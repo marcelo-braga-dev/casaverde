@@ -2,26 +2,23 @@
 
 namespace App\Models\Users;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Cliente\ClientProfile;
+use App\Models\Importacao\ClientEmailImportSetting;
+use App\Models\Energia\EnergyBill;
 use App\Models\Usina\UsinaSolar;
 use App\src\Roles\RoleUser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
         'email',
@@ -31,22 +28,12 @@ class User extends Authenticatable
         'status',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'name',
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -55,7 +42,7 @@ class User extends Authenticatable
         ];
     }
 
-    protected $appends = ['nome', 'status_nome', 'cadastrado_em', 'dados_acesso'];
+    protected $appends = ['nome', 'status_nome', 'cadastrado_em', 'dados_acesso', 'role_name'];
 
     protected $with = ['userData', 'contatos', 'consultor'];
 
@@ -63,51 +50,86 @@ class User extends Authenticatable
     {
         $user = Auth::user();
 
-        if ($user && $user->role_id == RoleUser::$ADMIN) return $query;
+        if ($user && $user->role_id == RoleUser::$ADMIN) {
+            return $query;
+        }
 
         return $query->where('consultor_id', $user->id);
     }
 
-    //--------------
-    // relations
-    //--------------
+    public function isAdmin(): bool
+    {
+        return (int) $this->role_id === RoleUser::$ADMIN;
+    }
+
+    public function isConsultor(): bool
+    {
+        return (int) $this->role_id === RoleUser::$CONSULTOR;
+    }
+
+    public function isCliente(): bool
+    {
+        return (int) $this->role_id === RoleUser::$CLIENTE;
+    }
 
     public function consultor()
     {
         return $this->belongsTo(User::class, 'consultor_id');
     }
 
-    public function userData(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function userData(): HasOne
     {
         return $this->hasOne(UserData::class, 'user_id', 'id');
     }
 
-    public function usina(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function usina(): HasOne
     {
         return $this->hasOne(UsinaSolar::class, 'user_id', 'id');
     }
 
-    public function contatos(): \Illuminate\Database\Eloquent\Relations\HasOne
+    public function contatos(): HasOne
     {
         return $this->hasOne(UserContact::class, 'user_id', 'id');
     }
 
-    public function vendedor(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    public function vendedor()
     {
         return $this->belongsTo(User::class, 'consultor_id');
     }
 
-    public function clientes()
+    public function clientes(): HasMany
     {
         return $this->hasMany(User::class, 'consultor_id');
     }
 
-    //--------------
-    // getters
-    //--------------
+    public function energyBillImportSetting(): HasOne
+    {
+        return $this->hasOne(ClientEmailImportSetting::class, 'user_id');
+    }
+
+    public function energyBills(): HasMany
+    {
+        return $this->hasMany(EnergyBill::class, 'user_id');
+    }
+
+    public function clientProfilesAsConsultor(): HasMany
+    {
+        return $this->hasMany(ClientProfile::class, 'consultor_user_id');
+    }
+
+    public function clientProfileAsPlatformUser(): HasOne
+    {
+        return $this->hasOne(ClientProfile::class, 'platform_user_id');
+    }
+
     public function getNomeAttribute()
     {
         return $this->attributes['name'];
+    }
+
+    public function getRoleNameAttribute(): ?string
+    {
+        return RoleUser::nameById((int) $this->role_id);
     }
 
     public function getDadosAcessoAttribute()
@@ -117,7 +139,7 @@ class User extends Authenticatable
                 $statusNome = 'Bloqueado';
                 break;
             case '1':
-                $statusNome = 'Ativo';;
+                $statusNome = 'Ativo';
                 break;
             default:
                 $statusNome = 'Desconhecido';
@@ -151,4 +173,14 @@ class User extends Authenticatable
                 return '-';
         }
     }
+
+public function usinas()
+{
+    return $this->hasMany(\App\Models\Usina\UsinaSolar::class, 'user_id');
+}
+
+public function producerProfile()
+{
+    return $this->hasOne(\App\Models\Produtor\ProducerProfile::class, 'user_id');
+}
 }

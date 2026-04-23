@@ -2,6 +2,7 @@
 
 namespace App\Models\Users;
 
+use App\Models\Endereco\Address;
 use App\Utils\FormatValues;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -11,8 +12,11 @@ class UserData extends Model
 {
     use HasFactory;
 
+    protected $table = 'user_data';
+
     protected $fillable = [
         'user_id',
+        'address_id',
         'tipo_pessoa',
         'nome',
         'cpf',
@@ -32,11 +36,7 @@ class UserData extends Model
     ];
 
     protected $appends = ['cadastrado_em'];
-    protected $with = ['endereco'];
 
-    //--------------
-    // getters
-    //--------------
     public function getCadastradoEmAttribute()
     {
         $data = Carbon::parse($this->attributes['created_at']);
@@ -45,57 +45,45 @@ class UserData extends Model
 
     public function getCnpjAttribute()
     {
-        return FormatValues::formatCnpj($this->attributes['cnpj']);
+        return isset($this->attributes['cnpj'])
+            ? FormatValues::formatCnpj($this->attributes['cnpj'])
+            : null;
     }
 
     public function getCpfAttribute()
     {
-        return FormatValues::formatCpf($this->attributes['cpf']);
-    }
-
-    public function getGeneroAttribute()
-    {
-        if ($this->attributes['genero'] == 'm') return 'Masculino';
-        if ($this->attributes['genero'] == 'f') return 'Feminino';
-        return '';
+        return isset($this->attributes['cpf'])
+            ? FormatValues::formatCpf($this->attributes['cpf'])
+            : null;
     }
 
     public function getDataNascimentoAttribute()
     {
-        if ($this->attributes['data_nascimento']) {
-            $data = Carbon::parse($this->attributes['data_nascimento'] ?? null);
+        if (!empty($this->attributes['data_nascimento'])) {
+            $data = Carbon::parse($this->attributes['data_nascimento']);
             return $data->format('d/m/Y');
         }
+
         return null;
     }
 
-    //--------------
-    // setters
-    //--------------
     public function setCnpjAttribute($value)
     {
         $this->attributes['cnpj'] = $value ? preg_replace('/\D/', '', $value) : null;
     }
+
     public function setCpfAttribute($value)
     {
         $this->attributes['cpf'] = $value ? preg_replace('/\D/', '', $value) : null;
     }
 
-    //--------------
-    // relations
-    //--------------
-    public function endereco()
+    public function address()
     {
-        return $this->hasOne(UserAddress::class, 'user_id', 'user_id');
+        return $this->belongsTo(Address::class, 'address_id');
     }
 
-    /**
-     * @param string[] $fillable
-     * @return UserData
-     */
-    public function setFillable(array $fillable): UserData
-    {
-        $this->fillable = $fillable;
-        return $this;
-    }
+public function user()
+{
+    return $this->belongsTo(\App\Models\Users\User::class, 'user_id');
+}
 }

@@ -7,41 +7,49 @@ use Illuminate\Database\Eloquent\Model;
 
 class UserContact extends Model
 {
-    protected $fillable = ['user_id', 'email', 'celular', 'celular_2', 'telefone'];
+    protected $table = 'user_contacts';
 
-    //---------------
-    // setters
-    //---------------
-    public function setCelularAttribute($value)
+    protected $fillable = [
+        'user_id',
+        'email',
+        'celular',
+        'celular_2',
+        'telefone',
+    ];
+
+    protected static function booted(): void
     {
-        $this->attributes['celular'] = FormatValues::formatInteger($value);
+        static::saving(function (UserContact $contact) {
+            $contact->email = $contact->email ? mb_strtolower(trim($contact->email)) : null;
+            $contact->celular = $contact->celular ? preg_replace('/\D+/', '', $contact->celular) : null;
+            $contact->celular_2 = $contact->celular_2 ? preg_replace('/\D+/', '', $contact->celular_2) : null;
+            $contact->telefone = $contact->telefone ? preg_replace('/\D+/', '', $contact->telefone) : null;
+        });
     }
 
-    public function setCelular2Attribute($value)
-    {
-        $this->attributes['celular_2'] = FormatValues::formatInteger($value);
-    }
-
-    public function setTelefoneAttribute($value)
-    {
-        $this->attributes['telefone'] = FormatValues::formatInteger($value);
-    }
-
-    //---------------
-    // getters
-    //---------------
     public function getCelularAttribute()
     {
-        return FormatValues::formatPhone($this->attributes['celular']);
+        return isset($this->attributes['celular'])
+            ? FormatValues::formatPhone($this->attributes['celular'])
+            : null;
     }
 
     public function getCelular2Attribute()
     {
-        return FormatValues::formatPhone($this->attributes['celular_2']);
+        return isset($this->attributes['celular_2'])
+            ? FormatValues::formatPhone($this->attributes['celular_2'])
+            : null;
     }
 
     public function getTelefoneAttribute()
     {
-        return FormatValues::formatPhone($this->attributes['telefone']);
+        return isset($this->attributes['telefone'])
+            ? FormatValues::formatPhone($this->attributes['telefone'])
+            : null;
     }
+
+public function user()
+{
+    return $this->belongsTo(\App\Models\Users\User::class, 'user_id');
+}
 }

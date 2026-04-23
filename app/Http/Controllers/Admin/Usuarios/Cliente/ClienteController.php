@@ -3,25 +3,56 @@
 namespace App\Http\Controllers\Admin\Usuarios\Cliente;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\Cliente\ClienteRepository;
-use App\Repositories\Produtor\ProdutorRepository;
-use Illuminate\Http\Request;
+use App\Http\Requests\Cliente\StoreClientProfileRequest;
+use App\Models\Cliente\ClientProfile;
+use App\Repositories\Cliente\ClientProfileRepository;
+use App\Services\Cliente\CreateOrFindClientProfileService;
 use Inertia\Inertia;
 
 class ClienteController extends Controller
 {
-    public function index()
+    public function index(ClientProfileRepository $repository)
     {
-        return Inertia::render('Admin/User/Cliente/Index/Page');
+        $this->authorize('viewAny', ClientProfile::class);
+
+        return Inertia::render('Admin/Cliente/Index/Page', [
+            'clients' => $repository->paginate(20),
+        ]);
     }
 
     public function create()
     {
-        return Inertia::render('Admin/User/Cliente/Create/Page');
+        $this->authorize('create', ClientProfile::class);
+
+        return Inertia::render('Admin/Cliente/Create/Page');
     }
 
-    public function store(Request $request)
-    {
+    public function store(
+        StoreClientProfileRequest $request,
+        CreateOrFindClientProfileService $service
+    ) {
+        $this->authorize('create', ClientProfile::class);
 
+        $result = $service->handle($request->validated());
+
+        return redirect()
+            ->route('admin.user.cliente.show', $result['client_profile']->id)
+            ->with('success', $result['message']);
+    }
+
+    public function show(ClientProfile $cliente)
+    {
+        $this->authorize('view', $cliente);
+
+        return Inertia::render('Admin/Cliente/Show/Page', [
+            'client' => $cliente->load([
+                'consultor',
+                'platformUser',
+                'activeUsinaLink.usina',
+                'activeDiscountRule',
+                'proposals.concessionaria',
+                'accessInvites',
+            ]),
+        ]);
     }
 }

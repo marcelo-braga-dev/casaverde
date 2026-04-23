@@ -22,7 +22,6 @@ Route::middleware(['auth'])
         require __DIR__ . '/producer-profiles.php';
         require __DIR__ . '/producer-leads.php';
 
-        require __DIR__ . '/concessionaria.php';
         require __DIR__ . '/config.php';
 
         require __DIR__ . '/fatura-import-settings.php';
