@@ -9,33 +9,27 @@ use App\Models\Usina\Concessionaria;
 use App\Models\Usina\UsinaBlock;
 use App\Models\Usina\UsinaSolar;
 use App\Models\Users\User;
-use App\Repositories\Usina\UsinaSolarRepository;
 use App\src\Roles\RoleUser;
 use Inertia\Inertia;
 
 class UsinaSolarController extends Controller
 {
-    public function index(UsinaSolarRepository $repository)
-    {
-        return Inertia::render('Admin/Usina/Index/Page', [
-            'usinas' => $repository->paginate(20),
-        ]);
-    }
-
     public function create()
     {
-        return Inertia::render('Admin/Usina/Create/Page', [
+        return Inertia::render('Admin/Usinas/Create/Page', [
+            'produtores' => User::query()
+                ->where('role_id', RoleUser::$PRODUTOR)
+                ->orderBy('name')
+                ->get(['id', 'name', 'email', 'consultor_id']),
             'consultores' => User::query()
                 ->where('role_id', RoleUser::$CONSULTOR)
                 ->orderBy('name')
                 ->get(['id', 'name']),
             'concessionarias' => Concessionaria::query()
-                ->where('status', 'ativo')
                 ->orderBy('nome')
                 ->get(['id', 'nome']),
             'blocks' => UsinaBlock::query()
-                ->where('status', 'ativo')
-                ->orderBy('nome')
+                ->orderBy('id')
                 ->get(['id', 'nome']),
             'addresses' => Address::query()
                 ->orderByDesc('id')
@@ -45,42 +39,32 @@ class UsinaSolarController extends Controller
 
     public function store(StoreUsinaSolarRequest $request)
     {
-        $usina = UsinaSolar::create($request->validated());
+        $data = $request->validated();
+
+        $usina = UsinaSolar::create($data);
 
         return redirect()
             ->route('admin.usinas.show', $usina->id)
             ->with('success', 'Usina cadastrada com sucesso.');
     }
 
-    public function show(UsinaSolar $usina)
-    {
-        return Inertia::render('Admin/Usina/Show/Page', [
-            'usina' => $usina->load([
-                'user',
-                'consultor',
-                'concessionaria',
-                'block',
-                'address',
-                'clientLinks.clientProfile',
-            ]),
-        ]);
-    }
-
     public function edit(UsinaSolar $usina)
     {
-        return Inertia::render('Admin/Usina/Edit/Page', [
-            'usina' => $usina,
+        return Inertia::render('Admin/Usinas/Edit/Page', [
+            'usina' => $usina->load(['produtor', 'consultor', 'concessionaria', 'block', 'address']),
+            'produtores' => User::query()
+                ->where('role_id', RoleUser::$PRODUTOR)
+                ->orderBy('name')
+                ->get(['id', 'name', 'email', 'consultor_id']),
             'consultores' => User::query()
                 ->where('role_id', RoleUser::$CONSULTOR)
                 ->orderBy('name')
                 ->get(['id', 'name']),
             'concessionarias' => Concessionaria::query()
-                ->where('status', 'ativo')
                 ->orderBy('nome')
                 ->get(['id', 'nome']),
             'blocks' => UsinaBlock::query()
-                ->where('status', 'ativo')
-                ->orderBy('nome')
+                ->orderBy('id')
                 ->get(['id', 'nome']),
             'addresses' => Address::query()
                 ->orderByDesc('id')

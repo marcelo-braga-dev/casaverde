@@ -39,6 +39,11 @@ class UsinaSolar extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function produtor()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
     public function consultor()
     {
         return $this->belongsTo(User::class, 'consultor_user_id');

@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Produtor;
 
+use App\src\Roles\RoleUser;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreProducerProfileRequest extends FormRequest
 {
@@ -14,8 +16,19 @@ class StoreProducerProfileRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => ['nullable', 'integer', 'exists:users,id'],
-            'created_by_user_id' => ['nullable', 'integer', 'exists:users,id'],
+            'user_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('users', 'id')->where(fn ($query) => $query->where('role_id', RoleUser::$PRODUTOR)),
+            ],
+            'created_by_user_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('users', 'id')->where(fn ($query) => $query->whereIn('role_id', [
+                    RoleUser::$ADMIN,
+                    RoleUser::$CONSULTOR,
+                ])),
+            ],
             'admin_nome' => ['nullable', 'string', 'max:255'],
             'admin_qualificacao' => ['nullable', 'string', 'max:255'],
             'admin_address_id' => ['nullable', 'integer', 'exists:addresses,id'],
@@ -45,7 +58,9 @@ class StoreProducerProfileRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'usina_cnpj' => $this->usina_cnpj ? preg_replace('/\D+/', '', $this->usina_cnpj) : null,
+            'usina_cnpj' => $this->usina_cnpj
+                ? preg_replace('/\D+/', '', $this->usina_cnpj)
+                : null,
         ]);
     }
 }

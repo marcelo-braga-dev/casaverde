@@ -69,4 +69,9 @@ class ProducerProfile extends Model
     {
         return $this->belongsTo(Address::class, 'usina_address_id');
     }
+
+    public function consultorResponsavel()
+    {
+        return $this->belongsTo(User::class, 'created_by_user_id');
+    }
 }

@@ -12,11 +12,21 @@ class ProducerLeadRepository
         $user = auth()->user();
 
         $query = ProducerLead::query()
-            ->with(['consultor', 'producerProfile', 'concessionaria'])
+            ->with([
+                'consultor',
+                'producerProfile.user',
+                'concessionaria',
+            ])
             ->orderByDesc('id');
 
         if ($user && $user->role_id === RoleUser::$CONSULTOR) {
             $query->where('consultor_user_id', $user->id);
+        }
+
+        if ($user && $user->role_id === RoleUser::$PRODUTOR) {
+            $query->whereHas('producerProfile', function ($subQuery) use ($user) {
+                $subQuery->where('user_id', $user->id);
+            });
         }
 
         return $query;

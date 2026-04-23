@@ -41,4 +41,16 @@ class ProducerLead extends Model
     {
         return $this->belongsTo(Concessionaria::class, 'concessionaria_id');
     }
+
+    public function produtorUsuario()
+    {
+        return $this->hasOneThrough(
+            User::class,
+            ProducerProfile::class,
+            'id',
+            'id',
+            'producer_profile_id',
+            'user_id'
+        );
+    }
 }

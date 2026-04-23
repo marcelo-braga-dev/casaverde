@@ -8,6 +8,7 @@ use App\Models\Endereco\Address;
 use App\Models\Produtor\ProducerProfile;
 use App\Models\Users\User;
 use App\Repositories\Produtor\ProducerProfileRepository;
+use App\src\Roles\RoleUser;
 use Inertia\Inertia;
 
 class ProducerProfileController extends Controller
@@ -22,7 +23,14 @@ class ProducerProfileController extends Controller
     public function create()
     {
         return Inertia::render('Admin/Produtor/Profile/Create/Page', [
-            'users' => User::query()->orderBy('name')->get(['id', 'name', 'email']),
+            'users' => User::query()
+                ->where('role_id', RoleUser::$PRODUTOR)
+                ->orderBy('name')
+                ->get(['id', 'name', 'email', 'consultor_id']),
+            'responsaveisCadastro' => User::query()
+                ->whereIn('role_id', [RoleUser::$ADMIN, RoleUser::$CONSULTOR])
+                ->orderBy('name')
+                ->get(['id', 'name', 'email']),
             'addresses' => Address::query()
                 ->orderByDesc('id')
                 ->get(['id', 'rua', 'numero', 'bairro', 'cidade', 'estado']),
@@ -33,7 +41,7 @@ class ProducerProfileController extends Controller
     {
         $data = $request->validated();
 
-        if (!$data['created_by_user_id'] ?? false) {
+        if (!isset($data['created_by_user_id']) || !$data['created_by_user_id']) {
             $data['created_by_user_id'] = auth()->id();
         }
 
@@ -59,8 +67,20 @@ class ProducerProfileController extends Controller
     public function edit(ProducerProfile $producerProfile)
     {
         return Inertia::render('Admin/Produtor/Profile/Edit/Page', [
-            'producer' => $producerProfile,
-            'users' => User::query()->orderBy('name')->get(['id', 'name', 'email']),
+            'producer' => $producerProfile->load([
+                'user',
+                'createdBy',
+                'adminAddress',
+                'usinaAddress',
+            ]),
+            'users' => User::query()
+                ->where('role_id', RoleUser::$PRODUTOR)
+                ->orderBy('name')
+                ->get(['id', 'name', 'email', 'consultor_id']),
+            'responsaveisCadastro' => User::query()
+                ->whereIn('role_id', [RoleUser::$ADMIN, RoleUser::$CONSULTOR])
+                ->orderBy('name')
+                ->get(['id', 'name', 'email']),
             'addresses' => Address::query()
                 ->orderByDesc('id')
                 ->get(['id', 'rua', 'numero', 'bairro', 'cidade', 'estado']),

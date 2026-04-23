@@ -3,8 +3,9 @@
 namespace App\Models\Users;
 
 use App\Models\Cliente\ClientProfile;
-use App\Models\Importacao\ClientEmailImportSetting;
 use App\Models\Energia\EnergyBill;
+use App\Models\Importacao\ClientEmailImportSetting;
+use App\Models\Produtor\ProducerProfile;
 use App\Models\Usina\UsinaSolar;
 use App\src\Roles\RoleUser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -29,7 +30,6 @@ class User extends Authenticatable
     ];
 
     protected $hidden = [
-        'name',
         'password',
         'remember_token',
     ];
@@ -42,19 +42,58 @@ class User extends Authenticatable
         ];
     }
 
-    protected $appends = ['nome', 'status_nome', 'cadastrado_em', 'dados_acesso', 'role_name'];
+    protected $appends = [
+        'nome',
+        'status_nome',
+        'cadastrado_em',
+        'dados_acesso',
+        'role_name',
+    ];
 
-    protected $with = ['userData', 'contatos', 'consultor'];
+    protected $with = [
+        'userData',
+        'contatos',
+        'consultor',
+    ];
 
     public function scopeSomenteMeusClientes($query)
     {
         $user = Auth::user();
 
-        if ($user && $user->role_id == RoleUser::$ADMIN) {
+        if (!$user) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        if ($user->isAdmin()) {
             return $query;
         }
 
-        return $query->where('consultor_id', $user->id);
+        if ($user->isConsultor()) {
+            return $query
+                ->where('consultor_id', $user->id)
+                ->where('role_id', RoleUser::$CLIENTE);
+        }
+
+        return $query->where('id', $user->id);
+    }
+
+    public function scopeSomenteMeusRelacionados($query)
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        if ($user->isAdmin()) {
+            return $query;
+        }
+
+        if ($user->isConsultor()) {
+            return $query->where('consultor_id', $user->id);
+        }
+
+        return $query->where('id', $user->id);
     }
 
     public function isAdmin(): bool
@@ -67,12 +106,22 @@ class User extends Authenticatable
         return (int) $this->role_id === RoleUser::$CONSULTOR;
     }
 
+    public function isProdutor(): bool
+    {
+        return (int) $this->role_id === RoleUser::$PRODUTOR;
+    }
+
     public function isCliente(): bool
     {
         return (int) $this->role_id === RoleUser::$CLIENTE;
     }
 
     public function consultor()
+    {
+        return $this->belongsTo(User::class, 'consultor_id');
+    }
+
+    public function vendedor()
     {
         return $this->belongsTo(User::class, 'consultor_id');
     }
@@ -87,19 +136,36 @@ class User extends Authenticatable
         return $this->hasOne(UsinaSolar::class, 'user_id', 'id');
     }
 
-    public function contatos(): HasOne
+    public function usinas(): HasMany
     {
-        return $this->hasOne(UserContact::class, 'user_id', 'id');
+        return $this->hasMany(UsinaSolar::class, 'user_id');
     }
 
-    public function vendedor()
+    public function ownedUsinas(): HasMany
     {
-        return $this->belongsTo(User::class, 'consultor_id');
+        return $this->hasMany(UsinaSolar::class, 'user_id');
+    }
+
+    public function usinasComoConsultor(): HasMany
+    {
+        return $this->hasMany(UsinaSolar::class, 'consultor_user_id');
+    }
+
+    public function contatos(): HasOne
+    {
+        return $this->hasOne(UserContact::class, 'user_id');
     }
 
     public function clientes(): HasMany
     {
-        return $this->hasMany(User::class, 'consultor_id');
+        return $this->hasMany(User::class, 'consultor_id')
+            ->where('role_id', RoleUser::$CLIENTE);
+    }
+
+    public function produtores(): HasMany
+    {
+        return $this->hasMany(User::class, 'consultor_id')
+            ->where('role_id', RoleUser::$PRODUTOR);
     }
 
     public function energyBillImportSetting(): HasOne
@@ -122,9 +188,14 @@ class User extends Authenticatable
         return $this->hasOne(ClientProfile::class, 'platform_user_id');
     }
 
+    public function producerProfile(): HasOne
+    {
+        return $this->hasOne(ProducerProfile::class, 'user_id');
+    }
+
     public function getNomeAttribute()
     {
-        return $this->attributes['name'];
+        return $this->attributes['name'] ?? null;
     }
 
     public function getRoleNameAttribute(): ?string
@@ -132,55 +203,42 @@ class User extends Authenticatable
         return RoleUser::nameById((int) $this->role_id);
     }
 
-    public function getDadosAcessoAttribute()
+    public function getDadosAcessoAttribute(): array
     {
-        switch ($this->attributes['status']) {
-            case '0':
-                $statusNome = 'Bloqueado';
-                break;
-            case '1':
-                $statusNome = 'Ativo';
-                break;
-            default:
-                $statusNome = 'Desconhecido';
-        }
+        $status = (string) ($this->attributes['status'] ?? '');
 
         return [
-            'email' => $this->attributes['email'],
-            'status' => $this->attributes['status'],
-            'status_nome' => $statusNome,
+            'email' => $this->attributes['email'] ?? null,
+            'status' => $status,
+            'status_nome' => match ($status) {
+                '0' => 'Bloqueado',
+                '1' => 'Ativo',
+                'novo' => 'Aguardando Análise Documentos',
+                'documentacao-aprovada' => 'Documentação Aprovada',
+                'assinar_contrato' => 'Assinar Contrato',
+                default => 'Desconhecido',
+            },
         ];
     }
 
-    public function getCadastradoEmAttribute()
+    public function getCadastradoEmAttribute(): ?string
     {
-        $data = Carbon::parse($this->attributes['created_at']);
-        return $data->format('d/m/Y H:i');
-    }
-
-    public function getStatusNomeAttribute()
-    {
-        switch ($this->attributes['status']) {
-            case '1':
-                return 'Ativo';
-            case 'novo':
-                return 'Aguardando Análise Documentos';
-            case 'documentacao-aprovada':
-                return 'Documentação Aprovada';
-            case 'assinar_contrato':
-                return 'Assinar Contrato';
-            default:
-                return '-';
+        if (empty($this->attributes['created_at'])) {
+            return null;
         }
+
+        return Carbon::parse($this->attributes['created_at'])->format('d/m/Y H:i');
     }
 
-public function usinas()
-{
-    return $this->hasMany(\App\Models\Usina\UsinaSolar::class, 'user_id');
-}
-
-public function producerProfile()
-{
-    return $this->hasOne(\App\Models\Produtor\ProducerProfile::class, 'user_id');
-}
+    public function getStatusNomeAttribute(): string
+    {
+        return match ((string) ($this->attributes['status'] ?? '')) {
+            '1' => 'Ativo',
+            '0' => 'Bloqueado',
+            'novo' => 'Aguardando Análise Documentos',
+            'documentacao-aprovada' => 'Documentação Aprovada',
+            'assinar_contrato' => 'Assinar Contrato',
+            default => '-',
+        };
+    }
 }

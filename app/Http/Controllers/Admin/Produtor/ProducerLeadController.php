@@ -29,8 +29,9 @@ class ProducerLeadController extends Controller
                 ->orderBy('name')
                 ->get(['id', 'name']),
             'producerProfiles' => ProducerProfile::query()
+                ->with(['user'])
                 ->orderByDesc('id')
-                ->get(['id', 'usina_nome', 'admin_nome']),
+                ->get(['id', 'user_id', 'usina_nome', 'admin_nome', 'created_by_user_id']),
             'concessionarias' => Concessionaria::query()
                 ->where('status', 'ativo')
                 ->orderBy('nome')
@@ -50,21 +51,30 @@ class ProducerLeadController extends Controller
     public function show(ProducerLead $producerLead)
     {
         return Inertia::render('Admin/Produtor/Lead/Show/Page', [
-            'lead' => $producerLead->load(['consultor', 'producerProfile', 'concessionaria']),
+            'lead' => $producerLead->load([
+                'consultor',
+                'producerProfile.user',
+                'concessionaria',
+            ]),
         ]);
     }
 
     public function edit(ProducerLead $producerLead)
     {
         return Inertia::render('Admin/Produtor/Lead/Edit/Page', [
-            'lead' => $producerLead,
+            'lead' => $producerLead->load([
+                'consultor',
+                'producerProfile.user',
+                'concessionaria',
+            ]),
             'consultores' => User::query()
                 ->where('role_id', RoleUser::$CONSULTOR)
                 ->orderBy('name')
                 ->get(['id', 'name']),
             'producerProfiles' => ProducerProfile::query()
+                ->with(['user'])
                 ->orderByDesc('id')
-                ->get(['id', 'usina_nome', 'admin_nome']),
+                ->get(['id', 'user_id', 'usina_nome', 'admin_nome', 'created_by_user_id']),
             'concessionarias' => Concessionaria::query()
                 ->where('status', 'ativo')
                 ->orderBy('nome')

@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Produtor;
 
+use App\src\Roles\RoleUser;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreProducerLeadRequest extends FormRequest
 {
@@ -14,7 +16,11 @@ class StoreProducerLeadRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'consultor_user_id' => ['required', 'integer', 'exists:users,id'],
+            'consultor_user_id' => [
+                'required',
+                'integer',
+                Rule::exists('users', 'id')->where(fn ($query) => $query->where('role_id', RoleUser::$CONSULTOR)),
+            ],
             'producer_profile_id' => ['nullable', 'integer', 'exists:producer_profiles,id'],
             'concessionaria_id' => ['nullable', 'integer', 'exists:concessionarias,id'],
             'taxa_reducao' => ['nullable', 'numeric', 'min:0', 'max:100'],
