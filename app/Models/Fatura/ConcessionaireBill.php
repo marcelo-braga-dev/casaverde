@@ -7,6 +7,7 @@ use App\Models\Usina\UsinaSolar;
 use App\Models\Users\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Usina\Concessionaria;
 
 class ConcessionaireBill extends Model
 {
@@ -18,7 +19,7 @@ class ConcessionaireBill extends Model
         'created_by_user_id',
         'reviewed_by_user_id',
         'import_source',
-        'concessionaria',
+        'concessionaria_id',
         'reference_month',
         'reference_year',
         'reference_label',
@@ -52,7 +53,12 @@ class ConcessionaireBill extends Model
     protected $appends = [
         'pdf_link',
         'has_open_issues',
-    ];
+    ];    
+
+    public function concessionaria()
+    {
+        return $this->belongsTo(Concessionaria::class, 'concessionaria_id');
+    }
 
     public function clientProfile()
     {

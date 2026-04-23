@@ -146,8 +146,8 @@ class ClientProfile extends Model
         return $query->where('consultor_user_id', $consultorId);
     }
 
-public function concessionaireBills()
-{
-    return $this->hasMany(\App\Models\Fatura\ConcessionaireBill::class, 'client_profile_id');
-}
+    public function concessionaireBills()
+    {
+        return $this->hasMany(\App\Models\Fatura\ConcessionaireBill::class, 'client_profile_id');
+    }
 }

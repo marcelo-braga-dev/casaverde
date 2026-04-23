@@ -19,6 +19,6 @@ Route::name('admin.faturas.')
         Route::post('/issues/{issue}/resolve', [ConcessionaireBillIssueController::class, 'resolve'])
             ->name('issues.resolve');
 
-Route::post('/{fatura}/approve', [ApproveConcessionaireBillController::class, 'store'])
-    ->name('approve');
+        Route::post('/{fatura}/approve', [ApproveConcessionaireBillController::class, 'store'])
+            ->name('approve');
     });
