@@ -43,6 +43,9 @@ class ConcessionaireBillController extends Controller
             'usinas' => UsinaSolar::query()
                 ->orderByDesc('id')
                 ->get(['id', 'uc']),
+            'clients' => \App\Models\Cliente\ClientProfile::query()
+                ->orderByDesc('id')
+                ->get(['id', 'client_code', 'nome', 'razao_social', 'cpf', 'cnpj']),
         ]);
     }
 
