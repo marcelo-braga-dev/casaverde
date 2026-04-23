@@ -16,23 +16,18 @@ class DashboardController extends Controller
     {
         $user = auth()->user();
 
-        $consultoresCount = User::query()
-            ->where('role_id', RoleUser::$CONSULTOR)
-            ->count();
-
-        $clientesCount = User::query()
-            ->where('role_id', RoleUser::$CLIENTE)
-            ->count();
-
-        $produtoresCount = User::query()
-            ->where('role_id', RoleUser::$PRODUTOR)
-            ->count();
+        $consultoresQuery = User::query()->where('role_id', RoleUser::$CONSULTOR);
+        $clientesQuery = User::query()->where('role_id', RoleUser::$CLIENTE);
+        $produtoresQuery = User::query()->where('role_id', RoleUser::$PRODUTOR);
 
         $usinasQuery = UsinaSolar::query();
         $producerLeadsQuery = ProducerLead::query();
         $producerProfilesQuery = ProducerProfile::query();
 
         if ($user->isConsultor()) {
+            $clientesQuery->where('consultor_id', $user->id);
+            $produtoresQuery->where('consultor_id', $user->id);
+
             $usinasQuery->where('consultor_user_id', $user->id);
             $producerLeadsQuery->where('consultor_user_id', $user->id);
             $producerProfilesQuery->where(function ($query) use ($user) {
@@ -45,9 +40,9 @@ class DashboardController extends Controller
 
         return Inertia::render('Admin/Dashboard/Page', [
             'stats' => [
-                'consultores' => $consultoresCount,
-                'clientes' => $clientesCount,
-                'produtores' => $produtoresCount,
+                'consultores' => $consultoresQuery->count(),
+                'clientes' => $clientesQuery->count(),
+                'produtores' => $produtoresQuery->count(),
                 'usinas' => $usinasQuery->count(),
                 'producerLeads' => $producerLeadsQuery->count(),
                 'producerProfiles' => $producerProfilesQuery->count(),
