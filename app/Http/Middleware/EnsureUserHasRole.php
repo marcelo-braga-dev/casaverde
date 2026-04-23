@@ -1,42 +1,25 @@
 <?php
 
-namespace App\Http\Controllers\Produtor;
+namespace App\Http\Middleware;
 
-use App\Http\Controllers\Controller;
-use App\Models\Produtor\ProducerLead;
-use App\Models\Produtor\ProducerProfile;
-use App\Models\Usina\UsinaSolar;
-use Inertia\Inertia;
+use Closure;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
-class DashboardController extends Controller
+class EnsureUserHasRole
 {
-    public function __invoke()
+    public function handle(Request $request, Closure $next, ...$roles): Response
     {
-        $user = auth()->user();
+        $user = $request->user();
 
-        $producerProfile = ProducerProfile::query()
-            ->with(['adminAddress', 'usinaAddress'])
-            ->where('user_id', $user->id)
-            ->first();
+        if (!$user) {
+            abort(403, 'Usuário não autenticado.');
+        }
 
-        $usinas = UsinaSolar::query()
-            ->with(['consultor', 'concessionaria', 'block', 'address'])
-            ->where('user_id', $user->id)
-            ->orderByDesc('id')
-            ->get();
+        if (!in_array($user->role_name, $roles, true)) {
+            abort(403, 'Você não possui permissão para acessar este recurso.');
+        }
 
-        $leads = ProducerLead::query()
-            ->with(['consultor', 'concessionaria'])
-            ->whereHas('producerProfile', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })
-            ->orderByDesc('id')
-            ->get();
-
-        return Inertia::render('Produtor/Dashboard/Page', [
-            'producerProfile' => $producerProfile,
-            'usinas' => $usinas,
-            'leads' => $leads,
-        ]);
+        return $next($request);
     }
 }
