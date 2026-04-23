@@ -29,27 +29,27 @@ class UserContact extends Model
 
     public function getCelularAttribute()
     {
-        return isset($this->attributes['celular'])
+        return isset($this->attributes['celular']) && $this->attributes['celular']
             ? FormatValues::formatPhone($this->attributes['celular'])
             : null;
     }
 
     public function getCelular2Attribute()
     {
-        return isset($this->attributes['celular_2'])
+        return isset($this->attributes['celular_2']) && $this->attributes['celular_2']
             ? FormatValues::formatPhone($this->attributes['celular_2'])
             : null;
     }
 
     public function getTelefoneAttribute()
     {
-        return isset($this->attributes['telefone'])
+        return isset($this->attributes['telefone']) && $this->attributes['telefone']
             ? FormatValues::formatPhone($this->attributes['telefone'])
             : null;
     }
 
-public function user()
-{
-    return $this->belongsTo(\App\Models\Users\User::class, 'user_id');
-}
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

@@ -2,22 +2,24 @@
 
 namespace App\Repositories\Produtor;
 
+use App\Models\Produtor\ProducerProfile;
 use App\Models\Produtor\ProdutorPropostas;
-use App\Models\Users\User;
 use App\Models\Users\UserData;
 use App\Services\Users\CreateUserService;
 use App\src\Roles\RoleUser;
+use Illuminate\Support\Facades\DB;
+use InvalidArgumentException;
 
 class ProdutorPropostaRepository
 {
-    public function find(int $id)
+    public function find(int $id): ?ProdutorPropostas
     {
-        return ProdutorPropostas::find($id);
+        return ProdutorPropostas::query()->find($id);
     }
 
     public function getProdutor(int $id)
     {
-        return (new ProdutorPropostas())
+        return ProdutorPropostas::query()
             ->where('produtor_id', $id)
             ->orderByDesc('id')
             ->get();
@@ -25,52 +27,111 @@ class ProdutorPropostaRepository
 
     public function getAll()
     {
-        return (new ProdutorPropostas)
+        return ProdutorPropostas::query()
             ->orderByDesc('id')
             ->get();
     }
 
-    public function store(array $data)
+    public function store(array $data): ProdutorPropostas
     {
-        $produtorId = $data['produtor_id'] ?? $this->verificarOuCriarUsuarioPorDocumento($data);
+        return DB::transaction(function () use ($data) {
+            $produtorId = $data['produtor_id'] ?? $this->verificarOuCriarUsuarioPorDocumento($data);
 
-        $proposta = (new ProdutorPropostas())->create([
-            'produtor_id' => $produtorId,
-            'consultor_id' => auth()->id(),
-            'potencia' => $data['dados']['potencia'],
-            'geracao_media' => $data['dados']['geracao_media'],
-            'valor_investimento' => $data['dados']['valor_investimento'],
-            'prazo_locacao' => $data['dados']['prazo_locacao'],
-            'taxa_reducao' => $data['taxa_reducao'],
-        ]);
+            $proposta = ProdutorPropostas::query()->create([
+                'produtor_id' => $produtorId,
+                'consultor_id' => auth()->id(),
+                'potencia' => $data['dados']['potencia'] ?? null,
+                'geracao_media' => $data['dados']['geracao_media'] ?? null,
+                'valor_investimento' => $data['dados']['valor_investimento'] ?? null,
+                'prazo_locacao' => $data['dados']['prazo_locacao'] ?? null,
+                'taxa_reducao' => $data['taxa_reducao'] ?? null,
+            ]);
 
-        $proposta->endereco()->create($data['endereco'] ?? []);
+            if (!empty($data['endereco']) && is_array($data['endereco'])) {
+                $proposta->endereco()->create($data['endereco']);
+            }
+
+            return $proposta;
+        });
     }
 
-    function verificarOuCriarUsuarioPorDocumento($userData): int
+    private function verificarOuCriarUsuarioPorDocumento(array $userData): int
     {
-        $cnpj = preg_replace('/\D/', '', $userData['cnpj'] ?? null);
-        $cpf = preg_replace('/\D/', '', $userData['cpf'] ?? null);
+        $registroExistente = null;
+
+        $cnpj = preg_replace('/\D/', '', $userData['cnpj'] ?? '');
+        $cpf = preg_replace('/\D/', '', $userData['cpf'] ?? '');
 
         if ($cpf) {
-            $registroExistente = UserData::where('cpf', $cpf)->first();
+            $registroExistente = UserData::query()
+                ->where('cpf', $cpf)
+                ->first();
         }
 
-        if ($cnpj) {
-            $registroExistente = UserData::where('cnpj', $cnpj)->first();
+        if (!$registroExistente && $cnpj) {
+            $registroExistente = UserData::query()
+                ->where('cnpj', $cnpj)
+                ->first();
         }
 
-        if ($registroExistente) return $registroExistente->user_id;
+        if ($registroExistente) {
+            $this->garantirProducerProfile($registroExistente->user_id, $userData);
 
-        $role = RoleUser::$PRODUTOR;
+            return (int) $registroExistente->user_id;
+        }
+
+        if (!$cpf && !$cnpj) {
+            throw new InvalidArgumentException('CPF ou CNPJ do produtor é obrigatório para cadastrar um novo produtor.');
+        }
+
         $service = new CreateUserService();
 
-        // Conta Acesso
-        $user = $service->createUser($userData, $role, null, auth()->id());
+        $user = $service->createUser(
+            produtor: $userData,
+            role: RoleUser::$PRODUTOR,
+            senha: null,
+            vendedor: auth()->id()
+        );
 
-        // Dados do Usuario
         $user->userData()->create($userData);
 
-        return $user->id;
+        if (!empty($userData['contato']) && is_array($userData['contato'])) {
+            $user->contatos()->create($userData['contato']);
+        }
+
+        $this->garantirProducerProfile($user->id, $userData);
+
+        return (int) $user->id;
+    }
+
+    private function garantirProducerProfile(int $userId, array $data): void
+    {
+        $existingProfile = ProducerProfile::query()
+            ->where('user_id', $userId)
+            ->first();
+
+        if ($existingProfile) {
+            return;
+        }
+
+        $tipoPessoa = $data['tipo_pessoa'] ?? null;
+        $potencia = $data['dados']['potencia'] ?? null;
+        $geracaoMedia = $data['dados']['geracao_media'] ?? null;
+        $prazoLocacao = $data['dados']['prazo_locacao'] ?? null;
+
+        ProducerProfile::query()->create([
+            'user_id' => $userId,
+            'created_by_user_id' => auth()->id(),
+            'admin_nome' => $data['nome'] ?? $data['razao_social'] ?? null,
+            'admin_qualificacao' => $tipoPessoa === 'pj' ? 'Pessoa Jurídica' : 'Pessoa Física',
+            'usina_nome' => $data['razao_social'] ?? $data['nome_fantasia'] ?? $data['nome'] ?? null,
+            'usina_cnpj' => $data['cnpj'] ?? null,
+            'potencia_kw' => $potencia,
+            'potencia_kwp' => $potencia,
+            'geracao_anual' => $geracaoMedia !== null ? ((float) $geracaoMedia * 12) : null,
+            'prazo_locacao' => $prazoLocacao,
+            'descricao' => 'Perfil criado automaticamente a partir da proposta de produtor.',
+            'status' => 'novo',
+        ]);
     }
 }

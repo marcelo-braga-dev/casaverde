@@ -11,6 +11,7 @@ import {
 import Grid from "@mui/material/Grid2";
 
 export default function Page({
+    produtores = [],
     consultores = [],
     concessionarias = [],
     blocks = [],
@@ -52,14 +53,35 @@ export default function Page({
                             <Grid size={{ xs: 12, md: 4 }}>
                                 <TextField
                                     select
+                                    label="Produtor proprietário"
+                                    value={data.user_id}
+                                    onChange={(e) => setData("user_id", e.target.value)}
+                                    error={!!errors.user_id}
+                                    helperText={errors.user_id}
+                                    fullWidth
+                                    required
+                                >
+                                    <MenuItem value="">Selecione</MenuItem>
+                                    {produtores.map((item) => (
+                                        <MenuItem key={item.id} value={item.id}>
+                                            {item.name} {item.email ? `- ${item.email}` : ""}
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
+                            </Grid>
+
+                            <Grid size={{ xs: 12, md: 4 }}>
+                                <TextField
+                                    select
                                     label="Consultor"
                                     value={data.consultor_user_id}
                                     onChange={(e) => setData("consultor_user_id", e.target.value)}
                                     error={!!errors.consultor_user_id}
                                     helperText={errors.consultor_user_id}
                                     fullWidth
+                                    required
                                 >
-                                    <MenuItem value="">Nenhum</MenuItem>
+                                    <MenuItem value="">Selecione</MenuItem>
                                     {consultores.map((item) => (
                                         <MenuItem key={item.id} value={item.id}>
                                             {item.name}
@@ -77,8 +99,9 @@ export default function Page({
                                     error={!!errors.concessionaria_id}
                                     helperText={errors.concessionaria_id}
                                     fullWidth
+                                    required
                                 >
-                                    <MenuItem value="">Nenhuma</MenuItem>
+                                    <MenuItem value="">Selecione</MenuItem>
                                     {concessionarias.map((item) => (
                                         <MenuItem key={item.id} value={item.id}>
                                             {item.nome}
@@ -134,6 +157,7 @@ export default function Page({
                                     error={!!errors.status}
                                     helperText={errors.status}
                                     fullWidth
+                                    required
                                 >
                                     <MenuItem value="ativo">Ativo</MenuItem>
                                     <MenuItem value="inativo">Inativo</MenuItem>
@@ -155,6 +179,7 @@ export default function Page({
                             <Grid size={{ xs: 12, md: 4 }}>
                                 <TextField
                                     label="Média de geração"
+                                    type="number"
                                     value={data.media_geracao}
                                     onChange={(e) => setData("media_geracao", e.target.value)}
                                     error={!!errors.media_geracao}
@@ -166,6 +191,7 @@ export default function Page({
                             <Grid size={{ xs: 12, md: 4 }}>
                                 <TextField
                                     label="Prazo de locação"
+                                    type="number"
                                     value={data.prazo_locacao}
                                     onChange={(e) => setData("prazo_locacao", e.target.value)}
                                     error={!!errors.prazo_locacao}
@@ -177,6 +203,7 @@ export default function Page({
                             <Grid size={{ xs: 12, md: 4 }}>
                                 <TextField
                                     label="Potência da usina"
+                                    type="number"
                                     value={data.potencia_usina}
                                     onChange={(e) => setData("potencia_usina", e.target.value)}
                                     error={!!errors.potencia_usina}
@@ -188,6 +215,7 @@ export default function Page({
                             <Grid size={{ xs: 12, md: 4 }}>
                                 <TextField
                                     label="Taxa de comissão"
+                                    type="number"
                                     value={data.taxa_comissao}
                                     onChange={(e) => setData("taxa_comissao", e.target.value)}
                                     error={!!errors.taxa_comissao}

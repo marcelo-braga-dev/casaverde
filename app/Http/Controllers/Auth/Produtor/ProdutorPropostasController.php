@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Auth\Produtor;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Produtor\StoreProdutorPropostaRequest;
 use App\Repositories\Produtor\ProdutorPropostaRepository;
 use App\Utils\AlertMessage;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class ProdutorPropostasController extends Controller
@@ -20,18 +20,23 @@ class ProdutorPropostasController extends Controller
         return Inertia::render('Auth/Produtor/Proposta/Create/Page', []);
     }
 
-    public function store(Request $request)
+    public function store(StoreProdutorPropostaRequest $request)
     {
-        (new ProdutorPropostaRepository())->store($request->all());
+        (new ProdutorPropostaRepository())->store($request->validated());
 
         AlertMessage::success('Proposta gerada com sucesso!');
+
         return redirect()->route('auth.produtor.proposta.index');
     }
 
     public function show($id)
     {
-        $proposta = (new ProdutorPropostaRepository)->find($id);
+        $proposta = (new ProdutorPropostaRepository())->find((int) $id);
 
-        return Inertia::render('Auth/Produtor/Proposta/Show/Page', ['idProposta' => $id]);
+        abort_unless($proposta, 404);
+
+        return Inertia::render('Auth/Produtor/Proposta/Show/Page', [
+            'idProposta' => (int) $id,
+        ]);
     }
 }

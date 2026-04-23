@@ -1,25 +1,31 @@
 import Grid from "@mui/material/Grid2";
-import {Card, CardContent, CardHeader, InputAdornment, MenuItem, TextField} from "@mui/material";
-import {IconFileInvoice} from "@tabler/icons-react";
-import {useEffect} from "react";
+import { Card, CardContent, CardHeader, InputAdornment, MenuItem, TextField } from "@mui/material";
+import { IconFileInvoice } from "@tabler/icons-react";
+import { useEffect } from "react";
 import useInputMask from "@/Utils/Masks/InputsMask.js";
 
-const ConsumoDados = ({data, setData}) => {
-
+const ConsumoDados = ({ data, setData }) => {
     useEffect(() => {
-        useInputMask()
+        useInputMask();
     }, []);
 
+    const updateDados = (field, value) => {
+        setData("dados", {
+            ...data.dados,
+            [field]: value,
+        });
+    };
+
     return (
-        <Card sx={{marginBottom: 4}}>
-            <CardHeader title="Informações da Usina" avatar={<IconFileInvoice/>} disableTypography/>
+        <Card sx={{ marginBottom: 4 }}>
+            <CardHeader title="Informações da Usina" avatar={<IconFileInvoice />} disableTypography />
             <CardContent>
                 <Grid container spacing={3}>
-                    <Grid size={{xs: 12, md: 3}}>
+                    <Grid size={{ xs: 12, md: 3 }}>
                         <TextField
                             label="Potência da Usina"
-                            value={data?.dados?.potencia}
-                            onChange={e => setData({...data, dados: {...data.dados, potencia: e.target.value}})}
+                            value={data?.dados?.potencia ?? ""}
+                            onChange={(e) => updateDados("potencia", e.target.value)}
                             type="number"
                             required
                             fullWidth
@@ -31,11 +37,11 @@ const ConsumoDados = ({data, setData}) => {
                         />
                     </Grid>
 
-                    <Grid size={{xs: 12, md: 3}}>
+                    <Grid size={{ xs: 12, md: 3 }}>
                         <TextField
                             label="Média Geração Mensal"
-                            value={data?.dados?.geracao_media}
-                            onChange={e => setData({...data, dados: {...data.dados, geracao_media: e.target.value}})}
+                            value={data?.dados?.geracao_media ?? ""}
+                            onChange={(e) => updateDados("geracao_media", e.target.value)}
                             type="number"
                             required
                             fullWidth
@@ -47,11 +53,11 @@ const ConsumoDados = ({data, setData}) => {
                         />
                     </Grid>
 
-                    <Grid size={{xs: 12, md: 3}}>
+                    <Grid size={{ xs: 12, md: 3 }}>
                         <TextField
                             label="Valor do Investimento"
-                            value={data?.dados?.valor_investimento}
-                            onBlur={e => setData({...data, dados: {...data.dados, valor_investimento: e.target.value}})}
+                            value={data?.dados?.valor_investimento ?? ""}
+                            onChange={(e) => updateDados("valor_investimento", e.target.value)}
                             className="money"
                             required
                             fullWidth
@@ -63,11 +69,11 @@ const ConsumoDados = ({data, setData}) => {
                         />
                     </Grid>
 
-                    <Grid size={{xs: 12, md: 3}}>
+                    <Grid size={{ xs: 12, md: 3 }}>
                         <TextField
                             label="Prazo Contrato"
-                            value={data?.dados?.prazo_locacao}
-                            onChange={e => setData({...data, dados: {...data.dados, prazo_locacao: e.target.value}})}
+                            value={data?.dados?.prazo_locacao ?? ""}
+                            onChange={(e) => updateDados("prazo_locacao", e.target.value)}
                             select
                             required
                             fullWidth
@@ -82,6 +88,7 @@ const ConsumoDados = ({data, setData}) => {
                 </Grid>
             </CardContent>
         </Card>
-    )
-}
-export default ConsumoDados
+    );
+};
+
+export default ConsumoDados;

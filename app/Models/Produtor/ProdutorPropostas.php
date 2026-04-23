@@ -2,49 +2,67 @@
 
 namespace App\Models\Produtor;
 
-use App\Models\Concessionarias;
 use App\Models\Users\User;
 use App\src\Roles\RoleUser;
 use App\Utils\ConvertValues;
-use App\Utils\FormatValues;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
 class ProdutorPropostas extends Model
 {
+    protected $table = 'produtor_propostas';
+
     protected $fillable = [
         'consultor_id',
         'produtor_id',
         'taxa_reducao',
         'prazo_locacao',
-        //'concessionaria_id',
         'potencia',
-        //'potencia_ac',
-        'geracao_media',//'geracao',
-        'valor_investimento',//'valor'
+        'geracao_media',
+        'valor_investimento',
     ];
 
-    protected static function booted()
+    protected $with = [
+        'produtor',
+        'endereco',
+        'consultor',
+    ];
+
+    protected $appends = [
+        'geracao_anual',
+        'retorno_anual_bruto',
+        'criado_em',
+    ];
+
+    protected static function booted(): void
     {
-        static::addGlobalScope('consultor_filter', function ($query) {
+        static::addGlobalScope('consultor_filter', function (Builder $query) {
             $user = Auth::user();
 
-            if ($user && $user->role_id == RoleUser::$ADMIN) return;
+            if (!$user) {
+                return;
+            }
 
-            $query->whereHas('produtor', function ($q) use ($user) {
-                $q->where('consultor_id', $user->id);
-            });
+            if ((int) $user->role_id === RoleUser::$ADMIN) {
+                return;
+            }
+
+            if ((int) $user->role_id === RoleUser::$CONSULTOR) {
+                $query->where('consultor_id', $user->id);
+                return;
+            }
+
+            if ((int) $user->role_id === RoleUser::$PRODUTOR) {
+                $query->where('produtor_id', $user->id);
+            }
         });
     }
 
-    protected $with = ['produtor', 'endereco', 'consultor'];
-
-    protected $appends = ['geracao_anual', 'retorno_anual_bruto', 'criado_em'];
-
     public function produtor()
     {
-        return $this->hasOne(User::class, 'id', 'produtor_id');
+        return $this->belongsTo(User::class, 'produtor_id');
     }
 
     public function consultor()
@@ -57,51 +75,74 @@ class ProdutorPropostas extends Model
         return $this->hasOne(ProdutorPropostasEnderecos::class, 'proposta_id', 'id');
     }
 
-    // ==== Setters ====
-    public function setPotenciaAttribute($value)
+    public function setPotenciaAttribute($value): void
     {
-        $this->attributes['potencia'] = $value ? ConvertValues::moneyToFloat($value) : null;
+        $this->attributes['potencia'] = $value !== null && $value !== ''
+            ? ConvertValues::moneyToFloat($value)
+            : null;
     }
 
-    public function setGeracaoMediaAttribute($value)
+    public function setGeracaoMediaAttribute($value): void
     {
-        $this->attributes['geracao_media'] = $value ? ConvertValues::moneyToFloat($value) : null;
+        $this->attributes['geracao_media'] = $value !== null && $value !== ''
+            ? ConvertValues::moneyToFloat($value)
+            : null;
     }
 
-    public function setValorInvestimentoAttribute($value)
+    public function setValorInvestimentoAttribute($value): void
     {
-        $this->attributes['valor_investimento'] = $value ? ConvertValues::moneyToFloat($value) : null;
+        $this->attributes['valor_investimento'] = $value !== null && $value !== ''
+            ? ConvertValues::moneyToFloat($value)
+            : null;
     }
-
-    // ==== Getters ====
 
     public function getValorInvestimentoAttribute()
     {
-        return ConvertValues::floatToMoney($this->attributes['valor_investimento']);
+        $value = $this->attributes['valor_investimento'] ?? null;
+
+        return $value !== null
+            ? ConvertValues::floatToMoney($value)
+            : null;
     }
 
     public function getPotenciaAttribute()
     {
-        return ConvertValues::floatToMoney($this->attributes['potencia']);
+        $value = $this->attributes['potencia'] ?? null;
+
+        return $value !== null
+            ? ConvertValues::floatToMoney($value)
+            : null;
     }
 
     public function getGeracaoMediaAttribute()
     {
-        return ConvertValues::floatToMoney($this->attributes['geracao_media']);
+        $value = $this->attributes['geracao_media'] ?? null;
+
+        return $value !== null
+            ? ConvertValues::floatToMoney($value)
+            : null;
     }
 
-    public function getCriadoEmAttribute()
+    public function getCriadoEmAttribute(): ?string
     {
+        if (empty($this->attributes['created_at'])) {
+            return null;
+        }
+
         return Carbon::parse($this->attributes['created_at'])->format('d/m/Y H:i:s');
     }
 
     public function getGeracaoAnualAttribute()
     {
-        return ConvertValues::floatToMoney($this->attributes['geracao_media'] * 12);
+        $geracaoMensal = (float) ($this->attributes['geracao_media'] ?? 0);
+
+        return ConvertValues::floatToMoney($geracaoMensal * 12);
     }
 
     public function getRetornoAnualBrutoAttribute()
     {
-        return ConvertValues::floatToMoney($this->attributes['geracao_media'] * 12 * 0.41);
+        $geracaoMensal = (float) ($this->attributes['geracao_media'] ?? 0);
+
+        return ConvertValues::floatToMoney($geracaoMensal * 12 * 0.41);
     }
 }

@@ -35,46 +35,54 @@ class UserData extends Model
         'ramo_atividade',
     ];
 
-    protected $appends = ['cadastrado_em'];
+    protected $appends = [
+        'cadastrado_em',
+    ];
 
-    public function getCadastradoEmAttribute()
+    public function getCadastradoEmAttribute(): ?string
     {
-        $data = Carbon::parse($this->attributes['created_at']);
-        return $data->format('d/m/Y H:i');
+        if (empty($this->attributes['created_at'])) {
+            return null;
+        }
+
+        return Carbon::parse($this->attributes['created_at'])->format('d/m/Y H:i');
     }
 
-    public function getCnpjAttribute()
+    public function getCnpjAttribute(): ?string
     {
-        return isset($this->attributes['cnpj'])
+        return isset($this->attributes['cnpj']) && $this->attributes['cnpj']
             ? FormatValues::formatCnpj($this->attributes['cnpj'])
             : null;
     }
 
-    public function getCpfAttribute()
+    public function getCpfAttribute(): ?string
     {
-        return isset($this->attributes['cpf'])
+        return isset($this->attributes['cpf']) && $this->attributes['cpf']
             ? FormatValues::formatCpf($this->attributes['cpf'])
             : null;
     }
 
-    public function getDataNascimentoAttribute()
+    public function getDataNascimentoAttribute(): ?string
     {
         if (!empty($this->attributes['data_nascimento'])) {
-            $data = Carbon::parse($this->attributes['data_nascimento']);
-            return $data->format('d/m/Y');
+            return Carbon::parse($this->attributes['data_nascimento'])->format('d/m/Y');
         }
 
         return null;
     }
 
-    public function setCnpjAttribute($value)
+    public function setCnpjAttribute($value): void
     {
-        $this->attributes['cnpj'] = $value ? preg_replace('/\D/', '', $value) : null;
+        $this->attributes['cnpj'] = $value
+            ? preg_replace('/\D/', '', $value)
+            : null;
     }
 
-    public function setCpfAttribute($value)
+    public function setCpfAttribute($value): void
     {
-        $this->attributes['cpf'] = $value ? preg_replace('/\D/', '', $value) : null;
+        $this->attributes['cpf'] = $value
+            ? preg_replace('/\D/', '', $value)
+            : null;
     }
 
     public function address()
@@ -82,8 +90,8 @@ class UserData extends Model
         return $this->belongsTo(Address::class, 'address_id');
     }
 
-public function user()
-{
-    return $this->belongsTo(\App\Models\Users\User::class, 'user_id');
-}
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }
