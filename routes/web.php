@@ -1,7 +1,6 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use Illuminate\Foundation\Application;
+use App\Http\Controllers\Auth\ClienteActivationController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -17,4 +16,8 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('/cliente/ativacao/{token}', [ClienteActivationController::class, 'show'])
+    ->name('cliente.activation.form');
 
+Route::post('/cliente/ativacao', [ClienteActivationController::class, 'store'])
+    ->name('cliente.activation.store');

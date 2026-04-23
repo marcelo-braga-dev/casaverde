@@ -4,28 +4,22 @@ namespace App\src\Roles;
 
 class RoleUser
 {
-    static int $ADMIN = 1;
-    static int $CONSULTOR = 2;
-    static int $PRODUTOR = 3;
-    static int $CLIENTE = 4;
+    public static int $ADMIN = 1;
+    public static int $CONSULTOR = 2;
+    public static int $PRODUTOR = 3; // legado temporário
+    public static int $CLIENTE = 4;
 
-    public function admin(): int
-    {
-        return 1;
-    }
+    public static string $ADMIN_NAME = 'admin';
+    public static string $CONSULTOR_NAME = 'consultor';
+    public static string $CLIENTE_NAME = 'cliente';
 
-    public function consultor(): int
+    public static function nameById(int $roleId): ?string
     {
-        return 2;
-    }
-
-    public function produtor(): int
-    {
-        return 3;
-    }
-
-    public function cliente(): int
-    {
-        return 4;
+        return match ($roleId) {
+            1 => self::$ADMIN_NAME,
+            2 => self::$CONSULTOR_NAME,
+            4 => self::$CLIENTE_NAME,
+            default => null,
+        };
     }
 }

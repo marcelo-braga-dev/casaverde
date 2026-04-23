@@ -1,0 +1,14 @@
+<?php
+
+use App\Http\Controllers\Admin\Proposta\CommercialProposalController;
+use Illuminate\Support\Facades\Route;
+
+Route::name('admin.propostas.')
+    ->prefix('propostas')
+    ->group(function () {
+        Route::get('/', [CommercialProposalController::class, 'index'])->name('index');
+        Route::get('/create', [CommercialProposalController::class, 'create'])->name('create');
+        Route::post('/', [CommercialProposalController::class, 'store'])->name('store');
+        Route::get('/{proposal}', [CommercialProposalController::class, 'show'])->name('show');
+        Route::get('/{proposal}/pdf', [CommercialProposalController::class, 'pdf'])->name('pdf');
+    });
