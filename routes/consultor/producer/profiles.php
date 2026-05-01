@@ -3,8 +3,8 @@
 use App\Http\Controllers\Admin\Produtor\ProducerProfileController;
 use Illuminate\Support\Facades\Route;
 
-Route::name('admin.producer-profiles.')
-    ->prefix('producer-profiles')
+Route::name('producer.profiles.')
+    ->prefix('producer/profiles')
     ->group(function () {
         Route::get('/', [ProducerProfileController::class, 'index'])->name('index');
         Route::get('/create', [ProducerProfileController::class, 'create'])->name('create');

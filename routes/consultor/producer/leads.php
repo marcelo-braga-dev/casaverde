@@ -3,8 +3,8 @@
 use App\Http\Controllers\Admin\Produtor\ProducerLeadController;
 use Illuminate\Support\Facades\Route;
 
-Route::name('admin.producer-leads.')
-    ->prefix('producer-leads')
+Route::name('producer.leads.')
+    ->prefix('producer/leads')
     ->group(function () {
         Route::get('/', [ProducerLeadController::class, 'index'])->name('index');
         Route::get('/create', [ProducerLeadController::class, 'create'])->name('create');

@@ -16,14 +16,14 @@ class ProducerLeadController extends Controller
 {
     public function index(ProducerLeadRepository $repository)
     {
-        return Inertia::render('Admin/Produtor/Lead/Index/Page', [
+        return Inertia::render('Consultor/Producer/Lead/Index/Page', [
             'leads' => $repository->paginate(20),
         ]);
     }
 
     public function create()
     {
-        return Inertia::render('Admin/Produtor/Lead/Create/Page', [
+        return Inertia::render('Consultor/Producer/Lead/Create/Page', [
             'consultores' => User::query()
                 ->where('role_id', RoleUser::$CONSULTOR)
                 ->orderBy('name')
@@ -44,13 +44,13 @@ class ProducerLeadController extends Controller
         $lead = ProducerLead::create($request->validated());
 
         return redirect()
-            ->route('admin.producer-leads.show', $lead->id)
+            ->route('consultor.producer.leads.show', $lead->id)
             ->with('success', 'Lead de produtor cadastrado com sucesso.');
     }
 
     public function show(ProducerLead $producerLead)
     {
-        return Inertia::render('Admin/Produtor/Lead/Show/Page', [
+        return Inertia::render('Consultor/Producer/Lead/Show/Page', [
             'lead' => $producerLead->load([
                 'consultor',
                 'producerProfile.user',
@@ -61,7 +61,7 @@ class ProducerLeadController extends Controller
 
     public function edit(ProducerLead $producerLead)
     {
-        return Inertia::render('Admin/Produtor/Lead/Edit/Page', [
+        return Inertia::render('Consultor/Producer/Lead/Edit/Page', [
             'lead' => $producerLead->load([
                 'consultor',
                 'producerProfile.user',
@@ -87,7 +87,7 @@ class ProducerLeadController extends Controller
         $producerLead->update($request->validated());
 
         return redirect()
-            ->route('admin.producer-leads.show', $producerLead->id)
+            ->route('consultor.producer.leads.show', $producerLead->id)
             ->with('success', 'Lead de produtor atualizado com sucesso.');
     }
 }

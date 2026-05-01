@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 Route::name('admin.user.')
     ->prefix('user')
     ->group(function () {
-        Route::resource('cliente', ClienteController::class);
+        //Route::resource('cliente', ClienteController::class);
 
 //        Route::name('cliente.api.')
 //            ->prefix('cliente-api')

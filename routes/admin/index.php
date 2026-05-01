@@ -20,11 +20,6 @@ Route::middleware(['auth', 'role:admin,consultor'])
 
         require __DIR__ . '/addresses.php';
         require __DIR__ . '/concessionarias.php';
-        require __DIR__ . '/usina-blocks.php';
-        require __DIR__ . '/usinas.php';
-
-        require __DIR__ . '/producer-profiles.php';
-        require __DIR__ . '/producer-leads.php';
 
         require __DIR__ . '/config.php';
         require __DIR__ . '/fatura-import-settings.php';

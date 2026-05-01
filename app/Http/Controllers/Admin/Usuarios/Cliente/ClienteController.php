@@ -15,7 +15,7 @@ class ClienteController extends Controller
     {
         $this->authorize('viewAny', ClientProfile::class);
 
-        return Inertia::render('Admin/Cliente/Index/Page', [
+        return Inertia::render('Consultor/Cliente/Index/Page', [
             'clients' => $repository->paginate(20),
         ]);
     }
@@ -24,7 +24,7 @@ class ClienteController extends Controller
     {
         $this->authorize('create', ClientProfile::class);
 
-        return Inertia::render('Admin/Cliente/Create/Page');
+        return Inertia::render('Consultor/Cliente/Create/Page');
     }
 
     public function store(
@@ -36,7 +36,7 @@ class ClienteController extends Controller
         $result = $service->handle($request->validated());
 
         return redirect()
-            ->route('admin.user.cliente.show', $result['client_profile']->id)
+            ->route('consultor.user.cliente.show', $result['client_profile']->id)
             ->with('success', $result['message']);
     }
 
@@ -44,7 +44,7 @@ class ClienteController extends Controller
     {
         $this->authorize('view', $cliente);
 
-        return Inertia::render('Admin/Cliente/Show/Page', [
+        return Inertia::render('Consultor/Cliente/Show/Page', [
             'client' => $cliente->load([
                 'consultor',
                 'platformUser',

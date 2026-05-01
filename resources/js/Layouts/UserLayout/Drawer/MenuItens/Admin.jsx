@@ -17,7 +17,7 @@ export const adminMenu = [
         id: 'clientes',
         cor: 'orange',
         subItems: [
-            {id: 'clientes-cadastrados', title: 'Clientes', link: route('auth.cliente.index')},
+            {id: 'cliente-index', title: 'Clientes', link: route('consultor.user.cliente.index')},
             {id: 'clientes-propostas', title: 'Propostas Cliente', link: route('auth.cliente.proposta.index')},
         ],
     }, {
@@ -26,6 +26,10 @@ export const adminMenu = [
         id: 'produtores-solar',
         cor: 'blue',
         subItems: [
+            {id: 'producer-leads-index', title: 'Lead', link: route('consultor.producer.leads.index')},
+            {id: 'producer-profiles-index', title: 'Perfil', link: route('consultor.producer.profiles.index')},
+            {id: 'usinas-index', title: 'Usinas', link: route('consultor.producer.usinas.index')},
+            {id: 'usinas-block-index', title: 'Blocos de Usinas', link: route('consultor.producer.usina-blocks.index')},
             {id: 'produtores-solar-cadastrados', title: 'Produtores', link: route('auth.produtor.index')},
             {id: 'produtores-propostas', title: 'Propostas Produtor', link: route('auth.produtor.proposta.index')},
         ],
@@ -36,8 +40,8 @@ export const adminMenu = [
         id: 'vendedores',
         cor: 'green',
         subItems: [
-            {id: 'vendedores-cadastrados', title: 'Consultores Cadastrados', link: route('admin.user.vendedor.index')},
-            {id: 'vendedores-cadastrar', title: 'Cadastrar Consultor', link: route('admin.user.vendedor.create')},
+            //{id: 'vendedores-cadastrados', title: 'Consultores Cadastrados', link: route('admin.user.vendedor.index')},
+            //{id: 'vendedores-cadastrar', title: 'Cadastrar Consultor', link: route('admin.user.vendedor.create')},
         ],
     }, {
         title: 'Administradores',
@@ -45,22 +49,22 @@ export const adminMenu = [
         id: 'admin',
         cor: 'brown',
         subItems: [
-            {id: 'admin-cadastrados', title: 'Admins Cadastrados', link: route('admin.user.admin.index')},
-            {id: 'admin-cadastrar', title: 'Cadastrar Admins', link: route('admin.user.admin.create')},
+            //{id: 'admin-cadastrados', title: 'Admins Cadastrados', link: route('admin.user.admin.index')},
+            //{id: 'admin-cadastrar', title: 'Cadastrar Admins', link: route('admin.user.admin.create')},
         ],
     }, {
         title: 'Financeiro',
         icon: <IconReportMoney/>,
         id: 'financeiro',
         subItems: [
-            {id: 'financeiro-produtor', title: 'Fluxo de Caixa', link: route('admin.financeiro.produtor.index')},
+            //{id: 'financeiro-produtor', title: 'Fluxo de Caixa', link: route('admin.financeiro.produtor.index')},
         ],
     }, {
         title: 'Concessionárias Energia',
         icon: <IconBolt/>,
         id: 'concessionarias',
         subItems: [
-            {id: 'concessionarias-todas', title: 'Todas Concessionárias', link: route('admin.concessionaria.index')},
+            //{id: 'concessionarias-todas', title: 'Todas Concessionárias', link: route('admin.concessionaria.index')},
         ],
     },
     // {
@@ -104,7 +108,7 @@ export const adminMenu = [
         icon: <IconSettings/>,
         id: 'config',
         subItems: [
-            {id: 'config-geral', title: 'Configurações Gerais', link: route('admin.config.geral.index')},
+            //{id: 'config-geral', title: 'Configurações Gerais', link: route('admin.config.geral.index')},
         ],
     },{
         title: 'Perfil',

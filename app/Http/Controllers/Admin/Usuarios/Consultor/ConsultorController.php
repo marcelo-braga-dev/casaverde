@@ -23,6 +23,6 @@ class ConsultorController extends Controller
     {
         (new ConsultorRepository())->create($request);
 
-        return redirect()->route('admin.user.vendedor.index');
+        //return redirect()->route('admin.user.vendedor.index');
     }
 }

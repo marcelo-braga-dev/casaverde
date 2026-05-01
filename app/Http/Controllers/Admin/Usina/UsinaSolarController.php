@@ -16,9 +16,19 @@ use Inertia\Inertia;
 
 class UsinaSolarController extends Controller
 {
+    public function index()
+    {
+        return Inertia::render('Consultor/Producer/Usina/Index/Page', [
+            'usinas' => UsinaSolar::query()
+                ->with(['produtor', 'consultor', 'concessionaria', 'block', 'address'])
+                ->orderByDesc('id')
+                ->paginate(20),
+        ]);
+    }
+
     public function create()
     {
-        return Inertia::render('Admin/Usinas/Create/Page', [
+        return Inertia::render('Consultor/Producer/Usina/Create/Page', [
             'produtores' => User::query()
                 ->where('role_id', RoleUser::$PRODUTOR)
                 ->orderBy('name')
@@ -52,13 +62,20 @@ class UsinaSolarController extends Controller
         });
 
         return redirect()
-            ->route('admin.usinas.show', $usina->id)
+            ->route('consultor.producer.usinas.show', $usina->id)
             ->with('success', 'Usina cadastrada com sucesso.');
+    }
+
+    public function show(UsinaSolar $usina)
+    {
+        return Inertia::render('Consultor/Producer/Usina/Show/Page', [
+            'usina' => $usina->load(['produtor', 'consultor', 'concessionaria', 'block', 'address']),
+        ]);
     }
 
     public function edit(UsinaSolar $usina)
     {
-        return Inertia::render('Admin/Usinas/Edit/Page', [
+        return Inertia::render('Consultor/Producer/Usina/Edit/Page', [
             'usina' => $usina->load(['produtor', 'consultor', 'concessionaria', 'block', 'address']),
             'produtores' => User::query()
                 ->where('role_id', RoleUser::$PRODUTOR)
@@ -91,7 +108,7 @@ class UsinaSolarController extends Controller
         });
 
         return redirect()
-            ->route('admin.usinas.show', $usina->id)
+            ->route('consultor.producer.usinas.show', $usina->id)
             ->with('success', 'Usina atualizada com sucesso.');
     }
 

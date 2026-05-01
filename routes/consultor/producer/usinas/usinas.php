@@ -3,8 +3,8 @@
 use App\Http\Controllers\Admin\Usina\UsinaSolarController;
 use Illuminate\Support\Facades\Route;
 
-Route::name('admin.usinas.')
-    ->prefix('usinas')
+Route::name('producer.usinas.')
+    ->prefix('producer/usinas')
     ->group(function () {
         Route::get('/', [UsinaSolarController::class, 'index'])->name('index');
         Route::get('/create', [UsinaSolarController::class, 'create'])->name('create');

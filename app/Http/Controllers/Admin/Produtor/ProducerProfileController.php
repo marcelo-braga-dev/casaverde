@@ -15,14 +15,14 @@ class ProducerProfileController extends Controller
 {
     public function index(ProducerProfileRepository $repository)
     {
-        return Inertia::render('Admin/Produtor/Profile/Index/Page', [
+        return Inertia::render('Consultor/Producer/Profile/Index/Page', [
             'producers' => $repository->paginate(20),
         ]);
     }
 
     public function create()
     {
-        return Inertia::render('Admin/Produtor/Profile/Create/Page', [
+        return Inertia::render('Consultor/Producer/Profile/Create/Page', [
             'users' => User::query()
                 ->where('role_id', RoleUser::$PRODUTOR)
                 ->orderBy('name')
@@ -48,13 +48,13 @@ class ProducerProfileController extends Controller
         $producer = ProducerProfile::create($data);
 
         return redirect()
-            ->route('admin.producer-profiles.show', $producer->id)
+            ->route('consultor.producer.profiles.show', $producer->id)
             ->with('success', 'Perfil de produtor cadastrado com sucesso.');
     }
 
     public function show(ProducerProfile $producerProfile)
     {
-        return Inertia::render('Admin/Produtor/Profile/Show/Page', [
+        return Inertia::render('Consultor/Producer/Profile/Show/Page', [
             'producer' => $producerProfile->load([
                 'user',
                 'createdBy',
@@ -66,7 +66,7 @@ class ProducerProfileController extends Controller
 
     public function edit(ProducerProfile $producerProfile)
     {
-        return Inertia::render('Admin/Produtor/Profile/Edit/Page', [
+        return Inertia::render('Consultor/Producer/Profile/Edit/Page', [
             'producer' => $producerProfile->load([
                 'user',
                 'createdBy',
@@ -92,7 +92,7 @@ class ProducerProfileController extends Controller
         $producerProfile->update($request->validated());
 
         return redirect()
-            ->route('admin.producer-profiles.show', $producerProfile->id)
+            ->route('consultor.producer.profiles.show', $producerProfile->id)
             ->with('success', 'Perfil de produtor atualizado com sucesso.');
     }
 }

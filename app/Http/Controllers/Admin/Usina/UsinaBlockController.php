@@ -12,14 +12,14 @@ class UsinaBlockController extends Controller
 {
     public function index(UsinaBlockRepository $repository)
     {
-        return Inertia::render('Admin/Usina/Block/Index/Page', [
+        return Inertia::render('Consultor/Producer/Usina-Block/Index/Page', [
             'blocks' => $repository->paginate(20),
         ]);
     }
 
     public function create()
     {
-        return Inertia::render('Admin/Usina/Block/Create/Page');
+        return Inertia::render('Consultor/Producer/Usina-Block/Create/Page');
     }
 
     public function store(StoreUsinaBlockRequest $request)
@@ -27,20 +27,20 @@ class UsinaBlockController extends Controller
         $block = UsinaBlock::create($request->validated());
 
         return redirect()
-            ->route('admin.usina-blocks.show', $block->id)
+            ->route('consultor.producer.usina-blocks.show', $block->id)
             ->with('success', 'Bloco cadastrado com sucesso.');
     }
 
     public function show(UsinaBlock $usinaBlock)
     {
-        return Inertia::render('Admin/Usina/Block/Show/Page', [
+        return Inertia::render('Consultor/Producer/Usina-Block/Show/Page', [
             'block' => $usinaBlock->load('usinas'),
         ]);
     }
 
     public function edit(UsinaBlock $usinaBlock)
     {
-        return Inertia::render('Admin/Usina/Block/Edit/Page', [
+        return Inertia::render('Consultor/Producer/Usina-Block/Edit/Page', [
             'block' => $usinaBlock,
         ]);
     }
@@ -50,7 +50,7 @@ class UsinaBlockController extends Controller
         $usinaBlock->update($request->validated());
 
         return redirect()
-            ->route('admin.usina-blocks.show', $usinaBlock->id)
+            ->route('consultor.producer.usina-blocks.show', $usinaBlock->id)
             ->with('success', 'Bloco atualizado com sucesso.');
     }
 }

@@ -3,8 +3,8 @@
 use App\Http\Controllers\Admin\Usina\UsinaBlockController;
 use Illuminate\Support\Facades\Route;
 
-Route::name('admin.usina-blocks.')
-    ->prefix('usina-blocks')
+Route::name('producer.usina-blocks.')
+    ->prefix('producer/usina-blocks')
     ->group(function () {
         Route::get('/', [UsinaBlockController::class, 'index'])->name('index');
         Route::get('/create', [UsinaBlockController::class, 'create'])->name('create');
