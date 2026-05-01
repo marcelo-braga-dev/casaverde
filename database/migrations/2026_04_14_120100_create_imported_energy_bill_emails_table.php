@@ -11,8 +11,11 @@ return new class extends Migration
         Schema::create('imported_energy_bill_emails', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->foreignId('client_email_import_setting_id')
-                ->constrained('client_email_import_settings')
+            $table->foreignId('client_email_import_setting_id');
+
+            $table->foreign('client_email_import_setting_id', 'ieb_emails_setting_fk')
+                ->references('id')
+                ->on('client_email_import_settings')
                 ->cascadeOnDelete();
 
             $table->string('message_uid')->nullable();
