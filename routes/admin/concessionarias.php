@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Admin\Usina\ConcessionariaController;
+//use App\Http\Controllers\Admin\Usina\ConcessionariaController;
 use App\Http\Controllers\Admin\Concessionaria\ConcessionariaController;
 use Illuminate\Support\Facades\Route;
 

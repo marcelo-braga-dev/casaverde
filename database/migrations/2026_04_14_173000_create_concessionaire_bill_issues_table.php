@@ -25,7 +25,7 @@ return new class extends Migration
 
             $table->timestamps();
 
-            $table->index(['concessionaire_bill_id', 'is_resolved']);
+            $table->index(['concessionaire_bill_id', 'is_resolved'], 'cbi_bill_resolved_idx');
             $table->index(['issue_code', 'severity']);
         });
     }

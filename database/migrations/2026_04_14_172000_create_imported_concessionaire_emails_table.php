@@ -12,8 +12,11 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('client_profile_id')->constrained('client_profiles')->cascadeOnDelete();
-            $table->foreignId('client_email_import_setting_id')
-                ->constrained('client_email_import_settings')
+            $table->foreignId('client_email_import_setting_id');
+
+            $table->foreign('client_email_import_setting_id', 'ic_emails_setting_fk')
+                ->references('id')
+                ->on('client_email_import_settings')
                 ->cascadeOnDelete();
 
             $table->foreignId('concessionaire_bill_id')
@@ -37,9 +40,9 @@ return new class extends Migration
             $table->timestamps();
 
             $table->index(['client_profile_id', 'status']);
-            $table->index(['client_profile_id', 'message_uid']);
-            $table->index(['client_profile_id', 'message_id']);
-            $table->index(['client_profile_id', 'attachment_hash']);
+            $table->index(['client_profile_id', 'message_uid'], 'ice_profile_uid_idx');
+            $table->index(['client_profile_id', 'message_id'], 'ice_profile_msg_idx');
+            $table->index(['client_profile_id', 'attachment_hash'], 'ice_profile_hash_idx');
         });
     }
 
