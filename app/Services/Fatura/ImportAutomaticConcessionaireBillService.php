@@ -115,7 +115,7 @@ class ImportAutomaticConcessionaireBillService
                             ]
                         );
 
-                        $bill->pdf_url = route('admin.faturas.pdf', $bill->id);
+                        $bill->pdf_url = route('consultor.cliente.faturas.pdf', $bill->id);
                         $bill->save();
 
                         return $bill;

@@ -21,7 +21,7 @@ class StoreClientEmailImportSettingRequest extends FormRequest
             'imap_port' => ['required', 'integer'],
             'imap_encryption' => ['nullable', Rule::in(['ssl', 'tls', 'none'])],
             'imap_email' => ['required', 'email', 'max:255'],
-            'imap_password' => ['required', 'string', 'max:255'],
+            'imap_password' => ['nullable', 'string', 'max:255'],
             'pdf_password' => ['nullable', 'string', 'max:255'],
             'sender_filter' => ['nullable', 'string', 'max:255'],
             'subject_filter' => ['nullable', 'string', 'max:255'],

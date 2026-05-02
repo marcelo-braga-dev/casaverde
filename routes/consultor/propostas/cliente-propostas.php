@@ -3,8 +3,8 @@
 use App\Http\Controllers\Admin\Proposta\CommercialProposalController;
 use Illuminate\Support\Facades\Route;
 
-Route::name('admin.propostas.')
-    ->prefix('propostas')
+Route::name('propostas.cliente.')
+    ->prefix('propostas/cliente')
     ->group(function () {
         Route::get('/', [CommercialProposalController::class, 'index'])->name('index');
         Route::get('/create', [CommercialProposalController::class, 'create'])->name('create');

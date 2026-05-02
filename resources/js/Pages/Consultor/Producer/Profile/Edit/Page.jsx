@@ -50,7 +50,7 @@ const Page = ({ producer, users = [], responsaveisCadastro = [], addresses = [] 
     };
 
     return (
-        <Layout titlePage="Editar Produtor" menu="produtores" subMenu="produtores-listar" backPage>
+        <Layout titlePage="Editar Produtor" menu="produtores-solar" subMenu="producer-profiles-index" backPage>
             <Head title="Editar Produtor" />
 
             <form onSubmit={submit}>

@@ -4,6 +4,7 @@ namespace App\Services\Fatura;
 
 use App\Models\Fatura\ConcessionaireBill;
 use App\Models\Importacao\ClientEmailImportSetting;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -21,17 +22,20 @@ class StoreParsedConcessionaireBillService
     public function handle(array $data): ConcessionaireBill
     {
         return DB::transaction(function () use ($data) {
+            /** @var UploadedFile $file */
             $file = $data['pdf'];
+
             $clientProfileId = (int) $data['client_profile_id'];
 
             $path = sprintf(
                 'concessionaire-bills/%d/%s/%s.pdf',
                 $clientProfileId,
                 now()->format('Y/m'),
-                (string) Str::uuid(),
+                (string) Str::uuid()
             );
 
             Storage::disk('local')->put($path, file_get_contents($file->getRealPath()));
+
             $absolutePath = Storage::disk('local')->path($path);
 
             $setting = ClientEmailImportSetting::query()
@@ -41,7 +45,7 @@ class StoreParsedConcessionaireBillService
             $bill = new ConcessionaireBill([
                 'client_profile_id' => $clientProfileId,
                 'usina_id' => $data['usina_id'] ?? null,
-                'concessionaria_id' => $data['concessionaria_id'],
+                'concessionaria_id' => $data['concessionaria_id'] ?? null,
                 'created_by_user_id' => auth()->id(),
                 'import_source' => 'manual',
                 'pdf_disk' => 'local',
@@ -62,6 +66,7 @@ class StoreParsedConcessionaireBillService
                 );
 
                 $rawText = $this->pdfTextExtractorService->extract($tempUnlockedFile);
+
                 $parsed = $this->copelBillParserService->parse($rawText);
 
                 $bill->fill([
@@ -76,13 +81,17 @@ class StoreParsedConcessionaireBillService
                     'raw_text' => $rawText,
                     'extracted_payload' => $parsed,
                     'parser_status' => 'success',
+                    'parser_error' => null,
                 ]);
             } catch (Throwable $e) {
+                $referenceMonth = (int) ($data['reference_month'] ?? now()->month);
+                $referenceYear = (int) ($data['reference_year'] ?? now()->year);
+
                 $bill->fill([
-                    'reference_month' => $data['reference_month'] ?? now()->month,
-                    'reference_year' => $data['reference_year'] ?? now()->year,
-                    'reference_label' => sprintf('%02d/%04d', (int) ($data['reference_month'] ?? now()->month), (int) ($data['reference_year'] ?? now()->year)),
-                    'unidade_consumidora' => preg_replace('/\D+/', '', ($data['unidade_consumidora'] ?? '0')),
+                    'reference_month' => $referenceMonth,
+                    'reference_year' => $referenceYear,
+                    'reference_label' => sprintf('%02d/%04d', $referenceMonth, $referenceYear),
+                    'unidade_consumidora' => preg_replace('/\D+/', '', $data['unidade_consumidora'] ?? '0'),
                     'numero_instalacao' => $data['numero_instalacao'] ?? null,
                     'vencimento' => $data['vencimento'] ?? now()->toDateString(),
                     'valor_total' => $data['valor_total'] ?? 0,
@@ -95,8 +104,10 @@ class StoreParsedConcessionaireBillService
             }
 
             $bill->save();
-            $bill->pdf_url = route('admin.faturas.pdf', $bill->id);
-            $bill->save();
+
+            $bill->forceFill([
+                'pdf_url' => route('consultor.cliente.faturas.pdf', $bill->id),
+            ])->save();
 
             return $bill;
         });

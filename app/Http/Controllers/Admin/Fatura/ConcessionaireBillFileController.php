@@ -4,24 +4,25 @@ namespace App\Http\Controllers\Admin\Fatura;
 
 use App\Http\Controllers\Controller;
 use App\Models\Fatura\ConcessionaireBill;
-use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class ConcessionaireBillFileController extends Controller
 {
-    public function show(ConcessionaireBill $fatura): Response
+    public function show(ConcessionaireBill $fatura): BinaryFileResponse
     {
-        abort_unless(
-            Storage::disk($fatura->pdf_disk)->exists($fatura->pdf_path),
-            404,
-            'PDF não encontrado.'
-        );
+        $disk = $fatura->pdf_disk ?? config('filesystems.default');
+        $path = $fatura->pdf_path;
 
-        $absolutePath = Storage::disk($fatura->pdf_disk)->path($fatura->pdf_path);
+        if (!$path || !Storage::disk($disk)->exists($path)) {
+            abort(404, 'PDF não encontrado.');
+        }
+
+        $absolutePath = Storage::disk($disk)->path($path);
 
         return response()->file($absolutePath, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="' . ($fatura->pdf_original_name ?: 'fatura.pdf') . '"',
+            'Content-Disposition' => 'inline; filename="' . ($fatura->pdf_original_name ?? 'fatura.pdf') . '"',
         ]);
     }
 }

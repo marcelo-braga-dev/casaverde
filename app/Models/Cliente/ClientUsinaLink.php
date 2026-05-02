@@ -20,8 +20,8 @@ class ClientUsinaLink extends Model
     ];
 
     protected $casts = [
-        'started_at' => 'date',
-        'ended_at' => 'date',
+        'started_at' => 'datetime',
+        'ended_at' => 'datetime',
         'is_active' => 'boolean',
     ];
 

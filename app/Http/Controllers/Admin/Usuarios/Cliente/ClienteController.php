@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin\Usuarios\Cliente;
 
 use App\Http\Controllers\Controller;
+use App\Models\Usina\Concessionaria;
 use App\Http\Requests\Cliente\StoreClientProfileRequest;
 use App\Models\Cliente\ClientProfile;
+use App\Models\Usina\UsinaSolar;
 use App\Repositories\Cliente\ClientProfileRepository;
 use App\Services\Cliente\CreateOrFindClientProfileService;
 use Inertia\Inertia;
@@ -15,7 +17,7 @@ class ClienteController extends Controller
     {
         $this->authorize('viewAny', ClientProfile::class);
 
-        return Inertia::render('Consultor/Cliente/Index/Page', [
+        return Inertia::render('Consultor/Cliente/Profile/Index/Page', [
             'clients' => $repository->paginate(20),
         ]);
     }
@@ -24,7 +26,7 @@ class ClienteController extends Controller
     {
         $this->authorize('create', ClientProfile::class);
 
-        return Inertia::render('Consultor/Cliente/Create/Page');
+        return Inertia::render('Consultor/Cliente/Profile/Create/Page');
     }
 
     public function store(
@@ -44,15 +46,29 @@ class ClienteController extends Controller
     {
         $this->authorize('view', $cliente);
 
-        return Inertia::render('Consultor/Cliente/Show/Page', [
+        return Inertia::render('Consultor/Cliente/Profile/Show/Page', [
+
             'client' => $cliente->load([
                 'consultor',
                 'platformUser',
                 'activeUsinaLink.usina',
                 'activeDiscountRule',
+                'usinaLinks.usina',
+                'discountRules',
+                'emailImportSetting.concessionaria',
                 'proposals.concessionaria',
                 'accessInvites',
             ]),
+
+            'usinas' => UsinaSolar::query()
+                ->with(['produtor'])
+                ->orderByDesc('id')
+                ->get(['id', 'uc', 'user_id']),
+
+            'concessionarias' => Concessionaria::query()
+                ->where('status', 'ativo')
+                ->orderBy('nome')
+                ->get(['id', 'nome']),
         ]);
     }
 }

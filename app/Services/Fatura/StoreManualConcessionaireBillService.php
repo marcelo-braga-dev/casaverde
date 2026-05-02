@@ -50,7 +50,7 @@ class StoreManualConcessionaireBillService
                 'notes' => $data['notes'] ?? null,
             ]);
 
-            $bill->pdf_url = route('admin.faturas.pdf', $bill->id);
+            $bill->pdf_url = route('consultor.cliente.faturas.pdf', $bill->id);
             $bill->save();
 
             return $bill;

@@ -29,11 +29,11 @@ const Page = () => {
     const submit = (e) => {
         e.preventDefault();
 
-        post(route("admin.user.cliente.store"));
+        post(route("consultor.user.cliente.store"));
     };
 
     return (
-        <Layout titlePage="Cadastrar Cliente" menu="clientes" subMenu="clientes-cadastrar" backPage>
+        <Layout titlePage="Cadastrar Cliente" menu="clientes" subMenu="cliente-index" backPage>
             <Head title="Cadastrar Cliente" />
 
             <form onSubmit={submit}>

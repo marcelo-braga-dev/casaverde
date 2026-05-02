@@ -8,7 +8,7 @@ class PdfTextExtractorService
 {
     public function extract(string $absolutePdfPath): string
     {
-        if (!is_file($absolutePdfPath)) {
+        if (! is_file($absolutePdfPath)) {
             throw new RuntimeException('Arquivo PDF não encontrado para leitura.');
         }
 
@@ -20,7 +20,7 @@ class PdfTextExtractorService
         exec($command, $output, $exitCode);
 
         if ($exitCode !== 0) {
-            throw new RuntimeException('Falha ao extrair texto do PDF.');
+            throw new RuntimeException('Falha ao extrair texto do PDF. Verifique se o poppler-utils está instalado.');
         }
 
         $text = trim(implode("\n", $output));

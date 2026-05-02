@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\Cliente\ClientUsinaHistoryController;
 use App\Http\Controllers\Admin\Cliente\ClientUsinaLinkController;
 use App\Http\Controllers\Admin\Cliente\ConvertClientProfileController;
 use App\Http\Controllers\Admin\Cliente\ClientContractDataController;
+use App\Http\Controllers\Admin\Fatura\ClientEmailImportSettingController;
 use App\Http\Controllers\Admin\Usuarios\Cliente\ClienteController;
 use App\Http\Controllers\Admin\Cliente\ClientContactController;
 use Illuminate\Support\Facades\Route;
@@ -14,6 +15,12 @@ use Illuminate\Support\Facades\Route;
 Route::name('user.')
     ->prefix('user')
     ->group(function () {
+//        Route::name('cliente.api.')
+//            ->prefix('cliente-api')
+//            ->group(function () {
+//                Route::get('get-clientes', \App\Http\Controllers\Admin\Usuarios\Cliente\GetClienteController::class)->name('get');
+//            });
+
         Route::resource('cliente', ClienteController::class);
 
         Route::post('cliente/{clientProfile}/converter', [ConvertClientProfileController::class, 'store'])
@@ -45,4 +52,7 @@ Route::name('user.')
 
         Route::put('cliente-user/{user}/contact', [ClientContactController::class, 'update'])
             ->name('cliente.contact.update');
+
+        Route::post('/', [ClientEmailImportSettingController::class, 'store'])
+            ->name('cliente.email-import-setting.store');
     });

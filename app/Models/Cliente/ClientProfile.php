@@ -6,6 +6,7 @@ use App\Models\Proposta\CommercialProposal;
 use App\Models\Users\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Importacao\ClientEmailImportSetting;
 
 class ClientProfile extends Model
 {
@@ -149,5 +150,10 @@ class ClientProfile extends Model
     public function concessionaireBills()
     {
         return $this->hasMany(\App\Models\Fatura\ConcessionaireBill::class, 'client_profile_id');
+    }
+
+    public function emailImportSetting()
+    {
+        return $this->hasOne(ClientEmailImportSetting::class, 'client_profile_id');
     }
 }

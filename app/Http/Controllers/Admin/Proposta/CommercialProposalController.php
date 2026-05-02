@@ -17,7 +17,7 @@ class CommercialProposalController extends Controller
     {
         $this->authorize('viewAny', CommercialProposal::class);
 
-        return Inertia::render('Admin/Proposta/Index/Page', [
+        return Inertia::render('Consultor/Propostas/Cliente/Index/Page', [
             'proposals' => $repository->paginate(),
         ]);
     }
@@ -26,7 +26,7 @@ class CommercialProposalController extends Controller
     {
         $this->authorize('create', CommercialProposal::class);
 
-        return Inertia::render('Admin/Proposta/Create/Page', [
+        return Inertia::render('Consultor/Propostas/Cliente/Create/Page', [
             'concessionarias' => Concessionaria::query()
                 ->where('status', 'ativo')
                 ->orderBy('nome')
@@ -43,7 +43,7 @@ class CommercialProposalController extends Controller
         $result = $service->handle($request->validated());
 
         return redirect()
-            ->route('admin.propostas.show', $result['proposal']->id)
+            ->route('consultor.propostas.cliente.show', $result['proposal']->id)
             ->with('success', 'Proposta emitida com sucesso.')
             ->with('client_already_exists', $result['client_already_exists'])
             ->with('client_message', $result['client_message']);
@@ -53,7 +53,7 @@ class CommercialProposalController extends Controller
     {
         $this->authorize('view', $proposal);
 
-        return Inertia::render('Admin/Proposta/Show/Page', [
+        return Inertia::render('Consultor/Propostas/Cliente/Show/Page', [
             'proposal' => $proposal->load(['clientProfile', 'consultor', 'concessionaria']),
         ]);
     }

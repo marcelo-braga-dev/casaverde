@@ -20,7 +20,7 @@ class ClienteActivationController extends Controller
 
         abort_unless($invite && $invite->canBeUsed(), 404);
 
-        return Inertia::render('Auth/ClienteActivation/Page', [
+        return Inertia::render('Auth/Cliente/ClienteActivation/Page', [
             'token' => $token,
             'invite' => [
                 'email' => $invite->email,

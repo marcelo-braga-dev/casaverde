@@ -21,12 +21,6 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified', 'redirect.role'])->name('dashboard');
 
-Route::get('/cliente/ativacao/{token}', [ClienteActivationController::class, 'show'])
-    ->name('cliente.activation.form');
-
-Route::post('/cliente/ativacao', [ClienteActivationController::class, 'store'])
-    ->name('cliente.activation.store');
-
 Route::get('/produtor/ativacao/{token}', [ProdutorActivationController::class, 'show'])
     ->name('produtor.activation.form');
 

@@ -101,11 +101,15 @@ class UsinaSolarController extends Controller
     {
         $data = $request->validated();
 
-        DB::transaction(function () use ($usina, $data) {
-            $usina->update($data);
+        try {
+            DB::transaction(function () use ($usina, $data) {
+                $usina->update($data);
 
-            $this->syncProducerProfileWithUsina($usina->fresh(), $data);
-        });
+                $this->syncProducerProfileWithUsina($usina->fresh(), $data);
+            });
+        } catch (\Throwable $e) {
+            dd('Erro Interno: ' . $e->getMessage());
+        }
 
         return redirect()
             ->route('consultor.producer.usinas.show', $usina->id)

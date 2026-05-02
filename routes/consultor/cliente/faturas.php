@@ -6,8 +6,8 @@ use App\Http\Controllers\Admin\Fatura\ConcessionaireBillIssueController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\Fatura\ApproveConcessionaireBillController;
 
-Route::name('admin.faturas.')
-    ->prefix('faturas')
+Route::name('cliente.faturas.')
+    ->prefix('cliente-faturas')
     ->group(function () {
         Route::get('/', [ConcessionaireBillController::class, 'index'])->name('index');
         Route::get('/create', [ConcessionaireBillController::class, 'create'])->name('create');
