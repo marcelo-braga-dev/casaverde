@@ -1,5 +1,7 @@
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
 import { Head, router, useForm } from "@inertiajs/react";
+import { getStatusColor, getStatusLabel } from "@/Utils/statusLabels.js";
+import { useEffect, useMemo, useState } from "react";
 import {
     Alert,
     Box,
@@ -30,21 +32,77 @@ import {
 } from "@tabler/icons-react";
 
 const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [] }) => {
-    const { data, setData, put, processing, errors } = useForm({
-        review_status: bill.review_status || "pending_review",
-        usina_id: bill.usina_id || suggestedUsinaId || "",
-        review_notes: bill.review_notes || "",
+    const initialData = useMemo(() => ({
+        review_status: bill.review_status ?? "pending_review",
+        usina_id: bill.usina_id ?? suggestedUsinaId ?? "",
+        concessionaria_id: bill.concessionaria_id ?? bill.concessionaria?.id ?? "",
+        review_notes: bill.review_notes ?? "",
+
+        nome: bill.nome ?? bill.extracted_payload?.nome ?? "",
+        unidade_consumidora: bill.unidade_consumidora ?? bill.extracted_payload?.unidade_consumidora ?? "",
+        numero_instalacao: bill.numero_instalacao ?? bill.extracted_payload?.numero_instalacao ?? "",
+        reference_label: bill.reference_label ?? bill.extracted_payload?.reference_label ?? "",
+        reference_month: bill.reference_month ?? bill.extracted_payload?.reference_month ?? "",
+        reference_year: bill.reference_year ?? bill.extracted_payload?.reference_year ?? "",
+        vencimento: toInputDate(bill.vencimento ?? bill.extracted_payload?.vencimento),
+
+        valor_total: inputDecimalValue(bill.valor_total ?? bill.extracted_payload?.valor_total),
+        consumo_kwh: inputDecimalValue(bill.consumo_kwh ?? bill.extracted_payload?.consumo_kwh),
+    }), [bill, suggestedUsinaId]);
+
+    const { data, setData, put, processing, errors } = useForm(initialData);
+    const [savedData, setSavedData] = useState(initialData);
+
+    useEffect(() => {
+        setSavedData(initialData);
+        setData(initialData);
+    }, [initialData]);
+
+    const requiredFields = [
+        { label: "Nome do titular", value: data.nome, validation: "text" },
+        { label: "Unidade Consumidora", value: data.unidade_consumidora, validation: "positive" },
+        { label: "Número da instalação", value: data.numero_instalacao, validation: "text" },
+        { label: "Referência / Mês-Ano", value: data.reference_label, validation: "text" },
+        { label: "Mês de referência", value: data.reference_month, validation: "positive" },
+        { label: "Ano de referência", value: data.reference_year, validation: "positive" },
+        { label: "Vencimento", value: formatDate(data.vencimento), validation: "text" },
+        { label: "Valor total / Valor cobrado", value: formatMoney(data.valor_total), validation: "money" },
+        { label: "Consumo kWh", value: formatNumber(data.consumo_kwh), validation: "positive" },
+        { label: "Concessionária", value: bill.concessionaria?.nome, validation: "text" },
+        { label: "PDF", value: bill.pdf_original_name, validation: "text" },
+        { label: "Origem da importação", value: bill.import_source, validation: "text" },
+    ];
+
+    const invalidFields = requiredFields.filter((field) => isInvalidField(field));
+
+    const hasUnsavedChanges = Object.keys(savedData).some((key) => {
+        if (["valor_total", "consumo_kwh"].includes(key)) {
+            return normalizeNumberForCompare(savedData[key]) !== normalizeNumberForCompare(data[key]);
+        }
+
+        return String(savedData[key] ?? "") !== String(data[key] ?? "");
     });
+
+    const canApprove =
+        data.review_status === "pending_review" &&
+        invalidFields.length === 0 &&
+        !hasUnsavedChanges &&
+        !processing;
 
     const submit = (e) => {
         e.preventDefault();
 
         put(route("consultor.cliente.faturas.update", bill.id), {
             preserveScroll: true,
+            onSuccess: () => {
+                setSavedData({ ...data });
+            },
         });
     };
 
     const approve = () => {
+        if (!canApprove) return;
+
         router.post(route("consultor.cliente.faturas.approve", bill.id), {}, {
             preserveScroll: true,
         });
@@ -56,58 +114,19 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [] }) => {
         });
     };
 
-    const requiredFields = [
-        {
-            label: "Nome do titular",
-            value: bill.nome || bill.extracted_payload?.nome,
-        },
-        {
-            label: "Unidade Consumidora",
-            value: bill.unidade_consumidora || bill.extracted_payload?.unidade_consumidora,
-        },
-        {
-            label: "Número da instalação",
-            value: bill.numero_instalacao || bill.extracted_payload?.numero_instalacao,
-        },
-        {
-            label: "Referência / Mês-Ano",
-            value: bill.reference_label || bill.extracted_payload?.reference_label,
-        },
-        {
-            label: "Mês de referência",
-            value: bill.reference_month || bill.extracted_payload?.reference_month,
-        },
-        {
-            label: "Ano de referência",
-            value: bill.reference_year || bill.extracted_payload?.reference_year,
-        },
-        {
-            label: "Vencimento",
-            value: formatDate(bill.vencimento || bill.extracted_payload?.vencimento),
-        },
-        {
-            label: "Valor total / Valor cobrado",
-            value: formatMoney(bill.valor_total || bill.extracted_payload?.valor_total),
-        },
-        {
-            label: "Consumo kWh",
-            value: formatNumber(bill.consumo_kwh || bill.extracted_payload?.consumo_kwh),
-        },
-        {
-            label: "Concessionária",
-            value: bill.concessionaria?.nome,
-        },
-        {
-            label: "PDF",
-            value: bill.pdf_original_name,
-        },
-        {
-            label: "Origem da importação",
-            value: bill.import_source,
-        },
-    ];
+    const clearInvalidDecimalOnFocus = (field) => {
+        if (isInvalidNumber(data[field])) {
+            setData(field, "");
+        }
+    };
 
-    const invalidFields = requiredFields.filter((field) => isInvalid(field.value));
+    const formatDecimalOnBlur = (field) => {
+        const number = parseBrazilianNumber(data[field]);
+
+        if (!Number.isNaN(number) && number > 0) {
+            setData(field, number.toFixed(2));
+        }
+    };
 
     return (
         <Layout titlePage={`Fatura #${bill.id}`} menu="faturas" subMenu="faturas-show" backPage>
@@ -115,22 +134,30 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [] }) => {
 
             <Grid container spacing={2}>
                 <Grid item xs={12}>
-                    {invalidFields.length > 0 ? (
-                        <Alert severity="warning" icon={<IconAlertTriangle />}>
-                            Existem {invalidFields.length} campo(s) que não foram extraídos corretamente do PDF.
-                        </Alert>
-                    ) : (
-                        <Alert severity="success">
-                            Todos os principais dados da fatura foram extraídos com sucesso.
-                        </Alert>
-                    )}
+                    <Stack spacing={1}>
+                        {invalidFields.length > 0 ? (
+                            <Alert severity="warning" icon={<IconAlertTriangle />}>
+                                Existem {invalidFields.length} campo(s) inválido(s). Corrija manualmente antes de aprovar.
+                            </Alert>
+                        ) : (
+                            <Alert severity="success">
+                                Todos os principais dados da fatura estão preenchidos.
+                            </Alert>
+                        )}
+
+                        {hasUnsavedChanges && (
+                            <Alert severity="info">
+                                Você possui alterações não salvas. Salve as correções antes de aprovar a fatura.
+                            </Alert>
+                        )}
+                    </Stack>
                 </Grid>
 
                 <Grid item xs={12} md={7}>
                     <Card>
                         <CardHeader
-                            title="Dados extraídos do PDF"
-                            subheader="Campos principais que precisam ser lidos automaticamente"
+                            title="Dados da Fatura"
+                            subheader="Campos extraídos do PDF e atualizados conforme correção manual"
                             avatar={<IconFileInvoice />}
                         />
 
@@ -141,6 +168,7 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [] }) => {
                                         key={field.label}
                                         label={field.label}
                                         value={field.value}
+                                        validation={field.validation}
                                     />
                                 ))}
                             </Grid>
@@ -153,7 +181,7 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [] }) => {
                                     variant="contained"
                                     startIcon={<IconCircleCheck />}
                                     onClick={approve}
-                                    disabled={invalidFields.length > 0}
+                                    disabled={!canApprove}
                                 >
                                     Aprovar Fatura
                                 </Button>
@@ -171,10 +199,7 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [] }) => {
                     </Card>
 
                     <Card sx={{ mt: 2 }}>
-                        <CardHeader
-                            title="Cliente e vínculo"
-                            avatar={<IconReceipt />}
-                        />
+                        <CardHeader title="Cliente e vínculo" avatar={<IconReceipt />} />
 
                         <CardContent>
                             <Grid container spacing={2}>
@@ -195,11 +220,19 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [] }) => {
                                 </Info>
 
                                 <Info label="Parser">
-                                    <Chip label={bill.parser_status || "Sem status"} size="small" />
+                                    <Chip
+                                        label={getStatusLabel(bill.parser_status)}
+                                        color={getStatusColor(bill.parser_status)}
+                                        size="small"
+                                    />
                                 </Info>
 
                                 <Info label="Status da revisão">
-                                    <Chip label={bill.review_status || "Sem status"} size="small" />
+                                    <Chip
+                                        label={getStatusLabel(bill.review_status)}
+                                        color={getStatusColor(bill.review_status)}
+                                        size="small"
+                                    />
                                 </Info>
 
                                 <Info label="Criado por">
@@ -220,11 +253,7 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [] }) => {
                             {bill.issues?.length > 0 ? (
                                 <Stack spacing={1}>
                                     {bill.issues.map((issue) => (
-                                        <Paper
-                                            key={issue.id}
-                                            variant="outlined"
-                                            sx={{ p: 2, borderRadius: 2 }}
-                                        >
+                                        <Paper key={issue.id} variant="outlined" sx={{ p: 2, borderRadius: 2 }}>
                                             <Stack
                                                 direction={{ xs: "column", sm: "row" }}
                                                 alignItems={{ xs: "flex-start", sm: "center" }}
@@ -268,11 +297,131 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [] }) => {
 
                 <Grid item xs={12} md={5}>
                     <Card>
-                        <CardHeader title="Revisão da Fatura" />
+                        <CardHeader
+                            title="Correção e Revisão da Fatura"
+                            subheader="Edite manualmente os campos inválidos ou incompletos"
+                        />
 
                         <CardContent>
                             <form onSubmit={submit}>
                                 <Grid container spacing={2}>
+                                    <Grid item xs={12}>
+                                        <Typography fontWeight={700}>Dados principais</Typography>
+                                    </Grid>
+
+                                    <Grid item xs={12}>
+                                        <TextField
+                                            fullWidth
+                                            label="Nome do titular"
+                                            value={data.nome}
+                                            error={Boolean(errors.nome)}
+                                            helperText={errors.nome}
+                                            onChange={(e) => setData("nome", e.target.value)}
+                                        />
+                                    </Grid>
+
+                                    <Grid item xs={12} md={6}>
+                                        <TextField
+                                            fullWidth
+                                            label="Unidade Consumidora"
+                                            value={data.unidade_consumidora}
+                                            error={Boolean(errors.unidade_consumidora)}
+                                            helperText={errors.unidade_consumidora}
+                                            onChange={(e) => setData("unidade_consumidora", e.target.value)}
+                                        />
+                                    </Grid>
+
+                                    <Grid item xs={12} md={6}>
+                                        <TextField
+                                            fullWidth
+                                            label="Número da instalação"
+                                            value={data.numero_instalacao}
+                                            error={Boolean(errors.numero_instalacao)}
+                                            helperText={errors.numero_instalacao}
+                                            onChange={(e) => setData("numero_instalacao", e.target.value)}
+                                        />
+                                    </Grid>
+
+                                    <Grid item xs={12} md={6}>
+                                        <TextField
+                                            fullWidth
+                                            label="Referência / Mês-Ano"
+                                            value={data.reference_label}
+                                            error={Boolean(errors.reference_label)}
+                                            helperText={errors.reference_label}
+                                            onChange={(e) => setData("reference_label", e.target.value)}
+                                        />
+                                    </Grid>
+
+                                    <Grid item xs={12} md={6}>
+                                        <TextField
+                                            fullWidth
+                                            type="date"
+                                            label="Vencimento"
+                                            value={data.vencimento}
+                                            error={Boolean(errors.vencimento)}
+                                            helperText={errors.vencimento}
+                                            InputLabelProps={{ shrink: true }}
+                                            onChange={(e) => setData("vencimento", e.target.value)}
+                                        />
+                                    </Grid>
+
+                                    <Grid item xs={12} md={6}>
+                                        <TextField
+                                            fullWidth
+                                            type="number"
+                                            label="Mês de referência"
+                                            value={data.reference_month}
+                                            error={Boolean(errors.reference_month)}
+                                            helperText={errors.reference_month}
+                                            onChange={(e) => setData("reference_month", e.target.value)}
+                                        />
+                                    </Grid>
+
+                                    <Grid item xs={12} md={6}>
+                                        <TextField
+                                            fullWidth
+                                            type="number"
+                                            label="Ano de referência"
+                                            value={data.reference_year}
+                                            error={Boolean(errors.reference_year)}
+                                            helperText={errors.reference_year}
+                                            onChange={(e) => setData("reference_year", e.target.value)}
+                                        />
+                                    </Grid>
+
+                                    <Grid item xs={12} md={6}>
+                                        <TextField
+                                            fullWidth
+                                            type="text"
+                                            label="Valor total"
+                                            value={data.valor_total}
+                                            error={Boolean(errors.valor_total)}
+                                            helperText={errors.valor_total || "Exemplo: 50415.00 ou 50.415,00"}
+                                            onFocus={() => clearInvalidDecimalOnFocus("valor_total")}
+                                            onBlur={() => formatDecimalOnBlur("valor_total")}
+                                            onChange={(e) => setData("valor_total", normalizeDecimalTyping(e.target.value))}
+                                        />
+                                    </Grid>
+
+                                    <Grid item xs={12} md={6}>
+                                        <TextField
+                                            fullWidth
+                                            type="text"
+                                            label="Consumo kWh"
+                                            value={data.consumo_kwh}
+                                            error={Boolean(errors.consumo_kwh)}
+                                            helperText={errors.consumo_kwh || "Exemplo: 100 ou 100.50"}
+                                            onFocus={() => clearInvalidDecimalOnFocus("consumo_kwh")}
+                                            onBlur={() => formatDecimalOnBlur("consumo_kwh")}
+                                            onChange={(e) => setData("consumo_kwh", normalizeDecimalTyping(e.target.value))}
+                                        />
+                                    </Grid>
+
+                                    <Grid item xs={12}>
+                                        <Divider />
+                                    </Grid>
+
                                     <Grid item xs={12}>
                                         <FormControl fullWidth error={Boolean(errors.review_status)}>
                                             <InputLabel>Status da revisão</InputLabel>
@@ -283,7 +432,7 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [] }) => {
                                             >
                                                 {reviewStatuses.map((status) => (
                                                     <MenuItem key={status} value={status}>
-                                                        {translateStatus(status)}
+                                                        {getStatusLabel(status)}
                                                     </MenuItem>
                                                 ))}
                                             </Select>
@@ -328,10 +477,10 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [] }) => {
                                             fullWidth
                                             type="submit"
                                             variant="contained"
-                                            disabled={processing}
+                                            disabled={processing || !hasUnsavedChanges}
                                             startIcon={<IconDeviceFloppy />}
                                         >
-                                            Salvar Revisão
+                                            Salvar Correções e Revisão
                                         </Button>
                                     </Grid>
                                 </Grid>
@@ -345,9 +494,22 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [] }) => {
                         <CardContent>
                             <Stack spacing={1}>
                                 <SummaryLine label="Campos analisados" value={requiredFields.length} />
-                                <SummaryLine label="Campos inválidos" value={invalidFields.length} danger={invalidFields.length > 0} />
+                                <SummaryLine
+                                    label="Campos inválidos"
+                                    value={invalidFields.length}
+                                    danger={invalidFields.length > 0}
+                                />
+                                <SummaryLine
+                                    label="Alterações pendentes"
+                                    value={hasUnsavedChanges ? "Sim" : "Não"}
+                                    danger={hasUnsavedChanges}
+                                />
                                 <SummaryLine label="Status do parser" value={bill.parser_status || "Sem status"} />
-                                <SummaryLine label="Arquivo" value={bill.pdf_original_name || "Inválido"} danger={!bill.pdf_original_name} />
+                                <SummaryLine
+                                    label="Arquivo"
+                                    value={bill.pdf_original_name || "Inválido"}
+                                    danger={!bill.pdf_original_name}
+                                />
                             </Stack>
                         </CardContent>
                     </Card>
@@ -376,8 +538,8 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [] }) => {
     );
 };
 
-const ExtractedField = ({ label, value }) => {
-    const invalid = isInvalid(value);
+const ExtractedField = ({ label, value, validation = "text" }) => {
+    const invalid = isInvalidField({ value, validation });
 
     return (
         <Grid item xs={12} sm={6} md={4}>
@@ -407,42 +569,102 @@ const ExtractedField = ({ label, value }) => {
     );
 };
 
-const Info = ({ label, children }) => {
-    return (
-        <Grid item xs={12} md={6}>
-            <Typography variant="caption" color="text.secondary">
-                {label}
-            </Typography>
-            <Typography>{children}</Typography>
-        </Grid>
-    );
-};
+const Info = ({ label, children }) => (
+    <Grid item xs={12} md={6}>
+        <Typography variant="caption" color="text.secondary">
+            {label}
+        </Typography>
 
-const SummaryLine = ({ label, value, danger = false }) => {
-    return (
-        <Stack direction="row" justifyContent="space-between" spacing={2}>
-            <Typography color="text.secondary">{label}</Typography>
-            <Typography fontWeight={700} color={danger ? "error.main" : "text.primary"}>
-                {value}
-            </Typography>
-        </Stack>
-    );
-};
+        <Box sx={{ mt: 0.25 }}>
+            {children}
+        </Box>
+    </Grid>
+);
+
+const SummaryLine = ({ label, value, danger = false }) => (
+    <Stack direction="row" justifyContent="space-between" spacing={2}>
+        <Typography color="text.secondary">{label}</Typography>
+        <Typography fontWeight={700} color={danger ? "error.main" : "text.primary"}>
+            {value}
+        </Typography>
+    </Stack>
+);
 
 const isInvalid = (value) => {
-    return value === null || value === undefined || value === "" || value === "-";
+    return value === null || value === undefined || String(value).trim() === "" || value === "-";
+};
+
+const isInvalidNumber = (value) => {
+    if (isInvalid(value)) return true;
+
+    const number = parseBrazilianNumber(value);
+
+    return Number.isNaN(number) || number <= 0;
+};
+
+const isInvalidField = ({ value, validation = "text" }) => {
+    if (validation === "money" || validation === "positive") {
+        return isInvalidNumber(value);
+    }
+
+    return isInvalid(value);
+};
+
+const parseBrazilianNumber = (value) => {
+    if (value === null || value === undefined || value === "") {
+        return NaN;
+    }
+
+    if (typeof value === "number") {
+        return value;
+    }
+
+    let normalized = String(value)
+        .replace("R$", "")
+        .replace(/\s/g, "")
+        .trim();
+
+    const hasComma = normalized.includes(",");
+    const hasDot = normalized.includes(".");
+
+    if (hasComma && hasDot) {
+        normalized = normalized.replace(/\./g, "").replace(",", ".");
+    } else if (hasComma) {
+        normalized = normalized.replace(",", ".");
+    }
+
+    return Number(normalized);
+};
+
+const normalizeNumberForCompare = (value) => {
+    const number = parseBrazilianNumber(value);
+
+    return Number.isNaN(number) ? "" : number.toFixed(2);
+};
+
+const normalizeDecimalTyping = (value) => {
+    return String(value)
+        .replace(/[^\d.,]/g, "")
+        .replace(/(,.*),/g, "$1")
+        .replace(/(\..*)\./g, "$1");
+};
+
+const inputDecimalValue = (value) => {
+    const number = parseBrazilianNumber(value);
+
+    if (Number.isNaN(number) || number <= 0) {
+        return "";
+    }
+
+    return String(value);
 };
 
 const formatMoney = (value) => {
-    if (isInvalid(value)) {
-        return "";
-    }
+    if (isInvalid(value)) return "";
 
-    const number = Number(value);
+    const number = parseBrazilianNumber(value);
 
-    if (Number.isNaN(number)) {
-        return "";
-    }
+    if (Number.isNaN(number)) return value;
 
     return number.toLocaleString("pt-BR", {
         style: "currency",
@@ -451,31 +673,46 @@ const formatMoney = (value) => {
 };
 
 const formatNumber = (value) => {
-    if (isInvalid(value)) {
-        return "";
-    }
+    if (isInvalid(value)) return "";
 
-    const number = Number(value);
+    const number = parseBrazilianNumber(value);
 
-    if (Number.isNaN(number)) {
-        return "";
-    }
+    if (Number.isNaN(number)) return value;
 
     return number.toLocaleString("pt-BR");
 };
 
 const formatDate = (value) => {
-    if (isInvalid(value)) {
-        return "";
+    if (isInvalid(value)) return "";
+
+    const valueString = String(value);
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(valueString)) {
+        const [year, month, day] = valueString.split("-");
+        return `${day}/${month}/${year}`;
     }
 
     const date = new Date(value);
 
-    if (Number.isNaN(date.getTime())) {
-        return value;
-    }
+    if (Number.isNaN(date.getTime())) return value;
 
     return date.toLocaleDateString("pt-BR");
+};
+
+const toInputDate = (value) => {
+    if (isInvalid(value)) return "";
+
+    const valueString = String(value);
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(valueString)) {
+        return valueString;
+    }
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) return value;
+
+    return date.toISOString().slice(0, 10);
 };
 
 const translateStatus = (status) => {

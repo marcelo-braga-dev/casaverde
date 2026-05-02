@@ -40,6 +40,10 @@ class ConcessionaireBill extends Model
         'parser_error',
         'notes',
         'reviewed_at',
+        'nome',
+        'review_notes',
+        'created_by_id',
+        'reviewed_by_id',
     ];
 
     protected $casts = [
@@ -53,7 +57,7 @@ class ConcessionaireBill extends Model
     protected $appends = [
         'pdf_link',
         'has_open_issues',
-    ];    
+    ];
 
     public function concessionaria()
     {

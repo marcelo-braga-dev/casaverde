@@ -21,7 +21,7 @@ export const adminMenu = [
             {id: 'propostas-cliente-index', title: 'Propostas', link: route('consultor.propostas.cliente.index')},
             {id: 'cliente-faturas', title: 'Faturas', link: route('consultor.cliente.faturas.index')},
 
-            {id: 'clientes-propostas', title: 'Propostas Cliente', link: route('auth.cliente.proposta.index')},
+            {id: 'clientes-propostas', title: '_Propostas Cliente', link: route('auth.cliente.proposta.index')},
         ],
     }, {
         title: 'Produtores Solar',

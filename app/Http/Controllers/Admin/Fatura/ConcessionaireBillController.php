@@ -108,7 +108,8 @@ class ConcessionaireBillController extends Controller
         $service->handle($fatura, $request->validated());
 
         return redirect()
-            ->back()
+            ->route('consultor.cliente.faturas.show', $fatura->id)
+            ->setStatusCode(303)
             ->with('success', 'Fatura revisada com sucesso.');
     }
 }
