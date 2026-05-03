@@ -1,12 +1,11 @@
 <?php
 
-namespace App\DTO\Endereco;
+namespace App\DTOs\Endereco;
 
 use Illuminate\Http\Request;
 
-class CreateEnderecoUsuarioDTO
+class CreateEnderecoDTO
 {
-    public int $userId;
     public ?string $cep;
     public ?string $rua;
     public ?string $numero;
@@ -17,11 +16,9 @@ class CreateEnderecoUsuarioDTO
     public ?string $referencia;
 
 
-    public static function fromArray(int $userId, $data): CreateEnderecoUsuarioDTO
+    public static function fromArray($data): CreateEnderecoDTO
     {
         $dto = new self();
-
-        $dto->userId = $userId;
         $dto->cep = $data['cep'] ?? null;
         $dto->rua = $data['rua'] ?? null;
         $dto->numero = $data['numero'] ?? null;
@@ -37,7 +34,6 @@ class CreateEnderecoUsuarioDTO
     public function toArray(): array
     {
         return [
-            'user_id' => $this->userId,
             'cep' => $this->cep,
             'rua' => $this->rua,
             'numero' => $this->numero,

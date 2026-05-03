@@ -9,6 +9,10 @@ Route::middleware(['auth', 'role:admin,consultor'])
     ->group(function () {
         Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
+        require __DIR__ . '/financeiro/cobrancas.php';
+        require __DIR__ . '/financeiro/pagamentos.php';
+        require __DIR__ . '/financeiro/payment-webhooks.php';
+
         require __DIR__ . '/users/admin.php';
         require __DIR__ . '/users/produtor.php';
         require __DIR__ . '/users/vendedor.php';

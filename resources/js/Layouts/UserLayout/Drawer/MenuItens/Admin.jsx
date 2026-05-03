@@ -61,7 +61,10 @@ export const adminMenu = [
         icon: <IconReportMoney/>,
         id: 'financeiro',
         subItems: [
-            //{id: 'financeiro-produtor', title: 'Fluxo de Caixa', link: route('admin.financeiro.produtor.index')},
+            {id: 'financeiro-cobrancas', title: 'Cobranças de Faturas', link: route('admin.financeiro.cobrancas.index')},
+            {id: 'financeiro-pagamentos', title: 'Pagamentos', link: route('admin.financeiro.pagamentos.index')},
+            {id: 'financeiro-bancos', title: 'Bancos', link: route('admin.financeiro.payment-provider-accounts.index')},
+            {id: 'financeiro-webhook', title: 'Webhook', link: route('admin.financeiro.payment-webhooks.index')},
         ],
     }, {
         title: 'Concessionárias',

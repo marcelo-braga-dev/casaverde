@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DTO\UsinaSolar;
+namespace App\DTOs\UsinaSolar;
 
 use Illuminate\Http\Request;
 
