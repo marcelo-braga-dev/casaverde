@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use App\Models\Concessionarias;
 use Illuminate\Database\Seeder;
 
-class ConcessionariasEnergiaSeeder extends Seeder
+class ConcessionariasSeeder extends Seeder
 {
     /**
      * Run the database seeds.

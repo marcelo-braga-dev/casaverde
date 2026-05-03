@@ -20,7 +20,6 @@ class ClientProfile extends Model
         'nome',
         'razao_social',
         'nome_fantasia',
-        'cidade',
         'email',
         'telefone',
         'consultor_user_id',
@@ -155,5 +154,10 @@ class ClientProfile extends Model
     public function emailImportSetting()
     {
         return $this->hasOne(ClientEmailImportSetting::class, 'client_profile_id');
+    }
+
+    public function contracts()
+    {
+        return $this->hasMany(\App\Models\Cliente\ClientContract::class, 'client_profile_id');
     }
 }

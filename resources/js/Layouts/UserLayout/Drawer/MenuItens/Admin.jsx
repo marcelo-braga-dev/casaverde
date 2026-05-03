@@ -20,6 +20,7 @@ export const adminMenu = [
             {id: 'cliente-index', title: 'Clientes', link: route('consultor.user.cliente.index')},
             {id: 'propostas-cliente-index', title: 'Propostas', link: route('consultor.propostas.cliente.index')},
             {id: 'cliente-faturas', title: 'Faturas', link: route('consultor.cliente.faturas.index')},
+            {id: 'clientes-contratos', title: 'Contratos', link: route('consultor.cliente.contratos.index')},
 
             {id: 'clientes-propostas', title: '_Propostas Cliente', link: route('auth.cliente.proposta.index')},
         ],
@@ -63,11 +64,11 @@ export const adminMenu = [
             //{id: 'financeiro-produtor', title: 'Fluxo de Caixa', link: route('admin.financeiro.produtor.index')},
         ],
     }, {
-        title: 'Concessionárias Energia',
+        title: 'Concessionárias',
         icon: <IconBolt/>,
         id: 'concessionarias',
         subItems: [
-            //{id: 'concessionarias-todas', title: 'Todas Concessionárias', link: route('admin.concessionaria.index')},
+            {id: 'concessionarias-index', title: 'Todas Concessionárias', link: route('admin.concessionaria.index')},
         ],
     },
     // {

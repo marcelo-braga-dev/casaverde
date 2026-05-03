@@ -41,7 +41,7 @@ const Page = () => {
                     <CardHeader title="Dados do Cliente" avatar={<IconUserPlus />} />
 
                     <CardContent>
-                        <Grid container spacing={3}>
+                        <Grid container spacing={3} marginBottom={3}>
                             <Grid size={{ xs: 12, md: 4 }}>
                                 <TextField
                                     label="Tipo de Pessoa"
@@ -57,7 +57,8 @@ const Page = () => {
                                     <MenuItem value="pj">Pessoa Jurídica</MenuItem>
                                 </TextField>
                             </Grid>
-
+                        </Grid>
+                        <Grid container spacing={3}>
                             {data.tipo_pessoa === "pf" && (
                                 <>
                                     <Grid size={{ xs: 12, md: 4 }}>
@@ -127,18 +128,6 @@ const Page = () => {
 
                             <Grid size={{ xs: 12, md: 4 }}>
                                 <TextField
-                                    label="Cidade"
-                                    value={data.cidade}
-                                    onChange={(e) => setData("cidade", e.target.value)}
-                                    error={!!errors.cidade}
-                                    helperText={errors.cidade}
-                                    required
-                                    fullWidth
-                                />
-                            </Grid>
-
-                            <Grid size={{ xs: 12, md: 4 }}>
-                                <TextField
                                     label="Email"
                                     value={data.email}
                                     onChange={(e) => setData("email", e.target.value)}
@@ -158,22 +147,6 @@ const Page = () => {
                                     helperText={errors.telefone}
                                     fullWidth
                                 />
-                            </Grid>
-
-                            <Grid size={{ xs: 12, md: 4 }}>
-                                <TextField
-                                    label="Status"
-                                    value={data.status}
-                                    onChange={(e) => setData("status", e.target.value)}
-                                    error={!!errors.status}
-                                    helperText={errors.status}
-                                    select
-                                    fullWidth
-                                >
-                                    <MenuItem value="prospect">Prospect</MenuItem>
-                                    <MenuItem value="active">Ativo</MenuItem>
-                                    <MenuItem value="inactive">Inativo</MenuItem>
-                                </TextField>
                             </Grid>
                         </Grid>
                     </CardContent>

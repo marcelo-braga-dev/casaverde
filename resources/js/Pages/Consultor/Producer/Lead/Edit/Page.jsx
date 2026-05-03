@@ -29,7 +29,7 @@ const Page = ({ lead, consultores = [], producerProfiles = [], concessionarias =
     };
 
     return (
-        <Layout titlePage="Editar Lead de Produtor" menu="produtores" subMenu="produtor-leads" backPage>
+        <Layout titlePage="Editar Lead de Produtor" menu="produtores-solar" subMenu="producer-leads-index" backPage>
             <Head title="Editar Lead de Produtor" />
 
             <form onSubmit={submit}>

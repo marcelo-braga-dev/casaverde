@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin\Usina;
+namespace App\Http\Controllers\Admin\Settings;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Usina\StoreConcessionariaRequest;
@@ -12,14 +12,14 @@ class ConcessionariaController extends Controller
 {
     public function index(ConcessionariaRepository $repository)
     {
-        return Inertia::render('Admin/Usina/Concessionaria/Index/Page', [
+        return Inertia::render('Admin/Concessionaria/Index/Page', [
             'concessionarias' => $repository->paginate(20),
         ]);
     }
 
     public function create()
     {
-        return Inertia::render('Admin/Usina/Concessionaria/Create/Page');
+        return Inertia::render('Admin/Concessionaria/Create/Page');
     }
 
     public function store(StoreConcessionariaRequest $request)
@@ -27,20 +27,20 @@ class ConcessionariaController extends Controller
         $concessionaria = Concessionaria::create($request->validated());
 
         return redirect()
-            ->route('admin.concessionarias.show', $concessionaria->id)
+            ->route('admin.concessionaria.show', $concessionaria->id)
             ->with('success', 'Concessionária cadastrada com sucesso.');
     }
 
     public function show(Concessionaria $concessionaria)
     {
-        return Inertia::render('Admin/Usina/Concessionaria/Show/Page', [
+        return Inertia::render('Admin/Concessionaria/Show/Page', [
             'concessionaria' => $concessionaria,
         ]);
     }
 
     public function edit(Concessionaria $concessionaria)
     {
-        return Inertia::render('Admin/Usina/Concessionaria/Edit/Page', [
+        return Inertia::render('Admin/Concessionaria/Edit/Page', [
             'concessionaria' => $concessionaria,
         ]);
     }
@@ -50,7 +50,7 @@ class ConcessionariaController extends Controller
         $concessionaria->update($request->validated());
 
         return redirect()
-            ->route('admin.concessionarias.show', $concessionaria->id)
+            ->route('admin.concessionaria.show', $concessionaria->id)
             ->with('success', 'Concessionária atualizada com sucesso.');
     }
 }

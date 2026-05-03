@@ -16,26 +16,37 @@ class StoreCommercialProposalRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'tipo_pessoa' => ['required', Rule::in(['pf', 'pj'])],
-            'cpf' => ['nullable', 'required_if:tipo_pessoa,pf', 'string', 'max:14'],
-            'cnpj' => ['nullable', 'required_if:tipo_pessoa,pj', 'string', 'max:18'],
+            'client_profile_id' => ['nullable', 'integer', 'exists:client_profiles,id'],
 
-            'nome' => ['nullable', 'required_if:tipo_pessoa,pf', 'string', 'max:255'],
-            'razao_social' => ['nullable', 'required_if:tipo_pessoa,pj', 'string', 'max:255'],
-            'nome_fantasia' => ['nullable', 'string', 'max:255'],
+            'tipo_pessoa' => ['required', 'string'],
+            'cpf' => ['nullable', 'string'],
+            'cnpj' => ['nullable', 'string'],
+            'nome' => ['nullable', 'string'],
+            'razao_social' => ['nullable', 'string'],
+            'nome_fantasia' => ['nullable', 'string'],
+            'email' => ['nullable', 'email'],
+            'telefone' => ['nullable', 'string'],
 
-            'cidade' => ['required', 'string', 'max:255'],
-            'email' => ['nullable', 'email', 'max:255'],
-            'telefone' => ['nullable', 'string', 'max:30'],
+            'address' => ['nullable', 'array'],
+            'address.cep' => ['nullable', 'string'],
+            'address.rua' => ['nullable', 'string'],
+            'address.numero' => ['nullable', 'string'],
+            'address.complemento' => ['nullable', 'string'],
+            'address.bairro' => ['nullable', 'string'],
+            'address.cidade' => ['nullable', 'string'],
+            'address.estado' => ['nullable', 'string'],
+            'address.referencia' => ['nullable', 'string'],
+            'address.latitude' => ['nullable', 'numeric'],
+            'address.longitude' => ['nullable', 'numeric'],
 
-            'concessionaria_id' => ['required', 'integer', 'exists:concessionarias,id'],
-            'media_consumo' => ['nullable', 'numeric', 'min:0'],
-            'taxa_reducao' => ['nullable', 'numeric', 'min:0', 'max:100'],
-            'prazo_locacao' => ['nullable', 'integer', 'min:1'],
-            'valor_medio' => ['nullable', 'numeric', 'min:0'],
-            'unidade_consumidora' => ['nullable', 'string', 'max:255'],
+            'concessionaria_id' => ['required', 'integer'],
+            'media_consumo' => ['nullable'],
+            'taxa_reducao' => ['nullable'],
+            'prazo_locacao' => ['nullable'],
+            'valor_medio' => ['nullable'],
+            'unidade_consumidora' => ['nullable'],
             'valid_until' => ['nullable', 'date'],
-            'notes' => ['nullable', 'string'],
+            'notes' => ['nullable'],
         ];
     }
 

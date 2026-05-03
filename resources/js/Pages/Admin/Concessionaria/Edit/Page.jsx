@@ -1,31 +1,38 @@
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
-import { Head, useForm } from "@inertiajs/react";
-import { Button, Card, CardContent, MenuItem, TextField, Typography } from "@mui/material";
+import {Head, router, useForm} from "@inertiajs/react";
+import {
+    Button,
+    Card,
+    CardContent,
+    CardHeader,
+    MenuItem,
+    TextField,
+} from "@mui/material";
 import Grid from "@mui/material/Grid2";
+import { IconDeviceFloppy, IconSettingsBolt } from "@tabler/icons-react";
 
-export default function Page() {
-    const { data, setData, post, processing, errors } = useForm({
-        nome: "",
-        tarifa_gd2: "",
-        estado: "",
-        status: "ativo",
+export default function Page({ concessionaria }) {
+    const { data, setData, processing, errors } = useForm({
+        nome: concessionaria?.nome ?? "",
+        tarifa_gd2: concessionaria?.tarifa_gd2 ?? "",
+        estado: concessionaria?.estado ?? "",
+        status: concessionaria?.status ?? "ativo",
     });
 
     const submit = (e) => {
         e.preventDefault();
-        post(route("admin.concessionarias.store"));
+
+        router.post(route("admin.concessionaria.update", concessionaria.id), {...data, _method: "PUT" });
     };
 
     return (
-        <Layout titlePage="Nova Concessionária" menu="config">
-            <Head title="Nova Concessionária" />
+        <Layout titlePage="Editar Concessionária" menu="concessionarias" subMenu="concessionarias-index" backPage>
+            <Head title="Editar Concessionária" />
 
             <Card>
-                <CardContent>
-                    <Typography variant="h6" marginBottom={3}>
-                        Cadastrar concessionária
-                    </Typography>
+                <CardHeader title="Editar dados da Concessionária" avatar={<IconSettingsBolt />} />
 
+                <CardContent>
                     <form onSubmit={submit}>
                         <Grid container spacing={2}>
                             <Grid size={{ xs: 12, md: 4 }}>
@@ -35,6 +42,7 @@ export default function Page() {
                                     onChange={(e) => setData("nome", e.target.value)}
                                     error={!!errors.nome}
                                     helperText={errors.nome}
+                                    required
                                     fullWidth
                                 />
                             </Grid>
@@ -69,6 +77,7 @@ export default function Page() {
                                     onChange={(e) => setData("status", e.target.value)}
                                     error={!!errors.status}
                                     helperText={errors.status}
+                                    required
                                     fullWidth
                                 >
                                     <MenuItem value="ativo">Ativo</MenuItem>
@@ -77,8 +86,14 @@ export default function Page() {
                             </Grid>
 
                             <Grid size={12}>
-                                <Button type="submit" variant="contained" disabled={processing}>
-                                    Salvar
+                                <Button
+                                    type="submit"
+                                    color="success"
+                                    variant="contained"
+                                    startIcon={<IconDeviceFloppy />}
+                                    disabled={processing}
+                                >
+                                    Atualizar
                                 </Button>
                             </Grid>
                         </Grid>

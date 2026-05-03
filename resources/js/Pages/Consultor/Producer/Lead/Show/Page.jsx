@@ -15,7 +15,7 @@ const Page = ({ lead }) => {
     };
 
     return (
-        <Layout titlePage="Detalhes do Lead de Produtor" menu="produtores" subMenu="produtor-leads" backPage>
+        <Layout titlePage="Detalhes do Lead de Produtor" menu="produtores-solar" subMenu="producer-leads-index" backPage>
             <Head title="Detalhes do Lead de Produtor" />
 
             <Card sx={{ marginBottom: 4 }}>

@@ -1,3 +1,6 @@
+/**
+ * @deprecated Este arquivo foi descontinuado.
+ */
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
 import { Head, useForm } from "@inertiajs/react";
 import {
@@ -10,7 +13,7 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 
-export default function Page({
+export default function PageDeprecated({
     usina,
     produtores = [],
     consultores = [],

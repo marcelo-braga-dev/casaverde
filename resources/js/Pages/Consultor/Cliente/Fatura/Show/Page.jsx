@@ -129,7 +129,7 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [] }) => {
     };
 
     return (
-        <Layout titlePage={`Fatura #${bill.id}`} menu="faturas" subMenu="faturas-show" backPage>
+        <Layout titlePage={`Fatura #${bill.id}`} menu="clientes" subMenu="cliente-faturas" backPage>
             <Head title={`Fatura #${bill.id}`} />
 
             <Grid container spacing={2}>
@@ -713,17 +713,6 @@ const toInputDate = (value) => {
     if (Number.isNaN(date.getTime())) return value;
 
     return date.toISOString().slice(0, 10);
-};
-
-const translateStatus = (status) => {
-    const statuses = {
-        pending_review: "Pendente de revisão",
-        reviewed: "Revisada",
-        corrected: "Corrigida",
-        approved: "Aprovada",
-    };
-
-    return statuses[status] || status;
 };
 
 export default Page;

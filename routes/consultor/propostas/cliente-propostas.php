@@ -11,4 +11,6 @@ Route::name('propostas.cliente.')
         Route::post('/', [CommercialProposalController::class, 'store'])->name('store');
         Route::get('/{proposal}', [CommercialProposalController::class, 'show'])->name('show');
         Route::get('/{proposal}/pdf', [CommercialProposalController::class, 'pdf'])->name('pdf');
+        Route::get('/{proposal}/edit', [CommercialProposalController::class, 'edit'])->name('edit');
+        Route::put('/{proposal}', [CommercialProposalController::class, 'update'])->name('update');
     });

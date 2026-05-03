@@ -38,7 +38,9 @@ class ClienteController extends Controller
         $result = $service->handle($request->validated());
 
         return redirect()
-            ->route('consultor.user.cliente.show', $result['client_profile']->id)
+            ->route('consultor.propostas.cliente.create', [
+                'client_profile_id' => $result['client_profile']->id,
+            ])
             ->with('success', $result['message']);
     }
 
@@ -57,7 +59,9 @@ class ClienteController extends Controller
                 'discountRules',
                 'emailImportSetting.concessionaria',
                 'proposals.concessionaria',
+                'proposals.contract',
                 'accessInvites',
+                'proposals.address',
             ]),
 
             'usinas' => UsinaSolar::query()

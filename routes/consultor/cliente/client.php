@@ -15,11 +15,6 @@ use Illuminate\Support\Facades\Route;
 Route::name('user.')
     ->prefix('user')
     ->group(function () {
-//        Route::name('cliente.api.')
-//            ->prefix('cliente-api')
-//            ->group(function () {
-//                Route::get('get-clientes', \App\Http\Controllers\Admin\Usuarios\Cliente\GetClienteController::class)->name('get');
-//            });
 
         Route::resource('cliente', ClienteController::class);
 

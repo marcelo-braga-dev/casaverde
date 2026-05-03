@@ -10,10 +10,17 @@ import {
     Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import { IconArrowLeft, IconFileDownload, IconFileText } from "@tabler/icons-react";
+import {
+    IconArrowLeft,
+    IconEdit,
+    IconFileDownload,
+    IconFileText,
+    IconMapPin,
+} from "@tabler/icons-react";
 
 const Page = ({ proposal }) => {
     const client = proposal?.client_profile;
+    const address = proposal?.address;
 
     const getClientName = () => {
         return client?.nome || client?.razao_social || client?.nome_fantasia || "Cliente não informado";
@@ -25,9 +32,43 @@ const Page = ({ proposal }) => {
         return String(value).substring(0, 10);
     };
 
+    const addressLine = () => {
+        if (!address) return "Não informado";
+
+        const parts = [
+            address?.rua,
+            address?.numero,
+            address?.bairro,
+            address?.cidade,
+            address?.estado,
+        ].filter(Boolean);
+
+        return parts.length ? parts.join(", ") : "Não informado";
+    };
+
     return (
         <Layout titlePage="Detalhes da Proposta" menu="clientes" subMenu="propostas-cliente-index" backPage>
             <Head title="Detalhes da Proposta" />
+
+            <div className="flex gap-2 mb-3">
+                <Link href={route("consultor.propostas.cliente.index")}>
+                    <Button startIcon={<IconArrowLeft />} variant="outlined">
+                        Voltar
+                    </Button>
+                </Link>
+
+                <Link href={route("consultor.propostas.cliente.edit", proposal.id)}>
+                    <Button startIcon={<IconEdit />} color="warning" variant="outlined">
+                        Editar
+                    </Button>
+                </Link>
+
+                <a href={route("consultor.propostas.cliente.pdf", proposal.id)} target="_blank" rel="noreferrer">
+                    <Button startIcon={<IconFileDownload />} color="error" variant="outlined">
+                        Baixar PDF
+                    </Button>
+                </a>
+            </div>
 
             <Card sx={{ marginBottom: 4 }}>
                 <CardHeader
@@ -106,19 +147,42 @@ const Page = ({ proposal }) => {
                 </CardContent>
             </Card>
 
-            <div className="flex gap-2">
-                <Link href={route("consultor.propostas.cliente.index")}>
-                    <Button startIcon={<IconArrowLeft />} variant="outlined">
-                        Voltar
-                    </Button>
-                </Link>
+            <Card sx={{ marginBottom: 4 }}>
+                <CardHeader title="Endereço da Unidade Consumidora" avatar={<IconMapPin />} />
 
-                <a href={route("consultor.propostas.cliente.pdf", proposal.id)} target="_blank" rel="noreferrer">
-                    <Button startIcon={<IconFileDownload />} color="success" variant="outlined">
-                        Baixar PDF
-                    </Button>
-                </a>
-            </div>
+                <CardContent>
+                    <Grid container spacing={3}>
+                        <Grid size={12}>
+                            <Typography variant="subtitle2">Endereço</Typography>
+                            <Typography>{addressLine()}</Typography>
+                        </Grid>
+
+                        <Grid size={{ xs: 12, md: 3 }}>
+                            <Typography variant="subtitle2">CEP</Typography>
+                            <Typography>{address?.cep ?? "Não informado"}</Typography>
+                        </Grid>
+
+                        <Grid size={{ xs: 12, md: 3 }}>
+                            <Typography variant="subtitle2">Complemento</Typography>
+                            <Typography>{address?.complemento ?? "Não informado"}</Typography>
+                        </Grid>
+
+                        <Grid size={{ xs: 12, md: 3 }}>
+                            <Typography variant="subtitle2">Referência</Typography>
+                            <Typography>{address?.referencia ?? "Não informado"}</Typography>
+                        </Grid>
+
+                        <Grid size={{ xs: 12, md: 3 }}>
+                            <Typography variant="subtitle2">Coordenadas</Typography>
+                            <Typography>
+                                {address?.latitude && address?.longitude
+                                    ? `${address.latitude}, ${address.longitude}`
+                                    : "Não informado"}
+                            </Typography>
+                        </Grid>
+                    </Grid>
+                </CardContent>
+            </Card>
         </Layout>
     );
 };

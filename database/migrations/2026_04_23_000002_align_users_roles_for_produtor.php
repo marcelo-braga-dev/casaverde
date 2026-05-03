@@ -11,7 +11,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             if (!Schema::hasColumn('users', 'role_id')) {
-                $table->unsignedBigInteger('role_id')->default(RoleUser::$CLIENTE)->after('password');
+                $table->unsignedBigInteger('role_id')->after('password');
             }
 
             if (!Schema::hasColumn('users', 'consultor_id')) {
@@ -19,7 +19,9 @@ return new class extends Migration
             }
 
             if (!Schema::hasColumn('users', 'status')) {
-                $table->string('status')->default('1')->after('consultor_id');
+                $table->string('status')
+                    ->default(\App\src\User\StatusUser::$ATIVO)
+                    ->after('consultor_id');
             }
         });
     }

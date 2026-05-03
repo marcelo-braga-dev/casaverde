@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Concessionarias;
 use Inertia\Inertia;
 
+/**
+ * @deprecated
+ */
 class ConcessionariaController extends Controller
 {
     public function index()

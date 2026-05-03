@@ -1,4 +1,5 @@
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
+import { useState } from "react";
 import { Head, useForm } from "@inertiajs/react";
 import {
     Button,
@@ -14,19 +15,45 @@ import {
     TextField,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import { IconDeviceFloppy, IconFileText, IconUser } from "@tabler/icons-react";
+import {
+    IconDeviceFloppy,
+    IconFileText,
+    IconUser,
+    IconUserPlus,
+} from "@tabler/icons-react";
+import AddressCard from "@/Components/Partials/AddressCard.jsx";
 
-const Page = ({ concessionarias = [] }) => {
+const emptyAddress = {
+    cep: "",
+    rua: "",
+    numero: "",
+    complemento: "",
+    bairro: "",
+    cidade: "",
+    estado: "",
+    referencia: "",
+    latitude: "",
+    longitude: "",
+};
+
+const Page = ({ concessionarias = [], clients = [], selectedClient = null }) => {
+    const hasInitialSelectedClient = !!selectedClient?.id;
+    const [showClientForm, setShowClientForm] = useState(hasInitialSelectedClient);
+
     const { data, setData, post, processing, errors } = useForm({
-        tipo_pessoa: "pf",
-        cpf: "",
-        cnpj: "",
-        nome: "",
-        razao_social: "",
-        nome_fantasia: "",
-        cidade: "",
-        email: "",
-        telefone: "",
+        client_profile_id: selectedClient?.id ?? "",
+
+        tipo_pessoa: selectedClient?.tipo_pessoa ?? "pf",
+        cpf: selectedClient?.cpf ?? "",
+        cnpj: selectedClient?.cnpj ?? "",
+        nome: selectedClient?.nome ?? "",
+        razao_social: selectedClient?.razao_social ?? "",
+        nome_fantasia: selectedClient?.nome_fantasia ?? "",
+        email: selectedClient?.email ?? "",
+        telefone: selectedClient?.telefone ?? "",
+
+        address: { ...emptyAddress },
+
         concessionaria_id: "",
         media_consumo: "",
         taxa_reducao: "",
@@ -36,6 +63,83 @@ const Page = ({ concessionarias = [] }) => {
         valid_until: "",
         notes: "",
     });
+
+    const hasSelectedClient = !!data.client_profile_id;
+
+    const setAddressData = (field, value) => {
+        if (typeof field === "object") {
+            setData("address", {
+                ...data.address,
+                ...field,
+            });
+            return;
+        }
+
+        setData("address", {
+            ...data.address,
+            [field]: value,
+        });
+    };
+
+    const resetClientFields = () => {
+        setData((current) => ({
+            ...current,
+            client_profile_id: "",
+            tipo_pessoa: "pf",
+            cpf: "",
+            cnpj: "",
+            nome: "",
+            razao_social: "",
+            nome_fantasia: "",
+            email: "",
+            telefone: "",
+        }));
+    };
+
+    const fillClientData = (clientId) => {
+        if (!clientId) {
+            resetClientFields();
+            setShowClientForm(false);
+            return;
+        }
+
+        const client = clients.find((item) => String(item.id) === String(clientId));
+
+        setData((current) => ({
+            ...current,
+            client_profile_id: clientId,
+            tipo_pessoa: client?.tipo_pessoa ?? "pf",
+            cpf: client?.cpf ?? "",
+            cnpj: client?.cnpj ?? "",
+            nome: client?.nome ?? "",
+            razao_social: client?.razao_social ?? "",
+            nome_fantasia: client?.nome_fantasia ?? "",
+            email: client?.email ?? "",
+            telefone: client?.telefone ?? "",
+        }));
+
+        setShowClientForm(false);
+    };
+
+    const openClientForm = () => {
+        resetClientFields();
+        setShowClientForm(true);
+    };
+
+    const getClientLabel = (client) => {
+        const nome = client?.nome || client?.razao_social || client?.nome_fantasia || "Cliente";
+        const documento = client?.cpf || client?.cnpj || client?.client_code || "";
+
+        return documento ? `${nome} - ${documento}` : nome;
+    };
+
+    const selectedClientLabel = () => {
+        const client =
+            selectedClient ??
+            clients.find((item) => String(item.id) === String(data.client_profile_id));
+
+        return client ? getClientLabel(client) : "Cliente selecionado";
+    };
 
     const submit = (e) => {
         e.preventDefault();
@@ -53,121 +157,175 @@ const Page = ({ concessionarias = [] }) => {
 
                     <CardContent>
                         <Grid container spacing={3}>
-                            <Grid size={12}>
-                                <FormControl>
-                                    <FormLabel>Tipo de Pessoa</FormLabel>
-                                    <RadioGroup
-                                        row
-                                        value={data.tipo_pessoa}
-                                        onChange={(e) => setData("tipo_pessoa", e.target.value)}
+                            {!hasInitialSelectedClient && !showClientForm && (
+                                <Grid size={12}>
+                                    <TextField
+                                        label="Selecionar Cliente"
+                                        value={data.client_profile_id}
+                                        onChange={(e) => fillClientData(e.target.value)}
+                                        error={!!errors.client_profile_id}
+                                        helperText={errors.client_profile_id}
+                                        select
+                                        fullWidth
                                     >
-                                        <FormControlLabel value="pf" control={<Radio />} label="Pessoa Física" />
-                                        <FormControlLabel value="pj" control={<Radio />} label="Pessoa Jurídica" />
-                                    </RadioGroup>
-                                </FormControl>
-                            </Grid>
+                                        <MenuItem value="">Nenhum cliente selecionado</MenuItem>
 
-                            {data.tipo_pessoa === "pf" && (
-                                <>
-                                    <Grid size={{ xs: 12, md: 4 }}>
-                                        <TextField
-                                            label="CPF"
-                                            value={data.cpf}
-                                            onChange={(e) => setData("cpf", e.target.value)}
-                                            error={!!errors.cpf}
-                                            helperText={errors.cpf}
-                                            required
-                                            fullWidth
-                                        />
-                                    </Grid>
-
-                                    <Grid size={{ xs: 12, md: 8 }}>
-                                        <TextField
-                                            label="Nome Completo"
-                                            value={data.nome}
-                                            onChange={(e) => setData("nome", e.target.value)}
-                                            error={!!errors.nome}
-                                            helperText={errors.nome}
-                                            required
-                                            fullWidth
-                                        />
-                                    </Grid>
-                                </>
+                                        {clients.map((client) => (
+                                            <MenuItem key={client.id} value={client.id}>
+                                                {getClientLabel(client)}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+                                </Grid>
                             )}
 
-                            {data.tipo_pessoa === "pj" && (
+                            {!hasInitialSelectedClient && !hasSelectedClient && !showClientForm && (
+                                <Grid size={12}>
+                                    <Button
+                                        type="button"
+                                        variant="outlined"
+                                        startIcon={<IconUserPlus />}
+                                        onClick={openClientForm}
+                                    >
+                                        Cadastrar novo cliente
+                                    </Button>
+                                </Grid>
+                            )}
+
+                            {showClientForm && !hasSelectedClient && (
                                 <>
-                                    <Grid size={{ xs: 12, md: 4 }}>
-                                        <TextField
-                                            label="CNPJ"
-                                            value={data.cnpj}
-                                            onChange={(e) => setData("cnpj", e.target.value)}
-                                            error={!!errors.cnpj}
-                                            helperText={errors.cnpj}
-                                            required
-                                            fullWidth
-                                        />
+                                    <Grid size={12}>
+                                        <FormControl>
+                                            <FormLabel>Tipo de Pessoa</FormLabel>
+                                            <RadioGroup
+                                                row
+                                                value={data.tipo_pessoa}
+                                                onChange={(e) => setData("tipo_pessoa", e.target.value)}
+                                            >
+                                                <FormControlLabel value="pf" control={<Radio />} label="Pessoa Física" />
+                                                <FormControlLabel value="pj" control={<Radio />} label="Pessoa Jurídica" />
+                                            </RadioGroup>
+                                        </FormControl>
                                     </Grid>
 
-                                    <Grid size={{ xs: 12, md: 8 }}>
-                                        <TextField
-                                            label="Razão Social"
-                                            value={data.razao_social}
-                                            onChange={(e) => setData("razao_social", e.target.value)}
-                                            error={!!errors.razao_social}
-                                            helperText={errors.razao_social}
-                                            required
-                                            fullWidth
-                                        />
-                                    </Grid>
+                                    {data.tipo_pessoa === "pf" && (
+                                        <>
+                                            <Grid size={{ xs: 12, md: 4 }}>
+                                                <TextField
+                                                    label="CPF"
+                                                    value={data.cpf}
+                                                    onChange={(e) => setData("cpf", e.target.value)}
+                                                    error={!!errors.cpf}
+                                                    helperText={errors.cpf}
+                                                    required
+                                                    fullWidth
+                                                />
+                                            </Grid>
+
+                                            <Grid size={{ xs: 12, md: 8 }}>
+                                                <TextField
+                                                    label="Nome Completo"
+                                                    value={data.nome}
+                                                    onChange={(e) => setData("nome", e.target.value)}
+                                                    error={!!errors.nome}
+                                                    helperText={errors.nome}
+                                                    required
+                                                    fullWidth
+                                                />
+                                            </Grid>
+                                        </>
+                                    )}
+
+                                    {data.tipo_pessoa === "pj" && (
+                                        <>
+                                            <Grid size={{ xs: 12, md: 4 }}>
+                                                <TextField
+                                                    label="CNPJ"
+                                                    value={data.cnpj}
+                                                    onChange={(e) => setData("cnpj", e.target.value)}
+                                                    error={!!errors.cnpj}
+                                                    helperText={errors.cnpj}
+                                                    required
+                                                    fullWidth
+                                                />
+                                            </Grid>
+
+                                            <Grid size={{ xs: 12, md: 8 }}>
+                                                <TextField
+                                                    label="Razão Social"
+                                                    value={data.razao_social}
+                                                    onChange={(e) => setData("razao_social", e.target.value)}
+                                                    error={!!errors.razao_social}
+                                                    helperText={errors.razao_social}
+                                                    required
+                                                    fullWidth
+                                                />
+                                            </Grid>
+
+                                            <Grid size={{ xs: 12, md: 6 }}>
+                                                <TextField
+                                                    label="Nome Fantasia"
+                                                    value={data.nome_fantasia}
+                                                    onChange={(e) => setData("nome_fantasia", e.target.value)}
+                                                    error={!!errors.nome_fantasia}
+                                                    helperText={errors.nome_fantasia}
+                                                    fullWidth
+                                                />
+                                            </Grid>
+                                        </>
+                                    )}
 
                                     <Grid size={{ xs: 12, md: 6 }}>
                                         <TextField
-                                            label="Nome Fantasia"
-                                            value={data.nome_fantasia}
-                                            onChange={(e) => setData("nome_fantasia", e.target.value)}
-                                            error={!!errors.nome_fantasia}
-                                            helperText={errors.nome_fantasia}
+                                            label="Email"
+                                            value={data.email}
+                                            onChange={(e) => setData("email", e.target.value)}
+                                            error={!!errors.email}
+                                            helperText={errors.email}
+                                            type="email"
                                             fullWidth
                                         />
                                     </Grid>
+
+                                    <Grid size={{ xs: 12, md: 4 }}>
+                                        <TextField
+                                            label="Telefone"
+                                            value={data.telefone}
+                                            onChange={(e) => setData("telefone", e.target.value)}
+                                            error={!!errors.telefone}
+                                            helperText={errors.telefone}
+                                            fullWidth
+                                        />
+                                    </Grid>
+
+                                    {!hasInitialSelectedClient && (
+                                        <Grid size={12}>
+                                            <Button
+                                                type="button"
+                                                variant="outlined"
+                                                color="inherit"
+                                                onClick={() => {
+                                                    resetClientFields();
+                                                    setShowClientForm(false);
+                                                }}
+                                            >
+                                                Cancelar cadastro de cliente
+                                            </Button>
+                                        </Grid>
+                                    )}
                                 </>
                             )}
 
-                            <Grid size={{ xs: 12, md: 4 }}>
-                                <TextField
-                                    label="Cidade"
-                                    value={data.cidade}
-                                    onChange={(e) => setData("cidade", e.target.value)}
-                                    error={!!errors.cidade}
-                                    helperText={errors.cidade}
-                                    required
-                                    fullWidth
-                                />
-                            </Grid>
-
-                            <Grid size={{ xs: 12, md: 4 }}>
-                                <TextField
-                                    label="Email"
-                                    value={data.email}
-                                    onChange={(e) => setData("email", e.target.value)}
-                                    error={!!errors.email}
-                                    helperText={errors.email}
-                                    type="email"
-                                    fullWidth
-                                />
-                            </Grid>
-
-                            <Grid size={{ xs: 12, md: 4 }}>
-                                <TextField
-                                    label="Telefone"
-                                    value={data.telefone}
-                                    onChange={(e) => setData("telefone", e.target.value)}
-                                    error={!!errors.telefone}
-                                    helperText={errors.telefone}
-                                    fullWidth
-                                />
-                            </Grid>
+                            {hasSelectedClient && (
+                                <Grid size={12}>
+                                    <TextField
+                                        label="Cliente selecionado"
+                                        value={selectedClientLabel()}
+                                        disabled
+                                        fullWidth
+                                    />
+                                </Grid>
+                            )}
                         </Grid>
                     </CardContent>
                 </Card>
@@ -228,9 +386,16 @@ const Page = ({ concessionarias = [] }) => {
                                     onChange={(e) => setData("prazo_locacao", e.target.value)}
                                     error={!!errors.prazo_locacao}
                                     helperText={errors.prazo_locacao}
-                                    type="number"
+                                    required
+                                    select
                                     fullWidth
-                                />
+                                >
+                                    <MenuItem value={12}>12 meses (1 ano)</MenuItem>
+                                    <MenuItem value={24}>24 meses (2 anos)</MenuItem>
+                                    <MenuItem value={36}>36 meses (3 anos)</MenuItem>
+                                    <MenuItem value={48}>48 meses (4 anos)</MenuItem>
+                                    <MenuItem value={60}>60 meses (5 anos)</MenuItem>
+                                </TextField>
                             </Grid>
 
                             <Grid size={{ xs: 12, md: 4 }}>
@@ -284,6 +449,12 @@ const Page = ({ concessionarias = [] }) => {
                         </Grid>
                     </CardContent>
                 </Card>
+
+                <AddressCard
+                    address={data.address}
+                    setAddressData={setAddressData}
+                    errors={errors}
+                />
 
                 <div className="text-center">
                     <Button

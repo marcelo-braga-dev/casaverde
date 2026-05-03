@@ -8,6 +8,7 @@ import UsinaList from "./Partials/UsinaList.jsx";
 import DiscountRuleForm from "./Partials/DiscountRuleForm.jsx";
 import DiscountRulesList from "./Partials/DiscountRulesList.jsx";
 import ClientEmailImportSettingForm from "./Partials/ClientEmailImportSettingForm.jsx";
+import ClientProposalsList from "./Partials/ClientProposalsList.jsx";
 
 const Page = ({ clientProfile, client, usinas = [], concessionarias = [] }) => {
     const profile = clientProfile ?? client;
@@ -27,6 +28,10 @@ const Page = ({ clientProfile, client, usinas = [], concessionarias = [] }) => {
         profile?.emailImportSetting ??
         null;
 
+    const proposals =
+        profile?.proposals ??
+        [];
+
     return (
         <Layout titlePage="Detalhes do Cliente" menu="clientes" subMenu="cliente-index" backPage>
             <Head title="Detalhes do Cliente" />
@@ -34,6 +39,8 @@ const Page = ({ clientProfile, client, usinas = [], concessionarias = [] }) => {
             <ClientInfoCard profile={profile} />
 
             <ClientActionsCard profile={profile} />
+
+            <ClientProposalsList proposals={proposals} />
 
             <AttachUsinaForm profile={profile} usinas={usinas} />
 
