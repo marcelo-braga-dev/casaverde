@@ -44,8 +44,8 @@ const Page = ({ users = [], responsaveisCadastro = [], addresses = [] }) => {
     };
 
     return (
-        <Layout titlePage="Cadastrar Produtor" menu="produtores" subMenu="produtores-cadastrar" backPage>
-            <Head title="Cadastrar Produtor" />
+        <Layout titlePage="Contrato Produtor" menu="produtores-solar" subMenu="producer-profiles-index" backPage>
+            <Head title="Contrato Produtor" />
 
             <form onSubmit={submit}>
                 <Card sx={{ marginBottom: 4 }}>

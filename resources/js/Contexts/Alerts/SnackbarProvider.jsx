@@ -1,53 +1,86 @@
-import React, {useState, useEffect, createContext, useContext} from 'react';
-import {Snackbar, Alert} from '@mui/material';
+import { createContext, useContext, useEffect, useState } from "react";
+import GlobalSnackbar from "@/Components/Alerts/GlobalSnackbar.jsx";
+import { normalizeAlertMessage } from "@/Utils/Alerts/alertUtils.js";
 
-const SnackbarContext = createContext();
+const SnackbarContext = createContext(null);
 
-export const useAlertMessage = () => useContext(SnackbarContext);
-
-export const SnackbarProvider = ({children, initialAlert}) => {
-
+export const SnackbarProvider = ({ children, initialAlert = null, errors = null }) => {
     const [snackbar, setSnackbar] = useState({
         open: false,
-        message: '',
-        severity: 'success',
+        type: "info",
+        message: "",
     });
 
+    const showSnackbar = (message, type = "info") => {
+        const normalizedMessage = normalizeAlertMessage(message);
+
+        if (!normalizedMessage) return;
+
+        setSnackbar({
+            open: true,
+            type,
+            message: normalizedMessage,
+        });
+    };
+
+    const closeSnackbar = () => {
+        setSnackbar((current) => ({
+            ...current,
+            open: false,
+        }));
+    };
+
     useEffect(() => {
-        if (initialAlert?.message) {
-            setSnackbar({
-                open: true,
-                message: initialAlert.message,
-                severity: initialAlert.type || 'success',
-            });
+        if (!initialAlert) return;
+
+        if (initialAlert.success) {
+            showSnackbar(initialAlert.success, "success");
+            return;
+        }
+
+        if (initialAlert.error) {
+            showSnackbar(initialAlert.error, "error");
+            return;
+        }
+
+        if (initialAlert.warning) {
+            showSnackbar(initialAlert.warning, "warning");
+            return;
+        }
+
+        if (initialAlert.info) {
+            showSnackbar(initialAlert.info, "info");
         }
     }, [initialAlert]);
 
-    const alertError = (message) => {
-        setSnackbar({open: true, message, severity: 'error'});
-    }
+    useEffect(() => {
+        const message = normalizeAlertMessage(errors);
 
-    const closeSnackbar = () => {
-        setSnackbar((prev) => ({...prev, open: false}));
-    };
+        if (message) {
+            showSnackbar(message, "error");
+        }
+    }, [errors]);
 
     return (
-        <SnackbarContext.Provider value={{alertError}}>
+        <SnackbarContext.Provider value={{ showSnackbar }}>
             {children}
-            <Snackbar
+
+            <GlobalSnackbar
                 open={snackbar.open}
-                autoHideDuration={snackbar.severity === 'error' ? null : 5000}
+                type={snackbar.type}
+                message={snackbar.message}
                 onClose={closeSnackbar}
-                anchorOrigin={{vertical: 'top', horizontal: 'right'}}
-            >
-                <Alert
-                    onClose={closeSnackbar}
-                    severity={snackbar.severity}
-                    sx={{width: '100%'}}
-                >
-                    {snackbar.message}
-                </Alert>
-            </Snackbar>
+            />
         </SnackbarContext.Provider>
     );
+};
+
+export const useSnackbar = () => {
+    const context = useContext(SnackbarContext);
+
+    if (!context) {
+        throw new Error("useSnackbar precisa estar dentro do SnackbarProvider.");
+    }
+
+    return context;
 };

@@ -1,11 +1,13 @@
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
-import { Button, Card, CardContent, CardHeader, MenuItem, TextField } from "@mui/material";
+import {Button, Card, CardContent, CardHeader, MenuItem, TextField} from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import { IconDeviceFloppy, IconSolarElectricity } from "@tabler/icons-react";
-import { Head, useForm } from "@inertiajs/react";
+import {IconDeviceFloppy, IconSolarElectricity} from "@tabler/icons-react";
+import {Head, useForm} from "@inertiajs/react";
 
-const Page = ({ usina, produtores = [], consultores = [], concessionarias = [], blocks = [], addresses = [] }) => {
-    const { data, setData, put, processing, errors } = useForm({
+import {router} from "@inertiajs/react";
+
+const Page = ({usina, produtores = [], consultores = [], concessionarias = [], blocks = [], addresses = []}) => {
+    const {data, setData, put, processing, errors} = useForm({
         user_id: usina?.user_id ?? "",
         consultor_user_id: usina?.consultor_user_id ?? "",
         concessionaria_id: usina?.concessionaria_id ?? "",
@@ -21,9 +23,23 @@ const Page = ({ usina, produtores = [], consultores = [], concessionarias = [], 
         modulos: usina?.modulos ?? "",
     });
 
+    // const submit = (e) => {
+    //     e.preventDefault();
+    //     e.stopPropagation();
+         //put(route("consultor.producer.usinas.update", usina.id));
+    // };
+
+
     const submit = (e) => {
         e.preventDefault();
-        put(route("consultor.producer.usinas.update", usina.id));
+        e.stopPropagation();
+
+        router.visit(`/consultor/producer/usinas/${usina.id}`, {
+            method: "put",
+            data,
+            preserveScroll: true,
+        });
+        // put(route("consultor.producer.usinas.update", { usina: usina.id }));
     };
 
     const addressLabel = (address) => {
@@ -31,16 +47,16 @@ const Page = ({ usina, produtores = [], consultores = [], concessionarias = [], 
     };
 
     return (
-        <Layout titlePage="Editar Usina" menu="usinas" subMenu="usinas-listar" backPage>
-            <Head title="Editar Usina" />
+        <Layout titlePage="Editar Usina" menu="produtores-solar" subMenu="usinas-index">
+            <Head title="Editar Usina"/>
 
             <form onSubmit={submit}>
-                <Card sx={{ marginBottom: 4 }}>
-                    <CardHeader title="Dados da Usina" avatar={<IconSolarElectricity />} />
+                <Card sx={{marginBottom: 4}}>
+                    <CardHeader title="Dados da Usina" avatar={<IconSolarElectricity/>}/>
 
                     <CardContent>
                         <Grid container spacing={3}>
-                            <Grid size={{ xs: 12, md: 6 }}>
+                            <Grid size={{xs: 12, md: 6}}>
                                 <TextField
                                     label="Produtor Proprietário"
                                     value={data.user_id}
@@ -59,7 +75,7 @@ const Page = ({ usina, produtores = [], consultores = [], concessionarias = [], 
                                 </TextField>
                             </Grid>
 
-                            <Grid size={{ xs: 12, md: 6 }}>
+                            <Grid size={{xs: 12, md: 6}}>
                                 <TextField
                                     label="Consultor Responsável"
                                     value={data.consultor_user_id}
@@ -78,7 +94,7 @@ const Page = ({ usina, produtores = [], consultores = [], concessionarias = [], 
                                 </TextField>
                             </Grid>
 
-                            <Grid size={{ xs: 12, md: 6 }}>
+                            <Grid size={{xs: 12, md: 6}}>
                                 <TextField
                                     label="Concessionária"
                                     value={data.concessionaria_id}
@@ -97,7 +113,7 @@ const Page = ({ usina, produtores = [], consultores = [], concessionarias = [], 
                                 </TextField>
                             </Grid>
 
-                            <Grid size={{ xs: 12, md: 6 }}>
+                            <Grid size={{xs: 12, md: 6}}>
                                 <TextField
                                     label="Grupo de Usina"
                                     value={data.usina_block_id}
@@ -135,27 +151,32 @@ const Page = ({ usina, produtores = [], consultores = [], concessionarias = [], 
                                 </TextField>
                             </Grid>
 
-                            <Grid size={{ xs: 12, md: 4 }}>
-                                <TextField label="UC" value={data.uc} onChange={(e) => setData("uc", e.target.value)} error={!!errors.uc} helperText={errors.uc} fullWidth />
+                            <Grid size={{xs: 12, md: 4}}>
+                                <TextField label="UC" value={data.uc} onChange={(e) => setData("uc", e.target.value)} error={!!errors.uc} helperText={errors.uc}
+                                           fullWidth/>
                             </Grid>
 
-                            <Grid size={{ xs: 12, md: 4 }}>
-                                <TextField label="Média de Geração" value={data.media_geracao} onChange={(e) => setData("media_geracao", e.target.value)} error={!!errors.media_geracao} helperText={errors.media_geracao} type="number" fullWidth />
+                            <Grid size={{xs: 12, md: 4}}>
+                                <TextField label="Média de Geração" value={data.media_geracao} onChange={(e) => setData("media_geracao", e.target.value)}
+                                           error={!!errors.media_geracao} helperText={errors.media_geracao} type="number" fullWidth/>
                             </Grid>
 
-                            <Grid size={{ xs: 12, md: 4 }}>
-                                <TextField label="Potência da Usina" value={data.potencia_usina} onChange={(e) => setData("potencia_usina", e.target.value)} error={!!errors.potencia_usina} helperText={errors.potencia_usina} type="number" fullWidth />
+                            <Grid size={{xs: 12, md: 4}}>
+                                <TextField label="Potência da Usina" value={data.potencia_usina} onChange={(e) => setData("potencia_usina", e.target.value)}
+                                           error={!!errors.potencia_usina} helperText={errors.potencia_usina} type="number" fullWidth/>
                             </Grid>
 
-                            <Grid size={{ xs: 12, md: 4 }}>
-                                <TextField label="Prazo de Locação" value={data.prazo_locacao} onChange={(e) => setData("prazo_locacao", e.target.value)} error={!!errors.prazo_locacao} helperText={errors.prazo_locacao} type="number" fullWidth />
+                            <Grid size={{xs: 12, md: 4}}>
+                                <TextField label="Prazo de Locação" value={data.prazo_locacao} onChange={(e) => setData("prazo_locacao", e.target.value)}
+                                           error={!!errors.prazo_locacao} helperText={errors.prazo_locacao} type="number" fullWidth/>
                             </Grid>
 
-                            <Grid size={{ xs: 12, md: 4 }}>
-                                <TextField label="Taxa de Comissão" value={data.taxa_comissao} onChange={(e) => setData("taxa_comissao", e.target.value)} error={!!errors.taxa_comissao} helperText={errors.taxa_comissao} type="number" fullWidth />
+                            <Grid size={{xs: 12, md: 4}}>
+                                <TextField label="Taxa de Comissão" value={data.taxa_comissao} onChange={(e) => setData("taxa_comissao", e.target.value)}
+                                           error={!!errors.taxa_comissao} helperText={errors.taxa_comissao} type="number" fullWidth/>
                             </Grid>
 
-                            <Grid size={{ xs: 12, md: 4 }}>
+                            <Grid size={{xs: 12, md: 4}}>
                                 <TextField
                                     label="Status"
                                     value={data.status}
@@ -174,11 +195,13 @@ const Page = ({ usina, produtores = [], consultores = [], concessionarias = [], 
                             </Grid>
 
                             <Grid size={12}>
-                                <TextField label="Inversores" value={data.inversores} onChange={(e) => setData("inversores", e.target.value)} error={!!errors.inversores} helperText={errors.inversores} multiline rows={3} fullWidth />
+                                <TextField label="Inversores" value={data.inversores} onChange={(e) => setData("inversores", e.target.value)} error={!!errors.inversores}
+                                           helperText={errors.inversores} multiline rows={3} fullWidth/>
                             </Grid>
 
                             <Grid size={12}>
-                                <TextField label="Módulos" value={data.modulos} onChange={(e) => setData("modulos", e.target.value)} error={!!errors.modulos} helperText={errors.modulos} multiline rows={3} fullWidth />
+                                <TextField label="Módulos" value={data.modulos} onChange={(e) => setData("modulos", e.target.value)} error={!!errors.modulos}
+                                           helperText={errors.modulos} multiline rows={3} fullWidth/>
                             </Grid>
                         </Grid>
                     </CardContent>
@@ -186,9 +209,11 @@ const Page = ({ usina, produtores = [], consultores = [], concessionarias = [], 
 
                 <div className="text-center">
                     <Button
-                        type="submit"
+                        // type="submit"
+                        type="button"
+                        onClick={submit}
                         color="success"
-                        startIcon={<IconDeviceFloppy />}
+                        startIcon={<IconDeviceFloppy/>}
                         disabled={processing}
                     >
                         Atualizar Usina

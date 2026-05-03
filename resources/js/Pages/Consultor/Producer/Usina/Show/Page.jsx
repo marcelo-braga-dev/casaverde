@@ -12,7 +12,7 @@ const Page = ({ usina }) => {
     };
 
     return (
-        <Layout titlePage="Detalhes da Usina" menu="produtores-solar" subMenu="usinas-index" backPage>
+        <Layout titlePage="Detalhes da Usina" menu="produtores-solar" subMenu="usinas-index" >
             <Head title="Detalhes da Usina" />
 
             <Card sx={{ marginBottom: 4 }}>

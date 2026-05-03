@@ -55,7 +55,6 @@ class CreateOrFindClientProfileService
                 'nome' => $data['nome'] ?? null,
                 'razao_social' => $data['razao_social'] ?? null,
                 'nome_fantasia' => $data['nome_fantasia'] ?? null,
-                'cidade' => $data['cidade'],
                 'email' => $data['email'] ?? null,
                 'telefone' => $data['telefone'] ?? null,
                 'consultor_user_id' => $consultorId,

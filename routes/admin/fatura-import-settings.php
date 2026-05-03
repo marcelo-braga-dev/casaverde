@@ -8,7 +8,7 @@ Route::name('admin.fatura-import-settings.')
     ->group(function () {
         Route::get('/', [ClientEmailImportSettingController::class, 'index'])->name('index');
         Route::get('/create', [ClientEmailImportSettingController::class, 'create'])->name('create');
-        Route::post('/', [ClientEmailImportSettingController::class, 'store'])->name('store');
+        //Route::post('/', [ClientEmailImportSettingController::class, 'store'])->name('store');
         Route::get('/{faturaImportSetting}', [ClientEmailImportSettingController::class, 'show'])->name('show');
         Route::get('/{faturaImportSetting}/edit', [ClientEmailImportSettingController::class, 'edit'])->name('edit');
         Route::put('/{faturaImportSetting}', [ClientEmailImportSettingController::class, 'update'])->name('update');

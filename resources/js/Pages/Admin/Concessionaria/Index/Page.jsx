@@ -1,130 +1,100 @@
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
-import {Button, Card, CardContent, CardHeader, Dialog, DialogContent, DialogTitle, IconButton, InputAdornment, Paper, TextField, Typography} from "@mui/material";
-import {IconBolt, IconEdit, IconX} from "@tabler/icons-react";
-import TextInfo from "@/Components/DataDisplay/TextInfo.jsx";
-import {useEffect, useState} from "react";
-import Grid from "@mui/material/Grid2";
-import formatarMoneyReal from "@/Utils/Formatters/formatarMoney.js";
+import { Head, Link } from "@inertiajs/react";
+import {
+    Button,
+    Card,
+    CardContent,
+    CardHeader,
+    Chip,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+} from "@mui/material";
+import { IconEye, IconSettingsBolt } from "@tabler/icons-react";
 
-const Page = ({}) => {
-    const [concessionarias, setConcessionarias] = useState([])
-    const [openDialog, setOpenDialog] = useState(false)
-
-    const [concessionariaEditar, setConcessionariaEditar] = useState({})
-    const [valorGd2, setValorGd2] = useState('')
-
-    useEffect(() => {
-        fetchAll()
-    }, []);
-
-    const fetchAll = async () => {
-        const response = await axios.get(route('admin.concessionaria.api.get-all'))
-        setConcessionarias(response.data)
-    }
-
-    const handleValorChange = (e) => {
-        const valorFormatado = formatarMoneyReal(e.target.value);
-        setValorGd2(valorFormatado);
-        e.target.value = valorFormatado
-    };
-
-    const handleOpenDialog = (concessionaria) => {
-        setOpenDialog(true)
-        setConcessionariaEditar(concessionaria)
-
-        setValorGd2(formatarMoneyReal(concessionaria.tarifa_gd2))
-    }
-
-    const handleCloseDialog = () => {
-        setOpenDialog(false)
-        setConcessionariaEditar({})
-    }
-
-    const submit = () => {
-        try {
-            axios.post(route('auth.concessionarias.update', concessionariaEditar.id),
-                {tarifa_gd2: valorGd2, _method: 'PUT'}
-            )
-        } finally {
-            handleCloseDialog()
-            fetchAll()
-        }
-    }
+export default function Page({ concessionarias }) {
+    const items = concessionarias?.data ?? [];
 
     return (
-        <Layout titlePage="Todas Concessionárias Cadastradas" menu="concessionarias" subMenu="concessionarias-todas">
+        <Layout titlePage="Concessionárias" menu="concessionarias" subMenu="concessionarias-index">
+            <Head title="Concessionárias" />
+
             <Card>
-                <CardHeader title="Todas Concessionárias Cadastradas" avatar={<IconBolt/>} disableTypography/>
+                <CardHeader
+                    title="Lista de Concessionárias"
+                    avatar={<IconSettingsBolt />}
+                    // action={
+                    //     <Link href={route("admin.concessionaria.create")}>
+                    //         <Button color="success" startIcon={<IconPlus />}>
+                    //             Nova Concessionária
+                    //         </Button>
+                    //     </Link>
+                    // }
+                />
+
                 <CardContent>
-                    {concessionarias.map(item => (
-                        <Paper key={item.id} variant="outlined">
-                            <Grid container marginBottom={2}>
-                                <Grid size={{xs: 11}}>
-                                    <TextInfo title="Concessionária" text={item.nome}/>
-                                </Grid>
-                                <Grid size={{xs: 1}} sx={{textAlign: 'end'}}>
-                                    <IconButton onClick={() => handleOpenDialog(item)}>
-                                        <IconEdit color="green"/>
-                                    </IconButton>
-                                </Grid>
-                            </Grid>
-                            <Grid container>
-                                <Grid size={{xs: 12, md: 4}}>
-                                    <TextInfo title="Estado" text={item.estado}/>
-                                </Grid>
-                                <Grid size={{xs: 12, md: 4}}>
-                                    <TextInfo title="Tarifa GD2" text={`R$ ${formatarMoneyReal(item.tarifa_gd2)}`}/>
-                                </Grid>
-                            </Grid>
-                        </Paper>
-                    ))}
+                    <TableContainer>
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell>Nome</TableCell>
+                                    <TableCell>Tarifa GD2</TableCell>
+                                    <TableCell>Estado</TableCell>
+                                    <TableCell>Status</TableCell>
+                                    <TableCell align="right">Ações</TableCell>
+                                </TableRow>
+                            </TableHead>
+
+                            <TableBody>
+                                {items.length === 0 && (
+                                    <TableRow>
+                                        <TableCell colSpan={6}>Nenhuma concessionária encontrada.</TableCell>
+                                    </TableRow>
+                                )}
+
+                                {items.map((item) => (
+                                    <TableRow key={item.id}>
+                                        <TableCell>{item.nome}</TableCell>
+                                        <TableCell>{item.tarifa_gd2 ?? "Não informado"}</TableCell>
+                                        <TableCell>{item.estado ?? "Não informado"}</TableCell>
+                                        <TableCell>
+                                            <Chip
+                                                label={item.status ?? "Sem status"}
+                                                color={item.status === "ativo" ? "success" : "default"}
+                                                size="small"
+                                            />
+                                        </TableCell>
+                                        <TableCell align="right">
+                                            <Link href={route("admin.concessionaria.show", item.id)}>
+                                                <Button size="small" variant="outlined" startIcon={<IconEye />}>
+                                                    Ver
+                                                </Button>
+                                            </Link>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+
+                    <div className="mt-4 flex justify-center gap-2">
+                        {concessionarias?.links?.map((link, index) => (
+                            <Link
+                                key={index}
+                                href={link.url ?? "#"}
+                                preserveScroll
+                                className={`px-3 py-2 rounded border ${
+                                    link.active ? "bg-green-600 text-white" : "bg-white text-gray-700"
+                                } ${!link.url ? "opacity-50 pointer-events-none" : ""}`}
+                                dangerouslySetInnerHTML={{ __html: link.label }}
+                            />
+                        ))}
+                    </div>
                 </CardContent>
             </Card>
-
-            {/*Dialog Editar*/}
-            <Dialog
-                open={openDialog}
-                onClose={handleCloseDialog}
-                maxWidth="sm"
-                fullWidth
-            >
-                <DialogTitle>
-                    <Grid container justifyContent="space-between">
-                        <Grid item>
-                            <Typography variant="h4">Editar Informações</Typography>
-                        </Grid>
-                        <Grid item>
-                            <IconButton onClick={handleCloseDialog}>
-                                <IconX color="red"/>
-                            </IconButton>
-                        </Grid>
-                    </Grid>
-                </DialogTitle>
-
-                <DialogContent>
-                    <TextInfo title="Concessionária" text={concessionariaEditar.nome}/>
-
-                    <Grid container marginTop={4} spacing={2}>
-                        <Grid size={{xs: 12, md: 4}}>
-                            <TextField
-                                label="Valor da Tarifa GD2"
-                                fullWidth
-                                value={valorGd2}
-                                slotProps={{
-                                    input: {
-                                        startAdornment: <InputAdornment position="start">R$</InputAdornment>,
-                                    },
-                                }}
-                                onChange={handleValorChange}
-                            />
-                        </Grid>
-                        <Grid size={{xs: 12, md: 4}}>
-                            <Button color="success" onClick={submit}>Atualizar</Button>
-                        </Grid>
-                    </Grid>
-                </DialogContent>
-            </Dialog>
         </Layout>
-    )
+    );
 }
-export default Page

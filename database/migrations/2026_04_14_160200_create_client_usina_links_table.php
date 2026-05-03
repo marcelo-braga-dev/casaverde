@@ -14,8 +14,8 @@ return new class extends Migration
             $table->foreignId('client_profile_id')->constrained('client_profiles')->cascadeOnDelete();
             $table->foreignId('usina_id')->constrained('usina_solars')->cascadeOnDelete();
 
-            $table->date('started_at');
-            $table->date('ended_at')->nullable();
+            $table->dateTime('started_at');
+            $table->dateTime('ended_at')->nullable();
             $table->boolean('is_active')->default(true);
             $table->text('notes')->nullable();
 

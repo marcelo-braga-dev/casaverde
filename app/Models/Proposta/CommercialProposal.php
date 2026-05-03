@@ -2,6 +2,7 @@
 
 namespace App\Models\Proposta;
 
+use App\Models\Cliente\ClientContract;
 use App\Models\Cliente\ClientProfile;
 use App\Models\Users\User;
 use App\Models\Usina\Concessionaria;
@@ -17,6 +18,7 @@ class CommercialProposal extends Model
         'client_profile_id',
         'consultor_user_id',
         'concessionaria_id',
+        'address_id',
         'status',
         'issued_at',
         'valid_until',
@@ -67,5 +69,15 @@ class CommercialProposal extends Model
     public function concessionaria()
     {
         return $this->belongsTo(Concessionaria::class, 'concessionaria_id');
+    }
+
+    public function address()
+    {
+        return $this->belongsTo(\App\Models\Endereco\Address::class, 'address_id');
+    }
+
+    public function contract()
+    {
+        return $this->hasOne(ClientContract::class, 'commercial_proposal_id');
     }
 }

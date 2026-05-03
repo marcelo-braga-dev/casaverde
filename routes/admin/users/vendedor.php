@@ -4,7 +4,7 @@ use App\Http\Controllers\Admin\Usuarios\Consultor\GetAllVendedoresController;
 use App\Http\Controllers\Admin\Usuarios\Consultor\ConsultorController;
 use Illuminate\Support\Facades\Route;
 
-Route::name('admin.user.')
+Route::name('user.')
     ->prefix('user')
     ->group(function () {
         Route::resource('vendedor', ConsultorController::class);

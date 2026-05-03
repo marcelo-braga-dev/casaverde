@@ -4,8 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
-{
+return new class extends Migration {
     public function up(): void
     {
         Schema::create('concessionaire_bills', function (Blueprint $table) {
@@ -16,6 +15,7 @@ return new class extends Migration
 
             $table->foreignId('created_by_user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('reviewed_by_user_id')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('concessionaria_id')->nullable()->constrained('concessionarias')->nullOnDelete();
 
             $table->string('import_source')->default('manual');
             $table->string('concessionaria')->default('copel');

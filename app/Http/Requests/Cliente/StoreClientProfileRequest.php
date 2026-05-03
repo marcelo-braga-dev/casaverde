@@ -51,7 +51,6 @@ class StoreClientProfileRequest extends FormRequest
             ],
 
             'nome_fantasia' => ['nullable', 'string', 'max:255'],
-            'cidade' => ['required', 'string', 'max:255'],
             'email' => ['nullable', 'email', 'max:255'],
             'telefone' => ['nullable', 'string', 'max:30'],
             'consultor_user_id' => ['nullable', 'integer', 'exists:users,id'],

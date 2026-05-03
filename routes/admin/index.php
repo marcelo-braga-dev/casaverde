@@ -10,13 +10,10 @@ Route::middleware(['auth', 'role:admin,consultor'])
         Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
         require __DIR__ . '/users/admin.php';
-        require __DIR__ . '/users/cliente.php';
         require __DIR__ . '/users/produtor.php';
         require __DIR__ . '/users/vendedor.php';
 
         require __DIR__ . '/financeiro.php';
-        require __DIR__ . '/faturas.php';
-        require __DIR__ . '/propostas.php';
 
         require __DIR__ . '/addresses.php';
         require __DIR__ . '/concessionarias.php';

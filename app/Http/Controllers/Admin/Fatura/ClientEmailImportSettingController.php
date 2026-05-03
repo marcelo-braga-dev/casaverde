@@ -24,15 +24,22 @@ class ClientEmailImportSettingController extends Controller
     public function create()
     {
         return Inertia::render('Admin/Fatura/ImportSetting/Create/Page', [
-            'clients' => ClientProfile::query()->orderByDesc('id')->get(['id', 'client_code', 'nome', 'razao_social', 'cpf', 'cnpj']),
-            'concessionarias' => Concessionaria::query()->where('status', 'ativo')->orderBy('nome')->get(['id', 'nome']),
+            'clients' => ClientProfile::query()
+                ->orderByDesc('id')
+                ->get(['id', 'client_code', 'nome', 'razao_social', 'cpf', 'cnpj']),
+
+            'concessionarias' => Concessionaria::query()
+                ->where('status', 'ativo')
+                ->orderBy('nome')
+                ->get(['id', 'nome']),
         ]);
     }
 
     public function store(StoreClientEmailImportSettingRequest $request)
     {
         $data = $request->validated();
-        $data['user_id'] = null;
+
+        $data['user_id'] = auth()->id();
 
         $setting = ClientEmailImportSetting::updateOrCreate(
             ['client_profile_id' => $data['client_profile_id']],
@@ -40,7 +47,7 @@ class ClientEmailImportSettingController extends Controller
         );
 
         return redirect()
-            ->route('admin.fatura-import-settings.show', $setting->id)
+            ->back()
             ->with('success', 'Configuração de importação salva com sucesso.');
     }
 
@@ -54,9 +61,16 @@ class ClientEmailImportSettingController extends Controller
     public function edit(ClientEmailImportSetting $faturaImportSetting)
     {
         return Inertia::render('Admin/Fatura/ImportSetting/Edit/Page', [
-            'setting' => $faturaImportSetting,
-            'clients' => ClientProfile::query()->orderByDesc('id')->get(['id', 'client_code', 'nome', 'razao_social', 'cpf', 'cnpj']),
-            'concessionarias' => Concessionaria::query()->where('status', 'ativo')->orderBy('nome')->get(['id', 'nome']),
+            'setting' => $faturaImportSetting->load(['clientProfile', 'concessionaria']),
+
+            'clients' => ClientProfile::query()
+                ->orderByDesc('id')
+                ->get(['id', 'client_code', 'nome', 'razao_social', 'cpf', 'cnpj']),
+
+            'concessionarias' => Concessionaria::query()
+                ->where('status', 'ativo')
+                ->orderBy('nome')
+                ->get(['id', 'nome']),
         ]);
     }
 
@@ -65,10 +79,23 @@ class ClientEmailImportSettingController extends Controller
         $data = $request->validated();
         $data['user_id'] = null;
 
-        $faturaImportSetting->update($data);
+        return $this->updateExistingSetting($faturaImportSetting, $data);
+    }
+
+    private function updateExistingSetting(ClientEmailImportSetting $setting, array $data)
+    {
+        if (empty($data['imap_password'])) {
+            unset($data['imap_password']);
+        }
+
+        if (empty($data['pdf_password'])) {
+            unset($data['pdf_password']);
+        }
+
+        $setting->update($data);
 
         return redirect()
-            ->route('admin.fatura-import-settings.show', $faturaImportSetting->id)
+            ->back()
             ->with('success', 'Configuração de importação atualizada com sucesso.');
     }
 }

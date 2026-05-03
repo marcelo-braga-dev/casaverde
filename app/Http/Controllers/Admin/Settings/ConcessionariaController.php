@@ -1,0 +1,56 @@
+<?php
+
+namespace App\Http\Controllers\Admin\Settings;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Usina\StoreConcessionariaRequest;
+use App\Models\Usina\Concessionaria;
+use App\Repositories\Usina\ConcessionariaRepository;
+use Inertia\Inertia;
+
+class ConcessionariaController extends Controller
+{
+    public function index(ConcessionariaRepository $repository)
+    {
+        return Inertia::render('Admin/Concessionaria/Index/Page', [
+            'concessionarias' => $repository->paginate(20),
+        ]);
+    }
+
+    public function create()
+    {
+        return Inertia::render('Admin/Concessionaria/Create/Page');
+    }
+
+    public function store(StoreConcessionariaRequest $request)
+    {
+        $concessionaria = Concessionaria::create($request->validated());
+
+        return redirect()
+            ->route('admin.concessionaria.show', $concessionaria->id)
+            ->with('success', 'Concessionária cadastrada com sucesso.');
+    }
+
+    public function show(Concessionaria $concessionaria)
+    {
+        return Inertia::render('Admin/Concessionaria/Show/Page', [
+            'concessionaria' => $concessionaria,
+        ]);
+    }
+
+    public function edit(Concessionaria $concessionaria)
+    {
+        return Inertia::render('Admin/Concessionaria/Edit/Page', [
+            'concessionaria' => $concessionaria,
+        ]);
+    }
+
+    public function update(StoreConcessionariaRequest $request, Concessionaria $concessionaria)
+    {
+        $concessionaria->update($request->validated());
+
+        return redirect()
+            ->route('admin.concessionaria.show', $concessionaria->id)
+            ->with('success', 'Concessionária atualizada com sucesso.');
+    }
+}

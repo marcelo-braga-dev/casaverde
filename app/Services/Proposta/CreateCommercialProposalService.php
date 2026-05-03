@@ -2,47 +2,56 @@
 
 namespace App\Services\Proposta;
 
+use App\Models\Cliente\ClientProfile;
+use App\Models\Endereco\Address;
 use App\Models\Proposta\CommercialProposal;
-use App\Services\Cliente\CreateOrFindClientProfileService;
 use Illuminate\Support\Facades\DB;
 
 class CreateCommercialProposalService
 {
-    public function __construct(
-        private readonly CreateOrFindClientProfileService $createOrFindClientProfileService
-    ) {
-    }
-
     public function handle(array $data): array
     {
         return DB::transaction(function () use ($data) {
-            $clientResult = $this->createOrFindClientProfileService->handle([
-                'tipo_pessoa' => $data['tipo_pessoa'],
-                'cpf' => $data['cpf'] ?? null,
-                'cnpj' => $data['cnpj'] ?? null,
-                'nome' => $data['nome'] ?? null,
-                'razao_social' => $data['razao_social'] ?? null,
-                'nome_fantasia' => $data['nome_fantasia'] ?? null,
-                'cidade' => $data['cidade'],
-                'email' => $data['email'] ?? null,
-                'telefone' => $data['telefone'] ?? null,
-                'status' => 'proposta_emitida',
-            ]);
 
-            $clientProfile = $clientResult['client_profile'];
+            // =============================
+            // CLIENTE
+            // =============================
 
-            if ($clientProfile->status === 'prospect') {
-                $clientProfile->update([
-                    'status' => 'proposta_emitida',
+            $clientAlreadyExists = false;
+
+            if (!empty($data['client_profile_id'])) {
+                $client = ClientProfile::find($data['client_profile_id']);
+                $clientAlreadyExists = true;
+            } else {
+                $client = ClientProfile::create([
+                    'tipo_pessoa' => $data['tipo_pessoa'],
+                    'cpf' => $data['cpf'] ?? null,
+                    'cnpj' => $data['cnpj'] ?? null,
+                    'nome' => $data['nome'] ?? null,
+                    'razao_social' => $data['razao_social'] ?? null,
+                    'nome_fantasia' => $data['nome_fantasia'] ?? null,
+                    'email' => $data['email'] ?? null,
+                    'telefone' => $data['telefone'] ?? null,
                 ]);
             }
 
+            // =============================
+            // 🔥 ENDEREÇO
+            // =============================
+
+            $address = $this->createAddressIfFilled($data['address'] ?? []);
+
+            // =============================
+            // PROPOSTA
+            // =============================
+
             $proposal = CommercialProposal::create([
-                'client_profile_id' => $clientProfile->id,
+                'client_profile_id' => $client->id,
                 'consultor_user_id' => auth()->id(),
                 'concessionaria_id' => $data['concessionaria_id'],
+                'address_id' => $address?->id, // 🔥 AQUI
                 'status' => 'emitida',
-                'issued_at' => now()->toDateString(),
+                'issued_at' => now(),
                 'valid_until' => $data['valid_until'] ?? null,
                 'media_consumo' => $data['media_consumo'] ?? null,
                 'taxa_reducao' => $data['taxa_reducao'] ?? null,
@@ -53,11 +62,26 @@ class CreateCommercialProposalService
             ]);
 
             return [
-                'proposal' => $proposal->load(['clientProfile', 'consultor', 'concessionaria']),
-                'client_profile' => $clientProfile,
-                'client_already_exists' => $clientResult['already_exists'],
-                'client_message' => $clientResult['message'],
+                'proposal' => $proposal,
+                'client_already_exists' => $clientAlreadyExists,
+                'client_message' => $clientAlreadyExists
+                    ? 'Cliente já existente'
+                    : 'Cliente criado com sucesso',
             ];
         });
+    }
+
+    private function createAddressIfFilled(array $data): ?Address
+    {
+        $filtered = collect($data)
+            ->map(fn ($v) => $v === '' ? null : $v)
+            ->filter()
+            ->toArray();
+
+        if (empty($filtered)) {
+            return null;
+        }
+
+        return Address::create($data);
     }
 }

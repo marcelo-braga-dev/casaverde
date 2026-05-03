@@ -154,6 +154,7 @@ const Page = ({ produtores = [], consultores = [], concessionarias = [], blocks 
                                     error={!!errors.media_geracao}
                                     helperText={errors.media_geracao}
                                     type="number"
+                                    required
                                     fullWidth
                                 />
                             </Grid>
@@ -166,6 +167,7 @@ const Page = ({ produtores = [], consultores = [], concessionarias = [], blocks 
                                     error={!!errors.potencia_usina}
                                     helperText={errors.potencia_usina}
                                     type="number"
+                                    required
                                     fullWidth
                                 />
                             </Grid>
@@ -221,6 +223,7 @@ const Page = ({ produtores = [], consultores = [], concessionarias = [], blocks 
                                     helperText={errors.inversores}
                                     multiline
                                     rows={3}
+                                    required
                                     fullWidth
                                 />
                             </Grid>
@@ -234,6 +237,7 @@ const Page = ({ produtores = [], consultores = [], concessionarias = [], blocks 
                                     helperText={errors.modulos}
                                     multiline
                                     rows={3}
+                                    required
                                     fullWidth
                                 />
                             </Grid>

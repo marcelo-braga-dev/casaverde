@@ -15,7 +15,7 @@ class ConsultorRepository
     public function create(Request $data)
     {
         DB::transaction(function () use ($data) {
-            $role = (new RoleUser())->consultor();
+            $role = RoleUser::$CONSULTOR;
             $service = new CreateUserService();
 
             $dto = CreateUsuarioDTO::fromArray($data);

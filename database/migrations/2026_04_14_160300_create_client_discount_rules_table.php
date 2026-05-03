@@ -14,8 +14,8 @@ return new class extends Migration
             $table->foreignId('client_profile_id')->constrained('client_profiles')->cascadeOnDelete();
 
             $table->decimal('discount_percent', 8, 2)->default(0);
-            $table->date('starts_on');
-            $table->date('ends_on')->nullable();
+            $table->dateTime('starts_on');
+            $table->dateTime('ends_on')->nullable();
             $table->boolean('is_active')->default(true);
             $table->text('notes')->nullable();
 

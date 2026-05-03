@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Fatura\FilterConcessionaireBillRequest;
 use App\Http\Requests\Fatura\StoreConcessionaireBillRequest;
 use App\Http\Requests\Fatura\UpdateConcessionaireBillReviewRequest;
+use App\Models\Cliente\ClientProfile;
 use App\Models\Fatura\ConcessionaireBill;
 use App\Models\Usina\Concessionaria;
 use App\Models\Usina\UsinaSolar;
@@ -24,7 +25,7 @@ class ConcessionaireBillController extends Controller
     ) {
         $filters = $request->validated();
 
-        return Inertia::render('Admin/Fatura/Index/Page', [
+        return Inertia::render('Consultor/Cliente/Fatura/Index/Page', [
             'bills' => $repository->paginate($filters, 20),
             'filters' => $filters,
             'reviewStatuses' => ['pending_review', 'reviewed', 'corrected', 'approved'],
@@ -35,15 +36,17 @@ class ConcessionaireBillController extends Controller
 
     public function create()
     {
-        return Inertia::render('Admin/Fatura/Create/Page', [
+        return Inertia::render('Consultor/Cliente/Fatura/Create/Page', [
             'concessionarias' => Concessionaria::query()
                 ->where('status', 'ativo')
                 ->orderBy('nome')
                 ->get(['id', 'nome']),
+
             'usinas' => UsinaSolar::query()
                 ->orderByDesc('id')
                 ->get(['id', 'uc']),
-            'clients' => \App\Models\Cliente\ClientProfile::query()
+
+            'clients' => ClientProfile::query()
                 ->orderByDesc('id')
                 ->get(['id', 'client_code', 'nome', 'razao_social', 'cpf', 'cnpj']),
         ]);
@@ -55,10 +58,11 @@ class ConcessionaireBillController extends Controller
         ValidateConcessionaireBillService $validateService
     ) {
         $bill = $service->handle($request->validated());
+
         $validateService->handle($bill);
 
         return redirect()
-            ->route('admin.faturas.show', $bill->id)
+            ->route('consultor.cliente.faturas.show', $bill->id)
             ->with('success', 'Fatura cadastrada com sucesso.');
     }
 
@@ -70,17 +74,29 @@ class ConcessionaireBillController extends Controller
             'clientProfile',
             'clientProfile.activeUsinaLink.usina',
             'clientProfile.activeDiscountRule',
+            'clientProfile.emailImportSetting.concessionaria',
+            'concessionaria',
             'usina',
             'createdBy',
             'reviewedBy',
             'issues',
         ]);
 
-        return Inertia::render('Admin/Fatura/Show/Page', [
+        return Inertia::render('Consultor/Cliente/Fatura/Show/Page', [
             'bill' => $fatura,
+            'emailImportSetting' => $fatura->clientProfile?->emailImportSetting,
+
+            'concessionarias' => Concessionaria::query()
+                ->where('status', 'ativo')
+                ->orderBy('nome')
+                ->get(['id', 'nome']),
+
             'suggestedUsinaId' => $suggestBillUsinaService->handle($fatura),
             'reviewStatuses' => ['pending_review', 'reviewed', 'corrected', 'approved'],
-            'usinas' => UsinaSolar::query()->orderByDesc('id')->get(['id', 'uc']),
+
+            'usinas' => UsinaSolar::query()
+                ->orderByDesc('id')
+                ->get(['id', 'uc']),
         ]);
     }
 
@@ -92,7 +108,8 @@ class ConcessionaireBillController extends Controller
         $service->handle($fatura, $request->validated());
 
         return redirect()
-            ->back()
+            ->route('consultor.cliente.faturas.show', $fatura->id)
+            ->setStatusCode(303)
             ->with('success', 'Fatura revisada com sucesso.');
     }
 }

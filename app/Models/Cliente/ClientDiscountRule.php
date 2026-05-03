@@ -20,8 +20,8 @@ class ClientDiscountRule extends Model
 
     protected $casts = [
         'discount_percent' => 'decimal:2',
-        'starts_on' => 'date',
-        'ends_on' => 'date',
+        'starts_on' => 'datetime',
+        'ends_on' => 'datetime',
         'is_active' => 'boolean',
     ];
 

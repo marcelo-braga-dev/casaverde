@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('razao_social')->nullable();
             $table->string('nome_fantasia')->nullable();
 
-            $table->string('cidade');
             $table->string('email')->nullable();
             $table->string('telefone')->nullable();
 

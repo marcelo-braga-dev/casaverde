@@ -16,14 +16,21 @@ class UpdateConcessionaireBillReviewRequest extends FormRequest
         return [
             'usina_id' => ['nullable', 'integer', 'exists:usina_solars,id'],
             'concessionaria_id' => ['required', 'integer', 'exists:concessionarias,id'],
-            'reference_month' => ['required', 'integer', 'min:1', 'max:12'],
-            'reference_year' => ['required', 'integer', 'min:2020', 'max:2100'],
-            'unidade_consumidora' => ['required', 'string', 'max:255'],
+
+            'nome' => ['nullable', 'string', 'max:255'],
+            'unidade_consumidora' => ['nullable', 'string', 'max:255'],
             'numero_instalacao' => ['nullable', 'string', 'max:255'],
-            'vencimento' => ['required', 'date'],
-            'valor_total' => ['required', 'numeric', 'min:0'],
-            'consumo_kwh' => ['nullable', 'numeric', 'min:0'],
+
+            'reference_month' => ['nullable', 'integer', 'min:1', 'max:12'],
+            'reference_year' => ['nullable', 'integer', 'min:2020', 'max:2100'],
+            'reference_label' => ['nullable', 'string', 'max:50'],
+
+            'vencimento' => ['nullable', 'date'],
+            'valor_total' => ['nullable'],
+            'consumo_kwh' => ['nullable'],
+
             'notes' => ['nullable', 'string'],
+            'review_notes' => ['nullable', 'string'],
             'review_status' => ['required', 'string', 'max:50'],
         ];
     }
