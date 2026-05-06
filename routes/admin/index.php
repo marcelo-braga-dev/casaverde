@@ -12,6 +12,7 @@ Route::middleware(['auth', 'role:admin,consultor'])
         require __DIR__ . '/financeiro/cobrancas.php';
         require __DIR__ . '/financeiro/pagamentos.php';
         require __DIR__ . '/financeiro/payment-webhooks.php';
+        require __DIR__ . '/relatorios.php';
 
         require __DIR__ . '/users/admin.php';
         require __DIR__ . '/users/produtor.php';

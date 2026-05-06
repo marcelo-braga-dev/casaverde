@@ -1,5 +1,5 @@
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
-import { Head, Link, router } from "@inertiajs/react";
+import {Head, Link, router} from "@inertiajs/react";
 import {
     Button,
     Card,
@@ -13,6 +13,7 @@ import {
     TableRow,
     Typography,
 } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 
 const providerLabels = {
     cora: "Cora",
@@ -36,21 +37,21 @@ function paginationLabel(label) {
         .replace(/<[^>]*>/g, "");
 }
 
-export default function Page({ accounts }) {
+export default function Page({accounts}) {
     return (
         <Layout titlePage="Contas de Pagamento" menu="financeiro" subMenu="financeiro-bancos">
-            <Head title="Contas de Pagamento" />
+            <Head title="Contas de Pagamento"/>
 
             <Stack spacing={3}>
                 <Card>
                     <CardContent>
-                        <Stack
-                            direction={{ xs: "column", md: "row" }}
+                        <Grid
+                            container
+                            alignItems="center"
                             justifyContent="space-between"
-                            alignItems={{ xs: "flex-start", md: "center" }}
                             spacing={2}
                         >
-                            <Stack spacing={0.5}>
+                            <Grid size="grow">
                                 <Typography variant="h5">
                                     Contas de pagamento
                                 </Typography>
@@ -58,14 +59,23 @@ export default function Page({ accounts }) {
                                 <Typography color="text.secondary">
                                     Configure provedores como Cora, Mercado Pago e outros.
                                 </Typography>
-                            </Stack>
+                            </Grid>
 
-                            <Link href={route("admin.financeiro.payment-provider-accounts.create")}>
-                                <Button variant="contained">
-                                    Nova conta
-                                </Button>
-                            </Link>
-                        </Stack>
+                            <Grid size="auto">
+                                <Stack direction={{xs: "column", sm: "row"}} spacing={1.5}>
+                                    <Link href={route("admin.financeiro.payment-webhooks.index")}>
+                                        <Button variant="contained">
+                                            Webhooks
+                                        </Button>
+                                    </Link>
+                                    <Link href={route("admin.financeiro.payment-provider-accounts.create")}>
+                                        <Button variant="contained" color="warning">
+                                            Nova conta
+                                        </Button>
+                                    </Link>
+                                </Stack>
+                            </Grid>
+                        </Grid>
                     </CardContent>
                 </Card>
 

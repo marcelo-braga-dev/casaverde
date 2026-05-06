@@ -111,4 +111,26 @@ class CustomerCharge extends BaseModel
     {
         return $this->hasMany(\App\Models\Pagamento\PaymentSlip::class, 'customer_charge_id');
     }
+
+    public function canBeCancelled(): bool
+    {
+        return !in_array($this->status, ['paid', 'cancelled'], true);
+    }
+
+    public function canBeMarkedAsPaid(): bool
+    {
+        return !in_array($this->status, ['paid', 'cancelled'], true);
+    }
+
+    public function canBeMarkedAsOverdue(): bool
+    {
+        return in_array($this->status, ['open', 'waiting_payment'], true);
+    }
+
+    public function hasActivePayment(): bool
+    {
+        return $this->paymentSlips()
+            ->whereIn('status', ['pending', 'generated'])
+            ->exists();
+    }
 }

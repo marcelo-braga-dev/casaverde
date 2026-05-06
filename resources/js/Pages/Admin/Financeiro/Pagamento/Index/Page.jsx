@@ -75,7 +75,7 @@ function paginationLabel(label) {
 
 export default function Page({ payments }) {
     return (
-        <Layout titlePage="Pagamentos" menu="financeiro" subMenu="clientes-pagamentos">
+        <Layout titlePage="Pagamentos" menu="financeiro" subMenu="financeiro-pagamentos">
             <Head title="Pagamentos" />
 
             <Stack spacing={3}>

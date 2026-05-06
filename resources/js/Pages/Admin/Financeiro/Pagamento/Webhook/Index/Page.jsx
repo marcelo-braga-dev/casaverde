@@ -73,7 +73,7 @@ export default function Page({
     };
 
     return (
-        <Layout titlePage="Webhooks de Pagamento" menu="financeiro">
+        <Layout titlePage="Webhooks de Pagamento" menu="financeiro" subMenu="financeiro-bancos" backPage>
             <Head title="Webhooks de Pagamento" />
 
             <Stack spacing={3}>

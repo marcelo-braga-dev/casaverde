@@ -1,10 +1,9 @@
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
-import {Head, Link, router, useForm} from "@inertiajs/react";
+import { Head, Link, router, useForm } from "@inertiajs/react";
 import {
     Button,
     Card,
     CardContent,
-    Chip,
     Divider,
     MenuItem,
     Stack,
@@ -17,43 +16,11 @@ import {
     Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-
-const statusLabels = {
-    draft: "Rascunho",
-    open: "Aberta",
-    waiting_payment: "Aguardando pagamento",
-    paid: "Paga",
-    overdue: "Atrasada",
-    cancelled: "Cancelada",
-};
-
-const statusColors = {
-    draft: "default",
-    open: "primary",
-    waiting_payment: "warning",
-    paid: "success",
-    overdue: "error",
-    cancelled: "default",
-};
-
-const adjustmentLabels = {
-    discount: "Desconto manual",
-    addition: "Acréscimo manual",
-};
-
-const adjustmentColors = {
-    discount: "success",
-    addition: "warning",
-};
-
-function money(value) {
-    const number = Number(value || 0);
-
-    return number.toLocaleString("pt-BR", {
-        style: "currency",
-        currency: "BRL",
-    });
-}
+import StatusChip from "@/Components/Admin/StatusChip.jsx";
+import MoneyText from "@/Components/Admin/MoneyText.jsx";
+import DateText from "@/Components/Admin/DateText.jsx";
+import ConfirmActionButton from "@/Components/Admin/ConfirmActionButton.jsx";
+import EmptyState from "@/Components/Admin/EmptyState.jsx";
 
 function getClientName(charge) {
     return (
@@ -64,21 +31,29 @@ function getClientName(charge) {
     );
 }
 
-export default function Page({charge}) {
+export default function Page({ charge }) {
+    const hasActivePayment = charge.payment_slips?.some((payment) =>
+        ["pending", "generated"].includes(payment.status)
+    );
+
     const adjustmentForm = useForm({
         type: "discount",
         amount: "",
         description: "",
     });
 
-    const hasActivePayment = charge.payment_slips?.some((payment) =>
-        ["pending", "generated"].includes(payment.status)
-    );
+    const cancelForm = useForm({
+        reason: "",
+    });
+
+    const paidForm = useForm({
+        note: "",
+    });
 
     const submitAdjustment = (e) => {
         e.preventDefault();
 
-        adjustmentForm.post(route("admin.financeiro.cobrancas.adjustments.store", charge.id), {
+        adjustmentForm.post(route("admin.cobrancas.adjustments.store", charge.id), {
             preserveScroll: true,
             onSuccess: () => {
                 adjustmentForm.reset("amount", "description");
@@ -88,22 +63,46 @@ export default function Page({charge}) {
     };
 
     const approveCharge = () => {
-        router.post(route("admin.financeiro.cobrancas.approve", charge.id), {}, {
+        router.post(route("admin.cobrancas.approve", charge.id), {}, {
+            preserveScroll: true,
+        });
+    };
+
+    const generatePayment = () => {
+        router.post(route("admin.pagamentos.generate-from-charge", charge.id), {}, {
+            preserveScroll: true,
+        });
+    };
+
+    const cancelCharge = () => {
+        cancelForm.post(route("admin.cobrancas.cancel", charge.id), {
+            preserveScroll: true,
+        });
+    };
+
+    const markPaid = () => {
+        paidForm.post(route("admin.cobrancas.mark-paid", charge.id), {
+            preserveScroll: true,
+        });
+    };
+
+    const markOverdue = () => {
+        router.post(route("admin.cobrancas.mark-overdue", charge.id), {}, {
             preserveScroll: true,
         });
     };
 
     return (
-        <Layout titlePage="Detalhes da Cobrança" menu="financeiro" subMenu="clientes-cobrancas" backPage>
-            <Head title={`Cobrança #${charge.id}`}/>
+        <Layout titlePage="Detalhes da Cobrança" menu="financeiro">
+            <Head title={`Cobrança #${charge.id}`} />
 
             <Stack spacing={3}>
                 <Card>
                     <CardContent>
                         <Stack
-                            direction={{xs: "column", md: "row"}}
+                            direction={{ xs: "column", md: "row" }}
                             justifyContent="space-between"
-                            alignItems={{xs: "flex-start", md: "center"}}
+                            alignItems={{ xs: "flex-start", md: "center" }}
                             spacing={2}
                         >
                             <Stack spacing={1}>
@@ -116,92 +115,50 @@ export default function Page({charge}) {
                                 </Typography>
 
                                 <Typography color="text.secondary">
-                                    Referência: {charge.reference_label ||
-                                    `${charge.reference_month}/${charge.reference_year}`}
+                                    Referência: {charge.reference_label || `${charge.reference_month}/${charge.reference_year}`}
                                 </Typography>
                             </Stack>
 
-                            <Stack direction="row" spacing={1}>
-                                <Chip
-                                    label={statusLabels[charge.status] || charge.status}
-                                    color={statusColors[charge.status] || "default"}
-                                />
+                            <Stack direction="row" spacing={1} flexWrap="wrap">
+                                <StatusChip status={charge.status} />
 
                                 {charge.status === "draft" && (
-                                    <Button
-                                        variant="contained"
+                                    <ConfirmActionButton
                                         color="success"
-                                        onClick={approveCharge}
+                                        message="Deseja abrir esta cobrança?"
+                                        onConfirm={approveCharge}
                                     >
                                         Abrir cobrança
-                                    </Button>
+                                    </ConfirmActionButton>
+                                )}
+
+                                {["open", "waiting_payment"].includes(charge.status) && !hasActivePayment && (
+                                    <ConfirmActionButton
+                                        color="primary"
+                                        message="Deseja gerar boleto/Pix para esta cobrança?"
+                                        onConfirm={generatePayment}
+                                    >
+                                        Gerar boleto/Pix
+                                    </ConfirmActionButton>
+                                )}
+
+                                {["open", "waiting_payment"].includes(charge.status) && (
+                                    <ConfirmActionButton
+                                        color="error"
+                                        variant="outlined"
+                                        message="Deseja marcar esta cobrança como atrasada?"
+                                        onConfirm={markOverdue}
+                                    >
+                                        Marcar atrasada
+                                    </ConfirmActionButton>
                                 )}
                             </Stack>
                         </Stack>
                     </CardContent>
                 </Card>
 
-                <Card>
-                    <CardContent>
-                        <Typography variant="h6" marginBottom={2}>
-                            Pagamentos gerados
-                        </Typography>
-
-                        {charge.payment_slips?.length > 0 ? (
-                            <Table>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>ID</TableCell>
-                                        <TableCell>Provider</TableCell>
-                                        <TableCell>Valor</TableCell>
-                                        <TableCell>Status</TableCell>
-                                        <TableCell>Vencimento</TableCell>
-                                        <TableCell align="right">Ações</TableCell>
-                                    </TableRow>
-                                </TableHead>
-
-                                <TableBody>
-                                    {charge.payment_slips.map((payment) => (
-                                        <TableRow key={payment.id}>
-                                            <TableCell>{payment.id}</TableCell>
-                                            <TableCell>{payment.provider}</TableCell>
-                                            <TableCell>{money(payment.amount)}</TableCell>
-                                            <TableCell>{payment.status}</TableCell>
-                                            <TableCell>{payment.due_date || "-"}</TableCell>
-                                            <TableCell align="right">
-                                                <Link href={route("admin.pagamentos.show", payment.id)}>
-                                                    <Button variant="outlined" size="small">
-                                                        Ver pagamento
-                                                    </Button>
-                                                </Link>
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        ) : (
-                            <Typography color="text.secondary">
-                                Nenhum pagamento gerado para esta cobrança.
-                            </Typography>
-                        )}
-                    </CardContent>
-                </Card>
-
-                <Card>
-                    <CardContent>
-                        {["open", "waiting_payment"].includes(charge.status) && !hasActivePayment && (
-                            <Button
-                                variant="contained"
-                                onClick={() => router.post(route("admin.pagamentos.generate-from-charge", charge.id))}
-                            >
-                                Gerar boleto/Pix Cora
-                            </Button>
-                        )}
-                    </CardContent>
-                </Card>
-
                 <Grid container spacing={3}>
-                    <Grid size={{xs: 12, md: 8}}>
+                    <Grid size={{ xs: 12, md: 8 }}>
                         <Card>
                             <CardContent>
                                 <Typography variant="h6" marginBottom={2}>
@@ -213,7 +170,7 @@ export default function Page({charge}) {
                                         <TableRow>
                                             <TableCell>Valor original</TableCell>
                                             <TableCell align="right">
-                                                {money(charge.original_amount)}
+                                                <MoneyText value={charge.original_amount} />
                                             </TableCell>
                                         </TableRow>
 
@@ -222,21 +179,21 @@ export default function Page({charge}) {
                                                 Desconto contratual ({charge.discount_percent || 0}%)
                                             </TableCell>
                                             <TableCell align="right">
-                                                - {money(charge.discount_amount)}
+                                                - <MoneyText value={charge.discount_amount} />
                                             </TableCell>
                                         </TableRow>
 
                                         <TableRow>
                                             <TableCell>Desconto manual</TableCell>
                                             <TableCell align="right">
-                                                - {money(charge.manual_discount_amount)}
+                                                - <MoneyText value={charge.manual_discount_amount} />
                                             </TableCell>
                                         </TableRow>
 
                                         <TableRow>
                                             <TableCell>Acréscimo manual</TableCell>
                                             <TableCell align="right">
-                                                + {money(charge.manual_addition_amount)}
+                                                + <MoneyText value={charge.manual_addition_amount} />
                                             </TableCell>
                                         </TableRow>
 
@@ -245,7 +202,7 @@ export default function Page({charge}) {
                                                 <strong>Valor final</strong>
                                             </TableCell>
                                             <TableCell align="right">
-                                                <strong>{money(charge.final_amount)}</strong>
+                                                <MoneyText value={charge.final_amount} bold />
                                             </TableCell>
                                         </TableRow>
                                     </TableBody>
@@ -254,7 +211,7 @@ export default function Page({charge}) {
                         </Card>
                     </Grid>
 
-                    <Grid size={{xs: 12, md: 4}}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <Card>
                             <CardContent>
                                 <Typography variant="h6" marginBottom={2}>
@@ -263,7 +220,7 @@ export default function Page({charge}) {
 
                                 <Stack spacing={1}>
                                     <Typography>
-                                        Vencimento: {charge.due_date || "-"}
+                                        Vencimento: <DateText value={charge.due_date} />
                                     </Typography>
 
                                     <Typography>
@@ -283,21 +240,21 @@ export default function Page({charge}) {
                                     </Typography>
 
                                     <Typography>
-                                        Aprovada em: {charge.approved_at || "-"}
+                                        Aprovada em: <DateText value={charge.approved_at} />
                                     </Typography>
 
                                     <Typography>
-                                        Paga em: {charge.paid_at || "-"}
+                                        Paga em: <DateText value={charge.paid_at} />
                                     </Typography>
                                 </Stack>
 
                                 {charge.bill && (
                                     <>
-                                        <Divider sx={{my: 2}}/>
+                                        <Divider sx={{ my: 2 }} />
 
-                                        <Link href={route("consultor.cliente.faturas.show", charge.bill.id)}>
+                                        <Link href={route("admin.faturas.show", charge.bill.id)}>
                                             <Button variant="outlined" fullWidth>
-                                                Ver fatura
+                                                Ver fatura origem
                                             </Button>
                                         </Link>
                                     </>
@@ -316,7 +273,7 @@ export default function Page({charge}) {
 
                             <form onSubmit={submitAdjustment}>
                                 <Grid container spacing={2}>
-                                    <Grid size={{xs: 12, md: 3}}>
+                                    <Grid size={{ xs: 12, md: 3 }}>
                                         <TextField
                                             select
                                             label="Tipo"
@@ -331,7 +288,7 @@ export default function Page({charge}) {
                                         </TextField>
                                     </Grid>
 
-                                    <Grid size={{xs: 12, md: 3}}>
+                                    <Grid size={{ xs: 12, md: 3 }}>
                                         <TextField
                                             label="Valor"
                                             value={adjustmentForm.data.amount}
@@ -342,7 +299,7 @@ export default function Page({charge}) {
                                         />
                                     </Grid>
 
-                                    <Grid size={{xs: 12, md: 6}}>
+                                    <Grid size={{ xs: 12, md: 6 }}>
                                         <TextField
                                             label="Descrição"
                                             value={adjustmentForm.data.description}
@@ -371,62 +328,169 @@ export default function Page({charge}) {
                 <Card>
                     <CardContent>
                         <Typography variant="h6" marginBottom={2}>
+                            Pagamentos gerados
+                        </Typography>
+
+                        {charge.payment_slips?.length > 0 ? (
+                            <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>ID</TableCell>
+                                        <TableCell>Provider</TableCell>
+                                        <TableCell>Valor</TableCell>
+                                        <TableCell>Status</TableCell>
+                                        <TableCell>Vencimento</TableCell>
+                                        <TableCell align="right">Ações</TableCell>
+                                    </TableRow>
+                                </TableHead>
+
+                                <TableBody>
+                                    {charge.payment_slips.map((payment) => (
+                                        <TableRow key={payment.id}>
+                                            <TableCell>{payment.id}</TableCell>
+                                            <TableCell>{payment.provider}</TableCell>
+                                            <TableCell>
+                                                <MoneyText value={payment.amount} />
+                                            </TableCell>
+                                            <TableCell>
+                                                <StatusChip status={payment.status} />
+                                            </TableCell>
+                                            <TableCell>
+                                                <DateText value={payment.due_date} />
+                                            </TableCell>
+                                            <TableCell align="right">
+                                                <Link href={route("admin.pagamentos.show", payment.id)}>
+                                                    <Button variant="outlined" size="small">
+                                                        Ver pagamento
+                                                    </Button>
+                                                </Link>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        ) : (
+                            <EmptyState title="Nenhum pagamento gerado para esta cobrança." />
+                        )}
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardContent>
+                        <Typography variant="h6" marginBottom={2}>
                             Histórico de ajustes
                         </Typography>
 
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>Tipo</TableCell>
-                                    <TableCell>Valor</TableCell>
-                                    <TableCell>Descrição</TableCell>
-                                    <TableCell>Criado por</TableCell>
-                                    <TableCell>Data</TableCell>
-                                </TableRow>
-                            </TableHead>
+                        {charge.adjustments?.length > 0 ? (
+                            <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>Tipo</TableCell>
+                                        <TableCell>Valor</TableCell>
+                                        <TableCell>Descrição</TableCell>
+                                        <TableCell>Criado por</TableCell>
+                                        <TableCell>Data</TableCell>
+                                    </TableRow>
+                                </TableHead>
 
-                            <TableBody>
-                                {charge.adjustments?.length > 0 ? (
-                                    charge.adjustments.map((adjustment) => (
+                                <TableBody>
+                                    {charge.adjustments.map((adjustment) => (
                                         <TableRow key={adjustment.id}>
                                             <TableCell>
-                                                <Chip
-                                                    label={adjustmentLabels[adjustment.type] || adjustment.type}
-                                                    color={adjustmentColors[adjustment.type] || "default"}
-                                                    size="small"
+                                                <StatusChip
+                                                    status={adjustment.type}
+                                                    label={adjustment.type === "discount" ? "Desconto" : "Acréscimo"}
                                                 />
                                             </TableCell>
 
                                             <TableCell>
-                                                {money(adjustment.amount)}
+                                                <MoneyText value={adjustment.amount} />
                                             </TableCell>
 
-                                            <TableCell>
-                                                {adjustment.description || "-"}
-                                            </TableCell>
+                                            <TableCell>{adjustment.description || "-"}</TableCell>
+
+                                            <TableCell>{adjustment.created_by?.name || "-"}</TableCell>
 
                                             <TableCell>
-                                                {adjustment.created_by?.name || "-"}
-                                            </TableCell>
-
-                                            <TableCell>
-                                                {adjustment.created_at || "-"}
+                                                <DateText value={adjustment.created_at} />
                                             </TableCell>
                                         </TableRow>
-                                    ))
-                                ) : (
-                                    <TableRow>
-                                        <TableCell colSpan={5}>
-                                            <Typography textAlign="center" color="text.secondary">
-                                                Nenhum ajuste lançado.
-                                            </Typography>
-                                        </TableCell>
-                                    </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        ) : (
+                            <EmptyState title="Nenhum ajuste lançado." />
+                        )}
                     </CardContent>
                 </Card>
+
+                {!["paid", "cancelled"].includes(charge.status) && (
+                    <Grid container spacing={3}>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <Card>
+                                <CardContent>
+                                    <Typography variant="h6" marginBottom={2}>
+                                        Marcar como paga manualmente
+                                    </Typography>
+
+                                    <Stack spacing={2}>
+                                        <TextField
+                                            label="Observação"
+                                            value={paidForm.data.note}
+                                            onChange={(e) => paidForm.setData("note", e.target.value)}
+                                            error={!!paidForm.errors.note}
+                                            helperText={paidForm.errors.note}
+                                            multiline
+                                            minRows={3}
+                                            fullWidth
+                                        />
+
+                                        <ConfirmActionButton
+                                            color="success"
+                                            message="Deseja marcar esta cobrança como paga manualmente?"
+                                            onConfirm={markPaid}
+                                            disabled={paidForm.processing}
+                                        >
+                                            Marcar como paga
+                                        </ConfirmActionButton>
+                                    </Stack>
+                                </CardContent>
+                            </Card>
+                        </Grid>
+
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <Card>
+                                <CardContent>
+                                    <Typography variant="h6" marginBottom={2}>
+                                        Cancelar cobrança
+                                    </Typography>
+
+                                    <Stack spacing={2}>
+                                        <TextField
+                                            label="Motivo do cancelamento"
+                                            value={cancelForm.data.reason}
+                                            onChange={(e) => cancelForm.setData("reason", e.target.value)}
+                                            error={!!cancelForm.errors.reason}
+                                            helperText={cancelForm.errors.reason}
+                                            multiline
+                                            minRows={3}
+                                            fullWidth
+                                        />
+
+                                        <ConfirmActionButton
+                                            color="error"
+                                            message="Deseja realmente cancelar esta cobrança?"
+                                            onConfirm={cancelCharge}
+                                            disabled={cancelForm.processing}
+                                        >
+                                            Cancelar cobrança
+                                        </ConfirmActionButton>
+                                    </Stack>
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                    </Grid>
+                )}
             </Stack>
         </Layout>
     );

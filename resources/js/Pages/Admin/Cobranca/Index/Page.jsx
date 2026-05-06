@@ -90,7 +90,7 @@ export default function Page({
     }
 
     return (
-        <Layout titlePage="Cobranças" menu="financeiro" subMenu="clientes-cobrancas">
+        <Layout titlePage="Cobranças" menu="financeiro" subMenu="financeiro-cobrancas">
             <Head title="Cobranças" />
 
             <Stack spacing={3}>
