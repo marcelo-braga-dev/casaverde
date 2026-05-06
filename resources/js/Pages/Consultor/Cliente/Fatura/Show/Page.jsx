@@ -28,7 +28,7 @@ import {
     IconDeviceFloppy,
     IconExternalLink,
     IconFileInvoice,
-    IconReceipt,
+    IconReceipt, IconWallet,
 } from "@tabler/icons-react";
 
 const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [] }) => {
@@ -176,15 +176,24 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [] }) => {
                             <Divider sx={{ my: 3 }} />
 
                             <Stack direction="row" spacing={1} flexWrap="wrap">
-                                <Button
+                                {bill.review_status !== 'approved' && <Button
                                     color="success"
                                     variant="contained"
-                                    startIcon={<IconCircleCheck />}
+                                    startIcon={<IconCircleCheck/>}
                                     onClick={approve}
                                     disabled={!canApprove}
                                 >
                                     Aprovar Fatura
-                                </Button>
+                                </Button>}
+
+                                {bill.review_status === 'approved' && <Button
+                                    variant="contained"
+                                    startIcon={<IconWallet/>}
+                                    color="warning"
+                                    onClick={() => router.post(route("admin.financeiro.cobrancas.generate-from-bill", bill.id))}
+                                >
+                                    Gerar cobrança
+                                </Button>}
 
                                 <Button
                                     href={route("consultor.cliente.faturas.pdf", bill.id)}

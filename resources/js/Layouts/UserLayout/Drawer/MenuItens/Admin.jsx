@@ -1,13 +1,13 @@
 import React from "react";
 import {
-    IconBolt,
     IconBrandWhatsapp,
     IconHeadset, IconReportMoney, IconSettings,
     IconUserBolt,
     IconUserCog,
     IconUserDollar,
     IconUsers,
-    IconUserSquare
+    IconUserSquare,
+    IconChartHistogram
 } from "@tabler/icons-react";
 
 export const adminMenu = [
@@ -61,34 +61,29 @@ export const adminMenu = [
         icon: <IconReportMoney/>,
         id: 'financeiro',
         subItems: [
-            //{id: 'financeiro-produtor', title: 'Fluxo de Caixa', link: route('admin.financeiro.produtor.index')},
+            {id: 'financeiro-cobrancas', title: 'Cobranças de Faturas', link: route('admin.financeiro.cobrancas.index')},
+            {id: 'financeiro-pagamentos', title: 'Pagamentos', link: route('admin.financeiro.pagamentos.index')},
+            {id: 'financeiro-bancos', title: 'Bancos', link: route('admin.financeiro.payment-provider-accounts.index')},
         ],
     }, {
-        title: 'Concessionárias',
-        icon: <IconBolt/>,
-        id: 'concessionarias',
+        title: 'Relatórios',
+        icon: <IconChartHistogram/>,
+        id: 'relatorios',
         subItems: [
-            {id: 'concessionarias-index', title: 'Todas Concessionárias', link: route('admin.concessionaria.index')},
+            {id: 'relatorios-financeiro', title: 'Financeiro', link: route('admin.relatorios.financeiro')},
+            {id: 'relatorios-cobrancas', title: 'Cobranças', link: route('admin.relatorios.cobrancas')},
+            {id: 'relatorios-faturas', title: 'Faturas', link: route('admin.relatorios.faturas')},
+            {id: 'relatorios-pagamentos', title: 'Pagamentos', link: route('admin.relatorios.pagamentos')},
+            {id: 'relatorios-usinas', title: 'Usinas', link: route('admin.relatorios.usinas')},
+            {id: 'relatorios-clientes', title: 'Clientes', link: route('admin.relatorios.clientes')},
         ],
     },
     // {
-    //     title: 'Relatórios',
-    //     icon: <IconChartHistogram/>,
-    //     id: 'dashboards',
+    //     title: 'Concessionárias',
+    //     icon: <IconBolt/>,
+    //     id: 'concessionarias',
     //     subItems: [
-    //         {id: 'dashboards-cadastrados', title: 'Produtores', link: route('admin.produtor.store')},
-    //         {id: 'dashboards-cadastrar', title: 'Clientes', link: route('admin.produtor.show', 1)},
-    //         {id: 'dashboards-cadastrar', title: 'Usinas', link: route('admin.produtor.show', 1)},
-    //         {id: 'dashboards-cadastrar', title: 'Consultores', link: route('admin.produtor.show', 1)},
-    //     ],
-    // },
-    // {
-    //     title: 'Contratos',
-    //     icon: <IconFileLike/>,
-    //     id: 'contratos',
-    //     subItems: [
-    //         {id: 'contratos-usinas', title: 'Contratos Usinas', link: route('auth.contratos.usina.index')},
-    //         {id: 'contratos-clientes', title: 'Contratos Clientes', link: route('auth.contratos.cliente.index')},
+    //         {id: 'concessionarias-index', title: 'Todas Concessionárias', link: route('admin.concessionaria.index')},
     //     ],
     // },
     {

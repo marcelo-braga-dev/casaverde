@@ -10,3 +10,7 @@ Artisan::command('inspire', function () {
 
 Schedule::command('energy-bills:import')->hourly();
 Schedule::command('concessionaire-bills:import')->hourly();
+
+Schedule::command('casaverde:generate-monthly-charges')->hourly();
+Schedule::command('casaverde:mark-overdue-charges')->everyTenMinutes();
+Schedule::command('casaverde:sync-payments')->everyFiveMinutes();
