@@ -30,33 +30,50 @@ export default function AppSidebar({ expandedWidth, collapsedWidth }) {
                 transition: 'width 220ms ease',
                 '& .MuiDrawer-paper': {
                     width,
-                    position: 'relative',
-                    transition: 'width 220ms ease',
-                    overflowX: 'hidden',
+                    height: '100vh',
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    overflow: 'hidden',
                     border: 0,
+                    transition: 'width 220ms ease',
+                    boxShadow: 'var(--cv-shadow-sidebar)',
+                    borderTopLeftRadius: 0,
+                    borderBottomLeftRadius: 0,
+                    borderTopRightRadius: {
+                        xs: 10,
+                        lg: 25,
+                    },
+                    borderBottomRightRadius: {
+                        xs: 10,
+                        lg: 25,
+                    },
                 },
             }}
             open
         >
             <Box
                 sx={{
-                    height: '100%',
+                    height: '100vh',
+                    minHeight: 0,
                     display: 'flex',
                     flexDirection: 'column',
                     color: '#FFFFFF',
-                    background:
-                        'radial-gradient(circle at 20% 0%, rgba(16,185,129,0.22), transparent 28%), radial-gradient(circle at 95% 20%, rgba(2,132,199,0.18), transparent 28%), linear-gradient(180deg, #0F172A 0%, #020617 100%)',
-                    borderRight: '1px solid rgba(255,255,255,0.06)',
-                    borderTopRightRadius: {
-                        xs: 0,
-                        lg: 18,
-                    },
-                    borderBottomRightRadius: {
-                        xs: 0,
-                        lg: 18,
-                    },
+                    background: 'var(--cv-gradient-sidebar)',
+                    borderRight: '1px solid rgba(255,255,255,0.10)',
+                    overflow: 'hidden',
+                    position: 'relative',
                 }}
             >
+                <Box
+                    sx={{
+                        position: 'absolute',
+                        inset: 0,
+                        background: 'var(--cv-sidebar-overlay)',
+                        pointerEvents: 'none',
+                    }}
+                />
+
                 <Stack
                     direction="row"
                     alignItems="center"
@@ -64,6 +81,9 @@ export default function AppSidebar({ expandedWidth, collapsedWidth }) {
                     sx={{
                         px: collapsed ? 1 : 2.5,
                         py: 2.4,
+                        flexShrink: 0,
+                        position: 'relative',
+                        zIndex: 1,
                     }}
                 >
                     <Stack
@@ -76,13 +96,14 @@ export default function AppSidebar({ expandedWidth, collapsedWidth }) {
                             sx={{
                                 width: 46,
                                 height: 46,
+                                minWidth: 46,
                                 borderRadius: 3.2,
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                background:
-                                    'linear-gradient(135deg, #10B981 0%, #0B7A53 100%)',
-                                boxShadow: '0 18px 40px rgba(16,185,129,0.24)',
+                                background: 'rgba(255,255,255,0.16)',
+                                boxShadow: '0 14px 32px rgba(0,0,0,0.16)',
+                                border: '1px solid rgba(255,255,255,0.16)',
                             }}
                         >
                             <IconLeaf size={25} />
@@ -106,7 +127,7 @@ export default function AppSidebar({ expandedWidth, collapsedWidth }) {
                                     variant="caption"
                                     noWrap
                                     sx={{
-                                        color: 'rgba(255,255,255,0.55)',
+                                        color: 'rgba(255,255,255,0.72)',
                                         fontWeight: 600,
                                     }}
                                 >
@@ -121,10 +142,10 @@ export default function AppSidebar({ expandedWidth, collapsedWidth }) {
                             <IconButton
                                 onClick={toggleCollapsed}
                                 sx={{
-                                    color: 'rgba(255,255,255,0.72)',
-                                    bgcolor: 'rgba(255,255,255,0.06)',
+                                    color: 'rgba(255,255,255,0.82)',
+                                    bgcolor: 'rgba(255,255,255,0.12)',
                                     '&:hover': {
-                                        bgcolor: 'rgba(255,255,255,0.12)',
+                                        bgcolor: 'rgba(255,255,255,0.20)',
                                     },
                                 }}
                             >
@@ -135,16 +156,24 @@ export default function AppSidebar({ expandedWidth, collapsedWidth }) {
                 </Stack>
 
                 {collapsed && (
-                    <Box sx={{ px: 1.6, pb: 1 }}>
+                    <Box
+                        sx={{
+                            px: 1.6,
+                            pb: 1,
+                            flexShrink: 0,
+                            position: 'relative',
+                            zIndex: 1,
+                        }}
+                    >
                         <Tooltip title="Expandir menu" placement="right">
                             <IconButton
                                 onClick={toggleCollapsed}
                                 sx={{
                                     width: '100%',
-                                    color: 'rgba(255,255,255,0.72)',
-                                    bgcolor: 'rgba(255,255,255,0.06)',
+                                    color: 'rgba(255,255,255,0.82)',
+                                    bgcolor: 'rgba(255,255,255,0.12)',
                                     '&:hover': {
-                                        bgcolor: 'rgba(255,255,255,0.12)',
+                                        bgcolor: 'rgba(255,255,255,0.20)',
                                     },
                                 }}
                             >
@@ -157,10 +186,27 @@ export default function AppSidebar({ expandedWidth, collapsedWidth }) {
                 <Box
                     sx={{
                         flex: 1,
+                        minHeight: 0,
                         overflowY: 'auto',
                         overflowX: 'hidden',
                         px: collapsed ? 1 : 1.5,
                         pb: 2,
+                        position: 'relative',
+                        zIndex: 1,
+
+                        '&::-webkit-scrollbar': {
+                            width: 7,
+                        },
+                        '&::-webkit-scrollbar-track': {
+                            background: 'transparent',
+                        },
+                        '&::-webkit-scrollbar-thumb': {
+                            background: 'rgba(255,255,255,0.22)',
+                            borderRadius: 999,
+                        },
+                        '&::-webkit-scrollbar-thumb:hover': {
+                            background: 'rgba(255,255,255,0.34)',
+                        },
                     }}
                 >
                     {adminMenu.map((item) => (

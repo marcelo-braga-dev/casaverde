@@ -1,15 +1,11 @@
 import {
-    Badge,
     Box,
     IconButton,
     Stack,
     Typography,
 } from '@mui/material';
 import {
-    IconBell,
     IconMenu2,
-    IconRefresh,
-    IconSearch,
 } from '@tabler/icons-react';
 import { usePage } from '@inertiajs/react';
 import { useMenuDrawer } from '@/Contexts/Drawer/DrawerContext';
@@ -107,57 +103,57 @@ export default function AppHeader({
                         alignItems="center"
                         gap={1}
                     >
-                        <Box
-                            sx={{
-                                display: { xs: 'none', md: 'flex' },
-                                alignItems: 'center',
-                                width: {
-                                    md: 280,
-                                    xl: 380,
-                                },
-                                height: 42,
-                                px: 1.5,
-                                gap: 1,
-                                borderRadius: 999,
-                                bgcolor: 'grey.100',
-                                border: '1px solid',
-                                borderColor: 'divider',
-                            }}
-                        >
-                            <IconSearch size={18} color="#64748B" />
-                            <Typography
-                                variant="body2"
-                                color="text.secondary"
-                                sx={{ fontWeight: 600 }}
-                            >
-                                Buscar clientes, faturas, propostas...
-                            </Typography>
-                        </Box>
+                        {/*<Box*/}
+                        {/*    sx={{*/}
+                        {/*        display: { xs: 'none', md: 'flex' },*/}
+                        {/*        alignItems: 'center',*/}
+                        {/*        width: {*/}
+                        {/*            md: 280,*/}
+                        {/*            xl: 380,*/}
+                        {/*        },*/}
+                        {/*        height: 42,*/}
+                        {/*        px: 1.5,*/}
+                        {/*        gap: 1,*/}
+                        {/*        borderRadius: 999,*/}
+                        {/*        bgcolor: 'grey.100',*/}
+                        {/*        border: '1px solid',*/}
+                        {/*        borderColor: 'divider',*/}
+                        {/*    }}*/}
+                        {/*>*/}
+                        {/*    <IconSearch size={18} color="#64748B" />*/}
+                        {/*    <Typography*/}
+                        {/*        variant="body2"*/}
+                        {/*        color="text.secondary"*/}
+                        {/*        sx={{ fontWeight: 600 }}*/}
+                        {/*    >*/}
+                        {/*        Buscar clientes, faturas, propostas...*/}
+                        {/*    </Typography>*/}
+                        {/*</Box>*/}
 
                         {actions}
 
-                        <IconButton
-                            sx={{
-                                width: 42,
-                                height: 42,
-                                bgcolor: 'grey.100',
-                                display: { xs: 'none', sm: 'inline-flex' },
-                            }}
-                        >
-                            <IconRefresh size={20} />
-                        </IconButton>
+                        {/*<IconButton*/}
+                        {/*    sx={{*/}
+                        {/*        width: 42,*/}
+                        {/*        height: 42,*/}
+                        {/*        bgcolor: 'grey.100',*/}
+                        {/*        display: { xs: 'none', sm: 'inline-flex' },*/}
+                        {/*    }}*/}
+                        {/*>*/}
+                        {/*    <IconRefresh size={20} />*/}
+                        {/*</IconButton>*/}
 
-                        <IconButton
-                            sx={{
-                                width: 42,
-                                height: 42,
-                                bgcolor: 'grey.100',
-                            }}
-                        >
-                            <Badge color="error" variant="dot">
-                                <IconBell size={20} />
-                            </Badge>
-                        </IconButton>
+                        {/*<IconButton*/}
+                        {/*    sx={{*/}
+                        {/*        width: 42,*/}
+                        {/*        height: 42,*/}
+                        {/*        bgcolor: 'grey.100',*/}
+                        {/*    }}*/}
+                        {/*>*/}
+                        {/*    <Badge color="error" variant="dot">*/}
+                        {/*        <IconBell size={20} />*/}
+                        {/*    </Badge>*/}
+                        {/*</IconButton>*/}
 
                         <AppUserMenu user={auth?.user} />
                     </Stack>

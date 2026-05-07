@@ -178,6 +178,11 @@ export const adminMenu = [
                 title: 'Clientes',
                 link: safeRoute('admin.relatorios.clientes'),
             },
+            {
+                id: 'relatorios-executivo',
+                title: 'Executivo',
+                link: safeRoute('admin.relatorios.executivo'),
+            },
         ],
     },
     {

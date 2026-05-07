@@ -25,7 +25,6 @@ export default function AppShell({
             sx={{
                 minHeight: '100vh',
                 bgcolor: 'background.default',
-                display: 'flex',
                 width: '100%',
             }}
         >
@@ -38,15 +37,19 @@ export default function AppShell({
 
             <Box
                 sx={{
-                    flex: 1,
                     minWidth: 0,
                     width: {
                         xs: '100%',
                         lg: `calc(100% - ${sidebarWidth}px)`,
                     },
+                    ml: {
+                        xs: 0,
+                        lg: `${sidebarWidth}px`,
+                    },
+                    minHeight: '100vh',
                     display: 'flex',
                     flexDirection: 'column',
-                    transition: 'width 220ms ease',
+                    transition: 'margin-left 220ms ease, width 220ms ease',
                 }}
             >
                 <AppHeader

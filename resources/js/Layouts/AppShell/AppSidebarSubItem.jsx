@@ -53,9 +53,7 @@ export default function AppSidebarSubItem({ item }) {
                     sx={{
                         fontWeight: isActive ? 850 : 650,
                         fontSize: 13,
-                        color: isActive
-                            ? '#FFFFFF'
-                            : 'rgba(255,255,255,0.64)',
+                        color: '#FFFFFF',
                     }}
                 >
                     {item.title}

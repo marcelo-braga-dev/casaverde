@@ -1,30 +1,21 @@
 import Layout from '@/Layouts/UserLayout/Layout.jsx';
 import { Head, router, useForm } from '@inertiajs/react';
-import {
-    Button,
-    Card,
-    CardContent,
-    Stack,
-    TextField,
-    Typography,
-} from '@mui/material';
+import { Button, Card, CardContent, Stack, TextField, Typography } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import {
-    IconAlertTriangle,
     IconCash,
-    IconChartBar,
-    IconClockDollar,
-    IconReceipt,
-    IconTrendingUp,
+    IconFileInvoice,
+    IconFileText,
+    IconSolarPanel,
+    IconUsers,
 } from '@tabler/icons-react';
 
 import ReportMetricCard from '@/Components/Reports/ReportMetricCard';
 import ReportChartCard from '@/Components/Reports/ReportChartCard';
-import MoneyAreaChart from '@/Components/Reports/charts/MoneyAreaChart';
-import MoneyBarChart from '@/Components/Reports/charts/MoneyBarChart';
+import MultiLineChart from '@/Components/Reports/charts/MultiLineChart';
 import StatusDonutChart from '@/Components/Reports/charts/StatusDonutChart';
-import GaugeProgressChart from '@/Components/Reports/charts/GaugeProgressChart';
-import { formatMoney, formatPercent } from '@/Components/Reports/utils/chartFormatters';
+import HorizontalRankingChart from '@/Components/Reports/charts/HorizontalRankingChart';
+import { formatMoney } from '@/Components/Reports/utils/chartFormatters';
 
 export default function Page({ report, filters = {} }) {
     const { data, setData, get, processing } = useForm({
@@ -35,46 +26,30 @@ export default function Page({ report, filters = {} }) {
     const submit = (e) => {
         e.preventDefault();
 
-        get(route('admin.relatorios.financeiro'), {
+        get(route('admin.relatorios.executivo'), {
             preserveState: true,
             preserveScroll: true,
         });
     };
 
     const clearFilters = () => {
-        router.get(route('admin.relatorios.financeiro'));
+        router.get(route('admin.relatorios.executivo'));
     };
 
     const summary = report?.summary || {};
-    const monthlyEvolution = report?.monthlyEvolution || [];
-
-    const paidAmount = Number(summary.paid_amount || 0);
-    const finalAmount = Number(summary.final_amount || 0);
-    const overdueAmount = Number(summary.overdue_amount || 0);
-    const openAmount = Number(summary.open_amount || 0);
-
-    const receivedRate = finalAmount > 0 ? (paidAmount / finalAmount) * 100 : 0;
-    const overdueRate = finalAmount > 0 ? (overdueAmount / finalAmount) * 100 : 0;
-
-    const monthlyComparison = monthlyEvolution.map((item) => ({
-        ...item,
-        charges: item.amount,
-        received: item.paid_amount || 0,
-        open: item.open_amount || 0,
-    }));
 
     return (
         <Layout
-            titlePage="Relatório Financeiro"
+            titlePage="Relatório Executivo"
             menu="relatorios"
-            subMenu="relatorios-financeiro"
-            subtitle="Visão executiva de cobranças, recebimentos, atrasos e performance financeira."
+            subMenu="relatorios-executivo"
+            subtitle="Visão geral da operação comercial, financeira, energética e operacional."
             breadcrumbs={[
                 { label: 'Relatórios' },
-                { label: 'Financeiro' },
+                { label: 'Executivo' },
             ]}
         >
-            <Head title="Relatório Financeiro" />
+            <Head title="Relatório Executivo" />
 
             <Stack spacing={3}>
                 <Card
@@ -86,7 +61,7 @@ export default function Page({ report, filters = {} }) {
                 >
                     <CardContent>
                         <Typography variant="h4" sx={{ fontWeight: 950 }}>
-                            Relatório Financeiro
+                            Central de Inteligência Casa Verde
                         </Typography>
 
                         <Typography sx={{ mt: 0.6, color: 'rgba(255,255,255,0.72)' }}>
@@ -140,80 +115,66 @@ export default function Page({ report, filters = {} }) {
                 <Grid container spacing={2}>
                     <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                         <ReportMetricCard
-                            title="Cobranças geradas"
-                            value={summary.charges_count || 0}
-                            helper="Total de cobranças no período"
-                            icon={IconReceipt}
+                            title="Clientes ativos"
+                            value={summary.clients_active || 0}
+                            helper={`${summary.clients_total || 0} clientes no total`}
+                            icon={IconUsers}
                         />
                     </Grid>
 
                     <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                         <ReportMetricCard
-                            title="Valor final"
-                            value={formatMoney(summary.final_amount)}
-                            helper="Valor total após descontos e acréscimos"
+                            title="Propostas"
+                            value={summary.proposals_total || 0}
+                            helper="Emitidas no período"
+                            icon={IconFileText}
+                        />
+                    </Grid>
+
+                    <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                        <ReportMetricCard
+                            title="Faturas"
+                            value={summary.bills_total || 0}
+                            helper="Importadas ou criadas no período"
+                            icon={IconFileInvoice}
+                        />
+                    </Grid>
+
+                    <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                        <ReportMetricCard
+                            title="Usinas"
+                            value={summary.plants_total || 0}
+                            helper="Usinas cadastradas"
+                            icon={IconSolarPanel}
+                        />
+                    </Grid>
+
+                    <Grid size={{ xs: 12, sm: 6, md: 4 }}>
+                        <ReportMetricCard
+                            title="Valor cobrado"
+                            value={formatMoney(summary.charges_amount)}
+                            helper={`${summary.charges_total || 0} cobranças`}
                             icon={IconCash}
                         />
                     </Grid>
 
-                    <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                    <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                         <ReportMetricCard
-                            title="Recebido"
+                            title="Valor recebido"
                             value={formatMoney(summary.paid_amount)}
-                            helper={`${formatPercent(receivedRate)} do valor final`}
-                            icon={IconTrendingUp}
+                            helper="Recebido no período"
+                            icon={IconCash}
                             color="success.main"
                         />
                     </Grid>
 
-                    <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+                    <Grid size={{ xs: 12, sm: 6, md: 4 }}>
                         <ReportMetricCard
-                            title="Em atraso"
+                            title="Valor vencido"
                             value={formatMoney(summary.overdue_amount)}
-                            helper={`${formatPercent(overdueRate)} do valor final`}
-                            icon={IconAlertTriangle}
-                            color="error.main"
-                        />
-                    </Grid>
-
-                    <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                        <ReportMetricCard
-                            title="Em aberto"
-                            value={formatMoney(summary.open_amount)}
-                            helper="Cobranças aguardando pagamento"
-                            icon={IconClockDollar}
-                            color="warning.main"
-                        />
-                    </Grid>
-
-                    <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                        <ReportMetricCard
-                            title="Descontos"
-                            value={formatMoney(
-                                Number(summary.contract_discount_amount || 0) +
-                                Number(summary.manual_discount_amount || 0),
-                            )}
-                            helper="Descontos contratuais e manuais"
-                            icon={IconChartBar}
-                        />
-                    </Grid>
-
-                    <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                        <ReportMetricCard
-                            title="Acréscimos manuais"
-                            value={formatMoney(summary.manual_addition_amount)}
-                            helper="Ajustes adicionados manualmente"
+                            helper="Cobranças em atraso"
                             icon={IconCash}
-                        />
-                    </Grid>
-
-                    <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                        <ReportMetricCard
-                            title="Pagamentos com falha"
-                            value={summary.failed_payments || 0}
-                            helper="Falhas registradas no período"
-                            icon={IconAlertTriangle}
-                            color={summary.failed_payments > 0 ? 'error.main' : 'success.main'}
+                            color="error.main"
                         />
                     </Grid>
                 </Grid>
@@ -221,40 +182,42 @@ export default function Page({ report, filters = {} }) {
                 <Grid container spacing={3}>
                     <Grid size={{ xs: 12, lg: 8 }}>
                         <ReportChartCard
-                            title="Evolução financeira mensal"
-                            subtitle="Valor de cobranças geradas no período."
-                            height={360}
+                            title="Evolução executiva financeira"
+                            subtitle="Cobrado, recebido e vencido por mês."
+                            height={370}
                         >
-                            <MoneyAreaChart
-                                data={monthlyEvolution}
-                                dataKey="amount"
-                                labelKey="label"
+                            <MultiLineChart
+                                data={report?.financialEvolution || []}
+                                money
+                                lines={[
+                                    {
+                                        dataKey: 'amount',
+                                        name: 'Cobrado',
+                                        color: '#2F7D18',
+                                    },
+                                    {
+                                        dataKey: 'paid_amount',
+                                        name: 'Recebido',
+                                        color: '#4F9A2A',
+                                    },
+                                    {
+                                        dataKey: 'overdue_amount',
+                                        name: 'Vencido',
+                                        color: '#C62828',
+                                    },
+                                ]}
                             />
                         </ReportChartCard>
                     </Grid>
 
                     <Grid size={{ xs: 12, lg: 4 }}>
                         <ReportChartCard
-                            title="Taxa de recebimento"
-                            subtitle="Percentual recebido sobre o valor final."
-                            height={360}
-                        >
-                            <GaugeProgressChart
-                                value={receivedRate}
-                                label="Recebimento"
-                                helper="Quanto do valor final já foi recebido."
-                            />
-                        </ReportChartCard>
-                    </Grid>
-
-                    <Grid size={{ xs: 12, md: 6 }}>
-                        <ReportChartCard
-                            title="Cobranças por status"
-                            subtitle="Distribuição de registros por status."
-                            height={330}
+                            title="Clientes por status"
+                            subtitle="Situação comercial da carteira."
+                            height={370}
                         >
                             <StatusDonutChart
-                                data={report?.chargesByStatus || []}
+                                data={report?.clientsByStatus || []}
                                 valueKey="total"
                                 statusKey="status"
                             />
@@ -263,29 +226,11 @@ export default function Page({ report, filters = {} }) {
 
                     <Grid size={{ xs: 12, md: 6 }}>
                         <ReportChartCard
-                            title="Valor por status de cobrança"
-                            subtitle="Volume financeiro agrupado por status."
-                            height={330}
-                        >
-                            <MoneyBarChart
-                                data={(report?.chargesByStatus || []).map((item) => ({
-                                    label: item.status,
-                                    amount: item.amount,
-                                }))}
-                                dataKey="amount"
-                                labelKey="label"
-                            />
-                        </ReportChartCard>
-                    </Grid>
-
-                    <Grid size={{ xs: 12, md: 6 }}>
-                        <ReportChartCard
-                            title="Pagamentos por status"
-                            subtitle="Distribuição dos pagamentos emitidos."
-                            height={330}
+                            title="Propostas por status"
+                            subtitle="Etapas comerciais no período."
                         >
                             <StatusDonutChart
-                                data={report?.paymentsByStatus || []}
+                                data={report?.proposalsByStatus || []}
                                 valueKey="total"
                                 statusKey="status"
                             />
@@ -294,17 +239,54 @@ export default function Page({ report, filters = {} }) {
 
                     <Grid size={{ xs: 12, md: 6 }}>
                         <ReportChartCard
-                            title="Valor de pagamentos por status"
-                            subtitle="Valores agrupados por status de pagamento."
-                            height={330}
+                            title="Contratos por status"
+                            subtitle="Situação dos contratos no período."
                         >
-                            <MoneyBarChart
-                                data={(report?.paymentsByStatus || []).map((item) => ({
-                                    label: item.status,
-                                    amount: item.amount,
-                                }))}
-                                dataKey="amount"
+                            <StatusDonutChart
+                                data={report?.contractsByStatus || []}
+                                valueKey="total"
+                                statusKey="status"
+                            />
+                        </ReportChartCard>
+                    </Grid>
+
+                    <Grid size={{ xs: 12, md: 6 }}>
+                        <ReportChartCard
+                            title="Faturas por revisão"
+                            subtitle="Status operacional das faturas."
+                        >
+                            <StatusDonutChart
+                                data={report?.billsByReviewStatus || []}
+                                valueKey="total"
+                                statusKey="status"
+                            />
+                        </ReportChartCard>
+                    </Grid>
+
+                    <Grid size={{ xs: 12, md: 6 }}>
+                        <ReportChartCard
+                            title="Usinas por status"
+                            subtitle="Disponibilidade das usinas cadastradas."
+                        >
+                            <StatusDonutChart
+                                data={report?.plantsByStatus || []}
+                                valueKey="total"
+                                statusKey="status"
+                            />
+                        </ReportChartCard>
+                    </Grid>
+
+                    <Grid size={{ xs: 12 }}>
+                        <ReportChartCard
+                            title="Top clientes por valor cobrado"
+                            subtitle="Clientes com maior volume financeiro no período."
+                            height={420}
+                        >
+                            <HorizontalRankingChart
+                                data={report?.topClientsByCharges || []}
                                 labelKey="label"
+                                valueKey="value"
+                                money
                             />
                         </ReportChartCard>
                     </Grid>

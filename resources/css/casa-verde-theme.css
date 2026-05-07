@@ -1,0 +1,50 @@
+:root {
+    --cv-primary: #2F7D18;
+    --cv-primary-dark: #1F5F10;
+    --cv-primary-darker: #123D0B;
+    --cv-primary-light: #DFF3D8;
+    --cv-primary-soft: #F3FAF0;
+
+    --cv-secondary: #4F9A2A;
+    --cv-secondary-dark: #2F7D18;
+    --cv-secondary-light: #E8F6E2;
+
+    --cv-accent: #7BAA2F;
+
+    --cv-black: #050505;
+    --cv-graphite: #111827;
+    --cv-white: #FFFFFF;
+
+    --cv-background: #F7FAF5;
+    --cv-surface: #FFFFFF;
+    --cv-surface-soft: #F3FAF0;
+
+    --cv-text-primary: #111827;
+    --cv-text-secondary: #64748B;
+    --cv-text-muted: #94A3B8;
+
+    --cv-border: #E2E8F0;
+    --cv-border-soft: rgba(17, 24, 39, 0.08);
+
+    --cv-success: #2F7D18;
+    --cv-warning: #D89614;
+    --cv-error: #C62828;
+    --cv-info: #3F8F24;
+
+    --cv-gradient-primary: linear-gradient(135deg, #1F5F10 0%, #2F7D18 48%, #4F9A2A 100%);
+    --cv-gradient-dark: linear-gradient(180deg, #123D0B 0%, #050505 100%);
+    --cv-gradient-sidebar: radial-gradient(circle at 20% 0%, rgba(79, 154, 42, 0.28), transparent 30%), linear-gradient(180deg, #123D0B 0%, #0c7a08 100%);
+    --cv-gradient-hero: radial-gradient(circle at top right, rgba(79,154,42,0.32), transparent 34%), radial-gradient(circle at bottom left, rgba(47,125,24,0.28), transparent 36%), linear-gradient(135deg, #123D0B 0%, #050505 76%);
+
+    --cv-shadow-sm: 0 4px 10px rgba(17, 24, 39, 0.06);
+    --cv-shadow-md: 0 10px 24px rgba(17, 24, 39, 0.08);
+    --cv-shadow-lg: 0 18px 45px rgba(17, 24, 39, 0.12);
+    --cv-shadow-xl: 0 28px 70px rgba(17, 24, 39, 0.18);
+    --cv-shadow-primary: 0 16px 38px rgba(47, 125, 24, 0.28);
+
+    --cv-radius-sm: 4px;
+    --cv-radius-md: 6px;
+    --cv-radius-lg: 8px;
+    --cv-radius-xl: 10px;
+    --cv-radius-2xl: 12px;
+}

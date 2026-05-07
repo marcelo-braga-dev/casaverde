@@ -3,20 +3,20 @@ export default function OutlinedInput(theme) {
         MuiOutlinedInput: {
             styleOverrides: {
                 root: {
-                    borderRadius: 14,
-                    backgroundColor: theme.palette.background.paper,
+                    borderRadius: 'var(--cv-radius-md)',
+                    backgroundColor: 'var(--cv-white)',
                     transition: 'all 160ms ease',
                     '& fieldset': {
-                        borderColor: theme.palette.divider,
+                        borderColor: 'var(--cv-border)',
                     },
                     '&:hover fieldset': {
-                        borderColor: theme.palette.primary.main,
+                        borderColor: 'var(--cv-primary)',
                     },
                     '&.Mui-focused': {
-                        boxShadow: theme.customShadows.focusPrimary,
+                        boxShadow: '0 0 0 4px rgba(47, 125, 24, 0.12)',
                     },
                     '&.Mui-focused fieldset': {
-                        borderColor: theme.palette.primary.main,
+                        borderColor: 'var(--cv-primary)',
                         borderWidth: 1,
                     },
                 },

@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\Relatorio\ExportPaymentReportController;
 use App\Http\Controllers\Admin\Relatorio\ExportBillReportPdfController;
 use App\Http\Controllers\Admin\Relatorio\ExportChargeReportPdfController;
 use App\Http\Controllers\Admin\Relatorio\ExportPaymentReportPdfController;
+use App\Http\Controllers\Admin\Relatorio\ExecutiveReportController;
 use Illuminate\Support\Facades\Route;
 
 Route::name('relatorios.')
@@ -52,4 +53,7 @@ Route::name('relatorios.')
 
         Route::get('/faturas/export-pdf', ExportBillReportPdfController::class)
             ->name('faturas.export-pdf');
+
+        Route::get('/executivo', ExecutiveReportController::class)
+            ->name('executivo');
     });

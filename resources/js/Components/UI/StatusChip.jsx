@@ -1,16 +1,23 @@
 import { Chip } from '@mui/material';
-import { getStatusLabel, getStatusColor } from '@/Utils/statusLabels';
+import { getStatusMeta } from '@/Utils/statusLabels';
 
-export default function StatusChip({ status, label }) {
+export default function StatusChip({ status, size = 'small' }) {
+    const meta = getStatusMeta(status);
+
     return (
         <Chip
-            size="small"
-            label={label || getStatusLabel(status)}
-            color={getStatusColor(status)}
-            variant="filled"
+            size={size}
+            label={meta.label}
             sx={{
-                height: 26,
-                px: 0.4,
+                height: size === 'small' ? 24 : 30,
+                borderRadius: 999,
+                fontWeight: 850,
+                bgcolor: meta.bgColor,
+                color: meta.color,
+                border: `1px solid ${meta.borderColor}`,
+                '& .MuiChip-label': {
+                    px: 1.1,
+                },
             }}
         />
     );

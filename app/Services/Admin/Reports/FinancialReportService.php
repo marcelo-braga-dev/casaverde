@@ -105,16 +105,33 @@ class FinancialReportService
 
     private function monthlyEvolution(ReportDateRange $range): array
     {
-        return CustomerCharge::query()
-            ->selectRaw('YEAR(created_at) as year, MONTH(created_at) as month, COUNT(*) as total, COALESCE(SUM(final_amount), 0) as amount')
+        $charges = CustomerCharge::query()
+            ->selectRaw("
+            YEAR(created_at) as year,
+            MONTH(created_at) as month,
+            COUNT(*) as total,
+            COALESCE(SUM(final_amount), 0) as amount,
+            COALESCE(SUM(CASE WHEN status = 'paid' THEN final_amount ELSE 0 END), 0) as paid_amount,
+            COALESCE(SUM(CASE WHEN status IN ('open', 'waiting_payment') THEN final_amount ELSE 0 END), 0) as open_amount,
+            COALESCE(SUM(CASE WHEN status = 'overdue' THEN final_amount ELSE 0 END), 0) as overdue_amount,
+            COALESCE(SUM(CASE WHEN status = 'cancelled' THEN final_amount ELSE 0 END), 0) as cancelled_amount
+        ")
             ->whereBetween('created_at', [$range->startDate, $range->endDate])
             ->groupByRaw('YEAR(created_at), MONTH(created_at)')
             ->orderByRaw('YEAR(created_at), MONTH(created_at)')
-            ->get()
+            ->get();
+
+        return $charges
             ->map(fn ($item) => [
                 'label' => str_pad((string) $item->month, 2, '0', STR_PAD_LEFT) . '/' . $item->year,
+                'year' => (int) $item->year,
+                'month' => (int) $item->month,
                 'total' => (int) $item->total,
                 'amount' => (float) $item->amount,
+                'paid_amount' => (float) $item->paid_amount,
+                'open_amount' => (float) $item->open_amount,
+                'overdue_amount' => (float) $item->overdue_amount,
+                'cancelled_amount' => (float) $item->cancelled_amount,
             ])
             ->values()
             ->toArray();

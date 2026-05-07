@@ -13,7 +13,7 @@ import { cloneElement, useMemo, useState } from 'react';
 import { useMenuDrawer } from '@/Contexts/Drawer/DrawerContext';
 import AppSidebarSubItem from './AppSidebarSubItem';
 
-function normalizeIcon(icon, size = 20) {
+function normalizeIcon(icon, size = 45) {
     if (!icon) return null;
 
     return cloneElement(icon, {
@@ -55,10 +55,10 @@ export default function AppSidebarMenuGroup({ item, collapsed }) {
                     cursor: hasSubItems ? 'pointer' : 'default',
                     color: '#FFFFFF',
                     bgcolor: isActiveGroup
-                        ? 'rgba(16,185,129,0.16)'
+                        ? 'rgba(47, 125, 24, 0.22)'
                         : 'transparent',
                     border: isActiveGroup
-                        ? '1px solid rgba(16,185,129,0.24)'
+                        ? '1px solid rgba(79, 154, 42, 0.30)'
                         : '1px solid transparent',
                     transition: 'all 160ms ease',
                     '&:hover': {
@@ -74,16 +74,14 @@ export default function AppSidebarMenuGroup({ item, collapsed }) {
                 >
                     <Box
                         sx={{
-                            width: 34,
-                            height: 34,
-                            minWidth: 34,
+                            width: 42,
+                            height: 42,
+                            minWidth: 42,
                             borderRadius: 2.3,
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            color: isActiveGroup
-                                ? '#FFFFFF'
-                                : 'rgba(255,255,255,0.72)',
+                            color: '#FFFFFF',
                             bgcolor: isActiveGroup
                                 ? 'linear-gradient(135deg, #10B981 0%, #0B7A53 100%)'
                                 : 'rgba(255,255,255,0.06)',
@@ -97,10 +95,9 @@ export default function AppSidebarMenuGroup({ item, collapsed }) {
                             variant="body2"
                             noWrap
                             sx={{
+                                fontSize: 14,
                                 fontWeight: isActiveGroup ? 900 : 750,
-                                color: isActiveGroup
-                                    ? '#FFFFFF'
-                                    : 'rgba(255,255,255,0.76)',
+                                color: '#FFFFFF',
                             }}
                         >
                             {item.title}
