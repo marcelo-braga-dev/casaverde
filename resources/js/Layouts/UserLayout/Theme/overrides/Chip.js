@@ -1,45 +1,26 @@
-// ==============================|| OVERRIDES - CHIP ||============================== //
-
 export default function Chip(theme) {
     return {
         MuiChip: {
             styleOverrides: {
                 root: {
-                    borderRadius: 50,
-                    '&:active': {
-                        boxShadow: 'none',
-                    },
-                    '&.MuiChip-colorSuccess': {
-                        color: '#89e64a',
-                        backgroundColor: '#e8fadd',
-                        borderColor: theme.palette.success.light,
-                    },
-                    '&.MuiChip-colorError': {
-                        color: '#e64a4a',
-                        backgroundColor: '#fadddd',
-                        borderColor: theme.palette.success.light,
-                    },
-                    '&.MuiChip-colorInfo': {
-                        color: '#69d8fb',
-                        backgroundColor: '#dcf6fe',
-                        borderColor: theme.palette.success.light,
-                    },
-                    '& .MuiChip-label': {
-                        fontWeight: 600,
-                    },
+                    borderRadius: 999,
+                    fontWeight: 700,
                 },
-                sizeLarge: {
-                    fontSize: '1.2rem',
+                filledSuccess: {
+                    backgroundColor: theme.palette.success.light,
+                    color: theme.palette.success.dark,
                 },
-                sizeMedium: {
-                    fontSize: '1rem',
+                filledWarning: {
+                    backgroundColor: theme.palette.warning.light,
+                    color: theme.palette.warning.dark,
                 },
-                sizeSmall: {
-                    fontSize: '0.8rem',
-                    paddingInline: 5,
-                    '& .MuiChip-label': {
-                        fontWeight: 600,
-                    },
+                filledError: {
+                    backgroundColor: theme.palette.error.light,
+                    color: theme.palette.error.dark,
+                },
+                filledInfo: {
+                    backgroundColor: theme.palette.info.light,
+                    color: theme.palette.info.dark,
                 },
             },
         },

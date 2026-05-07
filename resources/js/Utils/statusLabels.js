@@ -1,37 +1,61 @@
-export const statusLabels = {
-    pending_review: "Aguardando Revisão",
-    reviewed: "Revisada",
-    corrected: "Corrigida",
-    approved: "Aprovada",
-
-    pending: "Pendente",
-    success: "Sucesso",
-    error: "Erro",
-
-    manual: "Manual",
-    email: "E-mail",
+const statusMap = {
+    pending_review: {
+        label: 'Aguardando Revisão',
+        color: 'warning',
+    },
+    approved: {
+        label: 'Aprovado',
+        color: 'success',
+    },
+    rejected: {
+        label: 'Rejeitado',
+        color: 'error',
+    },
+    issued: {
+        label: 'Emitido',
+        color: 'info',
+    },
+    signed: {
+        label: 'Assinado',
+        color: 'success',
+    },
+    active: {
+        label: 'Ativo',
+        color: 'success',
+    },
+    inactive: {
+        label: 'Inativo',
+        color: 'default',
+    },
+    cancelled: {
+        label: 'Cancelado',
+        color: 'error',
+    },
+    ativo: {
+        label: 'Ativo',
+        color: 'success',
+    },
+    inativo: {
+        label: 'Inativo',
+        color: 'default',
+    },
+    contrato_fechado: {
+        label: 'Contrato Fechado',
+        color: 'success',
+    },
 };
 
-export const statusColors = {
-    pending_review: "warning",
-    reviewed: "info",
-    corrected: "primary",
-    approved: "success",
+export function getStatusInfo(status) {
+    return statusMap[status] || {
+        label: status || 'Não informado',
+        color: 'default',
+    };
+}
 
-    pending: "warning",
-    success: "success",
-    error: "error",
+export function getStatusLabel(status) {
+    return getStatusInfo(status).label;
+}
 
-    manual: "default",
-    email: "info",
-};
-
-export const getStatusLabel = (status) => {
-    if (!status) return "Sem status";
-
-    return statusLabels[status] || status;
-};
-
-export const getStatusColor = (status) => {
-    return statusColors[status] || "default";
-};
+export function getStatusColor(status) {
+    return getStatusInfo(status).color;
+}

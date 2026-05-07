@@ -1,43 +1,38 @@
-// ==============================|| OVERRIDES - TEXTFIELD ||============================== //
-
-export default function TextField() {
+export default function TextField(theme) {
     return {
         MuiTextField: {
             defaultProps: {
-                InputLabelProps: {
-                    // shrink: true,
-                },
+                variant: 'outlined',
+                size: 'small',
             },
+        },
+        MuiOutlinedInput: {
             styleOverrides: {
                 root: {
-                    '& .MuiInputBase-root': {
-                        backgroundColor: '#FFFFFF',
-                        borderRadius: '10px',
+                    borderRadius: 14,
+                    backgroundColor: '#FFFFFF',
+                    transition: 'all 180ms ease',
+                    '& fieldset': {
+                        borderColor: theme.palette.divider,
                     },
-                    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                        borderColor: '#FFFFFF',
+                    '&:hover fieldset': {
+                        borderColor: theme.palette.primary.main,
                     },
-                    '& input[type="file"]': {
-                        cursor: 'pointer',
-                        backgroundColor: '#FFF',
-                        borderRadius: '8px',
-                        padding: '8px',
-                        paddingBlockEnd: '10px',
+                    '&.Mui-focused': {
+                        boxShadow: '0 0 0 4px rgba(11, 122, 83, 0.10)',
                     },
-                    '& input[type="file"]::-webkit-file-upload-button': {
-                        backgroundColor: '#000',
-                        color: '#FFFFFF',
-                        border: 'none',
-                        borderRadius: '4px',
-                        padding: '3px 12px',
-                        fontSize: '12px',
-                        // fontWeight: 'bold',
-                        cursor: 'pointer',
-                        marginRight: '10px',
+                    '&.Mui-focused fieldset': {
+                        borderColor: theme.palette.primary.main,
+                        borderWidth: 1,
                     },
-                    '& input[type="file"]::-webkit-file-upload-button:hover': {
-                        backgroundColor: '#000', // Cor no hover
-                    },
+                },
+            },
+        },
+        MuiInputLabel: {
+            styleOverrides: {
+                root: {
+                    fontWeight: 600,
+                    color: theme.palette.text.secondary,
                 },
             },
         },

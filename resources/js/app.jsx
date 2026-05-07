@@ -1,33 +1,40 @@
 import '../css/app.css';
 import './bootstrap';
 
-import {createInertiaApp} from '@inertiajs/react';
-import {resolvePageComponent} from 'laravel-vite-plugin/inertia-helpers';
-import {createRoot} from 'react-dom/client';
-import ThemeCustomization from "./Layouts/UserLayout/Theme/index.jsx";
-import {DrawerProvider} from "@/Contexts/Drawer/DrawerContext.jsx";
+import { createInertiaApp } from '@inertiajs/react';
+import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
+import { createRoot } from 'react-dom/client';
 
-const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
+import ThemeCustomization from './Layouts/UserLayout/Theme/index.jsx';
+import { DrawerProvider } from '@/Contexts/Drawer/DrawerContext.jsx';
+import InertiaProgressOverlay from '@/Components/Feedback/InertiaProgressOverlay';
+
+const appName = import.meta.env.VITE_APP_NAME || 'Casa Verde';
 
 createInertiaApp({
-    title: (title) => `${title} - ${appName}`,
+    title: (title) => title ? `${title} - ${appName}` : appName,
+
     resolve: (name) =>
         resolvePageComponent(
             `./Pages/${name}.jsx`,
             import.meta.glob('./Pages/**/*.jsx'),
         ),
-    setup({el, App, props}) {
+
+    setup({ el, App, props }) {
         const root = createRoot(el);
 
         root.render(
             <ThemeCustomization>
                 <DrawerProvider>
+                    <InertiaProgressOverlay />
                     <App {...props} />
                 </DrawerProvider>
-            </ThemeCustomization>
+            </ThemeCustomization>,
         );
     },
+
     progress: {
-        color: '#4B5563',
+        color: '#0B7A53',
+        showSpinner: false,
     },
 });

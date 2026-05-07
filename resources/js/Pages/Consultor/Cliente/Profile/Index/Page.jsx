@@ -1,118 +1,280 @@
-import Layout from "@/Layouts/UserLayout/Layout.jsx";
-import { Head, Link } from "@inertiajs/react";
+import AppShell from '@/Layouts/AppShell/AppShell';
+import DataTableCard from '@/Components/DataDisplay/DataTableCard';
+import DataTablePagination from '@/Components/DataDisplay/DataTablePagination';
+import DataTableEmpty from '@/Components/DataDisplay/DataTableEmpty';
+import InfoCell from '@/Components/DataDisplay/InfoCell';
+import RowActions from '@/Components/DataDisplay/RowActions';
+import StatusChip from '@/Components/UI/StatusChip';
+import FilterBar from '@/Components/Filters/FilterBar';
+import FilterTextField from '@/Components/Filters/FilterTextField';
+import FilterSelect from '@/Components/Filters/FilterSelect';
+
+import { Head, Link, router, useForm } from '@inertiajs/react';
 import {
+    Box,
     Button,
-    Card,
-    CardContent,
-    CardHeader,
     Chip,
-    Table,
-    TableBody,
+    Stack,
     TableCell,
-    TableContainer,
-    TableHead,
     TableRow,
-} from "@mui/material";
-import { IconEye, IconPlus, IconUsers } from "@tabler/icons-react";
+    Typography,
+} from '@mui/material';
+import {
+    IconEye,
+    IconPlus,
+    IconSearch,
+    IconUserPlus,
+    IconUsers,
+} from '@tabler/icons-react';
 
-const Page = ({ clients }) => {
-    const items = clients?.data ?? [];
+const getClientName = (client) => {
+    if (client?.tipo_pessoa === 'pf') {
+        return client?.nome;
+    }
 
-    return (
-        <Layout titlePage="Clientes" menu="clientes" subMenu="cliente-index">
-            <Head title="Clientes" />
-
-            <Card>
-                <CardHeader
-                    title="Lista de Clientes"
-                    avatar={<IconUsers />}
-                    action={
-                        <Link href={route("consultor.user.cliente.create")}>
-                            <Button startIcon={<IconPlus />} color="success">
-                                Cadastrar Cliente
-                            </Button>
-                        </Link>
-                    }
-                />
-
-                <CardContent>
-                    <TableContainer>
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>ID</TableCell>
-                                    <TableCell>Cliente</TableCell>
-                                    <TableCell>Documento</TableCell>
-                                    <TableCell>Cidade</TableCell>
-                                    <TableCell>Email</TableCell>
-                                    <TableCell>Telefone</TableCell>
-                                    <TableCell>Status</TableCell>
-                                    <TableCell align="right">Ações</TableCell>
-                                </TableRow>
-                            </TableHead>
-
-                            <TableBody>
-                                {items.map((client) => {
-                                    const nome =
-                                        client?.tipo_pessoa === "pf"
-                                            ? client?.nome
-                                            : client?.razao_social;
-
-                                    const documento =
-                                        client?.tipo_pessoa === "pf"
-                                            ? client?.cpf
-                                            : client?.cnpj;
-
-                                    return (
-                                        <TableRow key={client.id}>
-                                            <TableCell>{client.id}</TableCell>
-                                            <TableCell>{nome ?? "Não informado"}</TableCell>
-                                            <TableCell>{documento ?? "Não informado"}</TableCell>
-                                            <TableCell>{client?.cidade ?? "Não informado"}</TableCell>
-                                            <TableCell>{client?.email ?? "Não informado"}</TableCell>
-                                            <TableCell>{client?.telefone ?? "Não informado"}</TableCell>
-                                            <TableCell>
-                                                <Chip
-                                                    label={client?.status ?? "Sem status"}
-                                                    color={client?.status === "active" ? "success" : "default"}
-                                                    size="small"
-                                                />
-                                            </TableCell>
-                                            <TableCell align="right">
-                                                <Link href={route("consultor.user.cliente.show", client.id)}>
-                                                    <Button
-                                                        size="small"
-                                                        variant="outlined"
-                                                        startIcon={<IconEye />}
-                                                    >
-                                                        Ver
-                                                    </Button>
-                                                </Link>
-                                            </TableCell>
-                                        </TableRow>
-                                    );
-                                })}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-
-                    <div className="mt-4 flex justify-center gap-2">
-                        {clients?.links?.map((link, index) => (
-                            <Link
-                                key={index}
-                                href={link.url ?? "#"}
-                                preserveScroll
-                                className={`px-3 py-2 rounded border ${
-                                    link.active ? "bg-green-600 text-white" : "bg-white text-gray-700"
-                                } ${!link.url ? "opacity-50 pointer-events-none" : ""}`}
-                                dangerouslySetInnerHTML={{ __html: link.label }}
-                            />
-                        ))}
-                    </div>
-                </CardContent>
-            </Card>
-        </Layout>
-    );
+    return client?.razao_social || client?.nome_fantasia;
 };
 
-export default Page;
+const getClientDocument = (client) => {
+    if (client?.tipo_pessoa === 'pf') {
+        return client?.cpf;
+    }
+
+    return client?.cnpj;
+};
+
+export default function Page({ clients, filters = {} }) {
+    const items = clients?.data ?? [];
+
+    const { data, setData, processing } = useForm({
+        search: filters?.search ?? '',
+        status: filters?.status ?? '',
+        tipo_pessoa: filters?.tipo_pessoa ?? '',
+    });
+
+    function submitFilters() {
+        router.get(
+            route('consultor.user.cliente.index'),
+            {
+                search: data.search,
+                status: data.status,
+                tipo_pessoa: data.tipo_pessoa,
+            },
+            {
+                preserveState: true,
+                preserveScroll: true,
+                replace: true,
+            },
+        );
+    }
+
+    function clearFilters() {
+        router.get(
+            route('consultor.user.cliente.index'),
+            {},
+            {
+                preserveState: true,
+                preserveScroll: true,
+                replace: true,
+            },
+        );
+    }
+
+    return (
+        <AppShell
+            title="Clientes"
+            subtitle="Gerencie a carteira de clientes, propostas, contratos e vínculos com usinas."
+            breadcrumbs={[
+                { label: 'Comercial' },
+                { label: 'Clientes' },
+            ]}
+            actions={
+                <Button
+                    component={Link}
+                    href={route('consultor.user.cliente.create')}
+                    variant="contained"
+                    startIcon={<IconPlus size={18} />}
+                >
+                    Novo cliente
+                </Button>
+            }
+        >
+            <Head title="Clientes" />
+
+            <DataTableCard
+                title="Carteira de clientes"
+                subtitle="Lista completa de clientes cadastrados na operação."
+                icon={IconUsers}
+                actions={
+                    <Button
+                        component={Link}
+                        href={route('consultor.user.cliente.create')}
+                        variant="contained"
+                        startIcon={<IconUserPlus size={18} />}
+                    >
+                        Cadastrar cliente
+                    </Button>
+                }
+                filters={
+                    <FilterBar
+                        onSubmit={submitFilters}
+                        onClear={clearFilters}
+                        processing={processing}
+                    >
+                        <FilterTextField
+                            label="Buscar"
+                            placeholder="Nome, documento, e-mail..."
+                            value={data.search}
+                            onChange={(value) => setData('search', value)}
+                        />
+
+                        <FilterSelect
+                            label="Tipo"
+                            value={data.tipo_pessoa}
+                            onChange={(value) => setData('tipo_pessoa', value)}
+                            options={[
+                                { value: 'pf', label: 'Pessoa Física' },
+                                { value: 'pj', label: 'Pessoa Jurídica' },
+                            ]}
+                        />
+
+                        <FilterSelect
+                            label="Status"
+                            value={data.status}
+                            onChange={(value) => setData('status', value)}
+                            options={[
+                                { value: 'active', label: 'Ativo' },
+                                { value: 'inactive', label: 'Inativo' },
+                                { value: 'contrato_fechado', label: 'Contrato Fechado' },
+                            ]}
+                        />
+                    </FilterBar>
+                }
+                isEmpty={items.length === 0}
+                empty={
+                    <DataTableEmpty
+                        title="Nenhum cliente encontrado"
+                        description="Cadastre o primeiro cliente ou ajuste os filtros de busca."
+                        actionLabel="Cadastrar cliente"
+                        actionHref={route('consultor.user.cliente.create')}
+                        icon={IconUsers}
+                    />
+                }
+                head={
+                    <TableRow>
+                        <TableCell>Cliente</TableCell>
+                        <TableCell>Documento</TableCell>
+                        <TableCell>Contato</TableCell>
+                        <TableCell>Localização</TableCell>
+                        <TableCell>Tipo</TableCell>
+                        <TableCell>Status</TableCell>
+                        <TableCell align="right">Ações</TableCell>
+                    </TableRow>
+                }
+                pagination={
+                    <DataTablePagination
+                        links={clients?.links}
+                        meta={{
+                            from: clients?.from,
+                            to: clients?.to,
+                            total: clients?.total,
+                        }}
+                    />
+                }
+            >
+                {items.map((client) => {
+                    const name = getClientName(client);
+                    const document = getClientDocument(client);
+
+                    return (
+                        <TableRow key={client.id}>
+                            <TableCell>
+                                <InfoCell
+                                    title={name || 'Não informado'}
+                                    subtitle={`ID #${client.id}`}
+                                    color="primary.main"
+                                />
+                            </TableCell>
+
+                            <TableCell>
+                                <Typography variant="body2" sx={{ fontWeight: 750 }}>
+                                    {document || 'Não informado'}
+                                </Typography>
+                            </TableCell>
+
+                            <TableCell>
+                                <Box>
+                                    <Typography variant="body2" sx={{ fontWeight: 750 }}>
+                                        {client?.email || 'Não informado'}
+                                    </Typography>
+
+                                    <Typography variant="caption" color="text.secondary">
+                                        {client?.telefone || 'Telefone não informado'}
+                                    </Typography>
+                                </Box>
+                            </TableCell>
+
+                            <TableCell>
+                                <Typography variant="body2" sx={{ fontWeight: 750 }}>
+                                    {client?.cidade || 'Não informado'}
+                                </Typography>
+
+                                {client?.estado && (
+                                    <Typography variant="caption" color="text.secondary">
+                                        {client.estado}
+                                    </Typography>
+                                )}
+                            </TableCell>
+
+                            <TableCell>
+                                <Chip
+                                    size="small"
+                                    label={client?.tipo_pessoa === 'pf' ? 'Pessoa Física' : 'Pessoa Jurídica'}
+                                    color={client?.tipo_pessoa === 'pf' ? 'info' : 'secondary'}
+                                    variant="filled"
+                                />
+                            </TableCell>
+
+                            <TableCell>
+                                <StatusChip status={client?.status} />
+                            </TableCell>
+
+                            <TableCell align="right">
+                                <Stack direction="row" justifyContent="flex-end" gap={1}>
+                                    <Button
+                                        component={Link}
+                                        href={route('consultor.user.cliente.show', client.id)}
+                                        size="small"
+                                        variant="outlined"
+                                        startIcon={<IconEye size={17} />}
+                                    >
+                                        Ver
+                                    </Button>
+
+                                    <RowActions
+                                        actions={[
+                                            {
+                                                label: 'Visualizar',
+                                                icon: IconEye,
+                                                component: Link,
+                                                href: route('consultor.user.cliente.show', client.id),
+                                            },
+                                            {
+                                                label: 'Nova proposta',
+                                                icon: IconSearch,
+                                                component: Link,
+                                                href: route('consultor.propostas.cliente.create', {
+                                                    client_profile_id: client.id,
+                                                }),
+                                            },
+                                        ]}
+                                    />
+                                </Stack>
+                            </TableCell>
+                        </TableRow>
+                    );
+                })}
+            </DataTableCard>
+        </AppShell>
+    );
+}

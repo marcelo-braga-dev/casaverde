@@ -1,47 +1,19 @@
-// third-party
-import {merge} from 'lodash';
-
-// project import
-import Badge from './Badge';
 import Button from './Button';
-import CardContent from './CardContent';
-import Checkbox from './Checkbox';
+import Card from './Card';
 import Chip from './Chip';
-import IconButton from './IconButton';
-import InputLabel from './InputLabel';
-import LinearProgress from './LinearProgress';
-import ListItemIcon from './ListItemIcon';
-import OutlinedInput from './OutlinedInput';
-import Paper from './Paper';
-import Tab from './Tab';
-import TableCell from './TableCell';
-import Tabs from './Tabs';
-import Typography from './Typography';
 import TextField from './TextField';
-import CardHeader from './CardHeader';
-import TabPanel from './TabPanel.js';
+import Table from './Table';
+import Drawer from './Drawer';
+import Paper from './Paper';
 
-// ==============================|| OVERRIDES - MAIN ||============================== //
-
-export default function ComponentsOverrides(theme) {
-    return merge(
+export default function componentsOverride(theme) {
+    return Object.assign(
         Button(theme),
-        Badge(theme),
-        CardContent(),
-        Checkbox(theme),
+        Card(theme),
         Chip(theme),
-        IconButton(theme),
-        InputLabel(theme),
-        LinearProgress(),
-        ListItemIcon(),
-        OutlinedInput(theme),
-        Paper(theme),
-        Tab(theme),
-        TableCell(theme),
-        Tabs(),
-        Typography(),
         TextField(theme),
-        CardHeader(),
-        TabPanel(theme),
+        Table(theme),
+        Drawer(theme),
+        Paper(theme),
     );
 }

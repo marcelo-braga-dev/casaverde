@@ -1,22 +1,29 @@
-import {useMemo} from 'react';
+import { useMemo } from 'react';
+import { CssBaseline, GlobalStyles, StyledEngineProvider } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
 
-// material-ui
-import {CssBaseline, StyledEngineProvider} from '@mui/material';
-import {createTheme, ThemeProvider} from '@mui/material/styles';
-
-// project import
 import Palette from './palette';
 import Typography from './typography';
 import CustomShadows from './shadows';
 import componentsOverride from './overrides';
 
-export default function ThemeCustomization({children}) {
-    const theme = Palette('light', 'default');
+export default function ThemeCustomization({ children }) {
+    const mode = 'light';
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    const themeTypography = Typography(`Inter, Roboto, "Segoe UI", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif`);
+    const paletteTheme = useMemo(() => Palette(mode), [mode]);
 
-    const themeCustomShadows = useMemo(() => CustomShadows(theme), [theme]);
+    const themeTypography = useMemo(
+        () =>
+            Typography(
+                'Inter, Roboto, "Segoe UI", Arial, sans-serif',
+            ),
+        [],
+    );
+
+    const themeCustomShadows = useMemo(
+        () => CustomShadows(paletteTheme),
+        [paletteTheme],
+    );
 
     const themeOptions = useMemo(
         () => ({
@@ -26,31 +33,79 @@ export default function ThemeCustomization({children}) {
                     sm: 768,
                     md: 1024,
                     lg: 1266,
-                    xl: 1536
-                }
+                    xl: 1536,
+                },
             },
             direction: 'ltr',
+            shape: {
+                borderRadius: 14,
+            },
             mixins: {
                 toolbar: {
-                    minHeight: 60,
+                    minHeight: 64,
                     paddingTop: 8,
-                    paddingBottom: 8
-                }
+                    paddingBottom: 8,
+                },
             },
-            palette: theme.palette,
+            palette: paletteTheme.palette,
             customShadows: themeCustomShadows,
-            typography: themeTypography
+            typography: themeTypography,
         }),
-        [themeTypography, themeCustomShadows, theme.palette]
+        [paletteTheme.palette, themeCustomShadows, themeTypography],
     );
 
-    const themes = createTheme(themeOptions);
-    themes.components = componentsOverride(themes);
+    const theme = useMemo(() => {
+        const createdTheme = createTheme(themeOptions);
+        createdTheme.components = componentsOverride(createdTheme);
+        return createdTheme;
+    }, [themeOptions]);
 
     return (
         <StyledEngineProvider injectFirst>
-            <ThemeProvider theme={themes}>
-                <CssBaseline/>
+            <ThemeProvider theme={theme}>
+                <CssBaseline />
+
+                <GlobalStyles
+                    styles={{
+                        '*': {
+                            boxSizing: 'border-box',
+                        },
+                        html: {
+                            width: '100%',
+                            minHeight: '100%',
+                            scrollBehavior: 'smooth',
+                        },
+                        body: {
+                            width: '100%',
+                            minHeight: '100%',
+                            margin: 0,
+                            backgroundColor: theme.palette.background.default,
+                            color: theme.palette.text.primary,
+                        },
+                        '#app': {
+                            minHeight: '100vh',
+                        },
+                        a: {
+                            color: 'inherit',
+                            textDecoration: 'none',
+                        },
+                        '::-webkit-scrollbar': {
+                            width: 8,
+                            height: 8,
+                        },
+                        '::-webkit-scrollbar-track': {
+                            background: 'transparent',
+                        },
+                        '::-webkit-scrollbar-thumb': {
+                            background: 'rgba(100, 116, 139, 0.35)',
+                            borderRadius: 999,
+                        },
+                        '::-webkit-scrollbar-thumb:hover': {
+                            background: 'rgba(100, 116, 139, 0.55)',
+                        },
+                    }}
+                />
+
                 {children}
             </ThemeProvider>
         </StyledEngineProvider>
