@@ -28,17 +28,17 @@ const Page = ({leads}) => {
     };
 
     return (
-        <Layout titlePage="Leads de Produtores" menu="produtores-solar" subMenu="producer-leads-index">
-            <Head title="Leads de Produtores"/>
+        <Layout titlePage="Produtores" menu="produtores-solar" subMenu="producer-leads-index">
+            <Head title="Produtores"/>
 
             <Card>
                 <CardHeader
-                    title="Lista de Leads de Produtores"
+                    title="Lista de Produtores"
                     avatar={<IconUsers/>}
                     action={
                         <Link href={route("consultor.producer.leads.create")}>
                             <Button startIcon={<IconPlus/>} color="success">
-                                Cadastrar Lead
+                                Cadastrar Produtor
                             </Button>
                         </Link>
                     }

@@ -1,17 +1,20 @@
-import { createContext, useContext, useEffect, useState } from "react";
-import GlobalSnackbar from "@/Components/Alerts/GlobalSnackbar.jsx";
-import { normalizeAlertMessage } from "@/Utils/Alerts/alertUtils.js";
+import { createContext, useContext, useEffect, useState } from 'react';
+import { usePage } from '@inertiajs/react';
+import GlobalSnackbar from '@/Components/Alerts/GlobalSnackbar.jsx';
+import { normalizeAlertMessage } from '@/Utils/Alerts/alertUtils.js';
 
 const SnackbarContext = createContext(null);
 
-export const SnackbarProvider = ({ children, initialAlert = null, errors = null }) => {
+export const SnackbarProvider = ({ children }) => {
+    const { alert, errors } = usePage().props;
+
     const [snackbar, setSnackbar] = useState({
         open: false,
-        type: "info",
-        message: "",
+        type: 'info',
+        message: '',
     });
 
-    const showSnackbar = (message, type = "info") => {
+    const showSnackbar = (message, type = 'info') => {
         const normalizedMessage = normalizeAlertMessage(message);
 
         if (!normalizedMessage) return;
@@ -31,35 +34,35 @@ export const SnackbarProvider = ({ children, initialAlert = null, errors = null 
     };
 
     useEffect(() => {
-        if (!initialAlert) return;
+        if (!alert) return;
 
-        if (initialAlert.success) {
-            showSnackbar(initialAlert.success, "success");
+        if (alert.success) {
+            showSnackbar(alert.success, 'success');
             return;
         }
 
-        if (initialAlert.error) {
-            showSnackbar(initialAlert.error, "error");
+        if (alert.error) {
+            showSnackbar(alert.error, 'error');
             return;
         }
 
-        if (initialAlert.warning) {
-            showSnackbar(initialAlert.warning, "warning");
+        if (alert.warning) {
+            showSnackbar(alert.warning, 'warning');
             return;
         }
 
-        if (initialAlert.info) {
-            showSnackbar(initialAlert.info, "info");
+        if (alert.info) {
+            showSnackbar(alert.info, 'info');
         }
-    }, [initialAlert]);
+    }, [alert?.success, alert?.error, alert?.warning, alert?.info]);
 
     useEffect(() => {
         const message = normalizeAlertMessage(errors);
 
         if (message) {
-            showSnackbar(message, "error");
+            showSnackbar(message, 'error');
         }
-    }, [errors]);
+    }, [JSON.stringify(errors)]);
 
     return (
         <SnackbarContext.Provider value={{ showSnackbar }}>
@@ -79,7 +82,7 @@ export const useSnackbar = () => {
     const context = useContext(SnackbarContext);
 
     if (!context) {
-        throw new Error("useSnackbar precisa estar dentro do SnackbarProvider.");
+        throw new Error('useSnackbar precisa estar dentro do SnackbarProvider.');
     }
 
     return context;

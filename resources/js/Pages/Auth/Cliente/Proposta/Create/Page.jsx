@@ -9,7 +9,6 @@ import Contato from "@/Components/UserData/Contato.jsx";
 import {Button, Card, CardContent, CardHeader, MenuItem, TextField} from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import {IconClipboardText, IconUserPlus} from "@tabler/icons-react";
-import {AlertError} from "@/Components/Snackbar/AlertError.jsx";
 
 const Page = () => {
     const [endereco, setEndereco] = useState({})
@@ -48,7 +47,6 @@ const Page = () => {
     return (
         <Layout titlePage="Gerar Proposta - Cliente Consumidor" menu="clientes" subMenu="clientes-propostas" backPage>
             <form onSubmit={submit}>
-                {error && <AlertError message="Usuário com o mesmo documento já cadastrado!" close={setError}/>}
 
                 {cadastrarCliente && <Card sx={{marginBottom: 4}}>
                     <CardContent>

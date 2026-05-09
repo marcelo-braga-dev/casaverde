@@ -64,6 +64,7 @@ const Page = () => {
                                     <Grid size={{ xs: 12, md: 4 }}>
                                         <TextField
                                             label="CPF"
+                                            className="mask-cpf"
                                             value={data.cpf}
                                             onChange={(e) => setData("cpf", e.target.value)}
                                             error={!!errors.cpf}
@@ -92,6 +93,7 @@ const Page = () => {
                                     <Grid size={{ xs: 12, md: 4 }}>
                                         <TextField
                                             label="CNPJ"
+                                            className="mask-cnpj"
                                             value={data.cnpj}
                                             onChange={(e) => setData("cnpj", e.target.value)}
                                             error={!!errors.cnpj}

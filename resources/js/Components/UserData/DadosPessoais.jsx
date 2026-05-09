@@ -9,10 +9,8 @@ import { IconClipboardText, IconSearch } from "@tabler/icons-react";
 import { useEffect } from "react";
 import useInputMask from "@/Utils/Masks/InputsMask.js";
 import axios from "axios";
-import { useAlertMessage } from "@/Contexts/Alerts/SnackbarProvider.jsx";
 
 const DadosPessoais = ({ data, setData, title, completo, verificarUsuarioExistente }) => {
-    const { alertError } = useAlertMessage();
 
     useEffect(() => {
         useInputMask();

@@ -33,7 +33,7 @@ const DiscountRulesList = ({ profile, discountRules = [] }) => {
 
     return (
         <Card sx={{ marginBottom: 4 }}>
-            <CardHeader title="Regras de Desconto" />
+            <CardHeader title="Histórico de Porcentagem de Desconto" />
 
             <CardContent>
                 <TableContainer>

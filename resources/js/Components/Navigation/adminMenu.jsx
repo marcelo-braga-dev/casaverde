@@ -42,19 +42,9 @@ export const adminMenu = [
                 link: safeRoute('consultor.propostas.cliente.index'),
             },
             {
-                id: 'cliente-faturas',
-                title: 'Faturas',
-                link: safeRoute('consultor.cliente.faturas.index'),
-            },
-            {
                 id: 'clientes-contratos',
                 title: 'Contratos',
                 link: safeRoute('consultor.cliente.contratos.index'),
-            },
-            {
-                id: 'clientes-propostas',
-                title: '_Propostas Cliente',
-                link: safeRoute('auth.cliente.proposta.index'),
             },
         ],
     },
@@ -66,14 +56,14 @@ export const adminMenu = [
         subItems: [
             {
                 id: 'producer-leads-index',
-                title: 'Lead',
+                title: 'Produtores',
                 link: safeRoute('consultor.producer.leads.index'),
             },
-            {
-                id: 'produtores-solar-cadastrados',
-                title: 'Produtores',
-                link: safeRoute('auth.produtor.index'),
-            },
+            // {
+            //     id: 'produtores-solar-cadastrados',
+            //     title: 'Produtores',
+            //     link: safeRoute('auth.produtor.index'),
+            // },
             {
                 id: 'producer-profiles-index',
                 title: 'Contrato Produtor',
@@ -127,6 +117,11 @@ export const adminMenu = [
         id: 'financeiro',
         subItems: [
             {
+                id: 'financeiro-faturas',
+                title: 'Faturas',
+                link: safeRoute('consultor.cliente.faturas.index'),
+            },
+            {
                 id: 'financeiro-cobrancas',
                 title: 'Cobranças de Faturas',
                 link: safeRoute('admin.financeiro.cobrancas.index'),
@@ -148,6 +143,11 @@ export const adminMenu = [
         icon: <IconChartHistogram />,
         id: 'relatorios',
         subItems: [
+            {
+                id: 'relatorios-clientes',
+                title: 'Clientes',
+                link: safeRoute('admin.relatorios.clientes'),
+            },
             {
                 id: 'relatorios-financeiro',
                 title: 'Financeiro',
@@ -172,11 +172,6 @@ export const adminMenu = [
                 id: 'relatorios-usinas',
                 title: 'Usinas',
                 link: safeRoute('admin.relatorios.usinas'),
-            },
-            {
-                id: 'relatorios-clientes',
-                title: 'Clientes',
-                link: safeRoute('admin.relatorios.clientes'),
             },
             {
                 id: 'relatorios-executivo',

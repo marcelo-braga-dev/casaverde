@@ -46,7 +46,7 @@ const Page = ({ bills, filters = {}, reviewStatuses = [], parserStatuses = [], i
     };
 
     return (
-        <Layout titlePage="Faturas" menu="clientes" subMenu="cliente-faturas">
+        <Layout titlePage="Faturas" menu="financeiro" subMenu="financeiro-faturas">
             <Head title="Faturas" />
 
             <Card>

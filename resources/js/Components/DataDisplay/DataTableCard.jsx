@@ -25,7 +25,7 @@ export default function DataTableCard({
     return (
         <Card
             sx={{
-                borderRadius: 5,
+                borderRadius: 2,
                 overflow: 'hidden',
                 border: '1px solid',
                 borderColor: 'divider',

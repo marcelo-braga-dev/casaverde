@@ -29,7 +29,7 @@ const Page = ({ consultores = [], producerProfiles = [], concessionarias = [] })
     };
 
     return (
-        <Layout titlePage="Cadastrar Lead de Produtor" menu="produtores-solar" subMenu="producer-leads-index" backPage>
+        <Layout titlePage="Cadastrar Produtor" menu="produtores-solar" subMenu="producer-leads-index" backPage>
             <Head title="Cadastrar Lead de Produtor" />
 
             <form onSubmit={submit}>
@@ -57,24 +57,24 @@ const Page = ({ consultores = [], producerProfiles = [], concessionarias = [] })
                                 </TextField>
                             </Grid>
 
-                            <Grid size={{ xs: 12, md: 6 }}>
-                                <TextField
-                                    label="Perfil do Produtor"
-                                    value={data.producer_profile_id}
-                                    onChange={(e) => setData("producer_profile_id", e.target.value)}
-                                    error={!!errors.producer_profile_id}
-                                    helperText={errors.producer_profile_id}
-                                    select
-                                    fullWidth
-                                >
-                                    <MenuItem value="">Não vincular agora</MenuItem>
-                                    {producerProfiles.map((producer) => (
-                                        <MenuItem key={producer.id} value={producer.id}>
-                                            {getProducerLabel(producer)}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
-                            </Grid>
+                            {/*<Grid size={{ xs: 12, md: 6 }}>*/}
+                            {/*    <TextField*/}
+                            {/*        label="Perfil do Produtor"*/}
+                            {/*        value={data.producer_profile_id}*/}
+                            {/*        onChange={(e) => setData("producer_profile_id", e.target.value)}*/}
+                            {/*        error={!!errors.producer_profile_id}*/}
+                            {/*        helperText={errors.producer_profile_id}*/}
+                            {/*        select*/}
+                            {/*        fullWidth*/}
+                            {/*    >*/}
+                            {/*        <MenuItem value="">Não vincular agora</MenuItem>*/}
+                            {/*        {producerProfiles.map((producer) => (*/}
+                            {/*            <MenuItem key={producer.id} value={producer.id}>*/}
+                            {/*                {getProducerLabel(producer)}*/}
+                            {/*            </MenuItem>*/}
+                            {/*        ))}*/}
+                            {/*    </TextField>*/}
+                            {/*</Grid>*/}
 
                             <Grid size={{ xs: 12, md: 6 }}>
                                 <TextField
@@ -114,9 +114,15 @@ const Page = ({ consultores = [], producerProfiles = [], concessionarias = [] })
                                     onChange={(e) => setData("prazo_locacao", e.target.value)}
                                     error={!!errors.prazo_locacao}
                                     helperText={errors.prazo_locacao}
-                                    type="number"
                                     fullWidth
-                                />
+                                    select
+                                >
+                                    <MenuItem value={12}>12 meses (1 ano)</MenuItem>
+                                    <MenuItem value={24}>24 meses (2 anos)</MenuItem>
+                                    <MenuItem value={36}>36 meses (3 anos)</MenuItem>
+                                    <MenuItem value={48}>48 meses (4 anos)</MenuItem>
+                                    <MenuItem value={60}>60 meses (5 anos)</MenuItem>
+                                </TextField>
                             </Grid>
 
                             <Grid size={{ xs: 12, md: 3 }}>
@@ -174,7 +180,7 @@ const Page = ({ consultores = [], producerProfiles = [], concessionarias = [] })
                         startIcon={<IconDeviceFloppy />}
                         disabled={processing}
                     >
-                        Cadastrar Lead
+                        Cadastrar Produtor
                     </Button>
                 </div>
             </form>

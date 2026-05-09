@@ -38,7 +38,7 @@ const Page = ({ clientProfile, client, usinas = [], concessionarias = [] }) => {
 
             <ClientInfoCard profile={profile} />
 
-            <ClientActionsCard profile={profile} />
+            {/*<ClientActionsCard profile={profile} />*/}
 
             <ClientProposalsList proposals={proposals} />
 

@@ -26,6 +26,7 @@ import {
     IconUserPlus,
     IconUsers,
 } from '@tabler/icons-react';
+import Layout from "@/Layouts/UserLayout/Layout.jsx";
 
 const getClientName = (client) => {
     if (client?.tipo_pessoa === 'pf') {
@@ -81,29 +82,12 @@ export default function Page({ clients, filters = {} }) {
     }
 
     return (
-        <AppShell
-            title="Clientes"
-            subtitle="Gerencie a carteira de clientes, propostas, contratos e vínculos com usinas."
-            breadcrumbs={[
-                { label: 'Comercial' },
-                { label: 'Clientes' },
-            ]}
-            actions={
-                <Button
-                    component={Link}
-                    href={route('consultor.user.cliente.create')}
-                    variant="contained"
-                    startIcon={<IconPlus size={18} />}
-                >
-                    Novo cliente
-                </Button>
-            }
-        >
-            <Head title="Clientes" />
+
+        <Layout titlePage="Clientes Cadastrados" menu="clientes" subMenu="cliente-index" backPage>
+            <Head title="Clientes Cadastrados" />
 
             <DataTableCard
                 title="Carteira de clientes"
-                subtitle="Lista completa de clientes cadastrados na operação."
                 icon={IconUsers}
                 actions={
                     <Button
@@ -166,7 +150,6 @@ export default function Page({ clients, filters = {} }) {
                         <TableCell>Documento</TableCell>
                         <TableCell>Contato</TableCell>
                         <TableCell>Localização</TableCell>
-                        <TableCell>Tipo</TableCell>
                         <TableCell>Status</TableCell>
                         <TableCell align="right">Ações</TableCell>
                     </TableRow>
@@ -227,15 +210,6 @@ export default function Page({ clients, filters = {} }) {
                             </TableCell>
 
                             <TableCell>
-                                <Chip
-                                    size="small"
-                                    label={client?.tipo_pessoa === 'pf' ? 'Pessoa Física' : 'Pessoa Jurídica'}
-                                    color={client?.tipo_pessoa === 'pf' ? 'info' : 'secondary'}
-                                    variant="filled"
-                                />
-                            </TableCell>
-
-                            <TableCell>
                                 <StatusChip status={client?.status} />
                             </TableCell>
 
@@ -251,30 +225,31 @@ export default function Page({ clients, filters = {} }) {
                                         Ver
                                     </Button>
 
-                                    <RowActions
-                                        actions={[
-                                            {
-                                                label: 'Visualizar',
-                                                icon: IconEye,
-                                                component: Link,
-                                                href: route('consultor.user.cliente.show', client.id),
-                                            },
-                                            {
-                                                label: 'Nova proposta',
-                                                icon: IconSearch,
-                                                component: Link,
-                                                href: route('consultor.propostas.cliente.create', {
-                                                    client_profile_id: client.id,
-                                                }),
-                                            },
-                                        ]}
-                                    />
+                                    {/*<RowActions*/}
+                                    {/*    actions={[*/}
+                                    {/*        {*/}
+                                    {/*            label: 'Visualizar',*/}
+                                    {/*            icon: IconEye,*/}
+                                    {/*            component: Link,*/}
+                                    {/*            href: route('consultor.user.cliente.show', client.id),*/}
+                                    {/*        },*/}
+                                    {/*        {*/}
+                                    {/*            label: 'Nova proposta',*/}
+                                    {/*            icon: IconSearch,*/}
+                                    {/*            component: Link,*/}
+                                    {/*            href: route('consultor.propostas.cliente.create', {*/}
+                                    {/*                client_profile_id: client.id,*/}
+                                    {/*            }),*/}
+                                    {/*        },*/}
+                                    {/*    ]}*/}
+                                    {/*/>*/}
                                 </Stack>
                             </TableCell>
                         </TableRow>
                     );
                 })}
             </DataTableCard>
-        </AppShell>
+        {/*</AppShell>*/}
+        </Layout>
     );
 }

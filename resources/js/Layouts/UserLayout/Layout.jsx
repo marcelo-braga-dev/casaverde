@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Head, usePage } from '@inertiajs/react';
+import { Head } from '@inertiajs/react';
 import { SnackbarProvider } from '@/Contexts/Alerts/SnackbarProvider.jsx';
 import { useMenuDrawer } from '@/Contexts/Drawer/DrawerContext.jsx';
 import AppShell from '@/Layouts/AppShell/AppShell';
@@ -13,17 +13,22 @@ const Layout = ({
                     actions,
                     breadcrumbs = [],
                 }) => {
-    const alert = usePage().props.alert;
-    const errors = usePage().props.errors;
 
     const { setMenuDrawer } = useMenuDrawer();
+
+    const capitalizeWords = (value = '') => {
+        return String(value)
+            .trim()
+            .toLowerCase()
+            .replace(/\b\w/g, (char) => char.toUpperCase());
+    };
 
     useEffect(() => {
         setMenuDrawer(titlePage, menu, subMenu, subtitle);
     }, [titlePage, menu, subMenu, subtitle]);
 
     return (
-        <SnackbarProvider initialAlert={alert} errors={errors}>
+        <SnackbarProvider>
             <Head title={titlePage ?? ''} />
 
             <AppShell
@@ -34,8 +39,8 @@ const Layout = ({
                     breadcrumbs.length
                         ? breadcrumbs
                         : [
-                            { label: menu || 'Casa Verde' },
-                            { label: titlePage || 'Página' },
+                            { label: capitalizeWords(menu || 'Casa Verde') },
+                            { label: capitalizeWords(titlePage || 'Página') },
                         ]
                 }
             >

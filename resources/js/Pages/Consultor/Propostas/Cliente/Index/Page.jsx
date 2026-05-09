@@ -34,7 +34,7 @@ const Page = ({ proposals }) => {
                     avatar={<IconFileText />}
                     action={
                         <Link href={route("consultor.propostas.cliente.create")}>
-                            <Button color="success" startIcon={<IconPlus />}>
+                            <Button color="success" startIcon={<IconPlus />} variant="contained">
                                 Nova Proposta
                             </Button>
                         </Link>
@@ -49,9 +49,7 @@ const Page = ({ proposals }) => {
                                     <TableCell>Código</TableCell>
                                     <TableCell>Cliente</TableCell>
                                     <TableCell>Consultor</TableCell>
-                                    <TableCell>Concessionária</TableCell>
                                     <TableCell>Consumo Médio</TableCell>
-                                    <TableCell>Redução</TableCell>
                                     <TableCell>Status</TableCell>
                                     <TableCell align="right">Ações</TableCell>
                                 </TableRow>
@@ -63,11 +61,7 @@ const Page = ({ proposals }) => {
                                         <TableCell>{proposal?.proposal_code ?? proposal.id}</TableCell>
                                         <TableCell>{getClientName(proposal)}</TableCell>
                                         <TableCell>{proposal?.consultor?.name ?? "Não informado"}</TableCell>
-                                        <TableCell>{proposal?.concessionaria?.nome ?? "Não informado"}</TableCell>
                                         <TableCell>{proposal?.media_consumo ?? "Não informado"}</TableCell>
-                                        <TableCell>
-                                            {proposal?.taxa_reducao ? `${proposal.taxa_reducao}%` : "Não informado"}
-                                        </TableCell>
                                         <TableCell>
                                             <Chip
                                                 label={proposal?.status ?? "Sem status"}

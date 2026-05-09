@@ -2,6 +2,7 @@
 
 namespace App\Models\Proposta;
 
+use App\Models\BaseModel;
 use App\Models\Cliente\ClientContract;
 use App\Models\Cliente\ClientProfile;
 use App\Models\Users\User;
@@ -9,7 +10,7 @@ use App\Models\Usina\Concessionaria;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class CommercialProposal extends Model
+class CommercialProposal extends BaseModel
 {
     use HasFactory;
 

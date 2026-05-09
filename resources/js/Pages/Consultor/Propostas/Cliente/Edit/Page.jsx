@@ -123,6 +123,7 @@ const Page = ({ proposal, concessionarias = [] }) => {
                                     <Grid size={{ xs: 12, md: 4 }}>
                                         <TextField
                                             label="CPF"
+                                            className="mask-cpf"
                                             value={data.cpf}
                                             onChange={(e) => setData("cpf", e.target.value)}
                                             error={!!errors.cpf}
@@ -151,6 +152,7 @@ const Page = ({ proposal, concessionarias = [] }) => {
                                     <Grid size={{ xs: 12, md: 4 }}>
                                         <TextField
                                             label="CNPJ"
+                                            className="mask-cnpj"
                                             value={data.cnpj}
                                             onChange={(e) => setData("cnpj", e.target.value)}
                                             error={!!errors.cnpj}
@@ -248,18 +250,6 @@ const Page = ({ proposal, concessionarias = [] }) => {
                                 />
                             </Grid>
 
-                            <Grid size={{ xs: 12, md: 3 }}>
-                                <TextField
-                                    label="Taxa de Redução (%)"
-                                    value={data.taxa_reducao}
-                                    onChange={(e) => setData("taxa_reducao", e.target.value)}
-                                    error={!!errors.taxa_reducao}
-                                    helperText={errors.taxa_reducao}
-                                    type="number"
-                                    fullWidth
-                                />
-                            </Grid>
-
                             <Grid size={{ xs: 12, md: 4 }}>
                                 <TextField
                                     label="Prazo de Locação"
@@ -267,9 +257,16 @@ const Page = ({ proposal, concessionarias = [] }) => {
                                     onChange={(e) => setData("prazo_locacao", e.target.value)}
                                     error={!!errors.prazo_locacao}
                                     helperText={errors.prazo_locacao}
-                                    type="number"
+                                    required
+                                    select
                                     fullWidth
-                                />
+                                >
+                                    <MenuItem value={12}>12 meses (1 ano)</MenuItem>
+                                    <MenuItem value={24}>24 meses (2 anos)</MenuItem>
+                                    <MenuItem value={36}>36 meses (3 anos)</MenuItem>
+                                    <MenuItem value={48}>48 meses (4 anos)</MenuItem>
+                                    <MenuItem value={60}>60 meses (5 anos)</MenuItem>
+                                </TextField>
                             </Grid>
 
                             <Grid size={{ xs: 12, md: 4 }}>

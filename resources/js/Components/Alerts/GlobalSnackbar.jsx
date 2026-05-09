@@ -11,6 +11,9 @@ const GlobalSnackbar = ({ open, message, type = "info", onClose }) => {
                 vertical: "top",
                 horizontal: "right",
             }}
+            sx={{
+                zIndex: 99999,
+            }}
         >
             <Alert
                 onClose={onClose}

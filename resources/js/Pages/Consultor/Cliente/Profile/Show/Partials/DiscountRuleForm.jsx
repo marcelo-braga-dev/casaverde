@@ -29,7 +29,7 @@ const DiscountRuleForm = ({ profile }) => {
 
     return (
         <Card sx={{ marginBottom: 4 }}>
-            <CardHeader title="Cadastrar Regra de Desconto" avatar={<IconDiscount2 />} />
+            <CardHeader title="Cadastrar Desconto" avatar={<IconDiscount2 />} />
 
             <CardContent>
                 <form onSubmit={submit}>

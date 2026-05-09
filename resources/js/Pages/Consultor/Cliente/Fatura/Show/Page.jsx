@@ -129,7 +129,7 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [] }) => {
     };
 
     return (
-        <Layout titlePage={`Fatura #${bill.id}`} menu="clientes" subMenu="cliente-faturas" backPage>
+        <Layout titlePage={`Fatura #${bill.id}`} menu="financeiro" subMenu="financeiro-faturas" backPage>
             <Head title={`Fatura #${bill.id}`} />
 
             <Grid container spacing={2}>

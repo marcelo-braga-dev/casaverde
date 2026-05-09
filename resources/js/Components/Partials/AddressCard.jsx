@@ -75,6 +75,7 @@ const AddressCard = ({ address, setAddressData, errors = {} }) => {
                     <Grid size={{ xs: 12, md: 3 }}>
                         <TextField
                             label="CEP"
+                            className="mask-cep"
                             value={safeAddress.cep}
                             onChange={(e) => setAddressData("cep", e.target.value)}
                             onBlur={searchCep}

@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { IconBuilding, IconUser } from "@tabler/icons-react";
+import StatusChip from "@/Components/UI/StatusChip.jsx";
 
 const ClientInfoCard = ({ profile }) => {
     const isPessoaFisica = profile?.tipo_pessoa === "pf";
@@ -26,11 +27,7 @@ const ClientInfoCard = ({ profile }) => {
                 title={clientName}
                 subheader={isPessoaFisica ? "Pessoa Física" : "Pessoa Jurídica"}
                 avatar={isPessoaFisica ? <IconUser /> : <IconBuilding />}
-                action={
-                    <Chip
-                        label={profile?.status ?? "Sem status"}
-                        color={profile?.status === "active" || profile?.status === "ativo" ? "success" : "default"}
-                    />
+                action={<StatusChip status={profile?.status} />
                 }
             />
 
@@ -45,7 +42,7 @@ const ClientInfoCard = ({ profile }) => {
 
                     <Grid size={{ xs: 12, md: 4 }}>
                         <Typography variant="subtitle2">{isPessoaFisica ? "CPF" : "CNPJ"}</Typography>
-                        <Typography>{documentValue ?? "Não informado"}</Typography>
+                        <Typography className={isPessoaFisica ? "mask-cpf" : "mask-cnpj"}>{documentValue ?? "Não informado"}</Typography>
                     </Grid>
 
                     <Grid size={{ xs: 12, md: 4 }}>

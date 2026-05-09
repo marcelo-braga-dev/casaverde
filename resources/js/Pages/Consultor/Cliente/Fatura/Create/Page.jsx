@@ -32,7 +32,7 @@ const Page = ({ concessionarias = [], usinas = [], clients = [] }) => {
     };
 
     return (
-        <Layout titlePage="Cadastrar Fatura" menu="clientes" subMenu="cliente-faturas" backPage>
+        <Layout titlePage="Cadastrar Fatura" menu="financeiro" subMenu="financeiro-faturas" backPage>
             <Head title="Cadastrar Fatura" />
 
             <Card>

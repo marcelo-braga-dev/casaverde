@@ -4,9 +4,10 @@ import {Button} from "@mui/material";
 import {pdf, PDFViewer} from '@react-pdf/renderer';
 
 import VisualizadorPDF from './VisualizadorPDF';
-import {IconDownload} from "@tabler/icons-react";
+import {IconDownload, IconEdit, IconFileDownload} from "@tabler/icons-react";
 import Grid from "@mui/material/Grid2";
 import DescontosGrafico from "@/Pages/Auth/Cliente/Proposta/Show/Graficos/DescontosGrafico.jsx";
+import {Link} from "@inertiajs/react";
 
 function PropostaBaixar({idProposta}) {
     const [urlPdf, setUrlPdf] = useState()
@@ -59,10 +60,19 @@ function PropostaBaixar({idProposta}) {
 
     return (
         <div style={{padding: 20}}>
-            <Grid container>
-                <Grid size={12} marginBottom={4}>
+            <div className="flex gap-2 mb-3">
+                <Link href={route("consultor.propostas.cliente.edit", idProposta)}>
+                    <Button startIcon={<IconEdit />} color="warning">
+                        Editar
+                    </Button>
+                </Link>
+
+                <a href={route("consultor.propostas.cliente.pdf", idProposta)} target="_blank" rel="noreferrer">
                     <Button color="error" startIcon={<IconDownload/>} onClick={abrirPdf}>Baixar PDF</Button>
-                </Grid>
+                </a>
+            </div>
+
+            <Grid container>
                 {isWebView && <Grid size={12}>
                     {urlPdf ? <VisualizadorPDF pdfUrl={urlPdf}/> : 'Carregando...'}
                 </Grid>}

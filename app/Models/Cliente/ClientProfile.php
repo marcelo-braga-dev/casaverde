@@ -72,7 +72,7 @@ class ClientProfile extends Model
     public static function generateClientCode(): string
     {
         do {
-            $code = 'CV' . str_pad((string) random_int(1, 999999), 6, '0', STR_PAD_LEFT);
+            $code = 'C' . str_pad((string) random_int(1, 999), 3, '0', STR_PAD_LEFT);
         } while (static::query()->where('client_code', $code)->exists());
 
         return $code;

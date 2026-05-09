@@ -17,6 +17,7 @@ import {
     IconFileText,
     IconMapPin,
 } from "@tabler/icons-react";
+import PropostaBaixar from "@/Pages/Auth/Cliente/Proposta/Show/Propostas.jsx";
 
 const Page = ({ proposal }) => {
     const client = proposal?.client_profile;
@@ -49,26 +50,6 @@ const Page = ({ proposal }) => {
     return (
         <Layout titlePage="Detalhes da Proposta" menu="clientes" subMenu="propostas-cliente-index" backPage>
             <Head title="Detalhes da Proposta" />
-
-            <div className="flex gap-2 mb-3">
-                <Link href={route("consultor.propostas.cliente.index")}>
-                    <Button startIcon={<IconArrowLeft />} variant="outlined">
-                        Voltar
-                    </Button>
-                </Link>
-
-                <Link href={route("consultor.propostas.cliente.edit", proposal.id)}>
-                    <Button startIcon={<IconEdit />} color="warning" variant="outlined">
-                        Editar
-                    </Button>
-                </Link>
-
-                <a href={route("consultor.propostas.cliente.pdf", proposal.id)} target="_blank" rel="noreferrer">
-                    <Button startIcon={<IconFileDownload />} color="error" variant="outlined">
-                        Baixar PDF
-                    </Button>
-                </a>
-            </div>
 
             <Card sx={{ marginBottom: 4 }}>
                 <CardHeader
@@ -121,7 +102,7 @@ const Page = ({ proposal }) => {
 
                         <Grid size={{ xs: 12, md: 4 }}>
                             <Typography variant="subtitle2">Prazo de Locação</Typography>
-                            <Typography>{proposal?.prazo_locacao ?? "Não informado"}</Typography>
+                            <Typography>{proposal?.prazo_locacao ? `${proposal?.prazo_locacao} meses` : "Não informado"}</Typography>
                         </Grid>
 
                         <Grid size={{ xs: 12, md: 4 }}>
@@ -183,6 +164,8 @@ const Page = ({ proposal }) => {
                     </Grid>
                 </CardContent>
             </Card>
+
+            <PropostaBaixar idProposta={proposal.id}/>
         </Layout>
     );
 };

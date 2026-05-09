@@ -1,12 +1,14 @@
-import Layout from "@/Layouts/UserLayout/Layout.jsx";
-import MoneyText from "@/Components/Admin/MoneyText.jsx";
-import StatusChip from "@/Components/Admin/StatusChip.jsx";
-import EmptyState from "@/Components/Admin/EmptyState.jsx";
-import { Head, router, useForm } from "@inertiajs/react";
+import Layout from '@/Layouts/UserLayout/Layout.jsx';
+
 import {
+    Box,
     Button,
     Card,
     CardContent,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
     Stack,
     Table,
     TableBody,
@@ -15,56 +17,90 @@ import {
     TableRow,
     TextField,
     Typography,
-} from "@mui/material";
-import Grid from "@mui/material/Grid2";
+} from '@mui/material';
 
-function MetricCard({ title, value, money = false }) {
-    return (
-        <Card sx={{ height: "100%" }}>
-            <CardContent>
-                <Typography color="text.secondary">{title}</Typography>
-                {money ? (
-                    <MoneyText value={value} bold variant="h5" component="div" />
-                ) : (
-                    <Typography variant="h5" fontWeight={700}>{value || 0}</Typography>
-                )}
-            </CardContent>
-        </Card>
-    );
-}
+import Grid from '@mui/material/Grid2';
 
-export default function Page({ report, filters = {} }) {
-    const { data, setData, get, processing } = useForm({
-        start_date: filters.start_date || report?.range?.start_date || "",
-        end_date: filters.end_date || report?.range?.end_date || "",
+import {
+    Area,
+    AreaChart,
+    Bar,
+    BarChart,
+    CartesianGrid,
+    Cell,
+    Legend,
+    Pie,
+    PieChart,
+    ResponsiveContainer,
+    Tooltip,
+    XAxis,
+    YAxis,
+} from 'recharts';
+
+import {
+    IconBolt,
+    IconCash,
+    IconChartBar,
+    IconDiscount,
+    IconFileInvoice,
+    IconLeaf,
+    IconUsers,
+} from '@tabler/icons-react';
+
+import { Head, router, useForm } from '@inertiajs/react';
+
+const money = (value) =>
+    Number(value || 0).toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL',
     });
 
-    const submit = (e) => {
+const number = (value) =>
+    Number(value || 0).toLocaleString('pt-BR');
+
+export default function Page({ report, filters }) {
+    const { data, setData, get, processing } = useForm({
+        client_id: filters?.client_id || '',
+        start_date: filters?.start_date || '',
+        end_date: filters?.end_date || '',
+    });
+
+    const general = report?.general;
+    const client = report?.client;
+
+    function submit(e) {
         e.preventDefault();
-        get(route("admin.relatorios.clientes"), {
-            preserveState: true,
-            preserveScroll: true,
-        });
-    };
 
-    const clearFilters = () => {
-        router.get(route("admin.relatorios.clientes"));
-    };
+        get(route('admin.relatorios.clientes'));
+    }
 
-    const summary = report?.summary || {};
+    function clearFilters() {
+        router.get(route('admin.relatorios.clientes'));
+    }
 
     return (
-        <Layout titlePage="Relatório por Cliente" menu="relatorios" subMenu="relatorios-clientes">
-            <Head title="Relatório por Cliente" />
+        <Layout
+            titlePage="Relatórios de Clientes"
+            menu="relatorios"
+            subMenu="relatorios-clientes"
+        >
+            <Head title="Relatórios de Clientes" />
 
             <Stack spacing={3}>
-                <Card>
+                <Card
+                    sx={{
+                        background: 'var(--cv-gradient-primary)',
+                        color: '#FFFFFF',
+                    }}
+                >
                     <CardContent>
-                        <Typography variant="h5" fontWeight={700}>
-                            Relatório por Cliente
+                        <Typography variant="h4" fontWeight={900}>
+                            Relatório Executivo de Clientes
                         </Typography>
-                        <Typography color="text.secondary">
-                            Período: {report?.range?.label}
+
+                        <Typography sx={{ opacity: 0.84 }}>
+                            Gestão financeira, economia solar,
+                            faturamento e performance dos clientes.
                         </Typography>
                     </CardContent>
                 </Card>
@@ -73,34 +109,93 @@ export default function Page({ report, filters = {} }) {
                     <CardContent>
                         <form onSubmit={submit}>
                             <Grid container spacing={2}>
-                                <Grid size={{ xs: 12, md: 4 }}>
+                                <Grid size={{ xs: 12, md: 5 }}>
+                                    <FormControl fullWidth>
+                                        <InputLabel>
+                                            Cliente
+                                        </InputLabel>
+
+                                        <Select
+                                            label="Cliente"
+                                            value={data.client_id}
+                                            onChange={(e) =>
+                                                setData(
+                                                    'client_id',
+                                                    e.target.value
+                                                )
+                                            }
+                                        >
+                                            <MenuItem value="">
+                                                Todos os clientes
+                                            </MenuItem>
+
+                                            {report.clients.map(
+                                                (client) => (
+                                                    <MenuItem
+                                                        key={client.id}
+                                                        value={client.id}
+                                                    >
+                                                        {client.name}
+                                                    </MenuItem>
+                                                )
+                                            )}
+                                        </Select>
+                                    </FormControl>
+                                </Grid>
+
+                                <Grid size={{ xs: 12, md: 2 }}>
                                     <TextField
+                                        fullWidth
                                         type="date"
-                                        label="Data inicial"
+                                        label="Inicial"
+                                        InputLabelProps={{
+                                            shrink: true,
+                                        }}
                                         value={data.start_date}
-                                        onChange={(e) => setData("start_date", e.target.value)}
-                                        fullWidth
-                                        InputLabelProps={{ shrink: true }}
+                                        onChange={(e) =>
+                                            setData(
+                                                'start_date',
+                                                e.target.value
+                                            )
+                                        }
                                     />
                                 </Grid>
 
-                                <Grid size={{ xs: 12, md: 4 }}>
+                                <Grid size={{ xs: 12, md: 2 }}>
                                     <TextField
-                                        type="date"
-                                        label="Data final"
-                                        value={data.end_date}
-                                        onChange={(e) => setData("end_date", e.target.value)}
                                         fullWidth
-                                        InputLabelProps={{ shrink: true }}
+                                        type="date"
+                                        label="Final"
+                                        InputLabelProps={{
+                                            shrink: true,
+                                        }}
+                                        value={data.end_date}
+                                        onChange={(e) =>
+                                            setData(
+                                                'end_date',
+                                                e.target.value
+                                            )
+                                        }
                                     />
                                 </Grid>
 
-                                <Grid size={{ xs: 12, md: 4 }}>
-                                    <Stack direction="row" spacing={2} height="100%" alignItems="center">
-                                        <Button type="submit" variant="contained" disabled={processing}>
+                                <Grid size={{ xs: 12, md: 3 }}>
+                                    <Stack
+                                        direction="row"
+                                        spacing={1}
+                                    >
+                                        <Button
+                                            type="submit"
+                                            variant="contained"
+                                            disabled={processing}
+                                        >
                                             Filtrar
                                         </Button>
-                                        <Button type="button" variant="outlined" onClick={clearFilters}>
+
+                                        <Button
+                                            variant="outlined"
+                                            onClick={clearFilters}
+                                        >
                                             Limpar
                                         </Button>
                                     </Stack>
@@ -111,57 +206,399 @@ export default function Page({ report, filters = {} }) {
                 </Card>
 
                 <Grid container spacing={2}>
-                    <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                        <MetricCard title="Clientes" value={summary.clients_count} />
+                    <Grid size={{ xs: 12, md: 3 }}>
+                        <MetricCard
+                            title="Clientes"
+                            value={general.summary.clients_count}
+                            helper="Clientes ativos"
+                            icon={<IconUsers />}
+                        />
                     </Grid>
-                    <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                        <MetricCard title="Clientes ativos" value={summary.active_clients_count} />
+
+                    <Grid size={{ xs: 12, md: 3 }}>
+                        <MetricCard
+                            title="Fatura cheia"
+                            value={money(
+                                general.summary.original_amount
+                            )}
+                            helper="Valor concessionária"
+                            icon={<IconFileInvoice />}
+                        />
                     </Grid>
-                    <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                        <MetricCard title="Recebido" value={summary.paid_amount} money />
+
+                    <Grid size={{ xs: 12, md: 3 }}>
+                        <MetricCard
+                            title="Valor Casa Verde"
+                            value={money(
+                                general.summary.final_amount
+                            )}
+                            helper="Valor final"
+                            icon={<IconCash />}
+                        />
                     </Grid>
-                    <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                        <MetricCard title="Em atraso" value={summary.overdue_amount} money />
+
+                    <Grid size={{ xs: 12, md: 3 }}>
+                        <MetricCard
+                            title="Economia"
+                            value={money(
+                                general.summary.economy_amount
+                            )}
+                            helper={`${general.summary.economy_percent}%`}
+                            icon={<IconDiscount />}
+                        />
                     </Grid>
                 </Grid>
 
-                <Card>
-                    <CardContent>
-                        {report?.items?.length > 0 ? (
-                            <Table>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell>Cliente</TableCell>
-                                        <TableCell>Documento</TableCell>
-                                        <TableCell>Status</TableCell>
-                                        <TableCell>Usina</TableCell>
-                                        <TableCell align="right">Desconto</TableCell>
-                                        <TableCell align="right">Cobranças</TableCell>
-                                        <TableCell align="right">Recebido</TableCell>
-                                        <TableCell align="right">Atrasado</TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {report.items.map((client) => (
-                                        <TableRow key={client.id}>
-                                            <TableCell>{client.name}</TableCell>
-                                            <TableCell>{client.document || "-"}</TableCell>
-                                            <TableCell><StatusChip status={client.is_active_client ? "active" : "inactive"} /></TableCell>
-                                            <TableCell>{client.usina || "-"}</TableCell>
-                                            <TableCell align="right">{client.discount_percent}%</TableCell>
-                                            <TableCell align="right">{client.charges_count}</TableCell>
-                                            <TableCell align="right"><MoneyText value={client.paid_amount} /></TableCell>
-                                            <TableCell align="right"><MoneyText value={client.overdue_amount} /></TableCell>
+                <Grid container spacing={3}>
+                    <Grid size={{ xs: 12, lg: 8 }}>
+                        <ChartCard
+                            title="Economia Geral"
+                            height={380}
+                        >
+                            <ResponsiveContainer>
+                                <BarChart
+                                    data={
+                                        general.economyEvolution
+                                    }
+                                >
+                                    <CartesianGrid
+                                        strokeDasharray="3 3"
+                                    />
+
+                                    <XAxis dataKey="label" />
+
+                                    <YAxis />
+
+                                    <Tooltip />
+
+                                    <Legend />
+
+                                    <Bar
+                                        dataKey="original_amount"
+                                        fill="#111827"
+                                        name="Concessionária"
+                                    />
+
+                                    <Bar
+                                        dataKey="final_amount"
+                                        fill="#2F7D18"
+                                        name="Casa Verde"
+                                    />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </ChartCard>
+                    </Grid>
+
+                    <Grid size={{ xs: 12, lg: 4 }}>
+                        <ChartCard
+                            title="Status Cobranças"
+                            height={380}
+                        >
+                            <ResponsiveContainer>
+                                <PieChart>
+                                    <Pie
+                                        data={
+                                            general.chargesByStatus
+                                        }
+                                        dataKey="total"
+                                        nameKey="status"
+                                        outerRadius={110}
+                                    >
+                                        {general.chargesByStatus.map(
+                                            (
+                                                entry,
+                                                index
+                                            ) => (
+                                                <Cell
+                                                    key={index}
+                                                    fill={[
+                                                        '#2F7D18',
+                                                        '#F59E0B',
+                                                        '#DC2626',
+                                                        '#2563EB',
+                                                    ][
+                                                    index % 4
+                                                        ]}
+                                                />
+                                            )
+                                        )}
+                                    </Pie>
+
+                                    <Tooltip />
+
+                                    <Legend />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        </ChartCard>
+                    </Grid>
+                </Grid>
+
+                {client && (
+                    <>
+                        <Card>
+                            <CardContent>
+                                <Typography
+                                    variant="h5"
+                                    fontWeight={900}
+                                >
+                                    {client.client.name}
+                                </Typography>
+
+                                <Typography
+                                    color="text.secondary"
+                                >
+                                    Cliente:{' '}
+                                    {client.client.client_code}
+                                </Typography>
+
+                                <Typography
+                                    color="text.secondary"
+                                >
+                                    Desconto:{' '}
+                                    {
+                                        client.client
+                                            .discount_percent
+                                    }
+                                    %
+                                </Typography>
+                            </CardContent>
+                        </Card>
+
+                        <Grid container spacing={2}>
+                            <Grid size={{ xs: 12, md: 3 }}>
+                                <MetricCard
+                                    title="Fatura cheia"
+                                    value={money(
+                                        client.summary
+                                            .original_amount
+                                    )}
+                                    icon={<IconFileInvoice />}
+                                />
+                            </Grid>
+
+                            <Grid size={{ xs: 12, md: 3 }}>
+                                <MetricCard
+                                    title="Valor pago"
+                                    value={money(
+                                        client.summary
+                                            .final_amount
+                                    )}
+                                    icon={<IconCash />}
+                                />
+                            </Grid>
+
+                            <Grid size={{ xs: 12, md: 3 }}>
+                                <MetricCard
+                                    title="Economia"
+                                    value={money(
+                                        client.summary
+                                            .economy_amount
+                                    )}
+                                    helper={`${client.summary.economy_percent}%`}
+                                    icon={<IconLeaf />}
+                                />
+                            </Grid>
+
+                            <Grid size={{ xs: 12, md: 3 }}>
+                                <MetricCard
+                                    title="Consumo"
+                                    value={`${number(
+                                        client.summary
+                                            .consumption_kwh
+                                    )} kWh`}
+                                    icon={<IconBolt />}
+                                />
+                            </Grid>
+                        </Grid>
+
+                        <ChartCard
+                            title="Fatura Cheia x Casa Verde"
+                            height={420}
+                        >
+                            <ResponsiveContainer>
+                                <AreaChart
+                                    data={
+                                        client.economyEvolution
+                                    }
+                                >
+                                    <CartesianGrid
+                                        strokeDasharray="3 3"
+                                    />
+
+                                    <XAxis dataKey="label" />
+
+                                    <YAxis />
+
+                                    <Tooltip />
+
+                                    <Legend />
+
+                                    <Area
+                                        type="monotone"
+                                        dataKey="original_amount"
+                                        fill="#11182733"
+                                        stroke="#111827"
+                                        name="Concessionária"
+                                    />
+
+                                    <Area
+                                        type="monotone"
+                                        dataKey="final_amount"
+                                        fill="#2F7D1833"
+                                        stroke="#2F7D18"
+                                        name="Casa Verde"
+                                    />
+                                </AreaChart>
+                            </ResponsiveContainer>
+                        </ChartCard>
+
+                        <Card>
+                            <CardContent>
+                                <Typography
+                                    variant="h6"
+                                    fontWeight={900}
+                                    mb={2}
+                                >
+                                    Últimas Cobranças
+                                </Typography>
+
+                                <Table>
+                                    <TableHead>
+                                        <TableRow>
+                                            <TableCell>
+                                                Referência
+                                            </TableCell>
+
+                                            <TableCell>
+                                                Fatura Cheia
+                                            </TableCell>
+
+                                            <TableCell>
+                                                Valor Final
+                                            </TableCell>
+
+                                            <TableCell>
+                                                Economia
+                                            </TableCell>
+
+                                            <TableCell>
+                                                Status
+                                            </TableCell>
                                         </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        ) : (
-                            <EmptyState title="Nenhum cliente encontrado." />
-                        )}
-                    </CardContent>
-                </Card>
+                                    </TableHead>
+
+                                    <TableBody>
+                                        {client.latestCharges.map(
+                                            (charge) => (
+                                                <TableRow
+                                                    key={charge.id}
+                                                >
+                                                    <TableCell>
+                                                        {
+                                                            charge.reference_label
+                                                        }
+                                                    </TableCell>
+
+                                                    <TableCell>
+                                                        {money(
+                                                            charge.original_amount
+                                                        )}
+                                                    </TableCell>
+
+                                                    <TableCell>
+                                                        {money(
+                                                            charge.final_amount
+                                                        )}
+                                                    </TableCell>
+
+                                                    <TableCell>
+                                                        {money(
+                                                            charge.original_amount -
+                                                            charge.final_amount
+                                                        )}
+                                                    </TableCell>
+
+                                                    <TableCell>
+                                                        {
+                                                            charge.status
+                                                        }
+                                                    </TableCell>
+                                                </TableRow>
+                                            )
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                        </Card>
+                    </>
+                )}
             </Stack>
         </Layout>
+    );
+}
+
+function MetricCard({
+                        title,
+                        value,
+                        helper,
+                        icon,
+                    }) {
+    return (
+        <Card sx={{ height: '100%' }}>
+            <CardContent>
+                <Stack spacing={1}>
+                    <Box color="primary.main">
+                        {icon}
+                    </Box>
+
+                    <Typography
+                        variant="body2"
+                        color="text.secondary"
+                    >
+                        {title}
+                    </Typography>
+
+                    <Typography
+                        variant="h5"
+                        fontWeight={900}
+                    >
+                        {value}
+                    </Typography>
+
+                    {helper && (
+                        <Typography
+                            variant="caption"
+                            color="text.secondary"
+                        >
+                            {helper}
+                        </Typography>
+                    )}
+                </Stack>
+            </CardContent>
+        </Card>
+    );
+}
+
+function ChartCard({
+                       title,
+                       children,
+                       height = 320,
+                   }) {
+    return (
+        <Card>
+            <CardContent>
+                <Typography
+                    variant="h6"
+                    fontWeight={900}
+                    mb={2}
+                >
+                    {title}
+                </Typography>
+
+                <Box height={height}>
+                    {children}
+                </Box>
+            </CardContent>
+        </Card>
     );
 }

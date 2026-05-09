@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useMemo, useState } from 'react';
+import useInputMask from '@/Hooks/useInputMask';
 
 const DrawerContext = createContext(null);
 
@@ -20,6 +21,8 @@ export const DrawerProvider = ({ children }) => {
 
     const [mobileOpen, setMobileOpen] = useState(false);
     const [collapsed, setCollapsed] = useState(false);
+
+    useInputMask();
 
     const setMenuDrawer = (
         title,

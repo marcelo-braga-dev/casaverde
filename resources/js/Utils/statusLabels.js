@@ -1,6 +1,6 @@
 const STATUS_MAP = {
     prospect: {
-        label: 'Prospect',
+        label: 'Novo',
         color: '#334155',
         bgColor: '#F1F5F9',
         borderColor: '#E2E8F0',

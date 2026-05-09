@@ -9,9 +9,12 @@ use Inertia\Inertia;
 
 class ClientReportController extends Controller
 {
-    public function __invoke(Request $request, ClientReportService $service)
-    {
+    public function __invoke(
+        Request $request,
+        ClientReportService $service
+    ) {
         $filters = $request->only([
+            'client_id',
             'start_date',
             'end_date',
         ]);
