@@ -92,21 +92,34 @@ export default function AppSidebar({ expandedWidth, collapsedWidth }) {
                         gap={1.4}
                         sx={{ minWidth: 0 }}
                     >
+
                         <Box
                             sx={{
                                 width: 46,
                                 height: 46,
                                 minWidth: 46,
-                                borderRadius: 3.2,
+                                borderRadius: '50%',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
+                                overflow: 'hidden',
                                 background: 'rgba(255,255,255,0.16)',
-                                boxShadow: '0 14px 32px rgba(0,0,0,0.16)',
-                                border: '1px solid rgba(255,255,255,0.16)',
+                                backdropFilter: 'blur(12px)',
+                                border: '1px solid rgba(255,255,255,0.12)',
+                                boxShadow: '0 10px 30px rgba(0,0,0,0.18)',
                             }}
                         >
-                            <IconLeaf size={25} />
+                            <Box
+                                component="img"
+                                src="/storage/app/logotipo_casaverde.png"
+                                alt="Casa Verde"
+                                sx={{
+                                    width: '100%',
+                                    height: '100%',
+                                    objectFit: 'cover',
+                                    borderRadius: '50%',
+                                }}
+                            />
                         </Box>
 
                         {!collapsed && (
@@ -121,17 +134,6 @@ export default function AppSidebar({ expandedWidth, collapsedWidth }) {
                                     }}
                                 >
                                     Casa Verde
-                                </Typography>
-
-                                <Typography
-                                    variant="caption"
-                                    noWrap
-                                    sx={{
-                                        color: 'rgba(255,255,255,0.72)',
-                                        fontWeight: 600,
-                                    }}
-                                >
-                                    CRM / ERP Energia
                                 </Typography>
                             </Box>
                         )}

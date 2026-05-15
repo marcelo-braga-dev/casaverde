@@ -1,6 +1,6 @@
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
 import { Head, router, useForm } from "@inertiajs/react";
-import { getStatusColor, getStatusLabel } from "@/Utils/statusLabels.js";
+import {getStatusMeta, getStatusLabel} from "@/Utils/statusLabels.js";
 import { useEffect, useMemo, useState } from "react";
 import {
     Alert,
@@ -231,7 +231,7 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [] }) => {
                                 <Info label="Parser">
                                     <Chip
                                         label={getStatusLabel(bill.parser_status)}
-                                        color={getStatusColor(bill.parser_status)}
+                                        // color={getStatusMeta(bill.parser_status)}
                                         size="small"
                                     />
                                 </Info>
@@ -239,7 +239,7 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [] }) => {
                                 <Info label="Status da revisão">
                                     <Chip
                                         label={getStatusLabel(bill.review_status)}
-                                        color={getStatusColor(bill.review_status)}
+                                        // color={getStatusMeta(bill.review_status)}
                                         size="small"
                                     />
                                 </Info>
