@@ -19,15 +19,15 @@ return new class extends Migration
             AND REFERENCED_TABLE_NAME IS NOT NULL
         ");
 
-//        if (!empty($foreignKey)) {
-//
-//            $constraintName = $foreignKey[0]->CONSTRAINT_NAME;
-//
-//            DB::statement("
-//                ALTER TABLE produtor_propostas
-//                DROP FOREIGN KEY {$constraintName}
-//            ");
-//        }
+        if (!empty($foreignKey)) {
+
+            $constraintName = $foreignKey[0]->CONSTRAINT_NAME;
+
+            DB::statement("
+                ALTER TABLE produtor_propostas
+                DROP FOREIGN KEY {$constraintName}
+            ");
+        }
 
         Schema::table('produtor_propostas', function (Blueprint $table) {
 

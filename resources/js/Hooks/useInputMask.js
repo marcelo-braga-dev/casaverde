@@ -17,10 +17,10 @@ export default function useInputMask() {
 
             $('.mask-mobile input').mask('(00) 00000-0000');
 
-            $('.mask-cpf').mask('000.000.000-00');
+            //$('.mask-cpf').mask('000.000.000-00');
             $('.mask-cpf input').mask('000.000.000-00');
 
-            $('.mask-cnpj').mask('00.000.000/0000-00');
+            //$('.mask-cnpj').mask('00.000.000/0000-00');
             $('.mask-cnpj input').mask('00.000.000/0000-00');
 
             $('.mask-money input').mask(
