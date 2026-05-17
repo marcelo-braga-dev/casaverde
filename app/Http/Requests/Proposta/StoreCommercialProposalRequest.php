@@ -41,7 +41,6 @@ class StoreCommercialProposalRequest extends FormRequest
 
             'concessionaria_id' => ['required', 'integer'],
             'media_consumo' => ['nullable'],
-            'taxa_reducao' => ['nullable'],
             'prazo_locacao' => ['nullable'],
             'valor_medio' => ['nullable'],
             'unidade_consumidora' => ['nullable'],

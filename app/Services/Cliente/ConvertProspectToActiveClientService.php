@@ -16,7 +16,7 @@ class ConvertProspectToActiveClientService
 
         return DB::transaction(function () use ($clientProfile) {
             $clientProfile->update([
-                'status' => 'contrato_fechado',
+                'status' => 'contrato_assinado',
                 'is_active_client' => true,
             ]);
 

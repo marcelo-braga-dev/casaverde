@@ -4,7 +4,7 @@ import {
     IconChartHistogram,
     IconHeadset,
     IconReportMoney,
-    IconSettings,
+    IconSettings, IconSolarPanel2,
     IconUserBolt,
     IconUserCog,
     IconUserDollar,
@@ -51,23 +51,28 @@ export const adminMenu = [
     {
         title: 'Produtores Solar',
         icon: <IconUserBolt />,
-        id: 'produtores-solar',
+        id: 'produtores',
         cor: 'blue',
         subItems: [
-            {
-                id: 'producer-leads-index',
-                title: 'Produtores',
-                link: safeRoute('consultor.producer.leads.index'),
-            },
+            // {
+            //     id: 'producer-leads-index',
+            //     title: 'Produtores',
+            //     link: safeRoute('consultor.producer.leads.index'),
+            // },
             // {
             //     id: 'produtores-solar-cadastrados',
             //     title: 'Produtores',
             //     link: safeRoute('auth.produtor.index'),
             // },
             {
-                id: 'producer-profiles-index',
-                title: 'Contrato Produtor',
+                id: 'produtores-profile',
+                title: 'Produtores',
                 link: safeRoute('consultor.producer.profiles.index'),
+            },
+            {
+                id: 'produtores-propostas',
+                title: 'Propostas',
+                link: safeRoute('consultor.propostas.produtor.index'),
             },
             {
                 id: 'usinas-index',
@@ -79,28 +84,52 @@ export const adminMenu = [
                 title: 'Blocos de Usinas',
                 link: safeRoute('consultor.producer.usina-blocks.index'),
             },
+            // {
+            //     id: 'produtores-propostas',
+            //     title: '_Propostas Produtor',
+            //     link: safeRoute('auth.produtor.proposta.index'),
+            // },
+        ],
+    },
+    {
+        title: 'Usinas Solar',
+        icon: <IconSolarPanel2/>,
+        id: 'usinas-solar',
+        cor: 'blue',
+        subItems: [
+            {id: 'usinas-gestao', title: 'Gestão de Energia', link: safeRoute('admin.usinas.management')},
+            {id: 'usinas-vinculos', title: 'Alocação Cliente/Usina', link: safeRoute('admin.usinas.links.index')},
+            {id: 'usinas-geracao', title: 'Geração Mensal', link: safeRoute('admin.usinas.generation.index')},
+        ],
+    },
+    {
+        title: 'Cockpit Executivo',
+        icon: <IconSolarPanel2/>,
+        id: 'cockpit-solar',
+        cor: 'blue',
+        subItems: [
             {
-                id: 'produtores-propostas',
-                title: 'Propostas Produtor',
-                link: safeRoute('auth.produtor.proposta.index'),
+                id: 'admin-cockpit-executive',
+                title: 'Cockpit Executivo',
+                link: safeRoute('admin.cockpit.executive'),
             },
         ],
     },
     {
         title: 'Consultores',
         icon: <IconUserDollar />,
-        id: 'vendedores',
+        id: 'consultores',
         cor: 'green',
         subItems: [
             {
-                id: 'vendedores-cadastrados',
+                id: 'consultores-cadastrados',
                 title: 'Consultores Cadastrados',
-                link: safeRoute('admin.user.vendedor.index'),
+                link: safeRoute('admin.user.consultor.index'),
             },
             {
                 id: 'vendedores-cadastrar',
                 title: 'Cadastrar Consultor',
-                link: safeRoute('admin.user.vendedor.create'),
+                link: safeRoute('admin.user.consultor.create'),
             },
         ],
     },
@@ -127,6 +156,11 @@ export const adminMenu = [
                 link: safeRoute('admin.financeiro.cobrancas.index'),
             },
             {
+                id: 'gestao-cobrancas',
+                title: 'Gestão de Cobranças',
+                link: safeRoute('admin.financeiro.management.index'),
+            },
+            {
                 id: 'financeiro-pagamentos',
                 title: 'Pagamentos',
                 link: safeRoute('admin.financeiro.pagamentos.index'),
@@ -143,6 +177,10 @@ export const adminMenu = [
         icon: <IconChartHistogram />,
         id: 'relatorios',
         subItems: [
+            {
+                id: 'alertas-operacionais',
+                title: 'Alertas Operacionais',
+                link: route('admin.operational-alerts.index')},
             {
                 id: 'relatorios-clientes',
                 title: 'Clientes',
@@ -213,7 +251,13 @@ export const adminMenu = [
         title: 'Configurações',
         icon: <IconSettings />,
         id: 'config',
-        subItems: [],
+        subItems: [
+            {
+                id: 'config-defaults',
+                title: 'Suporte Geral',
+                link: safeRoute('admin.settings.index'),
+            },
+        ],
     },
     {
         title: 'Perfil',

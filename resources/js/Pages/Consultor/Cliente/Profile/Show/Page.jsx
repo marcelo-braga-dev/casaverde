@@ -40,15 +40,15 @@ const Page = ({ clientProfile, client, usinas = [], concessionarias = [] }) => {
 
             {/*<ClientActionsCard profile={profile} />*/}
 
-            <ClientProposalsList proposals={proposals} />
+            <ClientProposalsList profile={profile} proposals={proposals} />
 
-            <AttachUsinaForm profile={profile} usinas={usinas} />
+            <AttachUsinaForm profile={profile} usinas={usinas} usinaLinks={usinaLinks} />
 
             <UsinaList profile={profile} usinaLinks={usinaLinks} />
 
             <DiscountRuleForm profile={profile} />
 
-            <DiscountRulesList profile={profile} discountRules={discountRules} />
+            <DiscountRulesList discountRules={discountRules} />
 
             <ClientEmailImportSettingForm
                 profile={profile}

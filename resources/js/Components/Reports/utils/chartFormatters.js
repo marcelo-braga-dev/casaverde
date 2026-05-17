@@ -31,7 +31,7 @@ export function normalizeStatusLabel(status) {
         inactive: 'Inativo',
         prospect: 'Prospect',
         proposta_emitida: 'Proposta Emitida',
-        contrato_fechado: 'Contrato Fechado',
+        contrato_assinado: 'Contrato Fechado',
 
         issued: 'Emitido',
         signed: 'Assinado',

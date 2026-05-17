@@ -22,6 +22,7 @@ const Page = ({ produtores = [], consultores = [], concessionarias = [], blocks 
     });
 
     const submit = (e) => {
+        console.log("submitted");
         e.preventDefault();
         post(route("consultor.producer.usinas.store"));
     };
@@ -53,7 +54,7 @@ const Page = ({ produtores = [], consultores = [], concessionarias = [], blocks 
                                 >
                                     {produtores.map((produtor) => (
                                         <MenuItem key={produtor.id} value={produtor.id}>
-                                            {produtor.name} - {produtor.email}
+                                            {produtor.nome}
                                         </MenuItem>
                                     ))}
                                 </TextField>

@@ -37,7 +37,7 @@ class ExecutiveReportService
             'clients_active' => ClientProfile::query()
                 ->where(function ($query) {
                     $query->where('is_active_client', true)
-                        ->orWhere('status', 'contrato_fechado');
+                        ->orWhere('status', 'contrato_assinado');
                 })
                 ->count(),
 

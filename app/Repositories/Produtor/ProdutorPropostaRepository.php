@@ -99,7 +99,7 @@ class ProdutorPropostaRepository
             $user->contatos()->create($userData['contato']);
         }
 
-        $this->garantirProducerProfile($user->id, $userData);
+//        $this->garantirProducerProfile($user->id, $userData);
 
         return (int) $user->id;
     }

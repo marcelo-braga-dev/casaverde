@@ -14,7 +14,7 @@ class ConsultorRepository
 {
     public function create(Request $data)
     {
-        DB::transaction(function () use ($data) {
+        return DB::transaction(function () use ($data) {
             $role = RoleUser::$CONSULTOR;
             $service = new CreateUserService();
 

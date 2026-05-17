@@ -6,7 +6,9 @@ use App\Models\Users\User;
 use App\Models\Usina\Concessionaria;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+/**
+ * @deprecated
+ */
 class ProducerLead extends Model
 {
     use HasFactory;

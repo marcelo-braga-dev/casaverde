@@ -11,8 +11,14 @@ const STATUS_MAP = {
         bgColor: '#E8F6E2',
         borderColor: '#DFF3D8',
     },
-    contrato_fechado: {
-        label: 'Contrato Fechado',
+    contrato_emitido: {
+        label: 'Contrato Emitido',
+        color: '#1F5F10',
+        bgColor: '#DFF3D8',
+        borderColor: '#BFE8B6',
+    },
+    contrato_assinado: {
+        label: 'Contrato Assinado',
         color: '#1F5F10',
         bgColor: '#DFF3D8',
         borderColor: '#BFE8B6',

@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\Admin\Produtor\ProducerLeadController;
 use Illuminate\Support\Facades\Route;
-
+/**
+ * @deprecated
+ */
 Route::name('producer.leads.')
     ->prefix('producer/leads')
     ->group(function () {

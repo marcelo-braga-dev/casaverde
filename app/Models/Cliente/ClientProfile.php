@@ -2,6 +2,7 @@
 
 namespace App\Models\Cliente;
 
+use App\Models\Alert\OperationalAlert;
 use App\Models\Proposta\CommercialProposal;
 use App\Models\Users\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -20,8 +21,8 @@ class ClientProfile extends Model
         'nome',
         'razao_social',
         'nome_fantasia',
-        'email',
-        'telefone',
+        //'email',
+        //'telefone',
         'consultor_user_id',
         'platform_user_id',
         'status',
@@ -159,5 +160,16 @@ class ClientProfile extends Model
     public function contracts()
     {
         return $this->hasMany(\App\Models\Cliente\ClientContract::class, 'client_profile_id');
+    }
+
+    public function operationalAlerts()
+    {
+        return $this->hasMany(OperationalAlert::class, 'client_profile_id');
+    }
+
+    public function openOperationalAlerts()
+    {
+        return $this->hasMany(OperationalAlert::class, 'client_profile_id')
+            ->whereIn('status', ['open', 'in_progress']);
     }
 }

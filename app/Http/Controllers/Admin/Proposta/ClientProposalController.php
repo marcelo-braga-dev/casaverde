@@ -15,7 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
-class CommercialProposalController extends Controller
+class ClientProposalController extends Controller
 {
     public function index(CommercialProposalRepository $repository)
     {

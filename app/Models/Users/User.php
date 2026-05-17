@@ -158,8 +158,7 @@ class User extends Authenticatable
 
     public function clientes(): HasMany
     {
-        return $this->hasMany(User::class, 'consultor_id')
-            ->where('role_id', RoleUser::$CLIENTE);
+        return $this->hasMany(ClientProfile::class, 'consultor_user_id');
     }
 
     public function produtores(): HasMany

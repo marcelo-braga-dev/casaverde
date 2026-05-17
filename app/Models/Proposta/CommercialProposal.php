@@ -8,14 +8,12 @@ use App\Models\Cliente\ClientProfile;
 use App\Models\Users\User;
 use App\Models\Usina\Concessionaria;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
 class CommercialProposal extends BaseModel
 {
     use HasFactory;
 
     protected $fillable = [
-        'proposal_code',
         'client_profile_id',
         'consultor_user_id',
         'concessionaria_id',
@@ -24,7 +22,7 @@ class CommercialProposal extends BaseModel
         'issued_at',
         'valid_until',
         'media_consumo',
-        'taxa_reducao',
+        'discount_percent',
         'prazo_locacao',
         'valor_medio',
         'unidade_consumidora',
@@ -35,26 +33,17 @@ class CommercialProposal extends BaseModel
         'issued_at' => 'date',
         'valid_until' => 'date',
         'media_consumo' => 'decimal:2',
+        'discount_percent' => 'decimal:2',
         'taxa_reducao' => 'decimal:2',
         'valor_medio' => 'decimal:2',
     ];
 
-    protected static function booted(): void
-    {
-        static::creating(function (CommercialProposal $proposal) {
-            if (!$proposal->proposal_code) {
-                $proposal->proposal_code = static::generateProposalCode();
-            }
-        });
-    }
+    protected $appends = ['proposal_code'];
 
-    public static function generateProposalCode(): string
+    public function getProposalCodeAttribute($value)
     {
-        do {
-            $code = 'PROP-' . now()->format('Ymd') . '-' . str_pad((string) random_int(1, 9999), 4, '0', STR_PAD_LEFT);
-        } while (static::query()->where('proposal_code', $code)->exists());
-
-        return $code;
+        $id = $this->id;
+        return "PC$id";
     }
 
     public function clientProfile()

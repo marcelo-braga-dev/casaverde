@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Produtor;
 
-use App\src\Roles\RoleUser;
+use App\Models\Cliente\ClientProfile;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -15,52 +15,68 @@ class StoreProducerProfileRequest extends FormRequest
 
     public function rules(): array
     {
+        $clientProfileId = $this->route('client_profile')?->id;
+
         return [
-            'user_id' => [
+            'tipo_pessoa' => ['required', Rule::in(['pf', 'pj'])],
+
+            'cpf' => [
                 'nullable',
-                'integer',
-                Rule::exists('users', 'id')->where(fn ($query) => $query->where('role_id', RoleUser::$PRODUTOR)),
+                'required_if:tipo_pessoa,pf',
+                'string',
+                'max:14',
+                Rule::unique('client_profiles', 'cpf')->ignore($clientProfileId),
             ],
-            'created_by_user_id' => [
+
+            'cnpj' => [
                 'nullable',
-                'integer',
-                Rule::exists('users', 'id')->where(fn ($query) => $query->whereIn('role_id', [
-                    RoleUser::$ADMIN,
-                    RoleUser::$CONSULTOR,
-                ])),
+                'required_if:tipo_pessoa,pj',
+                'string',
+                'max:18',
+                Rule::unique('client_profiles', 'cnpj')->ignore($clientProfileId),
             ],
-            'admin_nome' => ['nullable', 'string', 'max:255'],
-            'admin_qualificacao' => ['nullable', 'string', 'max:255'],
-            'admin_address_id' => ['nullable', 'integer', 'exists:addresses,id'],
-            'usina_nome' => ['nullable', 'string', 'max:255'],
-            'usina_address_id' => ['nullable', 'integer', 'exists:addresses,id'],
-            'usina_cnpj' => ['nullable', 'string', 'max:18'],
-            'potencia_kw' => ['nullable', 'numeric', 'min:0'],
-            'potencia_kwp' => ['nullable', 'numeric', 'min:0'],
-            'geracao_anual' => ['nullable', 'numeric', 'min:0'],
-            'unidade_consumidora' => ['nullable', 'string', 'max:255'],
-            'usina_area' => ['nullable', 'numeric', 'min:0'],
-            'imovel_area' => ['nullable', 'numeric', 'min:0'],
-            'imovel_matricula' => ['nullable', 'string', 'max:255'],
-            'tipo_area' => ['nullable', 'string', 'max:255'],
-            'classificacao' => ['nullable', 'string', 'max:255'],
-            'prazo_locacao' => ['nullable', 'integer', 'min:1'],
-            'modulos' => ['nullable', 'string'],
-            'inversores' => ['nullable', 'string'],
-            'descricao' => ['nullable', 'string'],
-            'parcela_fixa' => ['nullable', 'numeric', 'min:0'],
-            'taxa_administracao' => ['nullable', 'numeric', 'min:0'],
-            'contrato_data' => ['nullable', 'date'],
-            'status' => ['required', 'string', 'max:50'],
+
+            'nome' => [
+                'nullable',
+                'required_if:tipo_pessoa,pf',
+                'string',
+                'max:255',
+            ],
+
+            'razao_social' => [
+                'nullable',
+                'required_if:tipo_pessoa,pj',
+                'string',
+                'max:255',
+            ],
+
+            'nome_fantasia' => ['nullable', 'string', 'max:255'],
+            'email' => ['nullable', 'email', 'max:255'],
+            'telefone' => ['nullable', 'string', 'max:30'],
+            'consultor_user_id' => ['nullable', 'integer', 'exists:users,id'],
+            'status' => ['nullable', 'string', 'max:50'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'cpf.required_if' => 'O CPF é obrigatório para pessoa física.',
+            'cpf.unique' => 'Já existe um cliente cadastrado com este CPF.',
+            'cnpj.required_if' => 'O CNPJ é obrigatório para pessoa jurídica.',
+            'cnpj.unique' => 'Já existe um cliente cadastrado com este CNPJ.',
+            'nome.required_if' => 'O nome é obrigatório para pessoa física.',
+            'razao_social.required_if' => 'A razão social é obrigatória para pessoa jurídica.',
         ];
     }
 
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'usina_cnpj' => $this->usina_cnpj
-                ? preg_replace('/\D+/', '', $this->usina_cnpj)
-                : null,
+            'cpf' => ClientProfile::normalizeDocument($this->cpf),
+            'cnpj' => ClientProfile::normalizeDocument($this->cnpj),
+            'telefone' => ClientProfile::normalizeDocument($this->telefone),
+            'email' => $this->email ? mb_strtolower(trim($this->email)) : null,
         ]);
     }
 }

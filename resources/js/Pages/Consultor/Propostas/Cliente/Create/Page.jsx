@@ -56,7 +56,6 @@ const Page = ({ concessionarias = [], clients = [], selectedClient = null }) => 
 
         concessionaria_id: "",
         media_consumo: "",
-        taxa_reducao: "",
         prazo_locacao: "",
         valor_medio: "",
         unidade_consumidora: "",
@@ -362,18 +361,6 @@ const Page = ({ concessionarias = [], clients = [], selectedClient = null }) => 
                                     onChange={(e) => setData("media_consumo", e.target.value)}
                                     error={!!errors.media_consumo}
                                     helperText={errors.media_consumo}
-                                    type="number"
-                                    fullWidth
-                                />
-                            </Grid>
-
-                            <Grid size={{ xs: 12, md: 3 }}>
-                                <TextField
-                                    label="Taxa de Redução (%)"
-                                    value={data.taxa_reducao}
-                                    onChange={(e) => setData("taxa_reducao", e.target.value)}
-                                    error={!!errors.taxa_reducao}
-                                    helperText={errors.taxa_reducao}
                                     type="number"
                                     fullWidth
                                 />

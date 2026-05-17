@@ -5,7 +5,6 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import {useState} from "react";
 
 const DadosAcesso = ({data, setData}) => {
-    const [senhaPorEmail, setSenhaPorEmail] = useState(!data.senha)
 
     return (
         <Card sx={{marginBottom: 4}}>
@@ -24,16 +23,6 @@ const DadosAcesso = ({data, setData}) => {
                         />
                     </Grid>
                     <Grid size={{xs: 12, md: 6}}>
-                        <FormGroup>
-                            <FormControlLabel
-                                control={<Switch
-                                    defaultChecked={!data.senha}
-                                    onChange={e => setSenhaPorEmail(e.target.checked)}
-                                />}
-                                label="Enviar senha de acesso por email"/>
-                        </FormGroup>
-                    </Grid>
-                    {!senhaPorEmail && <Grid size={{xs: 12, md: 6}}>
                         <TextField
                             label="Senha:"
                             value={data.senha}
@@ -43,7 +32,7 @@ const DadosAcesso = ({data, setData}) => {
                             required
                             fullWidth
                         />
-                    </Grid>}
+                    </Grid>
                 </Grid>
             </CardContent>
         </Card>

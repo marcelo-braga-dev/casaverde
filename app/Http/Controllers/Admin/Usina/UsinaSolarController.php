@@ -29,10 +29,9 @@ class UsinaSolarController extends Controller
     public function create()
     {
         return Inertia::render('Consultor/Producer/Usina/Create/Page', [
-            'produtores' => User::query()
-                ->where('role_id', RoleUser::$PRODUTOR)
-                ->orderBy('name')
-                ->get(['id', 'name', 'email', 'consultor_id']),
+            'produtores' => ProducerProfile::query()
+                ->orderBy('nome')
+                ->get(['id', 'nome', 'razao_social', 'consultor_user_id', 'cpf', 'cnpj']),
             'consultores' => User::query()
                 ->where('role_id', RoleUser::$CONSULTOR)
                 ->orderBy('name')

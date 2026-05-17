@@ -8,6 +8,7 @@ use App\Models\Endereco\Address;
 use App\Models\Produtor\ProducerProfile;
 use App\Models\Users\User;
 use App\Repositories\Produtor\ProducerProfileRepository;
+use App\Services\Produtor\CreateOrFindProducerProfileService;
 use App\src\Roles\RoleUser;
 use Inertia\Inertia;
 
@@ -37,19 +38,19 @@ class ProducerProfileController extends Controller
         ]);
     }
 
-    public function store(StoreProducerProfileRequest $request)
+    public function store(StoreProducerProfileRequest        $request,
+                          CreateOrFindProducerProfileService $service
+    )
     {
-        $data = $request->validated();
+        //$this->authorize('create', ProducerProfile::class);
 
-        if (!isset($data['created_by_user_id']) || !$data['created_by_user_id']) {
-            $data['created_by_user_id'] = auth()->id();
-        }
-
-        $producer = ProducerProfile::create($data);
+        $result = $service->handle($request->validated());
 
         return redirect()
-            ->route('consultor.producer.profiles.show', $producer->id)
-            ->with('success', 'Perfil de produtor cadastrado com sucesso.');
+            ->route('consultor.propostas.produtor.create', [
+                'producer_profile_id' => $result['producer_profile']->id,
+            ])
+            ->with('success', $result['message']);
     }
 
     public function show(ProducerProfile $producerProfile)

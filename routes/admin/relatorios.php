@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Admin\Relatorio\ChargeReportController;
-use App\Http\Controllers\Admin\Relatorio\ClientManagementReportController;
 use App\Http\Controllers\Admin\Relatorio\FinancialReportController;
 use App\Http\Controllers\Admin\Relatorio\PaymentReportController;
 use App\Http\Controllers\Admin\Relatorio\BillReportController;

@@ -18,7 +18,7 @@ const Page = ({ producer }) => {
     };
 
     return (
-        <Layout titlePage="Detalhes do Produtor" menu="produtores-solar" subMenu="producer-profiles-index" backPage>
+        <Layout titlePage="Detalhes do Produtor" menu="produtores" subMenu="produtores-profile" backPage>
             <Head title="Detalhes do Produtor" />
 
             <Card sx={{ marginBottom: 4 }}>

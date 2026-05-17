@@ -12,6 +12,9 @@ use App\Repositories\Produtor\ProducerLeadRepository;
 use App\src\Roles\RoleUser;
 use Inertia\Inertia;
 
+/**
+ * @deprecated
+ */
 class ProducerLeadController extends Controller
 {
     public function index(ProducerLeadRepository $repository)
@@ -28,10 +31,6 @@ class ProducerLeadController extends Controller
                 ->where('role_id', RoleUser::$CONSULTOR)
                 ->orderBy('name')
                 ->get(['id', 'name']),
-            'producerProfiles' => ProducerProfile::query()
-                ->with(['user'])
-                ->orderByDesc('id')
-                ->get(['id', 'user_id', 'usina_nome', 'admin_nome', 'created_by_user_id']),
             'concessionarias' => Concessionaria::query()
                 ->where('status', 'ativo')
                 ->orderBy('nome')

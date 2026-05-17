@@ -114,7 +114,7 @@ const Page = ({ proposal, client }) => {
     };
 
     return (
-        <Layout titlePage="Emitir Contrato" menu="clientes" subMenu="contratos-index" backPage>
+        <Layout titlePage="Emitir Contrato" menu="clientes" subMenu="clientes-contratos" backPage>
             <Head title="Emitir Contrato" />
 
             <Card sx={{ marginBottom: 4 }}>

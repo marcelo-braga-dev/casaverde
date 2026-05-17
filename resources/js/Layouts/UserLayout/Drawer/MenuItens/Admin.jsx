@@ -44,8 +44,8 @@ export const adminMenu = [
         id: 'vendedores',
         cor: 'green',
         subItems: [
-            {id: 'vendedores-cadastrados', title: 'Consultores Cadastrados', link: route('admin.user.vendedor.index')},
-            {id: 'vendedores-cadastrar', title: 'Cadastrar Consultor', link: route('admin.user.vendedor.create')},
+            {id: 'vendedores-cadastrados', title: 'Consultores Cadastrados', link: route('admin.user.consultor.index')},
+            {id: 'vendedores-cadastrar', title: 'Cadastrar Consultor', link: route('admin.user.consultor.create')},
         ],
     }, {
         title: 'Administradores',

@@ -129,7 +129,7 @@ export default function Page({ clients, filters = {} }) {
                             options={[
                                 { value: 'active', label: 'Ativo' },
                                 { value: 'inactive', label: 'Inativo' },
-                                { value: 'contrato_fechado', label: 'Contrato Fechado' },
+                                { value: 'contrato_assinado', label: 'Contrato Fechado' },
                             ]}
                         />
                     </FilterBar>

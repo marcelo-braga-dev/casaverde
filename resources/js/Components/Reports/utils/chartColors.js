@@ -47,7 +47,7 @@ export function statusColor(status) {
         signed: chartColors.success,
         prospect: chartColors.grey,
         proposta_emitida: chartColors.info,
-        contrato_fechado: chartColors.success,
+        contrato_assinado: chartColors.success,
     };
 
     return map[status] || chartColors.primary;

@@ -17,9 +17,9 @@ import { IconEye, IconPlus, IconUsers } from "@tabler/icons-react";
 
 const Page = ({ producers }) => {
     const items = producers?.data ?? [];
-
+console.log(items)
     return (
-        <Layout titlePage="Produtores" menu="produtores-solar" subMenu="producer-profiles-index">
+        <Layout titlePage="Produtores" menu="produtores" subMenu="produtores-profile" >
             <Head title="Produtores" />
 
             <Card>
@@ -40,12 +40,9 @@ const Page = ({ producers }) => {
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>ID</TableCell>
-                                    <TableCell>Usuário</TableCell>
-                                    <TableCell>Administrador</TableCell>
-                                    <TableCell>Usina</TableCell>
-                                    <TableCell>Potência kWp</TableCell>
-                                    <TableCell>Geração Anual</TableCell>
+                                    <TableCell>Código</TableCell>
+                                    <TableCell>Nome</TableCell>
+                                    <TableCell>Documento</TableCell>
                                     <TableCell>Status</TableCell>
                                     <TableCell align="right">Ações</TableCell>
                                 </TableRow>
@@ -54,15 +51,12 @@ const Page = ({ producers }) => {
                             <TableBody>
                                 {items.map((producer) => (
                                     <TableRow key={producer.id}>
-                                        <TableCell>{producer.id}</TableCell>
-                                        <TableCell>{producer?.user?.name ?? "Não vinculado"}</TableCell>
-                                        <TableCell>{producer?.admin_nome ?? "Não informado"}</TableCell>
-                                        <TableCell>{producer?.usina_nome ?? "Não informado"}</TableCell>
-                                        <TableCell>{producer?.potencia_kwp ?? "Não informado"}</TableCell>
-                                        <TableCell>{producer?.geracao_anual ?? "Não informado"}</TableCell>
+                                        <TableCell>P{producer.id}</TableCell>
+                                        <TableCell>{producer?.nome ?? "Não informado"}</TableCell>
+                                        <TableCell>{producer?.cpf ?? producer?.cnpj ?? "Não informado"}</TableCell>
                                         <TableCell>
                                             <Chip
-                                                label={producer?.status ?? "Sem status"}
+                                                label="Novo"
                                                 color={producer?.status === "ativo" ? "success" : "default"}
                                                 size="small"
                                             />

@@ -73,16 +73,6 @@ const UsinaList = ({ profile, usinaLinks = [] }) => {
                         </TableBody>
                     </Table>
                 </TableContainer>
-
-                {route().has?.("consultor.user.cliente.usina.history") && (
-                    <div className="mt-3">
-                        <Link href={route("consultor.user.cliente.usina.history", profile.id)}>
-                            <Button variant="outlined">
-                                Ver Histórico De Usinas
-                            </Button>
-                        </Link>
-                    </div>
-                )}
             </CardContent>
         </Card>
     );

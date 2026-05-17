@@ -7,6 +7,7 @@ use App\Models\Endereco\Address;
 use App\Models\Proposta\CommercialProposal;
 use App\Models\Users\User;
 use App\Models\Users\UserData;
+use App\src\Cliente\ClientStatus;
 use App\src\Roles\RoleUser;
 use App\src\User\StatusUser;
 use Illuminate\Support\Facades\DB;
@@ -88,9 +89,11 @@ class IssueClientContractService
                 ]
             );
 
+            $clientProfile->update(['status' => ClientStatus::CONTRATO_EMITIDO]);
+
             if (in_array($contract->status, ['signed', 'active'], true)) {
                 $clientProfile->update([
-                    'status' => 'contrato_fechado',
+                    'status' => 'contrato_emitido',
                     'is_active_client' => true,
                     'activated_at' => now(),
                 ]);

@@ -1,6 +1,6 @@
 import React from 'react';
 
-const DadosProposta = ({dados}) => {console.log(dados)
+const DadosProposta = ({proposal}) => {console.log(proposal)
     return (
         <>
             <div style={styles.container}>
@@ -8,28 +8,29 @@ const DadosProposta = ({dados}) => {console.log(dados)
                     <div style={styles.overlayText}>
                         <div>
                             <div style={styles.sectionTitle}>INFORMAÇÕES DO INVESTIDOR</div>
-                            {dados?.produtor?.user_data?.nome && <p style={styles.sectionText}><strong>Nome:</strong> {dados?.produtor?.user_data?.nome}</p>}
-                            {dados?.produtor?.user_data?.nome_fantasia &&
-                                <p style={styles.sectionText}><strong>Nome Fantasia:</strong> {dados?.produtor?.user_data?.nome_fantasia}</p>}
-                            {dados?.produtor?.user_data?.razao_social &&
-                                <p style={styles.sectionText}><strong>Razão Social:</strong> {dados?.produtor?.user_data?.razao_social}</p>}
-                            {dados?.produtor?.user_data?.cnpj && <p style={styles.sectionText}><strong>CNPJ:</strong> {dados?.produtor?.user_data?.cnpj}</p>}
-                            {dados?.produtor?.user_data?.cpf && <p style={styles.sectionText}><strong>CPF:</strong> {dados?.produtor?.user_data?.cpf}</p>}
-                            {dados?.produtor?.contatos?.celular && <p style={styles.sectionText}><strong>Celular:</strong> {dados?.produtor?.contatos?.celular}</p>}
-                            {dados?.produtor?.contatos?.email && <p style={styles.sectionText}><strong>E-mail:</strong> {dados?.produtor?.contatos?.email}</p>}
+                            {proposal?.producer_profile?.nome && <p style={styles.sectionText}><strong>Nome:</strong> {proposal?.producer_profile?.nome}</p>}
+                            {proposal?.producer_profile?.nome_fantasia &&
+                                <p style={styles.sectionText}><strong>Nome Fantasia:</strong> {proposal?.producer_profile?.nome_fantasia}</p>}
+                            {proposal?.producer_profile?.razao_social &&
+                                <p style={styles.sectionText}><strong>Razão Social:</strong> {proposal?.producer_profile?.razao_social}</p>}
+                            {proposal?.producer_profile?.cnpj && <p style={styles.sectionText}><strong>CNPJ:</strong> {proposal?.producer_profile?.cnpj}</p>}
+                            {proposal?.producer_profile?.cpf && <p style={styles.sectionText}><strong>CPF:</strong> {proposal?.producer_profile?.cpf}</p>}
+                            {proposal?.produtor?.contatos?.celular && <p style={styles.sectionText}><strong>Celular:</strong> {proposal?.produtor?.contatos?.celular}</p>}
+                            {proposal?.produtor?.contatos?.email && <p style={styles.sectionText}><strong>E-mail:</strong> {proposal?.produtor?.contatos?.email}</p>}
                         </div>
 
                         <div>
                             <div style={styles.sectionTitle}>INFORMAÇÕES DA USINA SOLAR</div>
-                            {dados?.geracao_media && <p style={styles.sectionText}><strong>Média Geração:</strong> {dados?.geracao_media} kWh/mês</p>}
-                            {dados?.potencia && <p style={styles.sectionText}><strong>Potência da Usina:</strong> {dados?.potencia} kWp</p>}
-                            {dados?.taxa_reducao && <p style={styles.sectionText}><strong>Redução da Conta de Energia:</strong> {dados?.taxa_reducao}%</p>}
-                            {dados?.endereco?.endereco_completo && <p style={styles.sectionText}><strong>Endereço da Usina:</strong> {dados?.endereco?.endereco_completo}</p>}
+                            {proposal?.media_geracao && <p style={styles.sectionText}><strong>Média Geração:</strong> {proposal?.media_geracao} kWh/mês</p>}
+                            {proposal?.potencia_usina && <p style={styles.sectionText}><strong>Potência da Usina:</strong> {proposal?.potencia_usina} kWp</p>}
+                            {proposal?.concessionaria?.nome && <p style={styles.sectionText}><strong>Concessionária:</strong> {proposal?.concessionaria?.nome} kWp</p>}
+                            {proposal?.taxa_reducao && <p style={styles.sectionText}><strong>Redução da Conta de Energia:</strong> {proposal?.taxa_reducao}%</p>}
+                            {proposal?.endereco?.endereco_completo && <p style={styles.sectionText}><strong>Endereço da Usina:</strong> {proposal?.endereco?.endereco_completo}</p>}
                         </div>
                         <div>
                             <div style={styles.sectionTitle}>PROPOSTA DE INVESTIMENTO</div>
-                            {dados?.valor_investimento && <p style={styles.sectionText}><strong>Valor do Investimento:</strong> R$ {dados?.valor_investimento}</p>}
-                            {dados?.prazo_locacao && <p style={styles.sectionText}><strong>Prazo do Contrato:</strong> {dados?.prazo_locacao} meses</p>}
+                            {proposal?.valor_investimento && <p style={styles.sectionText}><strong>Valor do Investimento:</strong> R$ {proposal?.valor_investimento}</p>}
+                            {proposal?.prazo_contrato && <p style={styles.sectionText}><strong>Prazo do Contrato:</strong> {proposal?.prazo_contrato} meses</p>}
                         </div>
                         <table style={styles.table}>
                             <tbody>
@@ -43,15 +44,15 @@ const DadosProposta = ({dados}) => {console.log(dados)
                             </tr>
                             <tr>
                                 <td>Dedução operacionalização</td>
-                                <td>R$ 0,20</td>
+                                <td>R$ {proposal?.fill_percent}</td>
                             </tr>
                             <tr>
                                 <td>Produção Média Anual de energia</td>
-                                <td>{dados?.geracao_anual} kWh/ano</td>
+                                <td>{proposal?.geracao_anual} kWh/ano</td>
                             </tr>
                             <tr>
                                 <td>Pagamento anual Bruto</td>
-                                <td>R$ {dados?.retorno_anual_bruto} ano (Produção Anual * 0.41)</td>
+                                <td>R$ {proposal?.retorno_anual_bruto} ano (Produção Anual * 0.41)</td>
                             </tr>
                             </tbody>
                         </table>

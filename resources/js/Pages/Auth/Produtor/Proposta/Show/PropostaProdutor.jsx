@@ -5,11 +5,11 @@ import {useEffect, useRef, useState} from "react";
 import PropostaClientePage from "./DadosProposta.jsx";
 import TextInfo from "@/Components/DataDisplay/TextInfo.jsx";
 
-const PropostaProdutor = ({idProposta}) => {
+const PropostaProdutor = ({proposal, idProposta}) => {
     const [layout, setLayout] = useState([])
     const [dados, setDados] = useState([])
     const proposalRef = useRef(null);
-
+console.log(proposal)
     useEffect(() => {
         fethcDadosProposta()
         fethcLayout()
@@ -44,15 +44,6 @@ const PropostaProdutor = ({idProposta}) => {
         <>
             <Paper variant="outlined" sx={{padding: 2, marginBottom: 4}}>
                 <Grid container justifyContent="space-between" alignItems="center">
-                    <Grid size={{xs: 6, md: 3}}>
-                        {dados?.geracao_media && <TextInfo title="Média Geração" text={`${dados.geracao_media} kWh/mês`}/>}
-                    </Grid>
-                    <Grid size={{xs: 6, md: 3}}>
-                        {dados?.potencia && <TextInfo title="Potência da Usina" text={`${dados?.potencia} kWp`}/>}
-                    </Grid>
-                    <Grid size={{xs: 6, md: 3}}>
-                        {dados?.valor_investimento && <TextInfo title="Valor do Investimento" text={`R$ ${dados?.valor_investimento}`}/>}
-                    </Grid>
                     <Grid size={{xs: 6}}>
                         <Button color="error" onClick={generatePdf} startIcon={<IconDownload/>}>Baixar PDF</Button>
                     </Grid>
@@ -67,7 +58,7 @@ const PropostaProdutor = ({idProposta}) => {
                             </div>
 
                             <div ref={proposalRef}>
-                                <PropostaClientePage dados={dados}/>
+                                <PropostaClientePage proposal={proposal} dados={dados}/>
                             </div>
 
                             <div style={{textAlign: 'center', pageBreakAfter: 'always'}}>

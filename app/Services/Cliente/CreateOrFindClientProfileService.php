@@ -3,6 +3,7 @@
 namespace App\Services\Cliente;
 
 use App\Models\Cliente\ClientProfile;
+use App\Services\Config\SystemSettingService;
 use App\src\Roles\RoleUser;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
@@ -55,12 +56,22 @@ class CreateOrFindClientProfileService
                 'nome' => $data['nome'] ?? null,
                 'razao_social' => $data['razao_social'] ?? null,
                 'nome_fantasia' => $data['nome_fantasia'] ?? null,
-                'email' => $data['email'] ?? null,
-                'telefone' => $data['telefone'] ?? null,
                 'consultor_user_id' => $consultorId,
                 'status' => $data['status'] ?? 'prospect',
                 'is_active_client' => false,
             ]);
+
+            $defaultDiscount = (float) app(SystemSettingService::class)
+                ->get('default_discount_percentage');
+
+            app(StoreDiscountRuleService::class)
+                ->handle(
+                    clientProfile: $clientProfile,
+                    discountPercent: $defaultDiscount,
+                    startsOn: now()->toDateTimeString(),
+                );
+
+            $clientProfile->load('activeDiscountRule');
 
             return [
                 'client_profile' => $clientProfile,

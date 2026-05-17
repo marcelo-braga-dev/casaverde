@@ -1,6 +1,4 @@
-import { Link } from "@inertiajs/react";
 import {
-    Button,
     Card,
     CardContent,
     CardHeader,
@@ -26,14 +24,14 @@ const formatDate = (value) => {
     }).format(new Date(value.replace("Z", "")));
 };
 
-const DiscountRulesList = ({ profile, discountRules = [] }) => {
+const DiscountRulesList = ({discountRules = []}) => {
     const sortedRules = [...discountRules].sort((a, b) => {
         return new Date(b.starts_on ?? b.created_at ?? 0) - new Date(a.starts_on ?? a.created_at ?? 0);
     });
 
     return (
-        <Card sx={{ marginBottom: 4 }}>
-            <CardHeader title="Histórico de Porcentagem de Desconto" />
+        <Card sx={{marginBottom: 4}}>
+            <CardHeader title="Histórico de Porcentagem de Desconto"/>
 
             <CardContent>
                 <TableContainer>
@@ -73,16 +71,6 @@ const DiscountRulesList = ({ profile, discountRules = [] }) => {
                         </TableBody>
                     </Table>
                 </TableContainer>
-
-                {route().has?.("consultor.user.cliente.discount.history") && (
-                    <div className="mt-3">
-                        <Link href={route("consultor.user.cliente.discount.history", profile.id)}>
-                            <Button variant="outlined">
-                                Ver Histórico De Descontos
-                            </Button>
-                        </Link>
-                    </div>
-                )}
             </CardContent>
         </Card>
     );

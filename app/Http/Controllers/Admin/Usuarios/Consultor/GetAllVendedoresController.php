@@ -9,8 +9,8 @@ class GetAllVendedoresController extends Controller
 {
     public function __invoke()
     {
-        $user = (new ConsultorRepository())->getAll();
-
-        return response()->json($user);
+//        $user = (new ConsultorRepository())->getAll();
+//
+//        return response()->json($user);
     }
 }

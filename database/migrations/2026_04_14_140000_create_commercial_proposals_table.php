@@ -10,7 +10,6 @@ return new class extends Migration
     {
         Schema::create('commercial_proposals', function (Blueprint $table) {
             $table->id();
-            $table->string('proposal_code')->unique();
 
             $table->foreignId('client_profile_id')->constrained('client_profiles')->cascadeOnDelete();
             $table->foreignId('consultor_user_id')->constrained('users')->cascadeOnDelete();
@@ -23,10 +22,10 @@ return new class extends Migration
             $table->decimal('discount_percent', 8, 2)->nullable();
             $table->text('notes')->nullable();
 
-            $table->timestamps();
-
             $table->index(['client_profile_id', 'status']);
             $table->index(['consultor_user_id', 'status']);
+
+            $table->timestamps();
         });
     }
 

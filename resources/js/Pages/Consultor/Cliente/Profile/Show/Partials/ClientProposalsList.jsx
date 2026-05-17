@@ -4,7 +4,7 @@ import {
     Card,
     CardContent,
     CardHeader,
-    Chip,
+    Chip, Stack,
     Table,
     TableBody,
     TableCell,
@@ -12,26 +12,34 @@ import {
     TableHead,
     TableRow,
 } from "@mui/material";
-import { IconFileCertificate, IconFileText } from "@tabler/icons-react";
+import {IconEye, IconFileCertificate, IconFileText, IconPlus} from "@tabler/icons-react";
 
-const ClientProposalsList = ({ proposals = [] }) => {
+const ClientProposalsList = ({ profile, proposals = [] }) => {
     const items = [...proposals].sort((a, b) => b.id - a.id);
 
     return (
         <Card sx={{ marginBottom: 4 }}>
-            <CardHeader title="Propostas do Cliente" avatar={<IconFileText />} />
+            <CardHeader title="Propostas do Cliente" avatar={<IconFileText />}
+                        action={<Button
+                            component={Link}
+                            href={route('consultor.propostas.cliente.create', {client_profile_id: profile.id})}
+                            size="small"
+                            startIcon={<IconPlus />}
+                        >
+                            Emitir Proposta
+                        </Button>}/>
 
             <CardContent>
                 <TableContainer>
                     <Table>
                         <TableHead>
                             <TableRow>
+                                <TableCell>Data</TableCell>
                                 <TableCell>Código</TableCell>
                                 <TableCell>Concessionária</TableCell>
-                                <TableCell>UC</TableCell>
                                 <TableCell>Status</TableCell>
                                 <TableCell>Contrato</TableCell>
-                                <TableCell align="right">Ações</TableCell>
+                                <TableCell align="center">Ações</TableCell>
                             </TableRow>
                         </TableHead>
 
@@ -44,9 +52,9 @@ const ClientProposalsList = ({ proposals = [] }) => {
 
                             {items.map((proposal) => (
                                 <TableRow key={proposal.id}>
+                                    <TableCell>{proposal.created_at}</TableCell>
                                     <TableCell>{proposal.proposal_code ?? `#${proposal.id}`}</TableCell>
                                     <TableCell>{proposal?.concessionaria?.nome ?? "Não informado"}</TableCell>
-                                    <TableCell>{proposal?.unidade_consumidora ?? "Não informado"}</TableCell>
                                     <TableCell>
                                         <Chip
                                             label={proposal?.status ?? "Sem status"}
@@ -55,13 +63,6 @@ const ClientProposalsList = ({ proposals = [] }) => {
                                         />
                                     </TableCell>
                                     <TableCell>
-                                        {proposal?.contract ? (
-                                            <Chip label="Emitido" color="success" size="small" />
-                                        ) : (
-                                            <Chip label="Não emitido" color="warning" size="small" />
-                                        )}
-                                    </TableCell>
-                                    <TableCell align="right">
                                         {proposal?.contract ? (
                                             <Link href={route("consultor.cliente.contratos.show", proposal.contract.id)}>
                                                 <Button size="small" variant="outlined">
@@ -73,13 +74,24 @@ const ClientProposalsList = ({ proposals = [] }) => {
                                                 <Button
                                                     size="small"
                                                     color="success"
-                                                    variant="outlined"
                                                     startIcon={<IconFileCertificate />}
                                                 >
                                                     Emitir Contrato
                                                 </Button>
                                             </Link>
                                         )}
+                                    </TableCell>
+                                    <TableCell align="right">
+                                            <Link href={route("consultor.propostas.cliente.show", proposal.id)}>
+                                                <Button
+                                                    size="small"
+                                                    color="success"
+                                                    variant="outlined"
+                                                    startIcon={<IconEye />}
+                                                >
+                                                    Ver
+                                                </Button>
+                                            </Link>
                                     </TableCell>
                                 </TableRow>
                             ))}

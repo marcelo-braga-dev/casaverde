@@ -88,7 +88,7 @@ const Page = ({ contract }) => {
     const isPessoaFisica = userData?.tipo_pessoa === "pf";
 
     return (
-        <Layout titlePage="Contrato Emitido" menu="clientes" subMenu="contratos-index" backPage>
+        <Layout titlePage="Contrato Emitido" menu="clientes" subMenu="clientes-contratos" backPage>
             <Head title="Contrato Emitido" />
 
             {flashPassword && (

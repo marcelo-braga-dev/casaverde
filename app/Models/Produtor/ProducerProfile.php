@@ -2,6 +2,7 @@
 
 namespace App\Models\Produtor;
 
+use App\Models\Cliente\ClientDiscountRule;
 use App\Models\Endereco\Address;
 use App\Models\Users\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -12,6 +13,15 @@ class ProducerProfile extends Model
     use HasFactory;
 
     protected $fillable = [
+        'tipo_pessoa',
+        'cpf',
+        'cnpj',
+        'nome',
+        'razao_social',
+        'nome_fantasia',
+        'consultor_user_id',
+        'is_active_producer',
+
         'user_id',
         'created_by_user_id',
         'admin_nome',
@@ -50,6 +60,14 @@ class ProducerProfile extends Model
         'contrato_data' => 'date',
     ];
 
+    protected $appends = ['producer_code'];
+
+    public function getProducerCodeAttribute($value)
+    {
+        $id = $this->id;
+        return "P$id";
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
@@ -73,5 +91,11 @@ class ProducerProfile extends Model
     public function usinaAddress()
     {
         return $this->belongsTo(Address::class, 'usina_address_id');
+    }
+
+    public function activeDiscountRule()
+    {
+        return $this->hasOne(ClientDiscountRule::class, 'client_profile_id')
+            ->where('is_active', true);
     }
 }

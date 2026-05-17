@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {useState} from "react";
 import {
     Button,
     Card,
@@ -7,7 +7,7 @@ import {
     TextField,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import { IconMapPin, IconSearch } from "@tabler/icons-react";
+import {IconMapPin, IconSearch} from "@tabler/icons-react";
 
 const emptyAddress = {
     cep: "",
@@ -22,7 +22,7 @@ const emptyAddress = {
     longitude: "",
 };
 
-const AddressCard = ({ address, setAddressData, errors = {} }) => {
+const AddressCard = ({address, setAddressData, title, errors = {}}) => {
     const [loadingCep, setLoadingCep] = useState(false);
     const [cepMessage, setCepMessage] = useState("");
 
@@ -67,12 +67,12 @@ const AddressCard = ({ address, setAddressData, errors = {} }) => {
     };
 
     return (
-        <Card sx={{ marginBottom: 4 }}>
-            <CardHeader title="Endereço da Unidade Consumidora" avatar={<IconMapPin />} />
+        <Card sx={{marginBottom: 4}}>
+            <CardHeader title={title ?? "Endereço da Unidade Consumidora"} avatar={<IconMapPin/>}/>
 
             <CardContent>
                 <Grid container spacing={3}>
-                    <Grid size={{ xs: 12, md: 3 }}>
+                    <Grid size={{xs: 12, md: 3}}>
                         <TextField
                             label="CEP"
                             className="mask-cep"
@@ -86,23 +86,23 @@ const AddressCard = ({ address, setAddressData, errors = {} }) => {
                         />
                     </Grid>
 
-                    <Grid size={{ xs: 12, md: 2 }}>
+                    <Grid size={{xs: 12, md: 2}}>
                         <div>
                             <Button
                                 type="button"
                                 variant="outlined"
-                                startIcon={<IconSearch />}
+                                startIcon={<IconSearch/>}
                                 onClick={searchCep}
                                 disabled={loadingCep}
                                 fullWidth
-                                sx={{ height: "100%" }}
+                                sx={{height: "100%"}}
                             >
                                 Buscar CEP
                             </Button>
                         </div>
                     </Grid>
 
-                    <Grid size={{ xs: 12, md: 5 }}>
+                    <Grid size={{xs: 12, md: 5}}>
                         <TextField
                             label="Rua"
                             value={safeAddress.rua}
@@ -114,7 +114,7 @@ const AddressCard = ({ address, setAddressData, errors = {} }) => {
                         />
                     </Grid>
 
-                    <Grid size={{ xs: 12, md: 2 }}>
+                    <Grid size={{xs: 12, md: 2}}>
                         <TextField
                             label="Número"
                             value={safeAddress.numero}
@@ -126,7 +126,7 @@ const AddressCard = ({ address, setAddressData, errors = {} }) => {
                         />
                     </Grid>
 
-                    <Grid size={{ xs: 12, md: 3 }}>
+                    <Grid size={{xs: 12, md: 3}}>
                         <TextField
                             label="Complemento"
                             value={safeAddress.complemento}
@@ -137,7 +137,7 @@ const AddressCard = ({ address, setAddressData, errors = {} }) => {
                         />
                     </Grid>
 
-                    <Grid size={{ xs: 12, md: 4 }}>
+                    <Grid size={{xs: 12, md: 4}}>
                         <TextField
                             label="Bairro"
                             value={safeAddress.bairro}
@@ -149,7 +149,7 @@ const AddressCard = ({ address, setAddressData, errors = {} }) => {
                         />
                     </Grid>
 
-                    <Grid size={{ xs: 12, md: 3 }}>
+                    <Grid size={{xs: 12, md: 3}}>
                         <TextField
                             label="Cidade"
                             value={safeAddress.cidade}
@@ -161,7 +161,7 @@ const AddressCard = ({ address, setAddressData, errors = {} }) => {
                         />
                     </Grid>
 
-                    <Grid size={{ xs: 12, md: 2 }}>
+                    <Grid size={{xs: 12, md: 2}}>
                         <TextField
                             label="Estado"
                             value={safeAddress.estado}
@@ -173,7 +173,7 @@ const AddressCard = ({ address, setAddressData, errors = {} }) => {
                         />
                     </Grid>
 
-                    <Grid size={{ xs: 12, md: 6 }}>
+                    <Grid size={{xs: 12, md: 6}}>
                         <TextField
                             label="Referência"
                             value={safeAddress.referencia}
