@@ -79,7 +79,7 @@ class CreateCommercialProposalService
 
             $proposal = CommercialProposal::create([
                 'client_profile_id' => $client->id,
-                'consultor_user_id' => $client->consultor_user_id,
+                'consultor_user_id' => $client->consultor_user_id ?? auth()->user()->id,
                 'concessionaria_id' => $data['concessionaria_id'],
                 'address_id' => $address?->id,
                 'status' => ProposalStatus::EMITIDA,
