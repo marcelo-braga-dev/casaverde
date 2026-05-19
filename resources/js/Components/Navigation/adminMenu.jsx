@@ -75,11 +75,6 @@ export const adminMenu = [
                 link: safeRoute('consultor.propostas.produtor.index'),
             },
             {
-                id: 'usinas-index',
-                title: 'Usinas',
-                link: safeRoute('consultor.producer.usinas.index'),
-            },
-            {
                 id: 'usinas-block-index',
                 title: 'Blocos de Usinas',
                 link: safeRoute('consultor.producer.usina-blocks.index'),
@@ -97,22 +92,14 @@ export const adminMenu = [
         id: 'usinas-solar',
         cor: 'blue',
         subItems: [
-            {id: 'usinas-gestao', title: 'Gestão de Energia', link: safeRoute('admin.usinas.management')},
-            {id: 'usinas-vinculos', title: 'Alocação Cliente/Usina', link: safeRoute('admin.usinas.links.index')},
-            {id: 'usinas-geracao', title: 'Geração Mensal', link: safeRoute('admin.usinas.generation.index')},
-        ],
-    },
-    {
-        title: 'Cockpit Executivo',
-        icon: <IconSolarPanel2/>,
-        id: 'cockpit-solar',
-        cor: 'blue',
-        subItems: [
             {
-                id: 'admin-cockpit-executive',
-                title: 'Cockpit Executivo',
-                link: safeRoute('admin.cockpit.executive'),
+                id: 'usinas-index',
+                title: 'Usinas',
+                link: safeRoute('consultor.producer.usinas.index'),
             },
+            {id: 'usinas-gestao', title: 'Gestão de Energia', link: safeRoute('admin.usinas.management')},
+            // {id: 'usinas-vinculos', title: 'Alocação Cliente/Usina', link: safeRoute('admin.usinas.links.index')},
+            {id: 'usinas-geracao', title: 'Geração Mensal', link: safeRoute('admin.usinas.generation.index')},
         ],
     },
     {
@@ -177,6 +164,11 @@ export const adminMenu = [
         icon: <IconChartHistogram />,
         id: 'relatorios',
         subItems: [
+            {
+                id: 'admin-cockpit-executive',
+                title: 'Relatório Geral',
+                link: safeRoute('admin.cockpit.executive'),
+            },
             {
                 id: 'alertas-operacionais',
                 title: 'Alertas Operacionais',
@@ -254,7 +246,7 @@ export const adminMenu = [
         subItems: [
             {
                 id: 'config-defaults',
-                title: 'Suporte Geral',
+                title: 'Configurações Padrão',
                 link: safeRoute('admin.settings.index'),
             },
         ],
