@@ -6,6 +6,7 @@ use App\Enums\Usina\UsinaOperationalStatus;
 use App\Models\Alert\OperationalAlert;
 use App\Models\Cliente\ClientUsinaLink;
 use App\Models\Endereco\Address;
+use App\Models\Produtor\ProducerProfile;
 use App\Models\Users\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -60,7 +61,7 @@ class UsinaSolar extends Model
 
     public function produtor()
     {
-        return $this->belongsTo(User::class, 'user_id');
+        return $this->belongsTo(ProducerProfile::class, 'producer_profile_id');
     }
 
     public function consultor()

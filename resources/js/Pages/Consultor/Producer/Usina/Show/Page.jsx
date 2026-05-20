@@ -41,8 +41,7 @@ const Page = ({ usina }) => {
 
             <Card sx={{ marginBottom: 4 }}>
                 <CardHeader
-                    title={usina?.uc ? `UC ${usina.uc}` : `Usina #${usina?.id}`}
-                    subheader={usina?.produtor?.name ?? "Produtor não informado"}
+                    title={usina?.usina_nome}
                     avatar={<IconSolarElectricity />}
                     action={
                         <Chip
@@ -58,7 +57,7 @@ const Page = ({ usina }) => {
                     <Grid container spacing={3}>
                         <Grid size={{ xs: 12, md: 6 }}>
                             <Typography variant="subtitle2">Produtor</Typography>
-                            <Typography>{usina?.produtor?.name ?? "Não informado"}</Typography>
+                            <Typography>{usina?.produtor?.nome ?? "Não informado"}</Typography>
                         </Grid>
 
                         <Grid size={{ xs: 12, md: 6 }}>

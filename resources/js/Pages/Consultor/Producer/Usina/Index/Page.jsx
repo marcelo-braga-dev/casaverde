@@ -17,7 +17,7 @@ import { IconEye, IconPlus, IconSolarElectricity } from "@tabler/icons-react";
 
 const Page = ({ usinas }) => {
     const items = usinas?.data ?? [];
-
+console.log(items);
     return (
         <Layout titlePage="Usinas Fotovoltáicas" menu="usinas-solar" subMenu="usinas-index">
             <Head title="Usinas" />
@@ -57,11 +57,11 @@ const Page = ({ usinas }) => {
                                     <TableRow key={usina.id}>
                                         <TableCell>#{usina.id}</TableCell>
                                         <TableCell>{usina.usina_nome}</TableCell>
-                                        <TableCell>{usina?.produtor?.name ?? "Não informado"}</TableCell>
-                                        <TableCell>{usina?.consultor?.name ?? "Não informado"}</TableCell>
-                                        <TableCell>{usina?.block?.nome ?? "Sem grupo"}</TableCell>
-                                        <TableCell>{usina?.concessionaria?.nome ?? "Não informado"}</TableCell>
-                                        <TableCell>{usina?.potencia_usina ?? "Não informado"}</TableCell>
+                                        <TableCell>{usina?.produtor?.nome ?? "-"}</TableCell>
+                                        <TableCell>{usina?.consultor?.name ?? "-"}</TableCell>
+                                        <TableCell>{usina?.block?.nome ?? "-"}</TableCell>
+                                        <TableCell>{usina?.concessionaria?.nome ?? "-"}</TableCell>
+                                        <TableCell>{`${usina?.potencia_usina}kWp` ?? "-"}</TableCell>
                                         <TableCell>
                                             <Chip
                                                 label={usina?.status ?? "Sem status"}

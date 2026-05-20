@@ -115,7 +115,7 @@ export default function CreateClientUsinaLinkPage() {
                                     >
                                         {usinas.map((usina) => (
                                             <MenuItem key={usina.id} value={usina.id}>
-                                                UC {usina.uc || usina.id} - {usina.produtor?.name || 'Produtor não informado'}
+                                                {usina?.usina_nome}
                                             </MenuItem>
                                         ))}
                                     </TextField>
