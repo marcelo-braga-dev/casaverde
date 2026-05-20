@@ -3,26 +3,40 @@ import { Head, useForm } from "@inertiajs/react";
 import { Button, Card, CardContent, CardHeader, MenuItem, TextField } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { IconDeviceFloppy, IconSolarElectricity } from "@tabler/icons-react";
+import AddressCard from "@/Components/Partials/AddressCard.jsx";
 
 const Page = ({ produtores = [], consultores = [], concessionarias = [], blocks = [], addresses = [] }) => {
     const { data, setData, post, processing, errors } = useForm({
-        user_id: "",
-        consultor_user_id: "",
-        concessionaria_id: "",
-        usina_block_id: "",
-        address_id: "",
-        status: "ativo",
-        uc: "",
-        media_geracao: "",
-        prazo_locacao: "",
-        potencia_usina: "",
-        taxa_comissao: "",
-        inversores: "",
-        modulos: "",
+        'usina_nome' : "",
+        'producer_profile_id' : "",
+        'concessionaria_id' : "",
+        'usina_block_id' : "",
+        'uc' : "",
+        'media_geracao' : "",
+        'potencia_usina' : "",
+        'prazo_locacao' : "",
+        'inversores' : "",
+        'modulos' : "",
+        'address' : "",
     });
+console.log(data)
+    const setAddressData = (field, value) => {
+        if (typeof field === "object") {
+            setData("address", {
+                ...data.address,
+                ...field,
+            });
+
+            return;
+        }
+
+        setData("address", {
+            ...data.address,
+            [field]: value,
+        });
+    };
 
     const submit = (e) => {
-        console.log("submitted");
         e.preventDefault();
         post(route("consultor.producer.usinas.store"));
     };
@@ -32,7 +46,7 @@ const Page = ({ produtores = [], consultores = [], concessionarias = [], blocks 
     };
 
     return (
-        <Layout titlePage="Cadastrar Usina" menu="produtores-solar" subMenu="usinas-index" backPage>
+        <Layout titlePage="Cadastrar Usina" menu="usinas-solar" subMenu="usinas-index" backPage>
             <Head title="Cadastrar Usina" />
 
             <form onSubmit={submit}>
@@ -41,13 +55,24 @@ const Page = ({ produtores = [], consultores = [], concessionarias = [], blocks 
 
                     <CardContent>
                         <Grid container spacing={3}>
+                            <Grid size={{ xs: 12 }}>
+                                <TextField
+                                    label="Nome da Usina"
+                                    value={data.usina_nome}
+                                    onChange={(e) => setData("usina_nome", e.target.value)}
+                                    error={!!errors.usina_nome}
+                                    helperText={errors.usina_nome}
+                                    required
+                                    fullWidth
+                                />
+                            </Grid>
                             <Grid size={{ xs: 12, md: 6 }}>
                                 <TextField
                                     label="Produtor Proprietário"
-                                    value={data.user_id}
-                                    onChange={(e) => setData("user_id", e.target.value)}
-                                    error={!!errors.user_id}
-                                    helperText={errors.user_id}
+                                    value={data.producer_profile_id}
+                                    onChange={(e) => setData("producer_profile_id", e.target.value)}
+                                    error={!!errors.producer_profile_id}
+                                    helperText={errors.producer_profile_id}
                                     select
                                     required
                                     fullWidth
@@ -60,24 +85,24 @@ const Page = ({ produtores = [], consultores = [], concessionarias = [], blocks 
                                 </TextField>
                             </Grid>
 
-                            <Grid size={{ xs: 12, md: 6 }}>
-                                <TextField
-                                    label="Consultor Responsável"
-                                    value={data.consultor_user_id}
-                                    onChange={(e) => setData("consultor_user_id", e.target.value)}
-                                    error={!!errors.consultor_user_id}
-                                    helperText={errors.consultor_user_id}
-                                    select
-                                    required
-                                    fullWidth
-                                >
-                                    {consultores.map((consultor) => (
-                                        <MenuItem key={consultor.id} value={consultor.id}>
-                                            {consultor.name}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
-                            </Grid>
+                            {/*<Grid size={{ xs: 12, md: 6 }}>*/}
+                            {/*    <TextField*/}
+                            {/*        label="Consultor Responsável"*/}
+                            {/*        value={data.consultor_user_id}*/}
+                            {/*        onChange={(e) => setData("consultor_user_id", e.target.value)}*/}
+                            {/*        error={!!errors.consultor_user_id}*/}
+                            {/*        helperText={errors.consultor_user_id}*/}
+                            {/*        select*/}
+                            {/*        required*/}
+                            {/*        fullWidth*/}
+                            {/*    >*/}
+                            {/*        {consultores.map((consultor) => (*/}
+                            {/*            <MenuItem key={consultor.id} value={consultor.id}>*/}
+                            {/*                {consultor.name}*/}
+                            {/*            </MenuItem>*/}
+                            {/*        ))}*/}
+                            {/*    </TextField>*/}
+                            {/*</Grid>*/}
 
                             <Grid size={{ xs: 12, md: 6 }}>
                                 <TextField
@@ -112,25 +137,6 @@ const Page = ({ produtores = [], consultores = [], concessionarias = [], blocks 
                                     {blocks.map((block) => (
                                         <MenuItem key={block.id} value={block.id}>
                                             {block.nome}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
-                            </Grid>
-
-                            <Grid size={12}>
-                                <TextField
-                                    label="Endereço da Usina"
-                                    value={data.address_id}
-                                    onChange={(e) => setData("address_id", e.target.value)}
-                                    error={!!errors.address_id}
-                                    helperText={errors.address_id}
-                                    select
-                                    fullWidth
-                                >
-                                    <MenuItem value="">Não informar</MenuItem>
-                                    {addresses.map((address) => (
-                                        <MenuItem key={address.id} value={address.id}>
-                                            {addressLabel(address)}
                                         </MenuItem>
                                     ))}
                                 </TextField>
@@ -180,40 +186,47 @@ const Page = ({ produtores = [], consultores = [], concessionarias = [], blocks 
                                     onChange={(e) => setData("prazo_locacao", e.target.value)}
                                     error={!!errors.prazo_locacao}
                                     helperText={errors.prazo_locacao}
-                                    type="number"
-                                    fullWidth
-                                />
-                            </Grid>
-
-                            <Grid size={{ xs: 12, md: 4 }}>
-                                <TextField
-                                    label="Taxa de Comissão"
-                                    value={data.taxa_comissao}
-                                    onChange={(e) => setData("taxa_comissao", e.target.value)}
-                                    error={!!errors.taxa_comissao}
-                                    helperText={errors.taxa_comissao}
-                                    type="number"
-                                    fullWidth
-                                />
-                            </Grid>
-
-                            <Grid size={{ xs: 12, md: 4 }}>
-                                <TextField
-                                    label="Status"
-                                    value={data.status}
-                                    onChange={(e) => setData("status", e.target.value)}
-                                    error={!!errors.status}
-                                    helperText={errors.status}
-                                    select
                                     required
+                                    select
                                     fullWidth
                                 >
-                                    <MenuItem value="ativo">Ativo</MenuItem>
-                                    <MenuItem value="inativo">Inativo</MenuItem>
-                                    <MenuItem value="pendente">Pendente</MenuItem>
-                                    <MenuItem value="manutencao">Manutenção</MenuItem>
+                                    <MenuItem value={12}>12 meses (1 ano)</MenuItem>
+                                    <MenuItem value={24}>24 meses (2 anos)</MenuItem>
+                                    <MenuItem value={36}>36 meses (3 anos)</MenuItem>
+                                    <MenuItem value={48}>48 meses (4 anos)</MenuItem>
+                                    <MenuItem value={60}>60 meses (5 anos)</MenuItem>
                                 </TextField>
                             </Grid>
+
+                            {/*<Grid size={{ xs: 12, md: 4 }}>*/}
+                            {/*    <TextField*/}
+                            {/*        label="Taxa de Comissão"*/}
+                            {/*        value={data.taxa_comissao}*/}
+                            {/*        onChange={(e) => setData("taxa_comissao", e.target.value)}*/}
+                            {/*        error={!!errors.taxa_comissao}*/}
+                            {/*        helperText={errors.taxa_comissao}*/}
+                            {/*        type="number"*/}
+                            {/*        fullWidth*/}
+                            {/*    />*/}
+                            {/*</Grid>*/}
+
+                            {/*<Grid size={{ xs: 12, md: 4 }}>*/}
+                            {/*    <TextField*/}
+                            {/*        label="Status"*/}
+                            {/*        value={data.status}*/}
+                            {/*        onChange={(e) => setData("status", e.target.value)}*/}
+                            {/*        error={!!errors.status}*/}
+                            {/*        helperText={errors.status}*/}
+                            {/*        select*/}
+                            {/*        required*/}
+                            {/*        fullWidth*/}
+                            {/*    >*/}
+                            {/*        <MenuItem value="ativo">Ativo</MenuItem>*/}
+                            {/*        <MenuItem value="inativo">Inativo</MenuItem>*/}
+                            {/*        <MenuItem value="pendente">Pendente</MenuItem>*/}
+                            {/*        <MenuItem value="manutencao">Manutenção</MenuItem>*/}
+                            {/*    </TextField>*/}
+                            {/*</Grid>*/}
 
                             <Grid size={12}>
                                 <TextField
@@ -245,6 +258,13 @@ const Page = ({ produtores = [], consultores = [], concessionarias = [], blocks 
                         </Grid>
                     </CardContent>
                 </Card>
+
+                <AddressCard
+                    title="Endereço da Usina"
+                    address={data.address}
+                    setAddressData={setAddressData}
+                    errors={errors}
+                />
 
                 <div className="text-center">
                     <Button

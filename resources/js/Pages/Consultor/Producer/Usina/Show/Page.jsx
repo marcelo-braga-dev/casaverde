@@ -1,8 +1,32 @@
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
 import { Head, Link } from "@inertiajs/react";
-import { Button, Card, CardContent, CardHeader, Chip, Divider, Typography } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import { IconArrowLeft, IconEdit, IconSolarElectricity } from "@tabler/icons-react";
+
+import {
+    Avatar,
+    Box,
+    Button,
+    Card,
+    CardContent,
+    CardHeader,
+    Chip,
+    Divider,
+    Typography,
+    Stack,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+} from "@mui/material";
+
+import {
+    IconArrowLeft,
+    IconEdit,
+    IconSolarElectricity,
+    IconUsers,
+} from "@tabler/icons-react";
 
 const Page = ({ usina }) => {
     const addressLabel = (address) => {
@@ -12,7 +36,7 @@ const Page = ({ usina }) => {
     };
 
     return (
-        <Layout titlePage="Detalhes da Usina" menu="produtores-solar" subMenu="usinas-index" >
+        <Layout titlePage="Detalhes da Usina" menu="usinas-solar" subMenu="usinas-index" >
             <Head title="Detalhes da Usina" />
 
             <Card sx={{ marginBottom: 4 }}>
@@ -93,6 +117,184 @@ const Page = ({ usina }) => {
                         </Grid>
                     </Grid>
                 </CardContent>
+            </Card>
+
+            <Card
+                className="cv-card"
+                sx={{
+                    mb: 4,
+                }}
+            >
+
+                <CardHeader
+                    avatar={
+                        <Avatar
+                            sx={{
+                                bgcolor: 'primary.main',
+                            }}
+                        >
+                            <IconUsers size={22} />
+                        </Avatar>
+                    }
+                    title="Clientes Relacionados"
+                    subheader={`${usina?.active_client_links?.length || 0} clientes vinculados`}
+                />
+
+                <Divider />
+
+                <CardContent>
+
+                    {usina?.active_client_links?.length === 0 && (
+                        <Typography color="text.secondary">
+                            Nenhum cliente relacionado a esta usina.
+                        </Typography>
+                    )}
+
+                    {usina?.active_client_links?.length > 0 && (
+
+                        <TableContainer>
+
+                            <Table>
+
+                                <TableHead>
+
+                                    <TableRow>
+
+                                        <TableCell>
+                                            Cliente
+                                        </TableCell>
+
+                                        <TableCell>
+                                            Documento
+                                        </TableCell>
+
+                                        <TableCell>
+                                            Energia Alocada
+                                        </TableCell>
+
+                                        <TableCell>
+                                            Desconto
+                                        </TableCell>
+
+                                        <TableCell>
+                                            Status
+                                        </TableCell>
+
+                                        <TableCell align="right">
+                                            Ações
+                                        </TableCell>
+
+                                    </TableRow>
+
+                                </TableHead>
+
+                                <TableBody>
+
+                                    {usina.active_client_links.map((link) => {
+
+                                        const client = link.client_profile;
+
+                                        return (
+                                            <TableRow
+                                                key={link.id}
+                                                hover
+                                            >
+
+                                                <TableCell>
+
+                                                    <Stack spacing={0.5}>
+
+                                                        <Typography fontWeight={700}>
+                                                            {
+                                                                client?.nome
+                                                                || client?.razao_social
+                                                                || '-'
+                                                            }
+                                                        </Typography>
+
+                                                        <Typography
+                                                            variant="caption"
+                                                            color="text.secondary"
+                                                        >
+                                                            {client?.email || '-'}
+                                                        </Typography>
+
+                                                    </Stack>
+
+                                                </TableCell>
+
+                                                <TableCell>
+
+                                                    {
+                                                        client?.cpf
+                                                        || client?.cnpj
+                                                        || '-'
+                                                    }
+
+                                                </TableCell>
+
+                                                <TableCell>
+
+                                                    {link?.allocated_energy_kwh || 0} kWh
+
+                                                </TableCell>
+
+                                                <TableCell>
+
+                                                    {link?.discount_percentage || 0}%
+
+                                                </TableCell>
+
+                                                <TableCell>
+
+                                                    <Chip
+                                                        label={
+                                                            link?.status || 'Sem status'
+                                                        }
+                                                        color={
+                                                            link?.is_active
+                                                                ? 'success'
+                                                                : 'default'
+                                                        }
+                                                        size="small"
+                                                    />
+
+                                                </TableCell>
+
+                                                <TableCell align="right">
+
+                                                    <Link
+                                                        href={route(
+                                                            'consultor.user.cliente.show',
+                                                            client?.id
+                                                        )}
+                                                    >
+
+                                                        <Button
+                                                            size="small"
+                                                            variant="outlined"
+                                                        >
+                                                            Visualizar
+                                                        </Button>
+
+                                                    </Link>
+
+                                                </TableCell>
+
+                                            </TableRow>
+                                        );
+                                    })}
+
+                                </TableBody>
+
+                            </Table>
+
+                        </TableContainer>
+
+                    )}
+
+                </CardContent>
+
             </Card>
 
             <div className="flex gap-2">

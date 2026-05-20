@@ -15,7 +15,8 @@ class UsinaSolar extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
+        'usina_nome',
+        'producer_profile_id',
         'consultor_user_id',
         'concessionaria_id',
         'usina_block_id',
@@ -40,8 +41,6 @@ class UsinaSolar extends Model
         'media_geracao' => 'decimal:2',
         'potencia_usina' => 'decimal:2',
         'taxa_comissao' => 'decimal:2',
-
-
         'energia_disponivel_kwh' => 'decimal:3',
         'energia_alocada_kwh' => 'decimal:3',
         'energia_saldo_kwh' => 'decimal:3',
@@ -81,7 +80,7 @@ class UsinaSolar extends Model
 
     public function address()
     {
-        return $this->belongsTo(Address::class, 'address_id');
+        return $this->belongsTo(\App\Models\Endereco\Address::class, 'address_id');
     }
 
     public function clientLinks()
@@ -104,19 +103,19 @@ class UsinaSolar extends Model
     {
         return max(
             0,
-            (float) $this->energia_disponivel_kwh - (float) $this->energia_alocada_kwh
+            (float)$this->energia_disponivel_kwh - (float)$this->energia_alocada_kwh
         );
     }
 
     public function getUtilizationPercentageAttribute(): float
     {
-        $availableEnergy = (float) $this->energia_disponivel_kwh;
+        $availableEnergy = (float)$this->energia_disponivel_kwh;
 
         if ($availableEnergy <= 0) {
             return 0;
         }
 
-        return round(((float) $this->energia_alocada_kwh / $availableEnergy) * 100, 2);
+        return round(((float)$this->energia_alocada_kwh / $availableEnergy) * 100, 2);
     }
 
     public function operationalAlerts()

@@ -19,7 +19,7 @@ const Page = ({ usinas }) => {
     const items = usinas?.data ?? [];
 
     return (
-        <Layout titlePage="Usinas" menu="produtores-solar" subMenu="usinas-index">
+        <Layout titlePage="Usinas Fotovoltáicas" menu="usinas-solar" subMenu="usinas-index">
             <Head title="Usinas" />
 
             <Card>
@@ -41,11 +41,11 @@ const Page = ({ usinas }) => {
                             <TableHead>
                                 <TableRow>
                                     <TableCell>ID</TableCell>
+                                    <TableCell>Nome</TableCell>
                                     <TableCell>Produtor</TableCell>
                                     <TableCell>Consultor</TableCell>
                                     <TableCell>Grupo</TableCell>
                                     <TableCell>Concessionária</TableCell>
-                                    <TableCell>UC</TableCell>
                                     <TableCell>Potência</TableCell>
                                     <TableCell>Status</TableCell>
                                     <TableCell align="right">Ações</TableCell>
@@ -55,12 +55,12 @@ const Page = ({ usinas }) => {
                             <TableBody>
                                 {items.map((usina) => (
                                     <TableRow key={usina.id}>
-                                        <TableCell>{usina.id}</TableCell>
+                                        <TableCell>#{usina.id}</TableCell>
+                                        <TableCell>{usina.usina_nome}</TableCell>
                                         <TableCell>{usina?.produtor?.name ?? "Não informado"}</TableCell>
                                         <TableCell>{usina?.consultor?.name ?? "Não informado"}</TableCell>
                                         <TableCell>{usina?.block?.nome ?? "Sem grupo"}</TableCell>
                                         <TableCell>{usina?.concessionaria?.nome ?? "Não informado"}</TableCell>
-                                        <TableCell>{usina?.uc ?? "Não informado"}</TableCell>
                                         <TableCell>{usina?.potencia_usina ?? "Não informado"}</TableCell>
                                         <TableCell>
                                             <Chip

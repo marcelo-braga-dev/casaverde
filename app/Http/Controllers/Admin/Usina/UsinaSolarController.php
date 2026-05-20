@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Admin\Usina;
 
 use App\Http\Controllers\Controller;
+use App\Models\Proposta\CommercialProposal;
+use App\src\Usina\UsinaStatus;
 use App\Http\Requests\Usina\StoreUsinaSolarRequest;
 use App\Models\Endereco\Address;
 use App\Models\Produtor\ProducerProfile;
@@ -53,9 +55,14 @@ class UsinaSolarController extends Controller
         $data = $request->validated();
 
         $usina = DB::transaction(function () use ($data) {
+            $data['status'] = UsinaStatus::NOVA;
+
             $usina = UsinaSolar::query()->create($data);
 
-            $this->syncProducerProfileWithUsina($usina, $data);
+            $address = $this->createOrUpdateAddress($usina, $data['address']);
+            $usina->update(['address_id' => $address?->id]);
+
+//            $this->syncProducerProfileWithUsina($usina, $data);
 
             return $usina;
         });
@@ -65,11 +72,56 @@ class UsinaSolarController extends Controller
             ->with('success', 'Usina cadastrada com sucesso.');
     }
 
+    private function createOrUpdateAddress(UsinaSolar $usina, array $addressData): ?Address
+    {
+        $addressData = collect($addressData)
+            ->only([
+                'cep',
+                'rua',
+                'numero',
+                'complemento',
+                'bairro',
+                'cidade',
+                'estado',
+                'referencia',
+                'latitude',
+                'longitude',
+            ])
+            ->map(fn ($value) => $value === '' ? null : $value)
+            ->toArray();
+
+        $hasAddress = collect($addressData)
+            ->filter(fn ($value) => filled($value))
+            ->isNotEmpty();
+
+        if (!$hasAddress) {
+            return $usina->address;
+        }
+
+        if ($usina->address) {
+            $usina->address->update($addressData);
+
+            return $usina->address;
+        }
+
+        return Address::create($addressData);
+    }
+
     public function show(UsinaSolar $usina)
     {
-        return Inertia::render('Consultor/Producer/Usina/Show/Page', [
-            'usina' => $usina->load(['produtor', 'consultor', 'concessionaria', 'block', 'address']),
-        ]);
+        return Inertia::render(
+            'Consultor/Producer/Usina/Show/Page',
+            [
+                'usina' => $usina->load([
+                    'produtor',
+                    'consultor',
+                    'concessionaria',
+                    'block',
+                    'address',
+                    'activeClientLinks.clientProfile',
+                ]),
+            ]
+        );
     }
 
     public function edit(UsinaSolar $usina)
@@ -117,40 +169,44 @@ class UsinaSolarController extends Controller
 
     private function syncProducerProfileWithUsina(UsinaSolar $usina, array $data): void
     {
-        $produtor = User::query()->find($usina->user_id);
+        $profile = ProducerProfile::query()->find($usina->user_id);
 
-        if (!$produtor) {
+        if (!$profile) {
             return;
         }
 
-        $profile = ProducerProfile::query()->firstOrCreate(
-            ['user_id' => $usina->user_id],
-            [
-                'created_by_user_id' => $data['consultor_user_id'] ?? auth()->id(),
-                'admin_nome' => $produtor->name,
-                'admin_qualificacao' => $produtor->userData?->tipo_pessoa === 'pj'
-                    ? 'Pessoa Jurídica'
-                    : 'Pessoa Física',
-                'usina_nome' => $produtor->userData?->razao_social
-                    ?? $produtor->userData?->nome_fantasia
-                    ?? $produtor->name,
-                'usina_cnpj' => $produtor->userData?->getRawOriginal('cnpj'),
-                'status' => 'novo',
-            ]
-        );
+//        $profile = ProducerProfile::query()->firstOrCreate(
+//            ['user_id' => $usina->user_id],
+//            [
+//                'created_by_user_id' => $data['consultor_user_id'] ?? auth()->id(),
+//                'admin_nome' => $produtor->name,
+//                'admin_qualificacao' => $produtor->userData?->tipo_pessoa === 'pj'
+//                    ? 'Pessoa Jurídica'
+//                    : 'Pessoa Física',
+//                'usina_nome' => $produtor->userData?->razao_social
+//                    ?? $produtor->userData?->nome_fantasia
+//                    ?? $produtor->name,
+//                'usina_cnpj' => $produtor->userData?->getRawOriginal('cnpj'),
+//                'status' => 'novo',
+//            ]
+//        );
 
         $profile->update([
-            'created_by_user_id' => $data['consultor_user_id'] ?? $profile->created_by_user_id,
+//            'created_by_user_id' => $data['consultor_user_id'] ?? $profile->created_by_user_id,
+            'inversores' => $data['inversores'] ?? $profile->inversores,
+            'status' => $profile->status === 'novo' ? 'em_integracao' : $profile->status,
+            'modulos' => $data['modulos'] ?? $profile->modulos,
+
             'usina_address_id' => $data['address_id'] ?? $profile->usina_address_id,
             'potencia_kw' => $data['potencia_usina'] ?? $profile->potencia_kw,
             'potencia_kwp' => $data['potencia_usina'] ?? $profile->potencia_kwp,
             'geracao_anual' => isset($data['media_geracao'])
-                ? ((float) $data['media_geracao'] * 12)
+                ? ((float)$data['media_geracao'] * 12)
                 : $profile->geracao_anual,
+
             'prazo_locacao' => $data['prazo_locacao'] ?? $profile->prazo_locacao,
-            'modulos' => $data['modulos'] ?? $profile->modulos,
-            'inversores' => $data['inversores'] ?? $profile->inversores,
-            'status' => $profile->status === 'novo' ? 'em_integracao' : $profile->status,
+
+
         ]);
     }
 }

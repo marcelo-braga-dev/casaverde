@@ -30,18 +30,24 @@ class ClienteController extends Controller
     }
 
     public function store(
-        StoreClientProfileRequest $request,
+        StoreClientProfileRequest        $request,
         CreateOrFindClientProfileService $service
-    ) {
+    )
+    {
         $this->authorize('create', ClientProfile::class);
 
-        $result = $service->handle($request->validated());
+        $result = $service->handle(
+            $request->validated()
+        );
 
         return redirect()
-            ->route('consultor.propostas.cliente.create', [
-                'client_profile_id' => $result['client_profile']->id,
-            ])
-            ->with('success', $result['message']);
+            //->route('consultor.user.cliente.index')
+            ->back()
+            ->with([
+                'success' => $result['message'],
+                'client_created' => true,
+                'client_id' => $result['client_profile']->id,
+            ]);
     }
 
     public function show(ClientProfile $cliente)
@@ -67,7 +73,7 @@ class ClienteController extends Controller
             'usinas' => UsinaSolar::query()
                 ->with(['produtor'])
                 ->orderByDesc('id')
-                ->get(['id', 'uc', 'user_id']),
+                ->get(['id', 'usina_nome','uc', 'producer_profile_id']),
 
             'concessionarias' => Concessionaria::query()
                 ->where('status', 'ativo')

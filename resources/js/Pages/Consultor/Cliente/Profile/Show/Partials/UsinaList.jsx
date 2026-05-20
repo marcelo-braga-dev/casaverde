@@ -57,7 +57,7 @@ const UsinaList = ({ profile, usinaLinks = [] }) => {
 
                             {sortedLinks.map((item) => (
                                 <TableRow key={item.id}>
-                                    <TableCell>{item?.usina?.uc ?? `Usina #${item?.usina_id}`}</TableCell>
+                                    <TableCell>{`#${item?.usina?.id} - ${item?.usina?.usina_nome}` ?? `Usina #${item?.usina_id}`}</TableCell>
                                     <TableCell>{formatDate(item?.started_at)}</TableCell>
                                     <TableCell>{item?.ended_at ? formatDate(item.ended_at) : "Em aberto"}</TableCell>
                                     <TableCell>

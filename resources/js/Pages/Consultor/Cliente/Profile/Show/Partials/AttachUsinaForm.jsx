@@ -27,7 +27,7 @@ const AttachUsinaForm = ({ profile, usinas = [] }) => {
             },
         });
     };
-
+    
     return (
         <Card sx={{ marginBottom: 4 }}>
             <CardHeader title="Vincular Cliente à Usina" avatar={<IconPlugConnected />} />
@@ -48,7 +48,7 @@ const AttachUsinaForm = ({ profile, usinas = [] }) => {
                             >
                                 {usinas.map((usina) => (
                                     <MenuItem key={usina.id} value={usina.id}>
-                                        {usina.uc || usina.nome || `Usina #${usina.id}`}
+                                        {`#${usina.id} - ${usina.usina_nome}` || `Usina #${usina.id}`}
                                     </MenuItem>
                                 ))}
                             </TextField>

@@ -16,85 +16,71 @@ class StoreUsinaSolarRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => [
+            'producer_profile_id' => [
                 'required',
                 'integer',
-                Rule::exists('users', 'id')->where(function ($query) {
-                    $query->where('role_id', RoleUser::$PRODUTOR);
-                }),
+                'exists:producer_profiles,id',
             ],
-
-            'consultor_user_id' => [
+            'usina_nome' => [
                 'required',
+                'string',
+            ],
+            'consultor_user_id' => [
+                'nullable',
                 'integer',
                 Rule::exists('users', 'id')->where(function ($query) {
                     $query->where('role_id', RoleUser::$CONSULTOR);
                 }),
             ],
-
             'concessionaria_id' => [
                 'required',
                 'integer',
                 'exists:concessionarias,id',
             ],
-
             'usina_block_id' => [
                 'nullable',
                 'integer',
                 'exists:usina_blocks,id',
             ],
-
-            'address_id' => [
-                'nullable',
-                'integer',
-                'exists:addresses,id',
-            ],
-
-            'status' => [
-                'required',
-                'string',
-                'max:50',
-            ],
-
             'uc' => [
                 'nullable',
                 'string',
                 'max:255',
             ],
-
             'media_geracao' => [
                 'nullable',
                 'numeric',
                 'min:0',
             ],
-
             'prazo_locacao' => [
-                'nullable',
+                'required',
                 'integer',
                 'min:1',
             ],
-
             'potencia_usina' => [
-                'nullable',
+                'required',
                 'numeric',
                 'min:0',
             ],
-
-            'taxa_comissao' => [
-                'nullable',
-                'numeric',
-                'min:0',
-            ],
-
             'inversores' => [
                 'nullable',
                 'string',
             ],
-
             'modulos' => [
                 'nullable',
                 'string',
             ],
+            'address' => ['nullable', 'array'],
+            'address.cep' => ['nullable', 'string'],
+            'address.rua' => ['nullable', 'string'],
+            'address.numero' => ['nullable', 'string'],
+            'address.complemento' => ['nullable', 'string'],
+            'address.bairro' => ['nullable', 'string'],
+            'address.cidade' => ['nullable', 'string'],
+            'address.estado' => ['nullable', 'string'],
+            'address.referencia' => ['nullable', 'string'],
+            'address.latitude' => ['nullable', 'numeric'],
+            'address.longitude' => ['nullable', 'numeric'],
         ];
     }
 
@@ -103,7 +89,6 @@ class StoreUsinaSolarRequest extends FormRequest
         $this->merge([
             'media_geracao' => $this->normalizeNumber($this->input('media_geracao')),
             'potencia_usina' => $this->normalizeNumber($this->input('potencia_usina')),
-            'taxa_comissao' => $this->normalizeNumber($this->input('taxa_comissao')),
             'prazo_locacao' => $this->filled('prazo_locacao') ? (int) $this->input('prazo_locacao') : null,
         ]);
     }
@@ -111,8 +96,8 @@ class StoreUsinaSolarRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'user_id.required' => 'O produtor proprietário da usina é obrigatório.',
-            'user_id.exists' => 'O produtor selecionado não é válido.',
+            'producer_profile_id.required' => 'O produtor proprietário da usina é obrigatório.',
+            'producer_profile_id.exists' => 'O produtor selecionado não é válido.',
 
             'consultor_user_id.required' => 'O consultor responsável é obrigatório.',
             'consultor_user_id.exists' => 'O consultor selecionado não é válido.',
@@ -121,9 +106,6 @@ class StoreUsinaSolarRequest extends FormRequest
             'concessionaria_id.exists' => 'A concessionária selecionada não é válida.',
 
             'usina_block_id.exists' => 'O bloco da usina selecionado não é válido.',
-            'address_id.exists' => 'O endereço selecionado não é válido.',
-
-            'status.required' => 'O status da usina é obrigatório.',
 
             'media_geracao.numeric' => 'A média de geração deve ser numérica.',
             'media_geracao.min' => 'A média de geração não pode ser negativa.',
