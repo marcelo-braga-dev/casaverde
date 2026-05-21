@@ -128,10 +128,9 @@ class UsinaSolarController extends Controller
     {
         return Inertia::render('Consultor/Producer/Usina/Edit/Page', [
             'usina' => $usina->load(['produtor', 'consultor', 'concessionaria', 'block', 'address']),
-            'produtores' => User::query()
-                ->where('role_id', RoleUser::$PRODUTOR)
-                ->orderBy('name')
-                ->get(['id', 'name', 'email', 'consultor_id']),
+            'produtores' => ProducerProfile::query()
+                ->orderBy('nome')
+                ->get(['id', 'nome']),
             'consultores' => User::query()
                 ->where('role_id', RoleUser::$CONSULTOR)
                 ->orderBy('name')
@@ -142,9 +141,6 @@ class UsinaSolarController extends Controller
             'blocks' => UsinaBlock::query()
                 ->orderBy('id')
                 ->get(['id', 'nome']),
-            'addresses' => Address::query()
-                ->orderByDesc('id')
-                ->get(['id', 'rua', 'numero', 'bairro', 'cidade', 'estado']),
         ]);
     }
 
@@ -155,6 +151,7 @@ class UsinaSolarController extends Controller
         try {
             DB::transaction(function () use ($usina, $data) {
                 $usina->update($data);
+                $this->createOrUpdateAddress($usina, $data['address']);
 
                 $this->syncProducerProfileWithUsina($usina->fresh(), $data);
             });

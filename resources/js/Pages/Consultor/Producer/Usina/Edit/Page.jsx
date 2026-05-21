@@ -1,45 +1,57 @@
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
-import {Button, Card, CardContent, CardHeader, MenuItem, TextField} from "@mui/material";
+import {Head, router, useForm, usePage} from "@inertiajs/react";
+import { Button, Card, CardContent, CardHeader, MenuItem, TextField } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import {IconDeviceFloppy, IconSolarElectricity} from "@tabler/icons-react";
-import {Head, useForm} from "@inertiajs/react";
+import { IconDeviceFloppy, IconSolarElectricity } from "@tabler/icons-react";
+import AddressCard from "@/Components/Partials/AddressCard.jsx";
 
-import {router} from "@inertiajs/react";
+const Page = ({ usina = [], produtores = [], concessionarias = [], blocks = [], }) => {
+    const { data, setData, post, processing, errors } = useForm({
+        'usina_nome' : usina?.usina_nome,
+        'producer_profile_id' : usina?.producer_profile_id,
+        'concessionaria_id' : usina?.concessionaria_id,
+        'usina_block_id' : usina?.usina_block_id,
+        'uc' : usina?.uc,
+        'media_geracao' : usina?.media_geracao,
+        'potencia_usina' : usina?.potencia_usina,
+        'prazo_locacao' : usina?.prazo_locacao,
+        'inversores' : usina?.inversores,
+        'modulos' : usina?.modulos,
 
-const Page = ({usina, produtores = [], consultores = [], concessionarias = [], blocks = [], addresses = []}) => {
-    const {data, setData, put, processing, errors} = useForm({
-        user_id: usina?.user_id ?? "",
-        consultor_user_id: usina?.consultor_user_id ?? "",
-        concessionaria_id: usina?.concessionaria_id ?? "",
-        usina_block_id: usina?.usina_block_id ?? "",
-        address_id: usina?.address_id ?? "",
-        status: usina?.status ?? "ativo",
-        uc: usina?.uc ?? "",
-        media_geracao: usina?.media_geracao ?? "",
-        prazo_locacao: usina?.prazo_locacao ?? "",
-        potencia_usina: usina?.potencia_usina ?? "",
-        taxa_comissao: usina?.taxa_comissao ?? "",
-        inversores: usina?.inversores ?? "",
-        modulos: usina?.modulos ?? "",
+        'address' : {
+            cep: usina?.address?.cep,
+            rua: usina?.address?.rua,
+            numero: usina?.address?.numero,
+            complemento: usina?.address?.complemento,
+            bairro: usina?.address?.bairro,
+            cidade: usina?.address?.cidade,
+            estado: usina?.address?.estado,
+            referencia: usina?.address?.referencia,
+            latitude: usina?.address?.latitude,
+            longitude: usina?.address?.longitude,
+        },
     });
+     const {props} = usePage()
+    console.log(props)
+    const setAddressData = (field, value) => {
+        if (typeof field === "object") {
+            setData("address", {
+                ...data.address,
+                ...field,
+            });
 
-    // const submit = (e) => {
-    //     e.preventDefault();
-    //     e.stopPropagation();
-         //put(route("consultor.producer.usinas.update", usina.id));
-    // };
+            return;
+        }
 
+        setData("address", {
+            ...data.address,
+            [field]: value,
+        });
+    };
 
     const submit = (e) => {
         e.preventDefault();
-        e.stopPropagation();
-
-        router.visit(`/consultor/producer/usinas/${usina.id}`, {
-            method: "put",
-            data,
-            preserveScroll: true,
-        });
-        // put(route("consultor.producer.usinas.update", { usina: usina.id }));
+        router.post(route("consultor.producer.usinas.update", usina.id), {_method: "PUT", ...data});
     };
 
     const addressLabel = (address) => {
@@ -47,54 +59,65 @@ const Page = ({usina, produtores = [], consultores = [], concessionarias = [], b
     };
 
     return (
-        <Layout titlePage="Editar Usina" menu="produtores-solar" subMenu="usinas-index">
-            <Head title="Editar Usina"/>
+        <Layout titlePage="Editar Usina" menu="usinas-solar" subMenu="usinas-index" backPage>
+            <Head title="Editar Usina" />
 
             <form onSubmit={submit}>
-                <Card sx={{marginBottom: 4}}>
-                    <CardHeader title="Dados da Usina" avatar={<IconSolarElectricity/>}/>
+                <Card sx={{ marginBottom: 4 }}>
+                    <CardHeader title="Dados da Usina" avatar={<IconSolarElectricity />} />
 
                     <CardContent>
                         <Grid container spacing={3}>
-                            <Grid size={{xs: 12, md: 6}}>
+                            <Grid size={{ xs: 12 }}>
+                                <TextField
+                                    label="Nome da Usina"
+                                    value={data.usina_nome}
+                                    onChange={(e) => setData("usina_nome", e.target.value)}
+                                    error={!!errors.usina_nome}
+                                    helperText={errors.usina_nome}
+                                    required
+                                    fullWidth
+                                />
+                            </Grid>
+                            <Grid size={{ xs: 12, md: 6 }}>
                                 <TextField
                                     label="Produtor Proprietário"
-                                    value={data.user_id}
-                                    onChange={(e) => setData("user_id", e.target.value)}
-                                    error={!!errors.user_id}
-                                    helperText={errors.user_id}
+                                    value={data.producer_profile_id}
+                                    onChange={(e) => setData("producer_profile_id", e.target.value)}
+                                    error={!!errors.producer_profile_id}
+                                    helperText={errors.producer_profile_id}
                                     select
                                     required
                                     fullWidth
                                 >
                                     {produtores.map((produtor) => (
                                         <MenuItem key={produtor.id} value={produtor.id}>
-                                            {produtor.name} - {produtor.email}
+                                            {produtor.nome}
                                         </MenuItem>
                                     ))}
                                 </TextField>
                             </Grid>
 
-                            <Grid size={{xs: 12, md: 6}}>
-                                <TextField
-                                    label="Consultor Responsável"
-                                    value={data.consultor_user_id}
-                                    onChange={(e) => setData("consultor_user_id", e.target.value)}
-                                    error={!!errors.consultor_user_id}
-                                    helperText={errors.consultor_user_id}
-                                    select
-                                    required
-                                    fullWidth
-                                >
-                                    {consultores.map((consultor) => (
-                                        <MenuItem key={consultor.id} value={consultor.id}>
-                                            {consultor.name}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
-                            </Grid>
+                            {/*<Grid size={{ xs: 12, md: 6 }}>*/}
+                            {/*    <TextField*/}
+                            {/*        label="Consultor Responsável"*/}
+                            {/*        value={data.consultor_user_id}*/}
+                            {/*        onChange={(e) => setData("consultor_user_id", e.target.value)}*/}
+                            {/*        error={!!errors.consultor_user_id}*/}
+                            {/*        helperText={errors.consultor_user_id}*/}
+                            {/*        select*/}
+                            {/*        required*/}
+                            {/*        fullWidth*/}
+                            {/*    >*/}
+                            {/*        {consultores.map((consultor) => (*/}
+                            {/*            <MenuItem key={consultor.id} value={consultor.id}>*/}
+                            {/*                {consultor.name}*/}
+                            {/*            </MenuItem>*/}
+                            {/*        ))}*/}
+                            {/*    </TextField>*/}
+                            {/*</Grid>*/}
 
-                            <Grid size={{xs: 12, md: 6}}>
+                            <Grid size={{ xs: 12, md: 6 }}>
                                 <TextField
                                     label="Concessionária"
                                     value={data.concessionaria_id}
@@ -113,7 +136,7 @@ const Page = ({usina, produtores = [], consultores = [], concessionarias = [], b
                                 </TextField>
                             </Grid>
 
-                            <Grid size={{xs: 12, md: 6}}>
+                            <Grid size={{ xs: 12, md: 6 }}>
                                 <TextField
                                     label="Grupo de Usina"
                                     value={data.usina_block_id}
@@ -132,88 +155,105 @@ const Page = ({usina, produtores = [], consultores = [], concessionarias = [], b
                                 </TextField>
                             </Grid>
 
-                            <Grid size={12}>
+                            <Grid size={{ xs: 12, md: 4 }}>
                                 <TextField
-                                    label="Endereço da Usina"
-                                    value={data.address_id}
-                                    onChange={(e) => setData("address_id", e.target.value)}
-                                    error={!!errors.address_id}
-                                    helperText={errors.address_id}
-                                    select
+                                    label="UC"
+                                    value={data.uc}
+                                    onChange={(e) => setData("uc", e.target.value)}
+                                    error={!!errors.uc}
+                                    helperText={errors.uc}
                                     fullWidth
-                                >
-                                    <MenuItem value="">Não informar</MenuItem>
-                                    {addresses.map((address) => (
-                                        <MenuItem key={address.id} value={address.id}>
-                                            {addressLabel(address)}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
+                                />
                             </Grid>
 
-                            <Grid size={{xs: 12, md: 4}}>
-                                <TextField label="UC" value={data.uc} onChange={(e) => setData("uc", e.target.value)} error={!!errors.uc} helperText={errors.uc}
-                                           fullWidth/>
-                            </Grid>
-
-                            <Grid size={{xs: 12, md: 4}}>
-                                <TextField label="Média de Geração" value={data.media_geracao} onChange={(e) => setData("media_geracao", e.target.value)}
-                                           error={!!errors.media_geracao} helperText={errors.media_geracao} type="number" fullWidth/>
-                            </Grid>
-
-                            <Grid size={{xs: 12, md: 4}}>
-                                <TextField label="Potência da Usina" value={data.potencia_usina} onChange={(e) => setData("potencia_usina", e.target.value)}
-                                           error={!!errors.potencia_usina} helperText={errors.potencia_usina} type="number" fullWidth/>
-                            </Grid>
-
-                            <Grid size={{xs: 12, md: 4}}>
-                                <TextField label="Prazo de Locação" value={data.prazo_locacao} onChange={(e) => setData("prazo_locacao", e.target.value)}
-                                           error={!!errors.prazo_locacao} helperText={errors.prazo_locacao} type="number" fullWidth/>
-                            </Grid>
-
-                            <Grid size={{xs: 12, md: 4}}>
-                                <TextField label="Taxa de Comissão" value={data.taxa_comissao} onChange={(e) => setData("taxa_comissao", e.target.value)}
-                                           error={!!errors.taxa_comissao} helperText={errors.taxa_comissao} type="number" fullWidth/>
-                            </Grid>
-
-                            <Grid size={{xs: 12, md: 4}}>
+                            <Grid size={{ xs: 12, md: 4 }}>
                                 <TextField
-                                    label="Status"
-                                    value={data.status}
-                                    onChange={(e) => setData("status", e.target.value)}
-                                    error={!!errors.status}
-                                    helperText={errors.status}
-                                    select
+                                    label="Média de Geração"
+                                    value={data.media_geracao}
+                                    onChange={(e) => setData("media_geracao", e.target.value)}
+                                    error={!!errors.media_geracao}
+                                    helperText={errors.media_geracao}
+                                    type="number"
                                     required
                                     fullWidth
+                                />
+                            </Grid>
+
+                            <Grid size={{ xs: 12, md: 4 }}>
+                                <TextField
+                                    label="Potência da Usina"
+                                    value={data.potencia_usina}
+                                    onChange={(e) => setData("potencia_usina", e.target.value)}
+                                    error={!!errors.potencia_usina}
+                                    helperText={errors.potencia_usina}
+                                    type="number"
+                                    required
+                                    fullWidth
+                                />
+                            </Grid>
+
+                            <Grid size={{ xs: 12, md: 4 }}>
+                                <TextField
+                                    label="Prazo de Locação"
+                                    value={data.prazo_locacao}
+                                    onChange={(e) => setData("prazo_locacao", e.target.value)}
+                                    error={!!errors.prazo_locacao}
+                                    helperText={errors.prazo_locacao}
+                                    required
+                                    select
+                                    fullWidth
                                 >
-                                    <MenuItem value="ativo">Ativo</MenuItem>
-                                    <MenuItem value="inativo">Inativo</MenuItem>
-                                    <MenuItem value="pendente">Pendente</MenuItem>
-                                    <MenuItem value="manutencao">Manutenção</MenuItem>
+                                    <MenuItem value={12}>12 meses (1 ano)</MenuItem>
+                                    <MenuItem value={24}>24 meses (2 anos)</MenuItem>
+                                    <MenuItem value={36}>36 meses (3 anos)</MenuItem>
+                                    <MenuItem value={48}>48 meses (4 anos)</MenuItem>
+                                    <MenuItem value={60}>60 meses (5 anos)</MenuItem>
                                 </TextField>
                             </Grid>
 
                             <Grid size={12}>
-                                <TextField label="Inversores" value={data.inversores} onChange={(e) => setData("inversores", e.target.value)} error={!!errors.inversores}
-                                           helperText={errors.inversores} multiline rows={3} fullWidth/>
+                                <TextField
+                                    label="Inversores"
+                                    value={data.inversores}
+                                    onChange={(e) => setData("inversores", e.target.value)}
+                                    error={!!errors.inversores}
+                                    helperText={errors.inversores}
+                                    multiline
+                                    rows={3}
+                                    required
+                                    fullWidth
+                                />
                             </Grid>
 
                             <Grid size={12}>
-                                <TextField label="Módulos" value={data.modulos} onChange={(e) => setData("modulos", e.target.value)} error={!!errors.modulos}
-                                           helperText={errors.modulos} multiline rows={3} fullWidth/>
+                                <TextField
+                                    label="Módulos"
+                                    value={data.modulos}
+                                    onChange={(e) => setData("modulos", e.target.value)}
+                                    error={!!errors.modulos}
+                                    helperText={errors.modulos}
+                                    multiline
+                                    rows={3}
+                                    required
+                                    fullWidth
+                                />
                             </Grid>
                         </Grid>
                     </CardContent>
                 </Card>
 
+                <AddressCard
+                    title="Endereço da Usina"
+                    address={data.address}
+                    setAddressData={setAddressData}
+                    errors={errors}
+                />
+
                 <div className="text-center">
                     <Button
-                        // type="submit"
-                        type="button"
-                        onClick={submit}
+                        type="submit"
                         color="success"
-                        startIcon={<IconDeviceFloppy/>}
+                        startIcon={<IconDeviceFloppy />}
                         disabled={processing}
                     >
                         Atualizar Usina
