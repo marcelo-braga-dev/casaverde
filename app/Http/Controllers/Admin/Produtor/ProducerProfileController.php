@@ -47,10 +47,20 @@ class ProducerProfileController extends Controller
         $result = $service->handle($request->validated());
 
         return redirect()
-            ->route('consultor.propostas.produtor.create', [
+            ->route('consultor.producer.profiles.create', [
                 'producer_profile_id' => $result['producer_profile']->id,
             ])
-            ->with('success', $result['message']);
+            ->with([
+                'success' => $result['message'],
+                'producer_created' => true,
+                'producer_id' => $result['producer_profile']->id,
+            ]);
+
+//        return redirect()
+//            ->route('consultor.propostas.produtor.create', [
+//                'producer_profile_id' => $result['producer_profile']->id,
+//            ])
+//            ->with('success', $result['message']);
     }
 
     public function show(ProducerProfile $producerProfile)

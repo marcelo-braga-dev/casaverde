@@ -5,7 +5,7 @@ import axios from 'axios';
 
 ChartJS.register(BarController, CategoryScale, LinearScale, BarElement);
 
-const DescontosGrafico = ({ onExport, idProposta }) => {
+const DescontosGrafico = ({onExport, idProposta, dados}) => {
     const canvasRef = useRef(null);
     const [proposta, setProposta] = useState(null);
 
@@ -25,9 +25,10 @@ const DescontosGrafico = ({ onExport, idProposta }) => {
     useEffect(() => {
         if (!proposta || !canvasRef.current) return;
 
-        const aporteMensal = proposta?.valor_medio * (proposta?.taxa_reducao / 100);
+        // const aporteMensal = proposta?.valor_medio * (proposta?.taxa_reducao / 100);
+        const aporteMensal = dados?.proposal?.valor_medio * (dados?.proposal?.discount_percent / 100);
         const taxa = 0.01; // 1% ao mês
-        const meses = proposta?.prazo_locacao;
+        const meses = dados?.proposal?.prazo_locacao;
 
         let acumulado = 0;
         const acumuladoComRendimento = [];
@@ -37,7 +38,7 @@ const DescontosGrafico = ({ onExport, idProposta }) => {
             acumuladoComRendimento.push(acumulado.toFixed(2));
         }
 
-        const labels = Array.from({ length: meses }, (_, i) => `Mês ${i + 1}`);
+        const labels = Array.from({length: meses}, (_, i) => `Mês ${i + 1}`);
         const datas = acumuladoComRendimento.map(Number);
 
         const ctx = canvasRef.current.getContext('2d');
@@ -79,9 +80,9 @@ const DescontosGrafico = ({ onExport, idProposta }) => {
     return (
         <canvas
             ref={canvasRef}
-            width="800"
+            width="1200"
             height="400"
-            style={{ display: 'none' }} // OCULTA o gráfico na tela
+            style={{display: 'none'}}
         />
     );
 };

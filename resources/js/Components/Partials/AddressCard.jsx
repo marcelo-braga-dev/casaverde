@@ -3,11 +3,41 @@ import {
     Button,
     Card,
     CardContent,
-    CardHeader,
+    CardHeader, MenuItem,
     TextField,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import {IconMapPin, IconSearch} from "@tabler/icons-react";
+
+const estadosBrasil = [
+    { sigla: "AC", nome: "Acre" },
+    { sigla: "AL", nome: "Alagoas" },
+    { sigla: "AP", nome: "Amapá" },
+    { sigla: "AM", nome: "Amazonas" },
+    { sigla: "BA", nome: "Bahia" },
+    { sigla: "CE", nome: "Ceará" },
+    { sigla: "DF", nome: "Distrito Federal" },
+    { sigla: "ES", nome: "Espírito Santo" },
+    { sigla: "GO", nome: "Goiás" },
+    { sigla: "MA", nome: "Maranhão" },
+    { sigla: "MT", nome: "Mato Grosso" },
+    { sigla: "MS", nome: "Mato Grosso do Sul" },
+    { sigla: "MG", nome: "Minas Gerais" },
+    { sigla: "PA", nome: "Pará" },
+    { sigla: "PB", nome: "Paraíba" },
+    { sigla: "PR", nome: "Paraná" },
+    { sigla: "PE", nome: "Pernambuco" },
+    { sigla: "PI", nome: "Piauí" },
+    { sigla: "RJ", nome: "Rio de Janeiro" },
+    { sigla: "RN", nome: "Rio Grande do Norte" },
+    { sigla: "RS", nome: "Rio Grande do Sul" },
+    { sigla: "RO", nome: "Rondônia" },
+    { sigla: "RR", nome: "Roraima" },
+    { sigla: "SC", nome: "Santa Catarina" },
+    { sigla: "SP", nome: "São Paulo" },
+    { sigla: "SE", nome: "Sergipe" },
+    { sigla: "TO", nome: "Tocantins" },
+];
 
 const emptyAddress = {
     cep: "",
@@ -164,13 +194,23 @@ const AddressCard = ({address, setAddressData, title, errors = {}}) => {
                     <Grid size={{xs: 12, md: 2}}>
                         <TextField
                             label="Estado"
-                            value={safeAddress.estado}
+                            value={safeAddress.estado || ""}
                             onChange={(e) => setAddressData("estado", e.target.value.toUpperCase())}
                             error={!!errors["address.estado"]}
                             helperText={errors["address.estado"]}
+                            select
                             required
                             fullWidth
-                        />
+                        >
+                            {estadosBrasil.map((estado) => (
+                                <MenuItem
+                                    key={estado.sigla}
+                                    value={estado.sigla}
+                                >
+                                    {estado.sigla} - {estado.nome}
+                                </MenuItem>
+                            ))}
+                        </TextField>
                     </Grid>
 
                     <Grid size={{xs: 12, md: 6}}>

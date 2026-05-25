@@ -19,7 +19,7 @@ const Page = ({ blocks }) => {
     const items = blocks?.data ?? [];
 
     return (
-        <Layout titlePage="Grupos de Usinas" menu="produtores-solar" subMenu="usinas-block-index">
+        <Layout titlePage="Grupos de Usinas" menu="usinas-solar" subMenu="usinas-block">
             <Head title="Grupos de Usinas" />
 
             <Card>

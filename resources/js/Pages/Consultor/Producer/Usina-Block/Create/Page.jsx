@@ -18,7 +18,7 @@ const Page = () => {
     };
 
     return (
-        <Layout titlePage="Cadastrar Grupo de Usinas" menu="produtores-solar" subMenu="usinas-block-index" backPage>
+        <Layout titlePage="Cadastrar Grupo de Usinas" menu="usinas-solar" subMenu="usinas-block" backPage>
             <Head title="Cadastrar Grupo de Usinas" />
 
             <form onSubmit={submit}>

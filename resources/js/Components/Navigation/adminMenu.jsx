@@ -74,11 +74,6 @@ export const adminMenu = [
                 title: 'Propostas',
                 link: safeRoute('consultor.propostas.produtor.index'),
             },
-            {
-                id: 'usinas-block-index',
-                title: 'Blocos de Usinas',
-                link: safeRoute('consultor.producer.usina-blocks.index'),
-            },
             // {
             //     id: 'produtores-propostas',
             //     title: '_Propostas Produtor',
@@ -96,6 +91,11 @@ export const adminMenu = [
                 id: 'usinas-index',
                 title: 'Usinas',
                 link: safeRoute('consultor.producer.usinas.index'),
+            },
+            {
+                id: 'usinas-block',
+                title: 'Blocos de Usinas',
+                link: safeRoute('consultor.producer.usina-blocks.index'),
             },
             {id: 'usinas-gestao', title: 'Gestão de Energia', link: safeRoute('admin.usinas.management')},
             // {id: 'usinas-vinculos', title: 'Alocação Cliente/Usina', link: safeRoute('admin.usinas.links.index')},

@@ -69,8 +69,8 @@ const PropostaModelo = ({dados, imagemGrafico}) => {
                             </Text>
                         }
                     </View>
-                    {dados?.endereco?.endereco_completo &&
-                        <Text style={styles.field}><Text style={styles.label}>Endereço:</Text> {dados?.endereco?.endereco_completo}</Text>}
+                    {dados?.proposal?.address?.full_address &&
+                        <Text style={styles.field}><Text style={styles.label}>Endereço:</Text> {dados?.proposal?.address?.full_address}</Text>}
                 </View>
 
                 {/* Proposta */}

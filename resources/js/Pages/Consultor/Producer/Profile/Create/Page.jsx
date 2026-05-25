@@ -1,18 +1,19 @@
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
-import { Head, useForm } from "@inertiajs/react";
+import {Head, router, useForm, usePage} from "@inertiajs/react";
 import {
     Button,
     Card,
     CardContent,
-    CardHeader,
-    MenuItem,
-    TextField,
+    CardHeader, Dialog, DialogActions, DialogContent, DialogTitle,
+    MenuItem, Stack,
+    TextField, Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import {IconUserBolt, IconUserPlus} from "@tabler/icons-react";
+import {IconFileInvoice, IconUserBolt, IconUserPlus, IconX} from "@tabler/icons-react";
+import React, {useEffect, useState} from "react";
 
 const Page = () => {
-    const { data, setData, post, processing, errors } = useForm({
+    const {data, setData, post, processing, errors} = useForm({
         tipo_pessoa: "pf",
         cpf: "",
         cnpj: "",
@@ -26,23 +27,52 @@ const Page = () => {
         status: "prospect",
     });
 
+    const {props} = usePage();
+    const [openModal, setOpenModal] = useState(false);
+
+    useEffect(() => {
+
+        if (props.flash?.producer_created) {
+            setOpenModal(true);
+        }
+
+    }, [props.flash]);
+
+    const goToProposal = () => {
+
+        router.visit(
+            route(
+                'consultor.propostas.produtor.create',
+                {
+                    producer_profile_id: props.flash.producer_id,
+                }
+            )
+        );
+    };
+
+    const goToClient = () => {
+        router.visit(
+            route('consultor.producer.profiles.show', props.flash.producer_id)
+        );
+    };
+
     const submit = (e) => {
         e.preventDefault();
 
         post(route("consultor.producer.profiles.store"));
     };
-
+    console.log(props)
     return (
         <Layout titlePage="Cadastrar Produtor" menu="produtores" subMenu="produtores-profile" backPage>
-            <Head title="Cadastrar Cliente" />
+            <Head title="Cadastrar Produtor"/>
 
             <form onSubmit={submit}>
-                <Card sx={{ marginBottom: 4 }}>
-                    <CardHeader title="Dados do Produtor" avatar={<IconUserBolt />} />
+                <Card sx={{marginBottom: 4}}>
+                    <CardHeader title="Dados do Produtor" avatar={<IconUserBolt/>}/>
 
                     <CardContent>
                         <Grid container spacing={3} marginBottom={3}>
-                            <Grid size={{ xs: 12, md: 4 }}>
+                            <Grid size={{xs: 12, md: 4}}>
                                 <TextField
                                     label="Tipo de Pessoa"
                                     value={data.tipo_pessoa}
@@ -61,7 +91,7 @@ const Page = () => {
                         <Grid container spacing={3}>
                             {data.tipo_pessoa === "pf" && (
                                 <>
-                                    <Grid size={{ xs: 12, md: 4 }}>
+                                    <Grid size={{xs: 12, md: 4}}>
                                         <TextField
                                             label="CPF"
                                             className="mask-cpf"
@@ -74,7 +104,7 @@ const Page = () => {
                                         />
                                     </Grid>
 
-                                    <Grid size={{ xs: 12, md: 8 }}>
+                                    <Grid size={{xs: 12, md: 8}}>
                                         <TextField
                                             label="Nome Completo"
                                             value={data.nome}
@@ -90,7 +120,7 @@ const Page = () => {
 
                             {data.tipo_pessoa === "pj" && (
                                 <>
-                                    <Grid size={{ xs: 12, md: 4 }}>
+                                    <Grid size={{xs: 12, md: 4}}>
                                         <TextField
                                             label="CNPJ"
                                             className="mask-cnpj"
@@ -103,7 +133,7 @@ const Page = () => {
                                         />
                                     </Grid>
 
-                                    <Grid size={{ xs: 12, md: 8 }}>
+                                    <Grid size={{xs: 12, md: 8}}>
                                         <TextField
                                             label="Razão Social"
                                             value={data.razao_social}
@@ -115,7 +145,7 @@ const Page = () => {
                                         />
                                     </Grid>
 
-                                    <Grid size={{ xs: 12, md: 6 }}>
+                                    <Grid size={{xs: 12, md: 6}}>
                                         <TextField
                                             label="Nome Fantasia"
                                             value={data.nome_fantasia}
@@ -128,7 +158,7 @@ const Page = () => {
                                 </>
                             )}
 
-                            <Grid size={{ xs: 12, md: 4 }}>
+                            <Grid size={{xs: 12, md: 4}}>
                                 <TextField
                                     label="Email"
                                     value={data.email}
@@ -140,7 +170,7 @@ const Page = () => {
                                 />
                             </Grid>
 
-                            <Grid size={{ xs: 12, md: 4 }}>
+                            <Grid size={{xs: 12, md: 4}}>
                                 <TextField
                                     label="Telefone"
                                     value={data.telefone}
@@ -158,13 +188,47 @@ const Page = () => {
                     <Button
                         type="submit"
                         color="success"
-                        startIcon={<IconUserPlus />}
+                        startIcon={<IconUserPlus/>}
                         disabled={processing}
                     >
-                        Cadastrar Cliente
+                        Cadastrar Produtor
                     </Button>
                 </div>
             </form>
+
+            <Dialog
+                open={openModal}
+                maxWidth="xs"
+                fullWidth
+            >
+                <DialogTitle sx={{fontWeight: 800}}>
+                    Produtor cadastrado com sucesso
+                </DialogTitle>
+                <DialogContent>
+                    <Stack spacing={2} mt={1}>
+                        <Typography>
+                            Deseja criar uma proposta comercial agora?
+                        </Typography>
+                    </Stack>
+                </DialogContent>
+                <DialogActions sx={{p: 3}}>
+                    <Button
+                        variant="outlined"
+                        color="inherit"
+                        startIcon={<IconX size={18}/>}
+                        onClick={goToClient}
+                    >
+                        Não
+                    </Button>
+                    <Button
+                        variant="contained"
+                        startIcon={<IconFileInvoice size={18}/>}
+                        onClick={goToProposal}
+                    >
+                        Sim
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Layout>
     );
 };

@@ -18,8 +18,9 @@ import {
     IconMapPin,
 } from "@tabler/icons-react";
 import PropostaBaixar from "@/Pages/Auth/Cliente/Proposta/Show/Propostas.jsx";
+import ClientePropostaPDF from "@/Components/PropostasPDF/Cliente/ClientePropostaPDF.jsx";
 
-const Page = ({ proposal }) => {
+const Page = ({ proposal, dados }) => {
     const client = proposal?.client_profile;
     const address = proposal?.address;
 
@@ -46,10 +47,12 @@ const Page = ({ proposal }) => {
 
         return parts.length ? parts.join(", ") : "Não informado";
     };
-
+console.log(dados)
     return (
         <Layout titlePage="Detalhes da Proposta" menu="clientes" subMenu="propostas-cliente-index" backPage>
             <Head title="Detalhes da Proposta" />
+
+        {/*<ClientePropostaPDF proposal={proposal} dados={dados}/>*/}
 
             <Card sx={{ marginBottom: 4 }}>
                 <CardHeader
@@ -165,7 +168,7 @@ const Page = ({ proposal }) => {
                 </CardContent>
             </Card>
 
-            <PropostaBaixar idProposta={proposal.id}/>
+            <PropostaBaixar idProposta={proposal.id} dadosProposta={dados} />
         </Layout>
     );
 };

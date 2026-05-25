@@ -34,7 +34,7 @@ export const adminMenu = [
             {id: 'produtores-solar-cadastrados', title: 'Produtores', link: route('auth.produtor.index')},
             {id: 'producer-profiles-index', title: 'Contrato Produtor', link: route('consultor.producer.profiles.index')},
             {id: 'usinas-index', title: 'Usinas', link: route('consultor.producer.usinas.index')},
-            {id: 'usinas-block-index', title: 'Blocos de Usinas', link: route('consultor.producer.usina-blocks.index')},
+            {id: 'usinas-block', title: 'Blocos de Usinas', link: route('consultor.producer.usina-blocks.index')},
             {id: 'produtores-propostas', title: 'Propostas Produtor', link: route('auth.produtor.proposta.index')},
         ],
     },

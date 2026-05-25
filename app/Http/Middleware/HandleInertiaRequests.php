@@ -47,6 +47,8 @@ class HandleInertiaRequests extends Middleware
                 'info' => fn () => $request->session()->get('info'),
                 'client_created' => fn () => $request->session()->get('client_created'),
                 'client_id' => fn () => $request->session()->get('client_id'),
+                'producer_created' => fn () => $request->session()->get('producer_created'),
+                'producer_id' => fn () => $request->session()->get('producer_id'),
             ],
         ];
     }

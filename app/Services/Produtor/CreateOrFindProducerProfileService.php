@@ -4,7 +4,6 @@ namespace App\Services\Produtor;
 
 use App\Models\Cliente\ClientProfile;
 use App\Models\Produtor\ProducerProfile;
-use App\Services\Cliente\StoreDiscountRuleService;
 use App\Services\Config\SystemSettingService;
 use App\src\Roles\RoleUser;
 use Illuminate\Support\Facades\DB;
@@ -39,7 +38,7 @@ class CreateOrFindProducerProfileService
                     'producer_profile' => $existing,
                     'created' => false,
                     'already_exists' => true,
-                    'message' => 'Cliente já existente, cadastro reutilizado.',
+                    'message' => 'Produtor já existente, cadastro reutilizado.',
                 ];
             }
 
@@ -79,7 +78,7 @@ class CreateOrFindProducerProfileService
                 'producer_profile' => $producerProfile,
                 'created' => true,
                 'already_exists' => false,
-                'message' => 'Cliente criado com sucesso.',
+                'message' => 'Produtor criado com sucesso.',
             ];
         });
     }

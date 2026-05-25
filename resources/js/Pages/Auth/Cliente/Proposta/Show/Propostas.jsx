@@ -8,8 +8,9 @@ import {IconDownload, IconEdit, IconFileDownload} from "@tabler/icons-react";
 import Grid from "@mui/material/Grid2";
 import DescontosGrafico from "@/Pages/Auth/Cliente/Proposta/Show/Graficos/DescontosGrafico.jsx";
 import {Link} from "@inertiajs/react";
+import ClientePropostaPDF from "@/Components/PropostasPDF/Cliente/ClientePropostaPDF.jsx";
 
-function PropostaBaixar({idProposta}) {
+function PropostaBaixar({idProposta, dadosProposta}) {
     const [urlPdf, setUrlPdf] = useState()
     const [imagemGrafico, setImagemGrafico] = useState(null);
     const [dados, setDados] = useState([])
@@ -19,8 +20,9 @@ function PropostaBaixar({idProposta}) {
     }, [imagemGrafico]);
 
     const gerarPdfEEnviar = async (info) => {
-        const blob = await pdf(<PropostaPdf idProposta={idProposta} imagemGrafico={imagemGrafico} dados={info}/>).toBlob();
-
+        const blob = await pdf(<PropostaPdf dados={dadosProposta} idProposta={idProposta} imagemGrafico={imagemGrafico} />).toBlob();
+        // const blob = await pdf(<ClientePropostaPDF dados={dadosProposta}/>).toBlob();
+        console.log("XX2")
         const formData = new FormData();
         formData.append('file', blob, 'proposta.pdf');
 
@@ -80,12 +82,13 @@ function PropostaBaixar({idProposta}) {
 
             {!isWebView && <div style={{width: '100%', height: '70vh', border: '1px solid #ccc'}}>
                 <PDFViewer width="100%" height="100%">
-                    <PropostaPdf idProposta={idProposta} imagemGrafico={imagemGrafico} dados={dados}/>
+                    <PropostaPdf idProposta={idProposta} imagemGrafico={imagemGrafico} dados={dadosProposta}/>
+                    {/*<ClientePropostaPDF dados={dadosProposta}/>*/}
                 </PDFViewer>
             </div>}
 
             <div style={{marginTop: 50}}>
-                <DescontosGrafico onExport={setImagemGrafico} idProposta={idProposta}/>
+                <DescontosGrafico onExport={setImagemGrafico} idProposta={idProposta} dados={dadosProposta}/>
             </div>
         </div>
     );
