@@ -44,8 +44,8 @@ class StoreUsinaSolarRequest extends FormRequest
             ],
             'uc' => [
                 'nullable',
-                'string',
-                'max:255',
+                'integer',
+//                'max:255',
             ],
             'media_geracao' => [
                 'nullable',
