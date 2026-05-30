@@ -12,17 +12,17 @@ import {
     TableHead,
     TableRow,
 } from "@mui/material";
-import {IconEye, IconFileCertificate, IconFileText} from "@tabler/icons-react";
+import {IconEye,  IconFileText} from "@tabler/icons-react";
 
-const ClientProposalsList = ({ profile, proposals = [] }) => {
+const ProducerProposalsList = ({ profile, proposals = [] }) => {
     const items = [...proposals].sort((a, b) => b.id - a.id);
 
     return (
         <Card sx={{ marginBottom: 4 }}>
-            <CardHeader title="Propostas do Cliente" avatar={<IconFileText />}
+            <CardHeader title="Propostas do Produtor" avatar={<IconFileText />}
                         action={<Button
                             component={Link}
-                            href={route('consultor.propostas.cliente.create', {client_profile_id: profile.id})}
+                            href={route('consultor.propostas.produtor.create', {producer_profile_id: profile.id})}
                             size="small"
                             variant="outlined"
                         >
@@ -36,17 +36,16 @@ const ClientProposalsList = ({ profile, proposals = [] }) => {
                             <TableRow>
                                 <TableCell>Data</TableCell>
                                 <TableCell>Código</TableCell>
-                                <TableCell>Concessionária</TableCell>
                                 <TableCell>Status</TableCell>
                                 <TableCell>Contrato</TableCell>
-                                <TableCell align="center">Ações</TableCell>
+                                <TableCell align="center"></TableCell>
                             </TableRow>
                         </TableHead>
 
                         <TableBody>
                             {items.length === 0 && (
                                 <TableRow>
-                                    <TableCell colSpan={6}>Nenhuma proposta emitida para este cliente.</TableCell>
+                                    <TableCell colSpan={6}>Nenhuma proposta emitida para este produtor.</TableCell>
                                 </TableRow>
                             )}
 
@@ -54,7 +53,6 @@ const ClientProposalsList = ({ profile, proposals = [] }) => {
                                 <TableRow key={proposal.id}>
                                     <TableCell>{proposal.created_at}</TableCell>
                                     <TableCell>{proposal.proposal_code ?? `#${proposal.id}`}</TableCell>
-                                    <TableCell>{proposal?.concessionaria?.nome ?? "Não informado"}</TableCell>
                                     <TableCell>
                                         <Chip
                                             label={proposal?.status ?? "Sem status"}
@@ -63,26 +61,26 @@ const ClientProposalsList = ({ profile, proposals = [] }) => {
                                         />
                                     </TableCell>
                                     <TableCell>
-                                        {proposal?.contract ? (
-                                            <Link href={route("consultor.cliente.contratos.show", proposal.contract.id)}>
-                                                <Button size="small" variant="outlined">
-                                                    Ver Contrato
-                                                </Button>
-                                            </Link>
-                                        ) : (
-                                            <Link href={route("consultor.cliente.contratos.create", proposal.id)}>
-                                                <Button
-                                                    size="small"
-                                                    color="success"
-                                                    startIcon={<IconFileCertificate />}
-                                                >
-                                                    Emitir Contrato
-                                                </Button>
-                                            </Link>
-                                        )}
+                                        {/*{proposal?.contract ? (*/}
+                                        {/*    <Link href={route("consultor.cliente.contratos.show", proposal.contract.id)}>*/}
+                                        {/*        <Button size="small" variant="outlined">*/}
+                                        {/*            Ver Contrato*/}
+                                        {/*        </Button>*/}
+                                        {/*    </Link>*/}
+                                        {/*) : (*/}
+                                        {/*    <Link href={route("consultor.cliente.contratos.create", proposal.id)}>*/}
+                                        {/*        <Button*/}
+                                        {/*            size="small"*/}
+                                        {/*            color="success"*/}
+                                        {/*            startIcon={<IconFileCertificate />}*/}
+                                        {/*        >*/}
+                                        {/*            Emitir Contrato*/}
+                                        {/*        </Button>*/}
+                                        {/*    </Link>*/}
+                                        {/*)}*/}
                                     </TableCell>
                                     <TableCell align="right">
-                                            <Link href={route("consultor.propostas.cliente.show", proposal.id)}>
+                                            <Link href={route("consultor.propostas.produtor.show", proposal.id)}>
                                                 <Button
                                                     size="small"
                                                     color="success"
@@ -103,4 +101,4 @@ const ClientProposalsList = ({ profile, proposals = [] }) => {
     );
 };
 
-export default ClientProposalsList;
+export default ProducerProposalsList;

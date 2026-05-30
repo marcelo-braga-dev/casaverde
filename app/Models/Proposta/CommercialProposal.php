@@ -7,6 +7,7 @@ use App\Models\Cliente\ClientContract;
 use App\Models\Cliente\ClientProfile;
 use App\Models\Users\User;
 use App\Models\Usina\Concessionaria;
+use App\Utils\ConvertValues;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class CommercialProposal extends BaseModel
@@ -34,16 +35,27 @@ class CommercialProposal extends BaseModel
         'valid_until' => 'date',
         'media_consumo' => 'decimal:2',
         'discount_percent' => 'decimal:2',
-        'taxa_reducao' => 'decimal:2',
         'valor_medio' => 'decimal:2',
     ];
 
     protected $appends = ['proposal_code'];
 
+    //------------
+    // getters
+    //------------
     public function getProposalCodeAttribute($value)
     {
         $id = $this->id;
         return "PC$id";
+    }
+
+    //------------
+    // setters
+    public function setValorMedioAttribute($value)
+    {
+        $this->attributes['valor_medio'] = $value !== null && $value !== ''
+            ? ConvertValues::moneyToFloat($value)
+            : null;
     }
 
     public function clientProfile()

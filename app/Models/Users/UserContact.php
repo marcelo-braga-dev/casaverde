@@ -10,7 +10,6 @@ class UserContact extends Model
     protected $table = 'user_contacts';
 
     protected $fillable = [
-        'user_id',
         'email',
         'celular',
         'celular_2',

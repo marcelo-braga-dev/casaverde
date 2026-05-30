@@ -15,7 +15,8 @@ class StoreClientProfileRequest extends FormRequest
 
     public function rules(): array
     {
-        $clientProfileId = $this->route('client_profile')?->id;
+        $clientProfile = $this->route('cliente');
+        $clientProfileId = $clientProfile?->id;
 
         return [
             'tipo_pessoa' => ['required', Rule::in(['pf', 'pj'])],
@@ -52,9 +53,9 @@ class StoreClientProfileRequest extends FormRequest
 
             'nome_fantasia' => ['nullable', 'string', 'max:255'],
             'email' => ['nullable', 'email', 'max:255'],
+            'celular' => ['nullable', 'string', 'max:30'],
             'telefone' => ['nullable', 'string', 'max:30'],
             'consultor_user_id' => ['nullable', 'integer', 'exists:users,id'],
-            'status' => ['nullable', 'string', 'max:50'],
         ];
     }
 
@@ -75,6 +76,7 @@ class StoreClientProfileRequest extends FormRequest
         $this->merge([
             'cpf' => ClientProfile::normalizeDocument($this->cpf),
             'cnpj' => ClientProfile::normalizeDocument($this->cnpj),
+            'celular' => ClientProfile::normalizeDocument($this->celular),
             'telefone' => ClientProfile::normalizeDocument($this->telefone),
             'email' => $this->email ? mb_strtolower(trim($this->email)) : null,
         ]);

@@ -8,7 +8,7 @@ import {
     CardHeader,
     FormControl,
     FormControlLabel,
-    FormLabel,
+    FormLabel, InputAdornment,
     MenuItem,
     Radio,
     RadioGroup,
@@ -145,7 +145,7 @@ const Page = ({ concessionarias = [], clients = [], selectedClient = null }) => 
 
         post(route("consultor.propostas.cliente.store"));
     };
-
+console.log(data)
     return (
         <Layout titlePage="Emitir Proposta Comercial" menu="clientes" subMenu="propostas-cliente-index" backPage>
             <Head title="Emitir Proposta Comercial" />
@@ -359,6 +359,11 @@ const Page = ({ concessionarias = [], clients = [], selectedClient = null }) => 
                                     label="Média de Consumo"
                                     value={data.media_consumo}
                                     onChange={(e) => setData("media_consumo", e.target.value)}
+                                    slotProps={{
+                                        input: {
+                                            endAdornment: <InputAdornment position="start">kWh/mês</InputAdornment>,
+                                        },
+                                    }}
                                     error={!!errors.media_consumo}
                                     helperText={errors.media_consumo}
                                     type="number"
@@ -389,10 +394,15 @@ const Page = ({ concessionarias = [], clients = [], selectedClient = null }) => 
                                 <TextField
                                     label="Valor Médio"
                                     value={data.valor_medio}
-                                    onChange={(e) => setData("valor_medio", e.target.value)}
+                                    className="mask-money"
+                                    onBlur={(e) => setData("valor_medio", e.target.value)}
+                                    slotProps={{
+                                        input: {
+                                            startAdornment: <InputAdornment position="start">R$</InputAdornment>,
+                                        },
+                                    }}
                                     error={!!errors.valor_medio}
                                     helperText={errors.valor_medio}
-                                    type="number"
                                     fullWidth
                                 />
                             </Grid>

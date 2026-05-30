@@ -3,6 +3,7 @@
 namespace App\Services\Cliente;
 
 use App\Models\Cliente\ClientProfile;
+use App\Models\Users\UserContact;
 use App\Services\Config\SystemSettingService;
 use App\src\Roles\RoleUser;
 use Illuminate\Support\Facades\DB;
@@ -49,6 +50,12 @@ class CreateOrFindClientProfileService
                 $consultorId = $authUser->id;
             }
 
+            $contacts = UserContact::create([
+                'celular' => $data['celular'] ?? null,
+                'telefone' => $data['telefone'] ?? null,
+                'email' => $data['email'] ?? null,
+            ]);
+
             $clientProfile = ClientProfile::create([
                 'tipo_pessoa' => $tipoPessoa,
                 'cpf' => $cpf,
@@ -56,6 +63,7 @@ class CreateOrFindClientProfileService
                 'nome' => $data['nome'] ?? null,
                 'razao_social' => $data['razao_social'] ?? null,
                 'nome_fantasia' => $data['nome_fantasia'] ?? null,
+                'contacts_id' => $contacts->id,
                 'consultor_user_id' => $consultorId,
                 'status' => $data['status'] ?? 'prospect',
                 'is_active_client' => false,

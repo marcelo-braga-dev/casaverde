@@ -9,7 +9,7 @@ import {
     TextField, Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import {IconFileInvoice, IconUserBolt, IconUserPlus, IconX} from "@tabler/icons-react";
+import {IconFileInvoice, IconPhone, IconUserBolt, IconUserPlus, IconX} from "@tabler/icons-react";
 import React, {useEffect, useState} from "react";
 
 const Page = () => {
@@ -61,7 +61,7 @@ const Page = () => {
 
         post(route("consultor.producer.profiles.store"));
     };
-    console.log(props)
+
     return (
         <Layout titlePage="Cadastrar Produtor" menu="produtores" subMenu="produtores-profile" backPage>
             <Head title="Cadastrar Produtor"/>
@@ -158,6 +158,38 @@ const Page = () => {
                                 </>
                             )}
 
+
+                        </Grid>
+                    </CardContent>
+                </Card>
+
+                <Card sx={{marginBottom: 4}}>
+                    <CardHeader title="Contatos" avatar={<IconPhone/>}/>
+
+                    <CardContent>
+                        <Grid container spacing={3} marginBottom={3}>
+                            <Grid size={{xs: 12, md: 4}}>
+                                <TextField
+                                    label="Celular"
+                                    value={data.celular}
+                                    onChange={(e) => setData("celular", e.target.value)}
+                                    className="mask-mobile"
+                                    error={!!errors.celular}
+                                    helperText={errors.celular}
+                                    fullWidth
+                                />
+                            </Grid>
+                            <Grid size={{xs: 12, md: 4}}>
+                                <TextField
+                                    label="Telefone"
+                                    value={data.telefone}
+                                    onChange={(e) => setData("telefone", e.target.value)}
+                                    className="mask-phone"
+                                    error={!!errors.telefone}
+                                    helperText={errors.telefone}
+                                    fullWidth
+                                />
+                            </Grid>
                             <Grid size={{xs: 12, md: 4}}>
                                 <TextField
                                     label="Email"
@@ -166,17 +198,6 @@ const Page = () => {
                                     error={!!errors.email}
                                     helperText={errors.email}
                                     type="email"
-                                    fullWidth
-                                />
-                            </Grid>
-
-                            <Grid size={{xs: 12, md: 4}}>
-                                <TextField
-                                    label="Telefone"
-                                    value={data.telefone}
-                                    onChange={(e) => setData("telefone", e.target.value)}
-                                    error={!!errors.telefone}
-                                    helperText={errors.telefone}
                                     fullWidth
                                 />
                             </Grid>

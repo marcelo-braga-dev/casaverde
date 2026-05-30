@@ -5,13 +5,17 @@ namespace App\Models\Cliente;
 use App\Models\Alert\OperationalAlert;
 use App\Models\Proposta\CommercialProposal;
 use App\Models\Users\User;
+use App\Models\Users\UserContact;
+use App\Utils\FormatValues;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Importacao\ClientEmailImportSetting;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ClientProfile extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
         'client_code',
@@ -21,8 +25,7 @@ class ClientProfile extends Model
         'nome',
         'razao_social',
         'nome_fantasia',
-        //'email',
-        //'telefone',
+        'contacts_id',
         'consultor_user_id',
         'platform_user_id',
         'status',
@@ -40,6 +43,8 @@ class ClientProfile extends Model
         'display_name',
     ];
 
+    protected $with = ['contacts'];
+
     protected static function booted(): void
     {
         static::creating(function (ClientProfile $clientProfile) {
@@ -49,15 +54,11 @@ class ClientProfile extends Model
 
             $clientProfile->cpf = static::normalizeDocument($clientProfile->cpf);
             $clientProfile->cnpj = static::normalizeDocument($clientProfile->cnpj);
-            $clientProfile->telefone = static::normalizeDocument($clientProfile->telefone);
-            $clientProfile->email = $clientProfile->email ? mb_strtolower(trim($clientProfile->email)) : null;
         });
 
         static::updating(function (ClientProfile $clientProfile) {
             $clientProfile->cpf = static::normalizeDocument($clientProfile->cpf);
             $clientProfile->cnpj = static::normalizeDocument($clientProfile->cnpj);
-            $clientProfile->telefone = static::normalizeDocument($clientProfile->telefone);
-            $clientProfile->email = $clientProfile->email ? mb_strtolower(trim($clientProfile->email)) : null;
         });
     }
 
@@ -79,6 +80,33 @@ class ClientProfile extends Model
         return $code;
     }
 
+    //////////////
+    // getters
+    //////////////
+    public function getCpfAttribute()
+    {
+        return isset($this->attributes['cpf']) && $this->attributes['cpf']
+            ? FormatValues::formatCpf($this->attributes['cpf'])
+            : null;
+    }
+
+    public function getCnpjAttribute()
+    {
+        return isset($this->attributes['cnpj']) && $this->attributes['cnpj']
+            ? FormatValues::formatCnpj($this->attributes['cnpj'])
+            : null;
+    }
+
+    public function getDisplayNameAttribute(): string
+    {
+        return $this->tipo_pessoa === 'pj'
+            ? ($this->razao_social ?: ($this->nome_fantasia ?: '-'))
+            : ($this->nome ?: '-');
+    }
+
+    //////////////
+    // relations
+    //////////////
     public function consultor()
     {
         return $this->belongsTo(User::class, 'consultor_user_id');
@@ -126,13 +154,6 @@ class ClientProfile extends Model
         return $this->cpf ?: $this->cnpj;
     }
 
-    public function getDisplayNameAttribute(): string
-    {
-        return $this->tipo_pessoa === 'pj'
-            ? ($this->razao_social ?: ($this->nome_fantasia ?: '-'))
-            : ($this->nome ?: '-');
-    }
-
     public function isProspect(): bool
     {
         return $this->status === 'prospect' || $this->status === 'proposta_emitida';
@@ -171,5 +192,10 @@ class ClientProfile extends Model
     {
         return $this->hasMany(OperationalAlert::class, 'client_profile_id')
             ->whereIn('status', ['open', 'in_progress']);
+    }
+
+    public function contacts()
+    {
+        return $this->belongsTo(UserContact::class, 'contacts_id');
     }
 }

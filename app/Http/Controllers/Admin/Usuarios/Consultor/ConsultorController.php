@@ -19,7 +19,6 @@ class ConsultorController extends Controller
         $consultores = User::query()
             ->with([
                 'userData',
-                'contatos',
             ])
             ->withCount([
                 'clientes',
@@ -68,7 +67,6 @@ class ConsultorController extends Controller
 
         $consultor->load([
             'userData',
-            'contatos',
         ]);
 
         $clients = ClientProfile::query()

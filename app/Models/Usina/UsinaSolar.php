@@ -5,15 +5,16 @@ namespace App\Models\Usina;
 use App\Enums\Usina\UsinaOperationalStatus;
 use App\Models\Alert\OperationalAlert;
 use App\Models\Cliente\ClientUsinaLink;
-use App\Models\Endereco\Address;
 use App\Models\Produtor\ProducerProfile;
 use App\Models\Users\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class UsinaSolar extends Model
 {
     use HasFactory;
+    use SoftDeletes;
 
     protected $fillable = [
         'usina_nome',

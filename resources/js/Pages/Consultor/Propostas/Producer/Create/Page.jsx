@@ -8,7 +8,7 @@ import {
     CardHeader,
     FormControl,
     FormControlLabel,
-    FormLabel,
+    FormLabel, InputAdornment,
     MenuItem,
     Radio,
     RadioGroup,
@@ -367,6 +367,11 @@ const Page = ({concessionarias = [], producers = [], selectedProducer = null}) =
                                     error={!!errors.potencia_usina}
                                     helperText={errors.potencia_usina}
                                     type="number"
+                                    slotProps={{
+                                        input: {
+                                            endAdornment: <InputAdornment position="start">kWp</InputAdornment>,
+                                        },
+                                    }}
                                     fullWidth
                                 />
                             </Grid>
@@ -379,6 +384,11 @@ const Page = ({concessionarias = [], producers = [], selectedProducer = null}) =
                                     error={!!errors.media_geracao}
                                     helperText={errors.media_geracao}
                                     type="number"
+                                    slotProps={{
+                                        input: {
+                                            endAdornment: <InputAdornment position="start">kWh/mês</InputAdornment>,
+                                        },
+                                    }}
                                     fullWidth
                                 />
                             </Grid>
@@ -410,6 +420,11 @@ const Page = ({concessionarias = [], producers = [], selectedProducer = null}) =
                                     error={!!errors.valor_investimento}
                                     helperText={errors.valor_investimento}
                                     type="number"
+                                    slotProps={{
+                                        input: {
+                                            startAdornment: <InputAdornment position="start">R$</InputAdornment>,
+                                        },
+                                    }}
                                     fullWidth
                                 />
                             </Grid>

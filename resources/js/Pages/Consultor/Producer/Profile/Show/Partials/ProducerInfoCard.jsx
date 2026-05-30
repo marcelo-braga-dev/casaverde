@@ -1,27 +1,15 @@
 import {
-    Button,
     Card,
     CardContent,
     CardHeader,
-     Dialog, DialogActions, DialogContent, DialogTitle,
-    Divider,  Stack,
+    Chip,
+    Divider,
     Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import {
-    IconEdit,
-    IconTrash,
-    IconTrashX,
-    IconX,
-    IconPhone,
-    IconUserBolt
-} from "@tabler/icons-react";
-import {Link, router} from "@inertiajs/react";
-import * as React from "react";
-import {useState} from "react";
+import {IconPhone, IconUserBolt} from "@tabler/icons-react";
 
-const ClientInfoCard = ({profile}) => {
-    const [openModal, setOpenModal] = useState(false);
+const ProducerInfoCard = ({profile}) => {
 
     return (<>
         <Card sx={{marginBottom: 4}}>
@@ -30,17 +18,10 @@ const ClientInfoCard = ({profile}) => {
                 subheader={`Consultor: ${profile?.consultor?.nome ?? 'Não Informado'}`}
                 avatar={<IconUserBolt/>}
                 action={
-                    <div className="flex gap-2">
-                        <Link href={route("consultor.user.cliente.edit", profile.id)}>
-                            <Button startIcon={<IconEdit/>} color="success" variant="outlined" size="small">
-                                Editar
-                            </Button>
-                        </Link>
-
-                        <Button startIcon={<IconTrashX/>} color="error" size="small" variant="outlined" onClick={() => setOpenModal(true)}>
-                            Excluir
-                        </Button>
-                    </div>
+                    <Chip
+                        label={profile?.status ?? "Sem status"}
+                        color={profile?.status === "ativo" ? "success" : "default"}
+                    />
                 }
             />
 
@@ -108,42 +89,7 @@ const ClientInfoCard = ({profile}) => {
                 </Grid>
             </CardContent>
         </Card>
-
-        <Dialog
-            open={openModal}
-            maxWidth="xs"
-            fullWidth
-        >
-            <DialogTitle sx={{fontWeight: 800}}>
-                Deletar Cliente
-            </DialogTitle>
-            <DialogContent>
-                <Stack spacing={2} mt={1}>
-                    <Typography>
-                        Deseja realmente deletar este cliente?
-                    </Typography>
-                </Stack>
-            </DialogContent>
-            <DialogActions sx={{p: 3}}>
-                <Button
-                    variant="outlined"
-                    color="inherit"
-                    startIcon={<IconX size={18}/>}
-                    onClick={() => setOpenModal(false)}
-                >
-                    Não
-                </Button>
-                <Button
-                    variant="contained"
-                    color="error"
-                    startIcon={<IconTrash size={18}/>}
-                    onClick={() => router.post(route('consultor.producer.profiles.destroy', profile.id), {_method: "DELETE"})}
-                >
-                    Sim
-                </Button>
-            </DialogActions>
-        </Dialog>
-    </>);
+</>);
 };
 
-export default ClientInfoCard;
+export default ProducerInfoCard;

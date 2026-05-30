@@ -36,12 +36,9 @@ class ClienteController extends Controller
     {
         $this->authorize('create', ClientProfile::class);
 
-        $result = $service->handle(
-            $request->validated()
-        );
+        $result = $service->handle($request->validated());
 
         return redirect()
-            //->route('consultor.user.cliente.index')
             ->back()
             ->with([
                 'success' => $result['message'],
@@ -57,6 +54,7 @@ class ClienteController extends Controller
         return Inertia::render('Consultor/Cliente/Profile/Show/Page', [
 
             'client' => $cliente->load([
+                'contacts',
                 'consultor',
                 'platformUser',
                 'activeUsinaLink.usina',
@@ -73,12 +71,38 @@ class ClienteController extends Controller
             'usinas' => UsinaSolar::query()
                 ->with(['produtor'])
                 ->orderByDesc('id')
-                ->get(['id', 'usina_nome','uc', 'producer_profile_id']),
+                ->get(['id', 'usina_nome', 'uc', 'producer_profile_id']),
 
             'concessionarias' => Concessionaria::query()
                 ->where('status', 'ativo')
                 ->orderBy('nome')
                 ->get(['id', 'nome']),
         ]);
+    }
+
+    public function edit(ClientProfile $cliente)
+    {
+        return Inertia::render('Consultor/Cliente/Profile/Edit/Page',
+            ['client' => $cliente]);
+    }
+
+    public function update(StoreClientProfileRequest $request, ClientProfile $cliente)
+    {
+        $cliente->update($request->validated());
+        $cliente->contacts()->update($request->only(['celular', 'telefone', 'email']));
+
+        return redirect()
+            ->route('consultor.user.cliente.show', $cliente->id)
+            ->with('success', 'Cliente atualizado com sucesso.');
+    }
+
+    public function destroy(ClientProfile $producerProfile)
+    {
+        $producerProfile->delete();
+
+        return redirect()->route('consultor.user.cliente.index')
+            ->with([
+                'success' => "Cliente deletado com sucesso",
+            ]);
     }
 }

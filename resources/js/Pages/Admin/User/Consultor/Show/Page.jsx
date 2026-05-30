@@ -168,7 +168,7 @@ export default function Page({
                                 || '-',
                         },
                     ]}
-                    routeName="admin.usinas.show"
+                    routeName="consultor.producer.usinas.show"
                 />
 
                 <ModernTable

@@ -12,4 +12,5 @@ Route::name('producer.profiles.')
         Route::get('/{producerProfile}', [ProducerProfileController::class, 'show'])->name('show');
         Route::get('/{producerProfile}/edit', [ProducerProfileController::class, 'edit'])->name('edit');
         Route::put('/{producerProfile}', [ProducerProfileController::class, 'update'])->name('update');
+        Route::delete('/{producerProfile}', [ProducerProfileController::class, 'destroy'])->name('destroy');
     });

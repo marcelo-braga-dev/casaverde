@@ -1,19 +1,16 @@
-import AppShell from '@/Layouts/AppShell/AppShell';
 import DataTableCard from '@/Components/DataDisplay/DataTableCard';
 import DataTablePagination from '@/Components/DataDisplay/DataTablePagination';
 import DataTableEmpty from '@/Components/DataDisplay/DataTableEmpty';
 import InfoCell from '@/Components/DataDisplay/InfoCell';
-import RowActions from '@/Components/DataDisplay/RowActions';
 import StatusChip from '@/Components/UI/StatusChip';
 import FilterBar from '@/Components/Filters/FilterBar';
 import FilterTextField from '@/Components/Filters/FilterTextField';
 import FilterSelect from '@/Components/Filters/FilterSelect';
 
-import { Head, Link, router, useForm } from '@inertiajs/react';
+import {Head, Link, router, useForm} from '@inertiajs/react';
 import {
     Box,
     Button,
-    Chip,
     Stack,
     TableCell,
     TableRow,
@@ -21,8 +18,6 @@ import {
 } from '@mui/material';
 import {
     IconEye,
-    IconPlus,
-    IconSearch,
     IconUserPlus,
     IconUsers,
 } from '@tabler/icons-react';
@@ -44,10 +39,10 @@ const getClientDocument = (client) => {
     return client?.cnpj;
 };
 
-export default function Page({ clients, filters = {} }) {
+export default function Page({clients, filters = {}}) {
     const items = clients?.data ?? [];
 
-    const { data, setData, processing } = useForm({
+    const {data, setData, processing} = useForm({
         search: filters?.search ?? '',
         status: filters?.status ?? '',
         tipo_pessoa: filters?.tipo_pessoa ?? '',
@@ -84,7 +79,7 @@ export default function Page({ clients, filters = {} }) {
     return (
 
         <Layout titlePage="Clientes Cadastrados" menu="clientes" subMenu="cliente-index" backPage>
-            <Head title="Clientes Cadastrados" />
+            <Head title="Clientes Cadastrados"/>
 
             <DataTableCard
                 title="Carteira de clientes"
@@ -94,7 +89,7 @@ export default function Page({ clients, filters = {} }) {
                         component={Link}
                         href={route('consultor.user.cliente.create')}
                         variant="contained"
-                        startIcon={<IconUserPlus size={18} />}
+                        startIcon={<IconUserPlus size={18}/>}
                     >
                         Cadastrar cliente
                     </Button>
@@ -117,8 +112,8 @@ export default function Page({ clients, filters = {} }) {
                             value={data.tipo_pessoa}
                             onChange={(value) => setData('tipo_pessoa', value)}
                             options={[
-                                { value: 'pf', label: 'Pessoa Física' },
-                                { value: 'pj', label: 'Pessoa Jurídica' },
+                                {value: 'pf', label: 'Pessoa Física'},
+                                {value: 'pj', label: 'Pessoa Jurídica'},
                             ]}
                         />
 
@@ -127,9 +122,9 @@ export default function Page({ clients, filters = {} }) {
                             value={data.status}
                             onChange={(value) => setData('status', value)}
                             options={[
-                                { value: 'active', label: 'Ativo' },
-                                { value: 'inactive', label: 'Inativo' },
-                                { value: 'contrato_assinado', label: 'Contrato Fechado' },
+                                {value: 'active', label: 'Ativo'},
+                                {value: 'inactive', label: 'Inativo'},
+                                {value: 'contrato_assinado', label: 'Contrato Fechado'},
                             ]}
                         />
                     </FilterBar>
@@ -148,8 +143,7 @@ export default function Page({ clients, filters = {} }) {
                     <TableRow>
                         <TableCell>Cliente</TableCell>
                         <TableCell>Documento</TableCell>
-                        <TableCell>Contato</TableCell>
-                        <TableCell>Localização</TableCell>
+                        <TableCell align="center">Contato</TableCell>
                         <TableCell>Status</TableCell>
                         <TableCell align="right">Ações</TableCell>
                     </TableRow>
@@ -180,37 +174,29 @@ export default function Page({ clients, filters = {} }) {
                             </TableCell>
 
                             <TableCell>
-                                <Typography variant="body2" sx={{ fontWeight: 750 }}>
+                                <Typography variant="body2">
                                     {document || 'Não informado'}
                                 </Typography>
                             </TableCell>
 
-                            <TableCell>
+                            <TableCell align="center">
                                 <Box>
-                                    <Typography variant="body2" sx={{ fontWeight: 750 }}>
-                                        {client?.email || 'Não informado'}
-                                    </Typography>
-
-                                    <Typography variant="caption" color="text.secondary">
-                                        {client?.telefone || 'Telefone não informado'}
-                                    </Typography>
+                                    {client?.contacts?.celular && (
+                                        <Typography variant="body2">
+                                            {client?.contacts?.celular || 'Não informado'}
+                                        </Typography>
+                                    )}
+                                    {client?.contacts?.telefone && (
+                                        <Typography variant="body2">
+                                            {client?.contacts?.telefone || 'Não informado'}
+                                        </Typography>
+                                    )}
+                                    {(client?.contacts?.celular == null &&  client?.contacts?.telefone == null) && '-'}
                                 </Box>
                             </TableCell>
 
                             <TableCell>
-                                <Typography variant="body2" sx={{ fontWeight: 750 }}>
-                                    {client?.cidade || 'Não informado'}
-                                </Typography>
-
-                                {client?.estado && (
-                                    <Typography variant="caption" color="text.secondary">
-                                        {client.estado}
-                                    </Typography>
-                                )}
-                            </TableCell>
-
-                            <TableCell>
-                                <StatusChip status={client?.status} />
+                                <StatusChip status={client?.status}/>
                             </TableCell>
 
                             <TableCell align="right">
@@ -220,7 +206,7 @@ export default function Page({ clients, filters = {} }) {
                                         href={route('consultor.user.cliente.show', client.id)}
                                         size="small"
                                         variant="outlined"
-                                        startIcon={<IconEye size={17} />}
+                                        startIcon={<IconEye size={17}/>}
                                     >
                                         Ver
                                     </Button>
@@ -249,7 +235,7 @@ export default function Page({ clients, filters = {} }) {
                     );
                 })}
             </DataTableCard>
-        {/*</AppShell>*/}
+            {/*</AppShell>*/}
         </Layout>
     );
 }

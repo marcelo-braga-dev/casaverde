@@ -51,8 +51,6 @@ class ClientProposalController extends Controller
                     'nome',
                     'razao_social',
                     'nome_fantasia',
-                    'email',
-                    'telefone',
                 ]),
 
             'concessionarias' => Concessionaria::query()
@@ -83,7 +81,7 @@ class ClientProposalController extends Controller
         $this->authorize('view', $proposal);
 
         $proposal->load([
-
+            'consultor',
             // CLIENTE
             'clientProfile',
             'clientProfile.platformUser',
@@ -280,7 +278,6 @@ class ClientProposalController extends Controller
                 'concessionaria_id' => $data['concessionaria_id'],
                 'address_id' => $address?->id,
                 'media_consumo' => $data['media_consumo'] ?? null,
-                'taxa_reducao' => $data['taxa_reducao'] ?? null,
                 'prazo_locacao' => $data['prazo_locacao'] ?? null,
                 'valor_medio' => $data['valor_medio'] ?? null,
                 'unidade_consumidora' => $data['unidade_consumidora'] ?? null,

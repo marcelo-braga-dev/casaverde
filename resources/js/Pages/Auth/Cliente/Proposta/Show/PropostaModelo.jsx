@@ -12,7 +12,7 @@ import convertFloatToMoney from "@/Utils/Datas/convertFloatToMoney.js";
 const PropostaModelo = ({dados, imagemGrafico}) => {
 
     const valorConsorcio = (valor) => {
-        return valor * (1 - dados?.taxa_reducao / 100)
+        return valor * (1 - dados?.discount_percent / 100)
     }
 
     return <Document>
@@ -27,45 +27,57 @@ const PropostaModelo = ({dados, imagemGrafico}) => {
                 {/* Informações do Cliente */}
                 <Text style={styles.sectionTitle}>INFORMAÇÕES DO CLIENTE</Text>
                 <View style={styles.fieldGroup}>
-                    {dados?.cliente?.user_data?.nome && <Text style={styles.field}><Text style={styles.label}>Nome:</Text> {dados?.cliente?.user_data?.nome}</Text>}
-                    {dados?.cliente?.user_data?.nome_fantasia &&
-                        <Text style={styles.field}><Text style={styles.label}>Nome Fantasia:</Text> {dados?.cliente?.user_data?.nome_fantasia}</Text>}
-                    {dados?.cliente?.user_data?.razao_social &&
-                        <Text style={styles.field}><Text style={styles.label}>Razão Social:</Text> {dados?.cliente?.user_data?.razao_social}</Text>}
+                    {dados?.client_profile?.nome && <Text style={styles.field}><Text style={styles.label}>Nome:</Text> {dados?.client_profile?.nome}</Text>}
+                    {dados?.client_profile?.nome_fantasia &&
+                        <Text style={styles.field}><Text style={styles.label}>Nome Fantasia:</Text> {dados?.client_profile?.nome_fantasia}</Text>}
+                    {dados?.client_profile?.razao_social &&
+                        <Text style={styles.field}><Text style={styles.label}>Razão Social:</Text> {dados?.client_profile?.razao_social}</Text>}
 
                     <View style={styles.tableRow}>
-                        {dados?.cliente?.user_data?.cnpj &&
+                        {dados?.client_profile?.cnpj &&
                             <Text style={{
-                                width: '30%',
+                                width: '100%',
                                 paddingRight: 4,
                             }}>
-                                <Text style={styles.field}><Text style={styles.label}>CNPJ:</Text> {dados?.cliente?.user_data?.cnpj}</Text>
+                                <Text style={styles.field}><Text style={styles.label}>CNPJ:</Text> {dados?.client_profile?.cnpj}</Text>
                             </Text>
                         }
-                        {dados?.cliente?.user_data?.cpf &&
+                        {dados?.client_profile?.cpf &&
                             <Text style={{
-                                width: '30%',
+                                width: '100%',
                                 paddingRight: 4,
                             }}>
-                                <Text style={styles.field}><Text style={styles.label}>CPF:</Text> {dados?.cliente?.user_data?.cpf}</Text>
-                            </Text>
-                        }
-
-                        {dados?.cliente?.contatos?.celular &&
-                            <Text style={{
-                                width: '30%',
-                                paddingRight: 4,
-                            }}>
-                                <Text style={styles.field}><Text style={styles.label}>Celular:</Text> {dados?.cliente?.contatos?.celular}</Text>
+                                <Text style={styles.field}><Text style={styles.label}>CPF:</Text> {dados?.client_profile?.cpf}</Text>
                             </Text>
                         }
 
-                        {dados?.cliente?.contatos?.email &&
+
+                    </View>
+                    <View style={styles.tableRow}>
+                        {dados?.client_profile?.contacts?.celular &&
+                            <Text style={{
+                                width: '30%',
+                                paddingRight: 4,
+                            }}>
+                                <Text style={styles.field}><Text style={styles.label}>Celular:</Text> {dados?.client_profile?.contacts?.celular}</Text>
+                            </Text>
+                        }
+
+                        {dados?.client_profile?.contacts?.telefone &&
+                            <Text style={{
+                                width: '30%',
+                                paddingRight: 4,
+                            }}>
+                                <Text style={styles.field}><Text style={styles.label}>Telefone:</Text> {dados?.client_profile?.contacts?.telefone}</Text>
+                            </Text>
+                        }
+
+                        {dados?.client_profile?.contacts?.email &&
                             <Text style={{
                                 width: '40%',
                                 paddingRight: 4,
                             }}>
-                                <Text style={styles.field}><Text style={styles.label}>E-mail:</Text> {dados?.cliente?.contatos?.email}</Text>
+                                <Text style={styles.field}><Text style={styles.label}>E-mail:</Text> {dados?.client_profile?.contacts?.email}</Text>
                             </Text>
                         }
                     </View>
@@ -76,16 +88,16 @@ const PropostaModelo = ({dados, imagemGrafico}) => {
                 {/* Proposta */}
                 <Text style={styles.sectionTitle}>PROPOSTA</Text>
                 <View style={styles.fieldGroup}>
-                    <Text style={styles.field}><Text style={styles.label}>Gasto Mensal:</Text> {convertFloatToMoney(dados?.valor_medio)}</Text>
+                    <Text style={styles.field}><Text style={styles.label}>Gasto Mensal:</Text> R$ {convertFloatToMoney(dados?.valor_medio)}</Text>
                     <Text style={styles.field}><Text style={styles.label}>Média de Consumo Mensal:</Text> {dados?.media_consumo} kWh/mês</Text>
                     <Text style={styles.field}><Text style={styles.label}>Prazo do Contrato:</Text> {dados?.prazo_locacao} meses</Text>
                 </View>
 
                 <View style={{marginBottom: 12, textAlign: 'center'}}>
-                    <Text style={{fontWeight: 'bold', color: 'green', fontSize: 12, marginBottom: 4}}><Text>Taxa de Redução na Conta de
-                        Energia:</Text> {dados?.taxa_reducao}%</Text>
-                    <Text style={{fontWeight: 'bold', color: 'green', fontSize: 12, marginBottom: 4}}><Text>Desconto Anual
-                        Estimado:</Text> {convertFloatToMoney(dados?.desconto_anual)}*</Text>
+                    <Text style={{fontWeight: 'bold', color: 'green', fontSize: 14, marginBottom: 4}}><Text>Taxa de Redução na Conta de
+                        Energia:</Text> {dados?.discount_percent}%</Text>
+                    {/*<Text style={{fontWeight: 'bold', color: 'green', fontSize: 12, marginBottom: 4}}><Text>Desconto Anual*/}
+                    {/*    Estimado:</Text> {convertFloatToMoney(dados?.desconto_anual)}*</Text>*/}
                 </View>
 
                 {/* Tabela */}

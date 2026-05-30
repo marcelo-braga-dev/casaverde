@@ -11,6 +11,7 @@ use App\src\Roles\RoleUser;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -19,6 +20,7 @@ use Illuminate\Support\Facades\Auth;
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
+    use SoftDeletes;
 
     protected $fillable = [
         'name',
@@ -52,7 +54,6 @@ class User extends Authenticatable
 
     protected $with = [
         'userData',
-        'contatos',
         'consultor',
     ];
 
@@ -149,11 +150,6 @@ class User extends Authenticatable
     public function usinasComoConsultor(): HasMany
     {
         return $this->hasMany(UsinaSolar::class, 'consultor_user_id');
-    }
-
-    public function contatos(): HasOne
-    {
-        return $this->hasOne(UserContact::class, 'user_id');
     }
 
     public function clientes(): HasMany

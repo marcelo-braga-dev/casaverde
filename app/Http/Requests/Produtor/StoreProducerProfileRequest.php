@@ -51,10 +51,10 @@ class StoreProducerProfileRequest extends FormRequest
             ],
 
             'nome_fantasia' => ['nullable', 'string', 'max:255'],
-            'email' => ['nullable', 'email', 'max:255'],
+            'celular' => ['nullable', 'string', 'max:30'],
             'telefone' => ['nullable', 'string', 'max:30'],
+            'email' => ['nullable', 'email', 'max:255'],
             'consultor_user_id' => ['nullable', 'integer', 'exists:users,id'],
-            'status' => ['nullable', 'string', 'max:50'],
         ];
     }
 
@@ -75,6 +75,7 @@ class StoreProducerProfileRequest extends FormRequest
         $this->merge([
             'cpf' => ClientProfile::normalizeDocument($this->cpf),
             'cnpj' => ClientProfile::normalizeDocument($this->cnpj),
+            'celular' => ClientProfile::normalizeDocument($this->celular),
             'telefone' => ClientProfile::normalizeDocument($this->telefone),
             'email' => $this->email ? mb_strtolower(trim($this->email)) : null,
         ]);

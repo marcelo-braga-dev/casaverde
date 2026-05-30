@@ -1,99 +1,58 @@
-import React, {useEffect, useState} from "react";
+import React from "react";
 
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
 
-import {Head, router, useForm, usePage} from "@inertiajs/react";
+import {Head, router, useForm} from "@inertiajs/react";
 
 import {
     Button,
     Card,
     CardContent,
     CardHeader,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
     MenuItem,
     Stack,
     TextField,
-    Typography,
 } from "@mui/material";
 
 import Grid from "@mui/material/Grid2";
 
 import {
-    IconFileInvoice, IconPhone,
+    IconPhone,
     IconUserPlus,
-    IconX,
 } from "@tabler/icons-react";
 
-const Page = () => {
-
-    const {props} = usePage();
-    const [openModal, setOpenModal] = useState(false);
-
-    const clientId = props.flash?.client_id;
-
-    useEffect(() => {
-
-        if (props.flash?.client_created) {
-            setOpenModal(true);
-        }
-
-    }, [props.flash]);
+const Page = ({client}) => {
 
     const {
-        data,
-        setData,
-        post,
-        processing,
-        errors,
+        data, setData, processing, errors,
     } = useForm({
-        tipo_pessoa: "pf",
-        cpf: "",
-        cnpj: "",
-        nome: "",
-        razao_social: "",
-        nome_fantasia: "",
-        celular: "",
-        telefone: "",
-        email: "",
-        consultor_user_id: "",
+        tipo_pessoa: client?.tipo_pessoa,
+        cpf: client?.cpf,
+        cnpj: client?.cnpj,
+        nome: client?.nome,
+        razao_social: client?.razao_social,
+        nome_fantasia: client?.nome_fantasia,
+        celular: client?.contacts?.celular,
+        telefone: client?.contacts?.telefone,
+        email: client?.contacts?.email,
+        client_profile: client?.id,
+        id: client?.id,
     });
 
     const submit = (e) => {
         e.preventDefault();
 
-        post(route("consultor.user.cliente.store"));
-    };
-
-    const goToProposal = () => {
-
-        router.visit(
-            route(
-                'consultor.propostas.cliente.create',
-                {
-                    client_profile_id: clientId,
-                }
-            )
-        );
-    };
-
-    const goToClient = () => {
-        router.visit(
-            route('consultor.user.cliente.show', props.flash.client_id)
-        );
+        router.post(route("consultor.user.cliente.update", client.id), {_method: "PUT", ...data});
     };
 
     return (
         <Layout
-            titlePage="Cadastrar Cliente"
+            titlePage="Atualizar Cliente"
             menu="clientes"
             subMenu="cliente-index"
             backPage
         >
-
-            <Head title="Cadastrar Cliente"/>
+            <Head title="Atualizar Cliente"/>
 
             <form onSubmit={submit}>
 
@@ -319,46 +278,12 @@ const Page = () => {
                         startIcon={<IconUserPlus/>}
                         disabled={processing}
                     >
-                        Cadastrar Cliente
+                        Atualizar Cliente
                     </Button>
 
                 </Stack>
 
             </form>
-
-            <Dialog
-                open={openModal}
-                maxWidth="xs"
-                fullWidth
-            >
-                <DialogTitle sx={{fontWeight: 800}}>
-                    Cliente cadastrado com sucesso
-                </DialogTitle>
-                <DialogContent>
-                    <Stack spacing={2} mt={1}>
-                        <Typography>
-                            Deseja criar uma proposta comercial agora?
-                        </Typography>
-                    </Stack>
-                </DialogContent>
-                <DialogActions sx={{p: 3}}>
-                    <Button
-                        variant="outlined"
-                        color="inherit"
-                        startIcon={<IconX size={18}/>}
-                        onClick={goToClient}
-                    >
-                        Não
-                    </Button>
-                    <Button
-                        variant="contained"
-                        startIcon={<IconFileInvoice size={18}/>}
-                        onClick={goToProposal}
-                    >
-                        Sim
-                    </Button>
-                </DialogActions>
-            </Dialog>
         </Layout>
     );
 };

@@ -17,7 +17,7 @@ import { IconEye, IconPlus, IconUsers } from "@tabler/icons-react";
 
 const Page = ({ producers }) => {
     const items = producers?.data ?? [];
-console.log(items)
+
     return (
         <Layout titlePage="Produtores" menu="produtores" subMenu="produtores-profile" >
             <Head title="Produtores" />
@@ -52,7 +52,7 @@ console.log(items)
                                 {items.map((producer) => (
                                     <TableRow key={producer.id}>
                                         <TableCell>P{producer.id}</TableCell>
-                                        <TableCell>{producer?.nome ?? "Não informado"}</TableCell>
+                                        <TableCell>{producer?.nome ?? producer?.razao_social ?? "Não informado"}</TableCell>
                                         <TableCell>{producer?.cpf ?? producer?.cnpj ?? "Não informado"}</TableCell>
                                         <TableCell>
                                             <Chip

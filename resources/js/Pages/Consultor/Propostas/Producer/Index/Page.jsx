@@ -19,9 +19,9 @@ const Page = ({ proposals }) => {
     const items = proposals?.data ?? [];
 
     const getClientName = (proposal) => {
-        const client = proposal?.client_profile;
+        const producer = proposal?.producer_profile;
 
-        return client?.nome || client?.razao_social || client?.nome_fantasia || "Cliente não informado";
+        return producer?.nome || producer?.razao_social || producer?.nome_fantasia || "Cliente não informado";
     };
 
     return (
@@ -47,9 +47,9 @@ const Page = ({ proposals }) => {
                             <TableHead>
                                 <TableRow>
                                     <TableCell>Código</TableCell>
-                                    <TableCell>Cliente</TableCell>
+                                    <TableCell>Produtor</TableCell>
                                     <TableCell>Consultor</TableCell>
-                                    <TableCell>Consumo Médio</TableCell>
+                                    <TableCell>Emitido Em</TableCell>
                                     <TableCell>Status</TableCell>
                                     <TableCell align="right">Ações</TableCell>
                                 </TableRow>
@@ -61,7 +61,7 @@ const Page = ({ proposals }) => {
                                         <TableCell>{proposal?.proposal_code ?? proposal.id}</TableCell>
                                         <TableCell>{getClientName(proposal)}</TableCell>
                                         <TableCell>{proposal?.consultor?.name ?? "Não informado"}</TableCell>
-                                        <TableCell>{proposal?.media_consumo ?? "Não informado"}</TableCell>
+                                        <TableCell>{proposal?.created_at}</TableCell>
                                         <TableCell>
                                             <Chip
                                                 label={proposal?.status ?? "Sem status"}

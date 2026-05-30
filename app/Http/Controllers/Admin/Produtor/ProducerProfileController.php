@@ -43,7 +43,6 @@ class ProducerProfileController extends Controller
     )
     {
         //$this->authorize('create', ProducerProfile::class);
-
         $result = $service->handle($request->validated());
 
         return redirect()
@@ -55,22 +54,16 @@ class ProducerProfileController extends Controller
                 'producer_created' => true,
                 'producer_id' => $result['producer_profile']->id,
             ]);
-
-//        return redirect()
-//            ->route('consultor.propostas.produtor.create', [
-//                'producer_profile_id' => $result['producer_profile']->id,
-//            ])
-//            ->with('success', $result['message']);
     }
 
     public function show(ProducerProfile $producerProfile)
     {
         return Inertia::render('Consultor/Producer/Profile/Show/Page', [
             'producer' => $producerProfile->load([
-                'user',
-                'createdBy',
-                'adminAddress',
-                'usinaAddress',
+                'proposals',
+                'consultor',
+                'usinas',
+                'usinas.activeClientLinks',
             ]),
         ]);
     }
@@ -78,32 +71,27 @@ class ProducerProfileController extends Controller
     public function edit(ProducerProfile $producerProfile)
     {
         return Inertia::render('Consultor/Producer/Profile/Edit/Page', [
-            'producer' => $producerProfile->load([
-                'user',
-                'createdBy',
-                'adminAddress',
-                'usinaAddress',
-            ]),
-            'users' => User::query()
-                ->where('role_id', RoleUser::$PRODUTOR)
-                ->orderBy('name')
-                ->get(['id', 'name', 'email', 'consultor_id']),
-            'responsaveisCadastro' => User::query()
-                ->whereIn('role_id', [RoleUser::$ADMIN, RoleUser::$CONSULTOR])
-                ->orderBy('name')
-                ->get(['id', 'name', 'email']),
-            'addresses' => Address::query()
-                ->orderByDesc('id')
-                ->get(['id', 'rua', 'numero', 'bairro', 'cidade', 'estado']),
+            'producer' => $producerProfile,
         ]);
     }
 
     public function update(StoreProducerProfileRequest $request, ProducerProfile $producerProfile)
     {
         $producerProfile->update($request->validated());
+        $producerProfile->contacts()->update($request->only(['celular', 'telefone', 'email']));
 
         return redirect()
             ->route('consultor.producer.profiles.show', $producerProfile->id)
             ->with('success', 'Perfil de produtor atualizado com sucesso.');
+    }
+
+    public function destroy(ProducerProfile $producerProfile)
+    {
+        $producerProfile->delete();
+
+        return redirect()->route('consultor.producer.profiles.index')
+            ->with([
+                'success' => "Produtor deletado com sucesso",
+            ]);
     }
 }

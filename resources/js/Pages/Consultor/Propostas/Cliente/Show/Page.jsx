@@ -1,7 +1,6 @@
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
-import { Head, Link } from "@inertiajs/react";
+import { Head } from "@inertiajs/react";
 import {
-    Button,
     Card,
     CardContent,
     CardHeader,
@@ -11,18 +10,14 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import {
-    IconArrowLeft,
-    IconEdit,
-    IconFileDownload,
     IconFileText,
     IconMapPin,
 } from "@tabler/icons-react";
 import PropostaBaixar from "@/Pages/Auth/Cliente/Proposta/Show/Propostas.jsx";
-import ClientePropostaPDF from "@/Components/PropostasPDF/Cliente/ClientePropostaPDF.jsx";
+import convertFloatToMoney from "@/Utils/Datas/convertFloatToMoney.js";
 
-const Page = ({ proposal, dados }) => {
+const Page = ({ proposal }) => {
     const client = proposal?.client_profile;
-    const address = proposal?.address;
 
     const getClientName = () => {
         return client?.nome || client?.razao_social || client?.nome_fantasia || "Cliente não informado";
@@ -33,21 +28,7 @@ const Page = ({ proposal, dados }) => {
 
         return String(value).substring(0, 10);
     };
-
-    const addressLine = () => {
-        if (!address) return "Não informado";
-
-        const parts = [
-            address?.rua,
-            address?.numero,
-            address?.bairro,
-            address?.cidade,
-            address?.estado,
-        ].filter(Boolean);
-
-        return parts.length ? parts.join(", ") : "Não informado";
-    };
-console.log(dados)
+console.log(proposal)
     return (
         <Layout titlePage="Detalhes da Proposta" menu="clientes" subMenu="propostas-cliente-index" backPage>
             <Head title="Detalhes da Proposta" />
@@ -99,7 +80,7 @@ console.log(dados)
                         <Grid size={{ xs: 12, md: 4 }}>
                             <Typography variant="subtitle2">Taxa de Redução</Typography>
                             <Typography>
-                                {proposal?.taxa_reducao ? `${proposal.taxa_reducao}%` : "Não informado"}
+                                {proposal?.discount_percent ? `${proposal.discount_percent}%` : "Não informado"}
                             </Typography>
                         </Grid>
 
@@ -110,12 +91,12 @@ console.log(dados)
 
                         <Grid size={{ xs: 12, md: 4 }}>
                             <Typography variant="subtitle2">Valor Médio</Typography>
-                            <Typography>{proposal?.valor_medio ?? "Não informado"}</Typography>
+                            <Typography>R$ {convertFloatToMoney(proposal?.valor_medio )?? "Não informado"}</Typography>
                         </Grid>
 
                         <Grid size={{ xs: 12, md: 4 }}>
                             <Typography variant="subtitle2">Emitida em</Typography>
-                            <Typography>{dateLabel(proposal?.issued_at)}</Typography>
+                            <Typography>{proposal?.created_at}</Typography>
                         </Grid>
 
                         <Grid size={{ xs: 12, md: 4 }}>
@@ -138,37 +119,13 @@ console.log(dados)
                     <Grid container spacing={3}>
                         <Grid size={12}>
                             <Typography variant="subtitle2">Endereço</Typography>
-                            <Typography>{addressLine()}</Typography>
-                        </Grid>
-
-                        <Grid size={{ xs: 12, md: 3 }}>
-                            <Typography variant="subtitle2">CEP</Typography>
-                            <Typography>{address?.cep ?? "Não informado"}</Typography>
-                        </Grid>
-
-                        <Grid size={{ xs: 12, md: 3 }}>
-                            <Typography variant="subtitle2">Complemento</Typography>
-                            <Typography>{address?.complemento ?? "Não informado"}</Typography>
-                        </Grid>
-
-                        <Grid size={{ xs: 12, md: 3 }}>
-                            <Typography variant="subtitle2">Referência</Typography>
-                            <Typography>{address?.referencia ?? "Não informado"}</Typography>
-                        </Grid>
-
-                        <Grid size={{ xs: 12, md: 3 }}>
-                            <Typography variant="subtitle2">Coordenadas</Typography>
-                            <Typography>
-                                {address?.latitude && address?.longitude
-                                    ? `${address.latitude}, ${address.longitude}`
-                                    : "Não informado"}
-                            </Typography>
+                            <Typography>{proposal?.address.full_address}</Typography>
                         </Grid>
                     </Grid>
                 </CardContent>
             </Card>
 
-            <PropostaBaixar idProposta={proposal.id} dadosProposta={dados} />
+            <PropostaBaixar idProposta={proposal.id} dadosProposta={proposal} />
         </Layout>
     );
 };

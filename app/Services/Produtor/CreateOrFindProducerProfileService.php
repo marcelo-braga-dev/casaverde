@@ -4,6 +4,7 @@ namespace App\Services\Produtor;
 
 use App\Models\Cliente\ClientProfile;
 use App\Models\Produtor\ProducerProfile;
+use App\Models\Users\UserContact;
 use App\Services\Config\SystemSettingService;
 use App\src\Roles\RoleUser;
 use Illuminate\Support\Facades\DB;
@@ -50,6 +51,12 @@ class CreateOrFindProducerProfileService
                 $consultorId = $authUser->id;
             }
 
+            $contacts = UserContact::create([
+                'celular' => $data['celular'] ?? null,
+                'telefone' => $data['telefone'] ?? null,
+                'email' => $data['email'] ?? null,
+            ]);
+
             $producerProfile = ProducerProfile::create([
                 'tipo_pessoa' => $tipoPessoa,
                 'cpf' => $cpf,
@@ -57,6 +64,7 @@ class CreateOrFindProducerProfileService
                 'nome' => $data['nome'] ?? null,
                 'razao_social' => $data['razao_social'] ?? null,
                 'nome_fantasia' => $data['nome_fantasia'] ?? null,
+                'contacts_id' => $contacts->id,
                 'consultor_user_id' => $consultorId,
                 'status' => $data['status'] ?? 'prospect',
                 'is_active_producer' => false,

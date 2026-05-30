@@ -18,7 +18,6 @@ import {
     IconMapPin,
 } from "@tabler/icons-react";
 
-import PropostaBaixar from "@/Pages/Auth/Cliente/Proposta/Show/Propostas.jsx";
 import PropostaProdutor from "@/Pages/Auth/Produtor/Proposta/Show/PropostaProdutor.jsx";
 
 const statusConfig = {
@@ -46,7 +45,6 @@ const statusConfig = {
 const Page = ({proposal}) => {
 
     const producer = proposal?.producer_profile;
-    const address = proposal?.address;
 
     const getProducerName = () => {
 
@@ -79,24 +77,6 @@ const Page = ({proposal}) => {
         });
     };
 
-    const addressLine = () => {
-
-        if (!address) {
-            return "Não informado";
-        }
-
-        const parts = [
-            address?.rua,
-            address?.numero,
-            address?.bairro,
-            address?.cidade,
-            address?.estado,
-        ].filter(Boolean);
-
-        return parts.length
-            ? parts.join(", ")
-            : "Não informado";
-    };
 
     const status =
         statusConfig[proposal?.status] ||
@@ -225,7 +205,7 @@ const Page = ({proposal}) => {
 
                         <Grid size={{xs: 12, md: 4}}>
                             <Typography variant="subtitle2">
-                                Percentual Preenchimento
+                                Margem de Desconto
                             </Typography>
 
                             <Typography>
@@ -241,7 +221,7 @@ const Page = ({proposal}) => {
                             </Typography>
 
                             <Typography>
-                                {dateLabel(proposal?.issued_at)}
+                                {(proposal?.created_at)}
                             </Typography>
                         </Grid>
 
@@ -288,54 +268,10 @@ const Page = ({proposal}) => {
                             </Typography>
 
                             <Typography>
-                                {addressLine()}
+                                {proposal?.address?.full_address}
                             </Typography>
                         </Grid>
-
-                        <Grid size={{xs: 12, md: 3}}>
-                            <Typography variant="subtitle2">
-                                CEP
-                            </Typography>
-
-                            <Typography>
-                                {address?.cep || "Não informado"}
-                            </Typography>
-                        </Grid>
-
-                        <Grid size={{xs: 12, md: 3}}>
-                            <Typography variant="subtitle2">
-                                Complemento
-                            </Typography>
-
-                            <Typography>
-                                {address?.complemento || "Não informado"}
-                            </Typography>
-                        </Grid>
-
-                        <Grid size={{xs: 12, md: 3}}>
-                            <Typography variant="subtitle2">
-                                Referência
-                            </Typography>
-
-                            <Typography>
-                                {address?.referencia || "Não informado"}
-                            </Typography>
-                        </Grid>
-
-                        <Grid size={{xs: 12, md: 3}}>
-                            <Typography variant="subtitle2">
-                                Coordenadas
-                            </Typography>
-
-                            <Typography>
-                                {address?.latitude && address?.longitude
-                                    ? `${address.latitude}, ${address.longitude}`
-                                    : "Não informado"}
-                            </Typography>
-                        </Grid>
-
                     </Grid>
-
                 </CardContent>
 
             </Card>

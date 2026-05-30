@@ -41,16 +41,10 @@ class FormatValues
     {
         $phone = preg_replace('/\D/', '', $phone);
 
-        if (substr($phone, 0, 2) !== '55') {
-            $phone = '55' . $phone;
-        }
-
-        $phoneWithoutCountryCode = substr($phone, 2);
-
-        if (strlen($phoneWithoutCountryCode) === 10) {
-            return preg_replace('/(\d{2})(\d{4})(\d{4})/', '+55 ($1) $2-$3', $phoneWithoutCountryCode);
-        } elseif (strlen($phoneWithoutCountryCode) === 11) {
-            return preg_replace('/(\d{2})(\d{1})(\d{4})(\d{4})/', '+55 ($1) $2 $3-$4', $phoneWithoutCountryCode);
+        if (strlen($phone) === 10) {
+            return preg_replace('/(\d{2})(\d{4})(\d{4})/', '($1) $2-$3', $phone);
+        } elseif (strlen($phone) === 11) {
+            return preg_replace('/(\d{2})(\d{1})(\d{4})(\d{4})/', '($1) $2 $3-$4', $phone);
         }
 
         return $phone;

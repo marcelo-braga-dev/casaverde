@@ -15,7 +15,7 @@ export default function useInputMask() {
 
             $('.mask-phone input').mask('(00) 0000-0000');
 
-            $('.mask-mobile input').mask('(00) 00000-0000');
+            $('.mask-mobile input').mask('(00) 0 0000-0000');
 
             //$('.mask-cpf').mask('000.000.000-00');
             $('.mask-cpf input').mask('000.000.000-00');

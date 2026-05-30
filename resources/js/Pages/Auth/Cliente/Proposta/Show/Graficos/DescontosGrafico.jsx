@@ -26,9 +26,9 @@ const DescontosGrafico = ({onExport, idProposta, dados}) => {
         if (!proposta || !canvasRef.current) return;
 
         // const aporteMensal = proposta?.valor_medio * (proposta?.taxa_reducao / 100);
-        const aporteMensal = dados?.proposal?.valor_medio * (dados?.proposal?.discount_percent / 100);
+        const aporteMensal = dados?.valor_medio * (dados?.discount_percent / 100);
         const taxa = 0.01; // 1% ao mês
-        const meses = dados?.proposal?.prazo_locacao;
+        const meses = dados?.prazo_locacao;
 
         let acumulado = 0;
         const acumuladoComRendimento = [];
