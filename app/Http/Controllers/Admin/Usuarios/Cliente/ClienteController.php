@@ -96,9 +96,9 @@ class ClienteController extends Controller
             ->with('success', 'Cliente atualizado com sucesso.');
     }
 
-    public function destroy(ClientProfile $producerProfile)
+    public function destroy(ClientProfile $cliente)
     {
-        $producerProfile->delete();
+        $cliente->delete();
 
         return redirect()->route('consultor.user.cliente.index')
             ->with([

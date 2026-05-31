@@ -86,29 +86,17 @@ const Page = () => {
     };
 
     return (
-        <Layout
-            titlePage="Cadastrar Cliente"
-            menu="clientes"
-            subMenu="cliente-index"
-            backPage
-        >
-
+        <Layout titlePage="Cadastrar Cliente" menu="clientes" subMenu="cliente-index" backPage>
             <Head title="Cadastrar Cliente"/>
 
             <form onSubmit={submit}>
-
                 <Card
                     className="cv-card"
                     sx={{
                         marginBottom: 4,
                     }}
                 >
-
-                    <CardHeader
-                        title="Dados do Cliente"
-                        avatar={<IconUserPlus/>}
-                    />
-
+                    <CardHeader title="Dados do Cliente" avatar={<IconUserPlus/>}/>
                     <CardContent>
 
                         <Grid
@@ -116,9 +104,7 @@ const Page = () => {
                             spacing={3}
                             marginBottom={3}
                         >
-
                             <Grid size={{xs: 12, md: 4}}>
-
                                 <TextField
                                     label="Tipo de Pessoa"
                                     value={data.tipo_pessoa}
@@ -134,31 +120,20 @@ const Page = () => {
                                     required
                                     fullWidth
                                 >
-
                                     <MenuItem value="pf">
                                         Pessoa Física
                                     </MenuItem>
-
                                     <MenuItem value="pj">
                                         Pessoa Jurídica
                                     </MenuItem>
-
                                 </TextField>
-
                             </Grid>
-
                         </Grid>
 
-                        <Grid
-                            container
-                            spacing={3}
-                        >
-
+                        <Grid container spacing={3}>
                             {data.tipo_pessoa === "pf" && (
                                 <>
-
                                     <Grid size={{xs: 12, md: 4}}>
-
                                         <TextField
                                             label="CPF"
                                             className="mask-cpf"
@@ -174,11 +149,9 @@ const Page = () => {
                                             required
                                             fullWidth
                                         />
-
                                     </Grid>
 
                                     <Grid size={{xs: 12, md: 8}}>
-
                                         <TextField
                                             label="Nome Completo"
                                             value={data.nome}
@@ -193,17 +166,13 @@ const Page = () => {
                                             required
                                             fullWidth
                                         />
-
                                     </Grid>
-
                                 </>
                             )}
 
                             {data.tipo_pessoa === "pj" && (
                                 <>
-
                                     <Grid size={{xs: 12, md: 4}}>
-
                                         <TextField
                                             label="CNPJ"
                                             className="mask-cnpj"
@@ -219,7 +188,6 @@ const Page = () => {
                                             required
                                             fullWidth
                                         />
-
                                     </Grid>
 
                                     <Grid size={{xs: 12, md: 8}}>
@@ -238,11 +206,9 @@ const Page = () => {
                                             required
                                             fullWidth
                                         />
-
                                     </Grid>
 
                                     <Grid size={{xs: 12, md: 6}}>
-
                                         <TextField
                                             label="Nome Fantasia"
                                             value={data.nome_fantasia}
@@ -256,9 +222,7 @@ const Page = () => {
                                             helperText={errors.nome_fantasia}
                                             fullWidth
                                         />
-
                                     </Grid>
-
                                 </>
                             )}
                         </Grid>
@@ -311,7 +275,6 @@ const Page = () => {
                     direction="row"
                     justifyContent="center"
                 >
-
                     <Button
                         type="submit"
                         variant="contained"
@@ -321,9 +284,7 @@ const Page = () => {
                     >
                         Cadastrar Cliente
                     </Button>
-
                 </Stack>
-
             </form>
 
             <Dialog

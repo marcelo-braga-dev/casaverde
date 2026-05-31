@@ -46,7 +46,7 @@ class CreateOrFindClientProfileService
 
             $consultorId = $data['consultor_user_id'] ?? null;
 
-            if (!$consultorId && $authUser && $authUser->role_id === RoleUser::$CONSULTOR) {
+            if (!$consultorId && $authUser) {
                 $consultorId = $authUser->id;
             }
 
@@ -69,7 +69,7 @@ class CreateOrFindClientProfileService
                 'is_active_client' => false,
             ]);
 
-            $defaultDiscount = (float) app(SystemSettingService::class)
+            $defaultDiscount = (float)app(SystemSettingService::class)
                 ->get('default_discount_percentage');
 
             app(StoreDiscountRuleService::class)

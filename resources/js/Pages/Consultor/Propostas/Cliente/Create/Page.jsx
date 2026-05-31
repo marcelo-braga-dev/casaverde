@@ -145,7 +145,7 @@ const Page = ({ concessionarias = [], clients = [], selectedClient = null }) => 
 
         post(route("consultor.propostas.cliente.store"));
     };
-console.log(data)
+
     return (
         <Layout titlePage="Emitir Proposta Comercial" menu="clientes" subMenu="propostas-cliente-index" backPage>
             <Head title="Emitir Proposta Comercial" />
@@ -393,8 +393,9 @@ console.log(data)
                             <Grid size={{ xs: 12, md: 4 }}>
                                 <TextField
                                     label="Valor Médio"
-                                    value={data.valor_medio}
+                                    value={data.valor_medio ?? ""}
                                     className="mask-money"
+                                    onChange={(e) => setData("valor_medio", e.target.value)}
                                     onBlur={(e) => setData("valor_medio", e.target.value)}
                                     slotProps={{
                                         input: {

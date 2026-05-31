@@ -137,7 +137,7 @@ const ClientInfoCard = ({profile}) => {
                     variant="contained"
                     color="error"
                     startIcon={<IconTrash size={18}/>}
-                    onClick={() => router.post(route('consultor.producer.profiles.destroy', profile.id), {_method: "DELETE"})}
+                    onClick={() => router.post(route('consultor.user.cliente.destroy', profile.id), {_method: "DELETE"})}
                 >
                     Sim
                 </Button>
