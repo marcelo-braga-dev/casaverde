@@ -14,6 +14,7 @@ use App\Models\Usina\UsinaSolar;
 use App\Models\Users\User;
 use App\src\Roles\RoleUser;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class UsinaSolarController extends Controller
@@ -62,7 +63,7 @@ class UsinaSolarController extends Controller
             $address = $this->createOrUpdateAddress($usina, $data['address']);
             $usina->update(['address_id' => $address?->id]);
 
-//            $this->syncProducerProfileWithUsina($usina, $data);
+            $this->syncProducerProfileWithUsina($usina->fresh(), $data);
 
             return $usina;
         });
@@ -152,11 +153,18 @@ class UsinaSolarController extends Controller
             DB::transaction(function () use ($usina, $data) {
                 $usina->update($data);
                 $this->createOrUpdateAddress($usina, $data['address']);
-
                 $this->syncProducerProfileWithUsina($usina->fresh(), $data);
             });
         } catch (\Throwable $e) {
-            dd('Erro Interno: ' . $e->getMessage());
+            Log::error('Erro ao atualizar usina', [
+                'usina_id' => $usina->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return redirect()
+                ->back()
+                ->withErrors(['error' => 'Erro interno ao atualizar a usina. Tente novamente.']);
         }
 
         return redirect()
@@ -172,24 +180,7 @@ class UsinaSolarController extends Controller
             return;
         }
 
-//        $profile = ProducerProfile::query()->firstOrCreate(
-//            ['user_id' => $usina->user_id],
-//            [
-//                'created_by_user_id' => $data['consultor_user_id'] ?? auth()->id(),
-//                'admin_nome' => $produtor->name,
-//                'admin_qualificacao' => $produtor->userData?->tipo_pessoa === 'pj'
-//                    ? 'Pessoa Jurídica'
-//                    : 'Pessoa Física',
-//                'usina_nome' => $produtor->userData?->razao_social
-//                    ?? $produtor->userData?->nome_fantasia
-//                    ?? $produtor->name,
-//                'usina_cnpj' => $produtor->userData?->getRawOriginal('cnpj'),
-//                'status' => 'novo',
-//            ]
-//        );
-
         $profile->update([
-//            'created_by_user_id' => $data['consultor_user_id'] ?? $profile->created_by_user_id,
             'inversores' => $data['inversores'] ?? $profile->inversores,
             'status' => $profile->status === 'novo' ? 'em_integracao' : $profile->status,
             'modulos' => $data['modulos'] ?? $profile->modulos,

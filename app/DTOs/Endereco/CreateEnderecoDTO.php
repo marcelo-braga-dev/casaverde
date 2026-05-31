@@ -2,8 +2,6 @@
 
 namespace App\DTOs\Endereco;
 
-use Illuminate\Http\Request;
-
 class CreateEnderecoDTO
 {
     public ?string $cep;

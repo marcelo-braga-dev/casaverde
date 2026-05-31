@@ -2,7 +2,7 @@
 
 namespace App\Repositories\Consultor;
 
-use App\DTO\Usuario\CreateUsuarioDTO;
+use App\DTOs\Usuario\CreateUsuarioDTO;
 use App\Models\Users\User;
 use App\Models\Users\Vendedor;
 use App\Services\Users\CreateUserService;

@@ -2,7 +2,7 @@
 
 namespace App\Services\Users;
 
-use App\DTO\Endereco\CreateEnderecoUsuarioDTO;
+use App\DTOs\Endereco\CreateEnderecoUsuarioDTO;
 use App\Models\Users\User;
 use App\Models\Users\UserAddress;
 use Illuminate\Database\QueryException;

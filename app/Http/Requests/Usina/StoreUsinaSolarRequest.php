@@ -2,15 +2,18 @@
 
 namespace App\Http\Requests\Usina;
 
+use App\Http\Requests\Concerns\NormalizesNumbers;
 use App\src\Roles\RoleUser;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class StoreUsinaSolarRequest extends FormRequest
 {
+    use NormalizesNumbers;
+
     public function authorize(): bool
     {
-        return auth()->check();
+        return auth()->check() && in_array(auth()->user()?->role_id, [RoleUser::$ADMIN, RoleUser::$CONSULTOR], true);
     }
 
     public function rules(): array
@@ -45,7 +48,6 @@ class StoreUsinaSolarRequest extends FormRequest
             'uc' => [
                 'nullable',
                 'integer',
-//                'max:255',
             ],
             'media_geracao' => [
                 'nullable',
@@ -99,7 +101,6 @@ class StoreUsinaSolarRequest extends FormRequest
             'producer_profile_id.required' => 'O produtor proprietário da usina é obrigatório.',
             'producer_profile_id.exists' => 'O produtor selecionado não é válido.',
 
-            'consultor_user_id.required' => 'O consultor responsável é obrigatório.',
             'consultor_user_id.exists' => 'O consultor selecionado não é válido.',
 
             'concessionaria_id.required' => 'A concessionária é obrigatória.',
@@ -115,26 +116,6 @@ class StoreUsinaSolarRequest extends FormRequest
 
             'potencia_usina.numeric' => 'A potência da usina deve ser numérica.',
             'potencia_usina.min' => 'A potência da usina não pode ser negativa.',
-
-            'taxa_comissao.numeric' => 'A taxa de comissão deve ser numérica.',
-            'taxa_comissao.min' => 'A taxa de comissão não pode ser negativa.',
         ];
-    }
-
-    private function normalizeNumber($value): mixed
-    {
-        if ($value === null || $value === '') {
-            return null;
-        }
-
-        if (is_numeric($value)) {
-            return $value;
-        }
-
-        $value = trim((string) $value);
-        $value = str_replace('.', '', $value);
-        $value = str_replace(',', '.', $value);
-
-        return is_numeric($value) ? $value : $value;
     }
 }

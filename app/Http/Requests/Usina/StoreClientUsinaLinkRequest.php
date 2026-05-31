@@ -3,14 +3,18 @@
 namespace App\Http\Requests\Usina;
 
 use App\Enums\Cliente\ClientUsinaLinkStatus;
+use App\Http\Requests\Concerns\NormalizesNumbers;
+use App\src\Roles\RoleUser;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
 
 class StoreClientUsinaLinkRequest extends FormRequest
 {
+    use NormalizesNumbers;
+
     public function authorize(): bool
     {
-        return auth()->check();
+        return auth()->check() && in_array(auth()->user()?->role_id, [RoleUser::$ADMIN, RoleUser::$CONSULTOR], true);
     }
 
     public function rules(): array
@@ -35,22 +39,5 @@ class StoreClientUsinaLinkRequest extends FormRequest
             'discount_percentage' => $this->normalizeNumber($this->input('discount_percentage')),
             'is_active' => $this->boolean('is_active', true),
         ]);
-    }
-
-    private function normalizeNumber($value): mixed
-    {
-        if ($value === null || $value === '') {
-            return null;
-        }
-
-        if (is_numeric($value)) {
-            return $value;
-        }
-
-        $value = trim((string) $value);
-        $value = str_replace('.', '', $value);
-        $value = str_replace(',', '.', $value);
-
-        return is_numeric($value) ? $value : null;
     }
 }

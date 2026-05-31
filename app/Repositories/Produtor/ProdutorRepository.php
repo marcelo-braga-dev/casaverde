@@ -2,9 +2,9 @@
 
 namespace App\Repositories\Produtor;
 
-use App\DTO\Endereco\CreateEnderecoDTO;
-use App\DTO\UsinaSolar\CreateUsinaDTO;
-use App\DTO\Usuario\CreateUsuarioDTO;
+use App\DTOs\Endereco\CreateEnderecoDTO;
+use App\DTOs\UsinaSolar\CreateUsinaDTO;
+use App\DTOs\Usuario\CreateUsuarioDTO;
 use App\Models\Users\Produtor;
 use App\Models\Users\User;
 use App\Models\Usina\UsinaAddress;

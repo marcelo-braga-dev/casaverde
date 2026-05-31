@@ -2,8 +2,8 @@
 
 namespace App\Repositories\Admin;
 
-use App\DTO\Endereco\CreateEnderecoUsuarioDTO;
-use App\DTO\Usuario\CreateUsuarioDTO;
+use App\DTOs\Endereco\CreateEnderecoUsuarioDTO;
+use App\DTOs\Usuario\CreateUsuarioDTO;
 use App\Models\Users\Admin;
 use App\Models\Users\User;
 use App\Models\Users\UserAddress;

@@ -2,8 +2,6 @@
 
 namespace App\DTOs\UsinaSolar;
 
-use Illuminate\Http\Request;
-
 class CreateUsinaDTO
 {
     public int $userId;

@@ -2,7 +2,7 @@
 
 namespace App\Repositories\Cliente;
 
-use App\DTO\Usuario\CreateUsuarioDTO;
+use App\DTOs\Usuario\CreateUsuarioDTO;
 use App\Models\Users\User;
 use App\Services\Users\CreateUserService;
 use App\src\Roles\RoleUser;

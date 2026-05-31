@@ -2,13 +2,17 @@
 
 namespace App\Http\Requests\Usina;
 
+use App\Http\Requests\Concerns\NormalizesNumbers;
+use App\src\Roles\RoleUser;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreUsinaGenerationRecordRequest extends FormRequest
 {
+    use NormalizesNumbers;
+
     public function authorize(): bool
     {
-        return auth()->check();
+        return auth()->check() && in_array(auth()->user()?->role_id, [RoleUser::$ADMIN, RoleUser::$CONSULTOR], true);
     }
 
     public function rules(): array
@@ -33,22 +37,5 @@ class StoreUsinaGenerationRecordRequest extends FormRequest
             'compensated_energy_kwh' => $this->normalizeNumber($this->input('compensated_energy_kwh')),
             'available_energy_kwh' => $this->normalizeNumber($this->input('available_energy_kwh')),
         ]);
-    }
-
-    private function normalizeNumber($value): mixed
-    {
-        if ($value === null || $value === '') {
-            return null;
-        }
-
-        if (is_numeric($value)) {
-            return $value;
-        }
-
-        $value = trim((string) $value);
-        $value = str_replace('.', '', $value);
-        $value = str_replace(',', '.', $value);
-
-        return is_numeric($value) ? $value : null;
     }
 }

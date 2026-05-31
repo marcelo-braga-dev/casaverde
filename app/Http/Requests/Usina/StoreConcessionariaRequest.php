@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Usina;
 
+use App\src\Roles\RoleUser;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -9,7 +10,7 @@ class StoreConcessionariaRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return auth()->check();
+        return auth()->check() && auth()->user()?->role_id === RoleUser::$ADMIN;
     }
 
     public function rules(): array

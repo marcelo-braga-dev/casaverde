@@ -2,15 +2,18 @@
 
 namespace App\Http\Requests\Produtor;
 
+use App\Http\Requests\Concerns\NormalizesNumbers;
 use App\src\Roles\RoleUser;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class StoreProdutorPropostaRequest extends FormRequest
 {
+    use NormalizesNumbers;
+
     public function authorize(): bool
     {
-        return auth()->check();
+        return auth()->check() && in_array(auth()->user()?->role_id, [RoleUser::$ADMIN, RoleUser::$CONSULTOR], true);
     }
 
     public function rules(): array
@@ -44,17 +47,9 @@ class StoreProdutorPropostaRequest extends FormRequest
                 'max:255',
             ],
 
-            'nome_fantasia' => [
-                'nullable',
-                'string',
-                'max:255',
-            ],
+            'nome_fantasia' => ['nullable', 'string', 'max:255'],
 
-            'email' => [
-                'nullable',
-                'email',
-                'max:255',
-            ],
+            'email' => ['nullable', 'email', 'max:255'],
 
             'cpf' => [
                 Rule::requiredIf(fn () => !$this->filled('produtor_id') && $this->input('tipo_pessoa') !== 'pj' && !$this->filled('cnpj')),
@@ -70,68 +65,18 @@ class StoreProdutorPropostaRequest extends FormRequest
                 'max:18',
             ],
 
-            'rg' => [
-                'nullable',
-                'string',
-                'max:30',
-            ],
+            'rg' => ['nullable', 'string', 'max:30'],
+            'data_nascimento' => ['nullable', 'date'],
+            'data_fundacao' => ['nullable', 'date'],
+            'genero' => ['nullable', 'string', 'max:50'],
+            'estado_civil' => ['nullable', 'string', 'max:50'],
+            'profissao' => ['nullable', 'string', 'max:255'],
+            'tipo_empresa' => ['nullable', 'string', 'max:100'],
+            'ie' => ['nullable', 'string', 'max:50'],
+            'im' => ['nullable', 'string', 'max:50'],
+            'ramo_atividade' => ['nullable', 'string', 'max:255'],
 
-            'data_nascimento' => [
-                'nullable',
-                'date',
-            ],
-
-            'data_fundacao' => [
-                'nullable',
-                'date',
-            ],
-
-            'genero' => [
-                'nullable',
-                'string',
-                'max:50',
-            ],
-
-            'estado_civil' => [
-                'nullable',
-                'string',
-                'max:50',
-            ],
-
-            'profissao' => [
-                'nullable',
-                'string',
-                'max:255',
-            ],
-
-            'tipo_empresa' => [
-                'nullable',
-                'string',
-                'max:100',
-            ],
-
-            'ie' => [
-                'nullable',
-                'string',
-                'max:50',
-            ],
-
-            'im' => [
-                'nullable',
-                'string',
-                'max:50',
-            ],
-
-            'ramo_atividade' => [
-                'nullable',
-                'string',
-                'max:255',
-            ],
-
-            'contato' => [
-                'nullable',
-                'array',
-            ],
+            'contato' => ['nullable', 'array'],
 
             'contato.celular' => [
                 Rule::requiredIf(fn () => !$this->filled('produtor_id')),
@@ -140,122 +85,29 @@ class StoreProdutorPropostaRequest extends FormRequest
                 'max:20',
             ],
 
-            'contato.celular_2' => [
-                'nullable',
-                'string',
-                'max:20',
-            ],
+            'contato.celular_2' => ['nullable', 'string', 'max:20'],
+            'contato.telefone' => ['nullable', 'string', 'max:20'],
+            'contato.email' => ['nullable', 'email', 'max:255'],
 
-            'contato.telefone' => [
-                'nullable',
-                'string',
-                'max:20',
-            ],
+            'taxa_reducao' => ['required', 'numeric', 'min:0', 'max:100'],
 
-            'contato.email' => [
-                'nullable',
-                'email',
-                'max:255',
-            ],
+            'dados' => ['required', 'array'],
+            'dados.potencia' => ['required', 'numeric', 'min:0'],
+            'dados.geracao_media' => ['required', 'numeric', 'min:0'],
+            'dados.valor_investimento' => ['required', 'numeric', 'min:0'],
+            'dados.prazo_locacao' => ['required', 'integer', 'min:1'],
 
-            'taxa_reducao' => [
-                'required',
-                'numeric',
-                'min:0',
-                'max:100',
-            ],
-
-            'dados' => [
-                'required',
-                'array',
-            ],
-
-            'dados.potencia' => [
-                'required',
-                'numeric',
-                'min:0',
-            ],
-
-            'dados.geracao_media' => [
-                'required',
-                'numeric',
-                'min:0',
-            ],
-
-            'dados.valor_investimento' => [
-                'required',
-                'numeric',
-                'min:0',
-            ],
-
-            'dados.prazo_locacao' => [
-                'required',
-                'integer',
-                'min:1',
-            ],
-
-            'endereco' => [
-                'required',
-                'array',
-            ],
-
-            'endereco.cep' => [
-                'required',
-                'string',
-                'max:9',
-            ],
-
-            'endereco.rua' => [
-                'required',
-                'string',
-                'max:255',
-            ],
-
-            'endereco.numero' => [
-                'nullable',
-                'string',
-                'max:20',
-            ],
-
-            'endereco.complemento' => [
-                'nullable',
-                'string',
-                'max:255',
-            ],
-
-            'endereco.bairro' => [
-                'required',
-                'string',
-                'max:255',
-            ],
-
-            'endereco.cidade' => [
-                'required',
-                'string',
-                'max:255',
-            ],
-
-            'endereco.estado' => [
-                'required',
-                'string',
-                'size:2',
-            ],
-
-            'endereco.referencia' => [
-                'nullable',
-                'string',
-                'max:255',
-            ],
-
-            'endereco.latitude' => [
-                'nullable',
-                'numeric',
-            ],
-
-            'endereco.longitude' => [
-                'nullable',
-                'numeric',
-            ],
+            'endereco' => ['required', 'array'],
+            'endereco.cep' => ['required', 'string', 'max:9'],
+            'endereco.rua' => ['required', 'string', 'max:255'],
+            'endereco.numero' => ['nullable', 'string', 'max:20'],
+            'endereco.complemento' => ['nullable', 'string', 'max:255'],
+            'endereco.bairro' => ['required', 'string', 'max:255'],
+            'endereco.cidade' => ['required', 'string', 'max:255'],
+            'endereco.estado' => ['required', 'string', 'size:2'],
+            'endereco.referencia' => ['nullable', 'string', 'max:255'],
+            'endereco.latitude' => ['nullable', 'numeric'],
+            'endereco.longitude' => ['nullable', 'numeric'],
         ];
     }
 
@@ -318,22 +170,5 @@ class StoreProdutorPropostaRequest extends FormRequest
             'endereco.cidade.required' => 'A cidade é obrigatória.',
             'endereco.estado.required' => 'O estado é obrigatório.',
         ];
-    }
-
-    private function normalizeNumber($value): mixed
-    {
-        if ($value === null || $value === '') {
-            return null;
-        }
-
-        if (is_numeric($value)) {
-            return $value;
-        }
-
-        $value = trim((string) $value);
-        $value = str_replace('.', '', $value);
-        $value = str_replace(',', '.', $value);
-
-        return is_numeric($value) ? $value : $value;
     }
 }
