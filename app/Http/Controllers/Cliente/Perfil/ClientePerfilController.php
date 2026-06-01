@@ -14,10 +14,8 @@ class ClientePerfilController extends Controller
             ->with([
                 'contacts',
                 'consultor',
-                'activeUsinaLink.usina',
                 'activeDiscountRule',
                 'discountRules' => fn ($q) => $q->latest()->limit(5),
-                'usinaLinks' => fn ($q) => $q->latest()->limit(5),
             ])
             ->where('platform_user_id', auth()->id())
             ->first();

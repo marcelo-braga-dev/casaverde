@@ -13,7 +13,6 @@ class ClienteDashboardService
         $profile = ClientProfile::query()
             ->with([
                 'contacts',
-                'activeUsinaLink.usina.concessionaria',
                 'activeDiscountRule',
                 'contracts' => fn ($q) => $q->latest()->limit(1),
             ])
@@ -25,11 +24,11 @@ class ClienteDashboardService
         }
 
         return [
-            'profile'        => $profile,
-            'summary'        => $this->getSummary($profile),
-            'recentBills'    => $this->getRecentBills($profile->id),
-            'recentCharges'  => $this->getRecentCharges($profile->id),
-            'energyChart'    => $this->getEnergyChart($profile->id),
+            'profile'       => $profile,
+            'summary'       => $this->getSummary($profile),
+            'recentBills'   => $this->getRecentBills($profile->id),
+            'recentCharges' => $this->getRecentCharges($profile->id),
+            'energyChart'   => $this->getEnergyChart($profile->id),
         ];
     }
 
@@ -79,7 +78,6 @@ class ClienteDashboardService
             ->sum('discount_amount');
 
         $discountPercent = (float) ($profile->activeDiscountRule?->discount_percent ?? 0);
-        $allocatedEnergy = (float) ($profile->activeUsinaLink?->allocated_energy_kwh ?? 0);
 
         return [
             'bills_total'             => $billsTotal,
@@ -91,7 +89,6 @@ class ClienteDashboardService
             'charges_paid_year'       => $chargesPaidYear,
             'total_saved'             => $totalSaved,
             'active_discount_percent' => $discountPercent,
-            'allocated_energy_kwh'    => $allocatedEnergy,
         ];
     }
 
@@ -99,12 +96,12 @@ class ClienteDashboardService
     {
         return ConcessionaireBill::query()
             ->where('client_profile_id', $clientProfileId)
-            ->with(['concessionaria', 'usina'])
+            ->with(['concessionaria'])
             ->orderByDesc('reference_year')
             ->orderByDesc('reference_month')
             ->limit(6)
             ->get([
-                'id', 'client_profile_id', 'concessionaria_id', 'usina_id',
+                'id', 'client_profile_id', 'concessionaria_id',
                 'reference_month', 'reference_year', 'reference_label',
                 'valor_total', 'consumo_kwh', 'review_status',
                 'vencimento', 'pdf_url', 'created_at',
@@ -160,7 +157,6 @@ class ClienteDashboardService
                 'charges_paid_year'       => 0,
                 'total_saved'             => 0,
                 'active_discount_percent' => 0,
-                'allocated_energy_kwh'    => 0,
             ],
             'recentBills'   => [],
             'recentCharges' => [],

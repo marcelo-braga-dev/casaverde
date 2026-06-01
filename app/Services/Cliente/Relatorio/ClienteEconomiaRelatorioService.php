@@ -11,7 +11,7 @@ class ClienteEconomiaRelatorioService
     public function handle(int $platformUserId, array $filters = []): array
     {
         $profile = ClientProfile::query()
-            ->with(['activeDiscountRule', 'activeUsinaLink.usina'])
+            ->with(['activeDiscountRule'])
             ->where('platform_user_id', $platformUserId)
             ->first();
 
@@ -239,7 +239,6 @@ class ClienteEconomiaRelatorioService
             'tipo_pessoa'  => $profile->tipo_pessoa,
             'status'       => $profile->status,
             'discount'     => (float) ($profile->activeDiscountRule?->discount_percent ?? 0),
-            'usina_nome'   => $profile->activeUsinaLink?->usina?->usina_nome,
         ];
     }
 

@@ -260,6 +260,16 @@ export const adminMenu = [
                 title: 'Configurações Padrão',
                 link: safeRoute('admin.settings.index'),
             },
+            {
+                id: 'config-integracao',
+                title: 'Configurações de Integração',
+                link: safeRoute('admin.integracao.index'),
+            },
+            {
+                id: 'config-import-history',
+                title: 'Histórico de Importação',
+                link: safeRoute('admin.import-history.index'),
+            },
         ],
     },
     {

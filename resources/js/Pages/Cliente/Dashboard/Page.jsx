@@ -10,7 +10,6 @@ import {
     CardContent,
     Chip,
     Divider,
-    LinearProgress,
     Stack,
     Table,
     TableBody,
@@ -28,7 +27,6 @@ import {
     IconCash,
     IconFileInvoice,
     IconLeaf,
-    IconSolarPanel,
     IconWallet,
 } from '@tabler/icons-react';
 
@@ -39,12 +37,12 @@ function safeRoute(name, params) {
 
 function ChargeStatusChip({ status }) {
     const map = {
-        draft:           { label: 'Rascunho',        color: 'default' },
-        open:            { label: 'Em Aberto',        color: 'warning' },
-        waiting_payment: { label: 'Ag. Pagamento',    color: 'info' },
-        paid:            { label: 'Pago',             color: 'success' },
-        overdue:         { label: 'Vencido',          color: 'error' },
-        cancelled:       { label: 'Cancelado',        color: 'default' },
+        draft:           { label: 'Rascunho',     color: 'default' },
+        open:            { label: 'Em Aberto',     color: 'warning' },
+        waiting_payment: { label: 'Ag. Pagamento', color: 'info' },
+        paid:            { label: 'Pago',          color: 'success' },
+        overdue:         { label: 'Vencido',       color: 'error' },
+        cancelled:       { label: 'Cancelado',     color: 'default' },
     };
     const c = map[status] ?? { label: status ?? '-', color: 'default' };
     return <Chip label={c.label} color={c.color} size="small" />;
@@ -64,15 +62,13 @@ export default function Page({ dashboard }) {
     const { auth } = usePage().props;
     const userName = auth?.user?.name ?? 'Cliente';
 
-    const profile   = dashboard?.profile;
-    const summary   = dashboard?.summary ?? {};
-    const bills     = dashboard?.recentBills ?? [];
-    const charges   = dashboard?.recentCharges ?? [];
-    const chart     = dashboard?.energyChart ?? [];
+    const profile  = dashboard?.profile;
+    const summary  = dashboard?.summary ?? {};
+    const bills    = dashboard?.recentBills ?? [];
+    const charges  = dashboard?.recentCharges ?? [];
+    const chart    = dashboard?.energyChart ?? [];
 
-    const usinaLink    = profile?.active_usina_link;
-    const discount     = summary.active_discount_percent ?? 0;
-    const allocatedKwh = summary.allocated_energy_kwh ?? 0;
+    const discount = summary.active_discount_percent ?? 0;
 
     return (
         <Layout
@@ -174,115 +170,53 @@ export default function Page({ dashboard }) {
                     </Grid>
                 </Grid>
 
-                {/* ── Usina + Consumo ───────────────────────────────────── */}
-                <Grid container spacing={3}>
+                {/* ── Histórico de Consumo ──────────────────────────────── */}
+                <Card sx={{ borderRadius: 'var(--cv-radius-xl)', border: '1px solid var(--cv-border-soft)', boxShadow: 'var(--cv-shadow-md)' }}>
+                    <CardContent>
+                        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
+                            <Box>
+                                <Typography variant="h6" sx={{ fontWeight: 950, letterSpacing: '-0.04em' }}>Histórico de Consumo</Typography>
+                                <Typography variant="body2" color="text.secondary">kWh por competência</Typography>
+                            </Box>
+                            <Button component={Link} href={safeRoute('cliente.faturas.index')} size="small" variant="outlined" endIcon={<IconArrowRight size={14} />}>
+                                Ver faturas
+                            </Button>
+                        </Stack>
+                        <Divider sx={{ mb: 1.5 }} />
 
-                    <Grid size={{ xs: 12, md: 5 }}>
-                        <Card sx={{ height: '100%', borderRadius: 'var(--cv-radius-xl)', border: '1px solid var(--cv-border-soft)', boxShadow: 'var(--cv-shadow-md)' }}>
-                            <CardContent>
-                                <Stack direction="row" alignItems="center" gap={1.5} sx={{ mb: 2 }}>
-                                    <Box sx={{ width: 38, height: 38, borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--cv-gradient-primary)', color: '#fff' }}>
-                                        <IconSolarPanel size={20} />
-                                    </Box>
-                                    <Box>
-                                        <Typography variant="h6" sx={{ fontWeight: 950, letterSpacing: '-0.04em' }}>Minha Usina</Typography>
-                                        <Typography variant="body2" color="text.secondary">Vínculo ativo</Typography>
-                                    </Box>
-                                </Stack>
-                                <Divider sx={{ mb: 2 }} />
-
-                                {usinaLink ? (
-                                    <Stack spacing={1.5}>
-                                        {[
-                                            ['Usina', usinaLink.usina?.usina_nome],
-                                            ['Concessionária', usinaLink.usina?.concessionaria?.nome],
-                                            ['Energia alocada', `${allocatedKwh} kWh`],
-                                            ['Desconto', `${discount}%`],
-                                            ['Vínculo desde', usinaLink.started_at ? new Date(usinaLink.started_at).toLocaleDateString('pt-BR') : '—'],
-                                        ].map(([label, val]) => (
-                                            <Stack key={label} direction="row" justifyContent="space-between">
-                                                <Typography variant="body2" color="text.secondary">{label}</Typography>
-                                                <Typography variant="body2" sx={{ fontWeight: 700 }}>{val ?? '—'}</Typography>
-                                            </Stack>
-                                        ))}
-
-                                        <Box sx={{ mt: 1 }}>
-                                            <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.5 }}>
-                                                <Typography variant="caption" color="text.secondary">Utilização da usina</Typography>
-                                                <Typography variant="caption" sx={{ fontWeight: 700 }}>
-                                                    {usinaLink.usina?.utilization_percentage ?? 0}%
+                        {chart.length === 0 ? (
+                            <Box sx={{ py: 4, textAlign: 'center' }}>
+                                <IconBolt size={36} style={{ opacity: 0.2 }} />
+                                <Typography color="text.secondary" sx={{ mt: 1 }}>Nenhuma fatura aprovada ainda.</Typography>
+                            </Box>
+                        ) : (
+                            <Box sx={{ overflowX: 'auto', pb: 1 }}>
+                                <Stack direction="row" gap={1} alignItems="flex-end" sx={{ minWidth: chart.length * 52, height: 120 }}>
+                                    {chart.map((item, i) => {
+                                        const max = Math.max(...chart.map(c => c.consumo_kwh), 1);
+                                        const pct = (item.consumo_kwh / max) * 100;
+                                        return (
+                                            <Box key={i} sx={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end' }}>
+                                                <Typography variant="caption" sx={{ fontSize: 9, fontWeight: 700, mb: 0.3 }}>{item.consumo_kwh}</Typography>
+                                                <Box sx={{
+                                                    width: '100%',
+                                                    height: `${Math.max(4, pct)}%`,
+                                                    borderRadius: '3px 3px 0 0',
+                                                    background: i === chart.length - 1
+                                                        ? 'var(--cv-gradient-primary)'
+                                                        : 'rgba(16,185,129,0.35)',
+                                                }} />
+                                                <Typography variant="caption" color="text.secondary" sx={{ fontSize: 9, mt: 0.3, textAlign: 'center', display: 'block' }}>
+                                                    {item.label}
                                                 </Typography>
-                                            </Stack>
-                                            <LinearProgress
-                                                variant="determinate"
-                                                value={Math.min(100, usinaLink.usina?.utilization_percentage ?? 0)}
-                                                sx={{ height: 8, borderRadius: 4, bgcolor: 'grey.100', '& .MuiLinearProgress-bar': { background: 'var(--cv-gradient-primary)' } }}
-                                            />
-                                        </Box>
-
-                                        <Button fullWidth component={Link} href={safeRoute('cliente.usina.show')} variant="outlined" size="small" endIcon={<IconArrowRight size={14} />} sx={{ mt: 1 }}>
-                                            Ver detalhes completos
-                                        </Button>
-                                    </Stack>
-                                ) : (
-                                    <Box sx={{ py: 3, textAlign: 'center' }}>
-                                        <IconSolarPanel size={40} style={{ opacity: 0.2 }} />
-                                        <Typography color="text.secondary" sx={{ mt: 1 }}>Nenhuma usina vinculada.</Typography>
-                                    </Box>
-                                )}
-                            </CardContent>
-                        </Card>
-                    </Grid>
-
-                    <Grid size={{ xs: 12, md: 7 }}>
-                        <Card sx={{ height: '100%', borderRadius: 'var(--cv-radius-xl)', border: '1px solid var(--cv-border-soft)', boxShadow: 'var(--cv-shadow-md)' }}>
-                            <CardContent>
-                                <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-                                    <Box>
-                                        <Typography variant="h6" sx={{ fontWeight: 950, letterSpacing: '-0.04em' }}>Histórico de Consumo</Typography>
-                                        <Typography variant="body2" color="text.secondary">kWh por competência</Typography>
-                                    </Box>
-                                    <Button component={Link} href={safeRoute('cliente.faturas.index')} size="small" variant="outlined" endIcon={<IconArrowRight size={14} />}>
-                                        Ver faturas
-                                    </Button>
+                                            </Box>
+                                        );
+                                    })}
                                 </Stack>
-                                <Divider sx={{ mb: 1.5 }} />
-
-                                {chart.length === 0 ? (
-                                    <Box sx={{ py: 4, textAlign: 'center' }}>
-                                        <IconBolt size={36} style={{ opacity: 0.2 }} />
-                                        <Typography color="text.secondary" sx={{ mt: 1 }}>Nenhuma fatura aprovada ainda.</Typography>
-                                    </Box>
-                                ) : (
-                                    <Box sx={{ overflowX: 'auto', pb: 1 }}>
-                                        <Stack direction="row" gap={1} alignItems="flex-end" sx={{ minWidth: chart.length * 52, height: 120 }}>
-                                            {chart.map((item, i) => {
-                                                const max = Math.max(...chart.map(c => c.consumo_kwh), 1);
-                                                const pct = (item.consumo_kwh / max) * 100;
-                                                return (
-                                                    <Box key={i} sx={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'flex-end' }}>
-                                                        <Typography variant="caption" sx={{ fontSize: 9, fontWeight: 700, mb: 0.3 }}>{item.consumo_kwh}</Typography>
-                                                        <Box sx={{
-                                                            width: '100%',
-                                                            height: `${Math.max(4, pct)}%`,
-                                                            borderRadius: '3px 3px 0 0',
-                                                            background: i === chart.length - 1
-                                                                ? 'var(--cv-gradient-primary)'
-                                                                : 'rgba(16,185,129,0.35)',
-                                                        }} />
-                                                        <Typography variant="caption" color="text.secondary" sx={{ fontSize: 9, mt: 0.3, textAlign: 'center', display: 'block' }}>
-                                                            {item.label}
-                                                        </Typography>
-                                                    </Box>
-                                                );
-                                            })}
-                                        </Stack>
-                                    </Box>
-                                )}
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                </Grid>
+                            </Box>
+                        )}
+                    </CardContent>
+                </Card>
 
                 {/* ── Faturas + Cobranças recentes ─────────────────────── */}
                 <Grid container spacing={3}>

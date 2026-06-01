@@ -19,11 +19,10 @@ class ClienteFaturaController extends Controller
     public function index()
     {
         $profile = $this->getProfile();
-
         $filters = request()->only(['search', 'status', 'year']);
 
         $query = ConcessionaireBill::query()
-            ->with(['concessionaria', 'usina'])
+            ->with(['concessionaria'])
             ->where('client_profile_id', $profile?->id ?? 0)
             ->orderByDesc('reference_year')
             ->orderByDesc('reference_month');
@@ -41,9 +40,9 @@ class ClienteFaturaController extends Controller
         }
 
         return Inertia::render('Cliente/Faturas/Index/Page', [
-            'faturas'  => $query->paginate(12)->withQueryString(),
-            'filters'  => $filters,
-            'profile'  => $profile,
+            'faturas' => $query->paginate(12)->withQueryString(),
+            'filters' => $filters,
+            'profile' => $profile,
         ]);
     }
 
@@ -57,7 +56,7 @@ class ClienteFaturaController extends Controller
             'Acesso não autorizado a esta fatura.'
         );
 
-        $fatura->load(['concessionaria', 'usina', 'issues']);
+        $fatura->load(['concessionaria', 'issues']);
 
         $charge = $fatura->charges()->with('paymentSlips')->first();
 

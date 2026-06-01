@@ -14,8 +14,8 @@ abstract class AbstractImapFetcherService
 
         $imap = @imap_open(
             $mailbox,
-            $setting->imap_email,
-            $setting->imap_password,
+            $setting->effective_imap_email,
+            $setting->effective_imap_password,
             0,
             1,
             ['DISABLE_AUTHENTICATOR' => 'GSSAPI']
@@ -28,12 +28,15 @@ abstract class AbstractImapFetcherService
         try {
             $criteria = 'UNSEEN';
 
-            if ($setting->sender_filter) {
-                $criteria .= ' FROM "' . addslashes($setting->sender_filter) . '"';
+            $senderFilter  = $setting->effective_sender_filter;
+            $subjectFilter = $setting->effective_subject_filter;
+
+            if ($senderFilter) {
+                $criteria .= ' FROM "' . addslashes($senderFilter) . '"';
             }
 
-            if ($setting->subject_filter) {
-                $criteria .= ' SUBJECT "' . addslashes($setting->subject_filter) . '"';
+            if ($subjectFilter) {
+                $criteria .= ' SUBJECT "' . addslashes($subjectFilter) . '"';
             }
 
             $uids = imap_search($imap, $criteria, SE_UID);
@@ -85,17 +88,23 @@ abstract class AbstractImapFetcherService
 
     private function buildMailboxString(ClientEmailImportSetting $setting): string
     {
-        $flags = '/imap';
+        $flags      = '/imap';
+        $encryption = $setting->effective_imap_encryption;
 
-        if ($setting->imap_encryption === 'ssl') {
+        if ($encryption === 'ssl') {
             $flags .= '/ssl';
-        } elseif ($setting->imap_encryption === 'tls') {
+        } elseif ($encryption === 'tls') {
             $flags .= '/tls';
         }
 
         $flags .= '/novalidate-cert';
 
-        return sprintf('{%s:%d%s}INBOX', $setting->imap_host, $setting->imap_port, $flags);
+        return sprintf(
+            '{%s:%d%s}INBOX',
+            $setting->effective_imap_host,
+            $setting->effective_imap_port,
+            $flags
+        );
     }
 
     private function extractAttachments($imap, int $messageNumber, object $part, string $partNumber = ''): array

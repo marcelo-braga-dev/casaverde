@@ -16,7 +16,6 @@ import {
     IconArrowLeft,
     IconDownload,
     IconFileInvoice,
-    IconSolarPanel,
     IconBolt,
 } from '@tabler/icons-react';
 
@@ -168,22 +167,6 @@ export default function Page({ fatura, charge }) {
                             </CardContent>
                         </Card>
 
-                        {/* Usina */}
-                        {fatura?.usina && (
-                            <Card sx={{ mt: 2, borderRadius: 'var(--cv-radius-xl)', border: '1px solid var(--cv-border-soft)', boxShadow: 'var(--cv-shadow-md)' }}>
-                                <CardContent>
-                                    <Stack direction="row" alignItems="center" gap={1.5} sx={{ mb: 2 }}>
-                                        <Box sx={{ width: 36, height: 36, borderRadius: 2, background: 'var(--cv-gradient-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
-                                            <IconSolarPanel size={18} />
-                                        </Box>
-                                        <Typography variant="subtitle1" sx={{ fontWeight: 900 }}>Usina Solar</Typography>
-                                    </Stack>
-                                    <InfoRow label="Nome"     value={fatura.usina.usina_nome} />
-                                    <InfoRow label="Status"   value={fatura.usina.status} />
-                                    <InfoRow label="Potência" value={fatura.usina.potencia_usina ? `${fatura.usina.potencia_usina} kWp` : null} />
-                                </CardContent>
-                            </Card>
-                        )}
                     </Grid>
                 </Grid>
             </Stack>

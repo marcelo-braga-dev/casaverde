@@ -14,6 +14,7 @@ class ImportedConcessionaireEmail extends Model
     protected $fillable = [
         'client_profile_id',
         'client_email_import_setting_id',
+        'import_run_id',
         'concessionaire_bill_id',
         'message_uid',
         'message_id',
@@ -24,11 +25,14 @@ class ImportedConcessionaireEmail extends Model
         'attachment_hash',
         'status',
         'error_message',
+        'step_failed',
+        'duration_ms',
+        'retry_count',
         'processed_at',
     ];
 
     protected $casts = [
-        'received_at' => 'datetime',
+        'received_at'  => 'datetime',
         'processed_at' => 'datetime',
     ];
 
@@ -45,5 +49,45 @@ class ImportedConcessionaireEmail extends Model
     public function bill()
     {
         return $this->belongsTo(ConcessionaireBill::class, 'concessionaire_bill_id');
+    }
+
+    public function importRun()
+    {
+        return $this->belongsTo(ImportRun::class, 'import_run_id');
+    }
+
+    public function getStatusLabelAttribute(): string
+    {
+        return match ($this->status) {
+            'processing' => 'Processando',
+            'success'    => 'Sucesso',
+            'skipped'    => 'Ignorado',
+            'failed'     => 'Falhou',
+            default      => $this->status ?? '—',
+        };
+    }
+
+    public function getStatusColorAttribute(): string
+    {
+        return match ($this->status) {
+            'success'    => 'success',
+            'skipped'    => 'info',
+            'processing' => 'warning',
+            'failed'     => 'error',
+            default      => 'default',
+        };
+    }
+
+    public function getStepFailedLabelAttribute(): ?string
+    {
+        return match ($this->step_failed) {
+            'fetch'    => 'Busca IMAP',
+            'unlock'   => 'Desbloqueio PDF',
+            'extract'  => 'Extração de texto',
+            'parse'    => 'Leitura dos dados',
+            'store'    => 'Armazenamento',
+            'validate' => 'Validação',
+            default    => $this->step_failed,
+        };
     }
 }

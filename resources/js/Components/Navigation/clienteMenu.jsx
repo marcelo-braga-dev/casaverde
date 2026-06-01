@@ -5,8 +5,6 @@ import {
     IconFileInvoice,
     IconHeadset,
     IconLayoutDashboard,
-    IconLeaf,
-    IconSolarPanel2,
     IconUserSquare,
     IconWallet,
 } from '@tabler/icons-react';
@@ -73,18 +71,6 @@ export const clienteMenu = [
                 id: 'cliente-relatorio-economia',
                 title: 'Relatório de Economia',
                 link: safeRoute('cliente.relatorios.economia'),
-            },
-        ],
-    },
-    {
-        title: 'Minha Usina',
-        icon: <IconSolarPanel2 />,
-        id: 'cliente-usina',
-        subItems: [
-            {
-                id: 'cliente-usina-show',
-                title: 'Dados da Usina',
-                link: safeRoute('cliente.usina.show'),
             },
         ],
     },

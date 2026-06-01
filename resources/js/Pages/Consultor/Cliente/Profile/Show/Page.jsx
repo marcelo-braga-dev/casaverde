@@ -23,7 +23,7 @@ import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
 
-const Page = ({clientProfile, client, usinas = [], concessionarias = []}) => {
+const Page = ({clientProfile, client, usinas = [], concessionarias = [], availableEmails = []}) => {
 
     const profile = clientProfile ?? client;
 
@@ -87,6 +87,7 @@ const Page = ({clientProfile, client, usinas = [], concessionarias = []}) => {
                                 profile={profile}
                                 concessionarias={concessionarias}
                                 setting={emailImportSetting}
+                                availableEmails={availableEmails}
                             />
                         </TabPanel>
                     </TabContext>

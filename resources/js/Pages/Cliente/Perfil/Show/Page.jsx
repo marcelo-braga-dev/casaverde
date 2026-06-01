@@ -16,7 +16,6 @@ import {
     IconBolt,
     IconMail,
     IconPhone,
-    IconSolarPanel,
     IconUser,
     IconUserSquare,
 } from '@tabler/icons-react';
@@ -194,8 +193,7 @@ export default function Page({ profile, user }) {
                                     {[
                                         { label: 'Minhas Faturas',   route: 'cliente.faturas.index',    icon: <IconBolt size={20} /> },
                                         { label: 'Minhas Cobranças', route: 'cliente.cobrancas.index', icon: <IconBolt size={20} /> },
-                                        { label: 'Minha Usina',      route: 'cliente.usina.show',       icon: <IconSolarPanel size={20} /> },
-                                        { label: 'Meus Contratos',   route: 'cliente.contratos.index', icon: <IconBolt size={20} /> },
+                                                        { label: 'Meus Contratos',   route: 'cliente.contratos.index', icon: <IconBolt size={20} /> },
                                     ].map(item => (
                                         <Grid key={item.route} size={{ xs: 12, sm: 6, md: 3 }}>
                                             <Button

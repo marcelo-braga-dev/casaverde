@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Usuarios\Cliente;
 
 use App\Http\Controllers\Controller;
+use App\Models\Importacao\ImportEmailAccount;
 use App\Models\Usina\Concessionaria;
 use App\Http\Requests\Cliente\StoreClientProfileRequest;
 use App\Models\Cliente\ClientProfile;
@@ -65,6 +66,7 @@ class ClienteController extends Controller
                 'usinaLinks.usina',
                 'discountRules',
                 'emailImportSetting.concessionaria',
+                'emailImportSetting.emailAccount',
                 'proposals.concessionaria',
                 'proposals.contract',
                 'accessInvites',
@@ -80,6 +82,16 @@ class ClienteController extends Controller
                 ->where('status', 'ativo')
                 ->orderBy('nome')
                 ->get(['id', 'nome']),
+
+            // Emails disponíveis no pool (livres + o atual do cliente, se houver)
+            'availableEmails' => ImportEmailAccount::query()
+                ->where('is_active', true)
+                ->where(function ($q) use ($cliente) {
+                    $q->whereNull('client_profile_id')
+                      ->orWhere('client_profile_id', $cliente->id);
+                })
+                ->orderBy('email')
+                ->get(['id', 'email', 'label', 'client_profile_id']),
         ]);
     }
 

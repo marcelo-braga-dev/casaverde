@@ -9,7 +9,6 @@ use App\Http\Controllers\Cliente\Relatorio\ClienteEconomiaRelatorioController;
 use App\Http\Controllers\Cliente\Relatorio\ClienteRelatorioIndexController;
 use App\Http\Controllers\Cliente\Relatorio\ExportClienteEconomiaExcelController;
 use App\Http\Controllers\Cliente\Relatorio\ExportClienteEconomiaPdfController;
-use App\Http\Controllers\Cliente\Usina\ClienteUsinaController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'role:cliente'])
@@ -27,9 +26,6 @@ Route::middleware(['auth', 'role:cliente'])
         // Cobranças
         Route::get('/cobrancas', [ClienteCobrancaController::class, 'index'])->name('cobrancas.index');
         Route::get('/cobrancas/{cobranca}', [ClienteCobrancaController::class, 'show'])->name('cobrancas.show');
-
-        // Usina vinculada
-        Route::get('/minha-usina', [ClienteUsinaController::class, 'show'])->name('usina.show');
 
         // Contratos
         Route::get('/contratos', [ClienteContratoController::class, 'index'])->name('contratos.index');

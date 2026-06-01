@@ -36,7 +36,6 @@ import {
     IconFileExport,
     IconFileInvoice,
     IconLeaf,
-    IconSolarPanel,
     IconTableExport,
     IconTrendingUp,
 } from '@tabler/icons-react';
@@ -211,7 +210,6 @@ export default function Page({ report }) {
                                         </Typography>
                                         <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: 13 }}>
                                             Código: {profile.client_code} · Desconto: {profile.discount}%
-                                            {profile.usina_nome && ` · Usina: ${profile.usina_nome}`}
                                         </Typography>
                                     </Box>
                                 </Stack>
@@ -255,7 +253,7 @@ export default function Page({ report }) {
                                     title="Com Casa Verde você paga"
                                     value={formatMoney(summary.total_final_amount ?? 0)}
                                     helper={`Desconto de ${summary.avg_discount_percent ?? 0}%`}
-                                    icon={IconSolarPanel}
+                                    icon={IconLeaf}
                                     color="primary.main"
                                 />
                             </Grid>
