@@ -23,10 +23,11 @@ class ProducerProposalController extends Controller
 {
     public function index(ProposalProducerRepository $repository)
     {
-        //$this->authorize('viewAny', CommercialProposal::class);
+        $filters = request()->only(['search', 'status']);
 
         return Inertia::render('Consultor/Propostas/Producer/Index/Page', [
-            'proposals' => $repository->paginate(),
+            'proposals' => $repository->paginate(15, $filters),
+            'filters'   => $filters,
         ]);
     }
 

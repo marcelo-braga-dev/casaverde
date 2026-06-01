@@ -1,50 +1,76 @@
 :root {
-    --cv-primary: #2F7D18;
-    --cv-primary-dark: #1F5F10;
+    /* ── Cores primárias ──────────────────────────────────── */
+    --cv-primary:        #2F7D18;
+    --cv-primary-dark:   #1F5F10;
     --cv-primary-darker: #123D0B;
-    --cv-primary-light: #DFF3D8;
-    --cv-primary-soft: #F3FAF0;
+    --cv-primary-light:  #DFF3D8;
+    --cv-primary-soft:   #F0FDF4;
 
-    --cv-secondary: #4F9A2A;
-    --cv-secondary-dark: #2F7D18;
-    --cv-secondary-light: #E8F6E2;
+    --cv-secondary:       #4F9A2A;
+    --cv-secondary-dark:  #2F7D18;
+    --cv-secondary-light: #DCFCE7;
 
     --cv-accent: #7BAA2F;
 
-    --cv-black: #050505;
+    /* ── Neutros ──────────────────────────────────────────── */
+    --cv-black:    #050505;
     --cv-graphite: #111827;
-    --cv-white: #FFFFFF;
+    --cv-white:    #FFFFFF;
 
-    --cv-background: #F7FAF5;
-    --cv-surface: #FFFFFF;
-    --cv-surface-soft: #F3FAF0;
+    /* ── Superfícies ──────────────────────────────────────── */
+    --cv-background:   #F4F7F4;
+    --cv-surface:      #FFFFFF;
+    --cv-surface-soft: #F0FDF4;
+    --cv-surface-elevated: rgba(255,255,255,0.95);
 
-    --cv-text-primary: #111827;
+    /* ── Texto ────────────────────────────────────────────── */
+    --cv-text-primary:   #0F172A;
     --cv-text-secondary: #64748B;
-    --cv-text-muted: #94A3B8;
+    --cv-text-muted:     #94A3B8;
 
-    --cv-border: #E2E8F0;
-    --cv-border-soft: rgba(17, 24, 39, 0.08);
+    /* ── Bordas ───────────────────────────────────────────── */
+    --cv-border:      #E2E8F0;
+    --cv-border-soft: rgba(15, 23, 42, 0.07);
+    --cv-border-mid:  rgba(15, 23, 42, 0.12);
 
-    --cv-success: #2F7D18;
-    --cv-warning: #D89614;
-    --cv-error: #C62828;
-    --cv-info: #3F8F24;
+    /* ── Status ───────────────────────────────────────────── */
+    --cv-success: #16A34A;
+    --cv-warning: #D97706;
+    --cv-error:   #DC2626;
+    --cv-info:    #0284C7;
 
-    --cv-gradient-primary: linear-gradient(135deg, #1F5F10 0%, #2F7D18 48%, #4F9A2A 100%);
-    --cv-gradient-dark: linear-gradient(180deg, #123D0B 0%, #050505 100%);
-    --cv-gradient-sidebar: radial-gradient(circle at 20% 0%, rgba(79, 154, 42, 0.28), transparent 30%), linear-gradient(180deg, #123D0B 0%, #0c7a08 100%);
-    --cv-gradient-hero: radial-gradient(circle at top right, rgba(79,154,42,0.32), transparent 34%), radial-gradient(circle at bottom left, rgba(47,125,24,0.28), transparent 36%), linear-gradient(135deg, #123D0B 0%, #050505 76%);
+    /* ── Gradientes ───────────────────────────────────────── */
+    --cv-gradient-primary: linear-gradient(135deg, #166534 0%, #15803D 50%, #22C55E 100%);
+    --cv-gradient-dark:    linear-gradient(180deg, #14532D 0%, #052e16 100%);
+    --cv-gradient-sidebar: radial-gradient(ellipse at 15% 0%, rgba(74,222,128,0.18), transparent 40%),
+                           linear-gradient(175deg, #052e16 0%, #14532D 40%, #065f46 100%);
+    --cv-gradient-hero:    radial-gradient(ellipse at top right, rgba(74,222,128,0.22), transparent 42%),
+                           radial-gradient(ellipse at bottom left, rgba(16,185,129,0.18), transparent 44%),
+                           linear-gradient(135deg, #14532D 0%, #052e16 100%);
+    --cv-gradient-card:    linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(248,250,252,0.6) 100%);
 
-    --cv-shadow-sm: 0 4px 10px rgba(17, 24, 39, 0.06);
-    --cv-shadow-md: 0 10px 24px rgba(17, 24, 39, 0.08);
-    --cv-shadow-lg: 0 18px 45px rgba(17, 24, 39, 0.12);
-    --cv-shadow-xl: 0 28px 70px rgba(17, 24, 39, 0.18);
-    --cv-shadow-primary: 0 16px 38px rgba(47, 125, 24, 0.28);
+    /* ── Sombras — mais suaves e refinadas ────────────────── */
+    --cv-shadow-xs:      0 1px 3px rgba(15,23,42,0.06), 0 1px 2px rgba(15,23,42,0.04);
+    --cv-shadow-sm:      0 2px 8px rgba(15,23,42,0.06), 0 1px 3px rgba(15,23,42,0.04);
+    --cv-shadow-md:      0 4px 16px rgba(15,23,42,0.08), 0 2px 6px rgba(15,23,42,0.04);
+    --cv-shadow-lg:      0 10px 30px rgba(15,23,42,0.10), 0 4px 12px rgba(15,23,42,0.06);
+    --cv-shadow-xl:      0 20px 50px rgba(15,23,42,0.14), 0 8px 20px rgba(15,23,42,0.08);
+    --cv-shadow-primary: 0 8px 24px rgba(22,101,52,0.30), 0 2px 8px rgba(22,101,52,0.15);
+    --cv-shadow-sidebar: 4px 0 24px rgba(5,46,22,0.25), 2px 0 8px rgba(5,46,22,0.12);
+    --cv-shadow-card:    0 1px 4px rgba(15,23,42,0.06), 0 0 0 1px rgba(15,23,42,0.05);
+    --cv-shadow-hover:   0 6px 20px rgba(15,23,42,0.10), 0 2px 8px rgba(15,23,42,0.06);
 
-    --cv-radius-sm: 4px;
-    --cv-radius-md: 6px;
-    --cv-radius-lg: 8px;
-    --cv-radius-xl: 10px;
-    --cv-radius-2xl: 12px;
+    /* ── Raios de borda ───────────────────────────────────── */
+    --cv-radius-xs:  3px;
+    --cv-radius-sm:  6px;
+    --cv-radius-md:  8px;
+    --cv-radius-lg:  10px;
+    --cv-radius-xl:  12px;
+    --cv-radius-2xl: 16px;
+    --cv-radius-3xl: 20px;
+
+    /* ── Transições ───────────────────────────────────────── */
+    --cv-transition-fast: all 140ms cubic-bezier(0.4, 0, 0.2, 1);
+    --cv-transition-base: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+    --cv-transition-slow: all 300ms cubic-bezier(0.4, 0, 0.2, 1);
 }

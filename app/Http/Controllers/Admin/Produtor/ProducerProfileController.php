@@ -16,8 +16,11 @@ class ProducerProfileController extends Controller
 {
     public function index(ProducerProfileRepository $repository)
     {
+        $filters = request()->only(['search', 'status', 'tipo_pessoa']);
+
         return Inertia::render('Consultor/Producer/Profile/Index/Page', [
-            'producers' => $repository->paginate(20),
+            'producers' => $repository->paginate(20, $filters),
+            'filters'   => $filters,
         ]);
     }
 

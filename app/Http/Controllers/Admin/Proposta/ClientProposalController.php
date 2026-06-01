@@ -21,8 +21,11 @@ class ClientProposalController extends Controller
     {
         $this->authorize('viewAny', CommercialProposal::class);
 
+        $filters = request()->only(['search', 'status', 'concessionaria_id']);
+
         return Inertia::render('Consultor/Propostas/Cliente/Index/Page', [
-            'proposals' => $repository->paginate(),
+            'proposals' => $repository->paginate(15, $filters),
+            'filters'   => $filters,
         ]);
     }
 

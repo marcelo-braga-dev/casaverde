@@ -19,7 +19,7 @@ body,
 
 body {
     margin: 0;
-    background: #f5f7fa;
+    background: var(--cv-background);
 }
 
 a {
@@ -27,14 +27,16 @@ a {
     color: inherit;
 }
 
+/* ── Seleção de texto ─────────────────────────────────────── */
 ::selection {
-    background: rgba(11, 122, 83, 0.18);
-    color: #064e3b;
+    background: rgba(22, 101, 52, 0.15);
+    color: #14532d;
 }
 
+/* ── Scrollbar refinada ──────────────────────────────────── */
 ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -42,10 +44,45 @@ a {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: rgba(100, 116, 139, 0.36);
+    background: rgba(100, 116, 139, 0.28);
     border-radius: 999px;
+    transition: background 200ms ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: rgba(100, 116, 139, 0.56);
+    background: rgba(100, 116, 139, 0.50);
+}
+
+/* ── Foco acessível ──────────────────────────────────────── */
+:focus-visible {
+    outline: 2px solid var(--cv-primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* ── Tabelas MUI — linha hover mais suave ────────────────── */
+.MuiTableRow-root:hover {
+    transition: var(--cv-transition-fast);
+}
+
+/* ── Inputs — transição mais suave ──────────────────────── */
+.MuiOutlinedInput-root {
+    transition: var(--cv-transition-base) !important;
+}
+
+/* ── Cards — hover sutil para cards clicáveis ───────────── */
+.cv-card-hover {
+    transition: var(--cv-transition-base);
+    cursor: pointer;
+}
+.cv-card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--cv-shadow-hover) !important;
+}
+
+/* ── Texto truncado com tooltip ─────────────────────────── */
+.cv-truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }

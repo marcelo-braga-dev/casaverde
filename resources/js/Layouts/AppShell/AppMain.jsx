@@ -9,16 +9,9 @@ export default function AppMain({ children, maxWidth = '1680px' }) {
                 width: '100%',
                 maxWidth,
                 mx: 'auto',
-                px: {
-                    xs: 2,
-                    sm: 3,
-                    lg: 3,
-                    xl: 4,
-                },
-                py: {
-                    xs: 2,
-                    lg: 3,
-                },
+                px: { xs: 2, sm: 2.5, lg: 3, xl: 4 },
+                py: { xs: 2.5, lg: 3.5 },
+                minHeight: 0,
             }}
         >
             {children}

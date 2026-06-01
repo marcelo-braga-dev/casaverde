@@ -19,13 +19,13 @@ use Inertia\Inertia;
 
 class UsinaSolarController extends Controller
 {
-    public function index()
+    public function index(\App\Repositories\Usina\UsinaSolarRepository $repository)
     {
+        $filters = request()->only(['search', 'status', 'concessionaria_id']);
+
         return Inertia::render('Consultor/Producer/Usina/Index/Page', [
-            'usinas' => UsinaSolar::query()
-                ->with(['produtor', 'consultor', 'concessionaria', 'block', 'address'])
-                ->orderByDesc('id')
-                ->paginate(20),
+            'usinas'  => $repository->paginate(20, $filters),
+            'filters' => $filters,
         ]);
     }
 

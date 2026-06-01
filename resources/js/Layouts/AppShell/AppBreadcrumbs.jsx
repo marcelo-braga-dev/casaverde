@@ -4,10 +4,15 @@ import { Link } from '@inertiajs/react';
 export default function AppBreadcrumbs({ items = [] }) {
     return (
         <Breadcrumbs
-            separator="›"
+            separator="·"
             sx={{
                 '& .MuiBreadcrumbs-separator': {
-                    color: 'text.secondary',
+                    color: 'text.disabled',
+                    fontSize: '0.6rem',
+                    mx: 0.6,
+                },
+                '& .MuiBreadcrumbs-ol': {
+                    flexWrap: 'nowrap',
                 },
             }}
         >
@@ -19,8 +24,12 @@ export default function AppBreadcrumbs({ items = [] }) {
                         <Typography
                             key={item.label}
                             variant="caption"
-                            color="text.secondary"
-                            sx={{ fontWeight: 700 }}
+                            sx={{
+                                fontWeight: 700,
+                                color: isLast ? 'text.secondary' : 'text.disabled',
+                                whiteSpace: 'nowrap',
+                                lineHeight: 1,
+                            }}
                         >
                             {item.label}
                         </Typography>
@@ -33,12 +42,13 @@ export default function AppBreadcrumbs({ items = [] }) {
                         component={Link}
                         href={item.href}
                         variant="caption"
-                        color="text.secondary"
                         sx={{
                             fontWeight: 700,
-                            '&:hover': {
-                                color: 'primary.main',
-                            },
+                            color: 'text.disabled',
+                            whiteSpace: 'nowrap',
+                            lineHeight: 1,
+                            transition: 'color 140ms ease',
+                            '&:hover': { color: 'primary.main' },
                         }}
                     >
                         {item.label}

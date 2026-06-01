@@ -5,6 +5,7 @@ import {
     Card,
     CardContent,
     Grid,
+    InputAdornment,
     MenuItem,
     Stack,
     Switch,
@@ -155,9 +156,14 @@ export default function CreateClientUsinaLinkPage() {
                                             setData('allocated_energy_kwh', event.target.value)
                                         }
                                         error={Boolean(errors.allocated_energy_kwh)}
-                                        helperText={errors.allocated_energy_kwh || 'Valor em kWh'}
+                                        helperText={errors.allocated_energy_kwh}
                                         type="number"
                                         fullWidth
+                                        slotProps={{
+                                            input: {
+                                                endAdornment: <InputAdornment position="end">kWh</InputAdornment>,
+                                            },
+                                        }}
                                     />
                                 </Grid>
 
@@ -169,9 +175,14 @@ export default function CreateClientUsinaLinkPage() {
                                             setData('discount_percentage', event.target.value)
                                         }
                                         error={Boolean(errors.discount_percentage)}
-                                        helperText={errors.discount_percentage || 'Percentual'}
+                                        helperText={errors.discount_percentage}
                                         type="number"
                                         fullWidth
+                                        slotProps={{
+                                            input: {
+                                                endAdornment: <InputAdornment position="end">%</InputAdornment>,
+                                            },
+                                        }}
                                     />
                                 </Grid>
 

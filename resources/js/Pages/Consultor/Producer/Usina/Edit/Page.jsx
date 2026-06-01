@@ -1,6 +1,6 @@
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
 import {Head, router, useForm, usePage} from "@inertiajs/react";
-import { Button, Card, CardContent, CardHeader, MenuItem, TextField } from "@mui/material";
+import { Button, Card, CardContent, CardHeader, InputAdornment, MenuItem, TextField } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { IconDeviceFloppy, IconSolarElectricity } from "@tabler/icons-react";
 import AddressCard from "@/Components/Partials/AddressCard.jsx";
@@ -176,6 +176,11 @@ const Page = ({ usina = [], produtores = [], concessionarias = [], blocks = [], 
                                     type="number"
                                     required
                                     fullWidth
+                                    slotProps={{
+                                        input: {
+                                            endAdornment: <InputAdornment position="end">kWh/mês</InputAdornment>,
+                                        },
+                                    }}
                                 />
                             </Grid>
 
@@ -189,6 +194,11 @@ const Page = ({ usina = [], produtores = [], concessionarias = [], blocks = [], 
                                     type="number"
                                     required
                                     fullWidth
+                                    slotProps={{
+                                        input: {
+                                            endAdornment: <InputAdornment position="end">kWp</InputAdornment>,
+                                        },
+                                    }}
                                 />
                             </Grid>
 

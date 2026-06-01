@@ -2,7 +2,6 @@
 
 namespace App\Models\Produtor;
 
-use App\Models\Cliente\ClientDiscountRule;
 use App\Models\Proposta\ProducerProposal;
 use App\Models\Users\User;
 use App\Models\Users\UserContact;
@@ -33,30 +32,31 @@ class ProducerProfile extends Model
     ];
 
     protected $appends = ['producer_code'];
-    protected $with = ['contacts'];
+    protected $with    = ['contacts'];
 
-    // getters
-    public function getProducerCodeAttribute($value)
+    // ── Getters ───────────────────────────────────────────────────────────
+
+    public function getProducerCodeAttribute(): string
     {
-        $id = $this->id;
-        return "P$id";
+        return "P{$this->id}";
     }
 
-    public function getCpfAttribute()
+    public function getCpfAttribute(): ?string
     {
         return isset($this->attributes['cpf']) && $this->attributes['cpf']
             ? FormatValues::formatCpf($this->attributes['cpf'])
             : null;
     }
 
-    public function getCnpjAttribute()
+    public function getCnpjAttribute(): ?string
     {
         return isset($this->attributes['cnpj']) && $this->attributes['cnpj']
             ? FormatValues::formatCnpj($this->attributes['cnpj'])
             : null;
     }
 
-    // relations
+    // ── Relationships ─────────────────────────────────────────────────────
+
     public function consultor()
     {
         return $this->belongsTo(User::class, 'consultor_user_id');
@@ -82,9 +82,16 @@ class ProducerProfile extends Model
         return $this->hasMany(UsinaSolar::class, 'producer_profile_id');
     }
 
-    public function activeDiscountRule()
+    /** Todas as regras de taxa de administração */
+    public function feeRules()
     {
-        return $this->hasOne(ClientDiscountRule::class, 'client_profile_id')
+        return $this->hasMany(ProducerAdministrationFeeRules::class, 'producer_profile_id');
+    }
+
+    /** Regra de taxa de administração atualmente ativa */
+    public function activeFeeRule()
+    {
+        return $this->hasOne(ProducerAdministrationFeeRules::class, 'producer_profile_id')
             ->where('is_active', true);
     }
 }

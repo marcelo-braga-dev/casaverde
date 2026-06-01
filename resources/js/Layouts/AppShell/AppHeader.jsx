@@ -1,23 +1,11 @@
-import {
-    Box,
-    IconButton,
-    Stack,
-    Typography,
-} from '@mui/material';
-import {
-    IconMenu2,
-} from '@tabler/icons-react';
+import { Box, IconButton, Stack, Typography } from '@mui/material';
+import { IconMenu2 } from '@tabler/icons-react';
 import { usePage } from '@inertiajs/react';
 import { useMenuDrawer } from '@/Contexts/Drawer/DrawerContext';
 import AppUserMenu from './AppUserMenu';
 import AppBreadcrumbs from './AppBreadcrumbs';
 
-export default function AppHeader({
-                                      title,
-                                      subtitle,
-                                      actions,
-                                      breadcrumbs = [],
-                                  }) {
+export default function AppHeader({ title, subtitle, actions, breadcrumbs = [] }) {
     const { auth } = usePage().props;
     const { toggleMobileDrawer } = useMenuDrawer();
 
@@ -28,45 +16,36 @@ export default function AppHeader({
                 position: 'sticky',
                 top: 0,
                 zIndex: 120,
-                backdropFilter: 'blur(18px)',
-                backgroundColor: 'background.header',
+                backdropFilter: 'blur(20px)',
+                WebkitBackdropFilter: 'blur(20px)',
+                backgroundColor: 'rgba(255,255,255,0.90)',
                 borderBottom: '1px solid',
                 borderColor: 'divider',
-                boxShadow: 'customShadows.header',
+                boxShadow: '0 1px 3px rgba(15,23,42,0.06)',
                 width: '100%',
             }}
         >
-            <Box
-                sx={{
-                    px: {
-                        xs: 2,
-                        sm: 3,
-                        lg: 3,
-                        xl: 4,
-                    },
-                    py: 1.5,
-                }}
-            >
+            <Box sx={{ px: { xs: 2, sm: 3, xl: 4 }, py: 1.25 }}>
                 <Stack
                     direction="row"
                     alignItems="center"
                     justifyContent="space-between"
                     gap={2}
                 >
-                    <Stack
-                        direction="row"
-                        alignItems="center"
-                        gap={1.5}
-                        sx={{ minWidth: 0 }}
-                    >
+                    {/* ── Esquerda: menu mobile + título ────────── */}
+                    <Stack direction="row" alignItems="center" gap={1.2} sx={{ minWidth: 0 }}>
                         <IconButton
                             onClick={toggleMobileDrawer}
+                            size="small"
                             sx={{
                                 display: { xs: 'inline-flex', lg: 'none' },
                                 bgcolor: 'grey.100',
+                                borderRadius: 2,
+                                width: 36,
+                                height: 36,
                             }}
                         >
-                            <IconMenu2 size={22} />
+                            <IconMenu2 size={20} />
                         </IconButton>
 
                         <Box sx={{ minWidth: 0 }}>
@@ -78,9 +57,11 @@ export default function AppHeader({
                                 variant="h5"
                                 noWrap
                                 sx={{
-                                    mt: breadcrumbs.length > 0 ? 0.4 : 0,
+                                    mt: breadcrumbs.length > 0 ? 0.2 : 0,
                                     fontWeight: 900,
                                     letterSpacing: '-0.045em',
+                                    fontSize: { xs: '1rem', sm: '1.1rem' },
+                                    lineHeight: 1.25,
                                 }}
                             >
                                 {title || 'Casa Verde'}
@@ -88,9 +69,10 @@ export default function AppHeader({
 
                             {subtitle && (
                                 <Typography
-                                    variant="body2"
+                                    variant="caption"
                                     color="text.secondary"
                                     noWrap
+                                    sx={{ display: 'block', mt: 0.1 }}
                                 >
                                     {subtitle}
                                 </Typography>
@@ -98,63 +80,9 @@ export default function AppHeader({
                         </Box>
                     </Stack>
 
-                    <Stack
-                        direction="row"
-                        alignItems="center"
-                        gap={1}
-                    >
-                        {/*<Box*/}
-                        {/*    sx={{*/}
-                        {/*        display: { xs: 'none', md: 'flex' },*/}
-                        {/*        alignItems: 'center',*/}
-                        {/*        width: {*/}
-                        {/*            md: 280,*/}
-                        {/*            xl: 380,*/}
-                        {/*        },*/}
-                        {/*        height: 42,*/}
-                        {/*        px: 1.5,*/}
-                        {/*        gap: 1,*/}
-                        {/*        borderRadius: 999,*/}
-                        {/*        bgcolor: 'grey.100',*/}
-                        {/*        border: '1px solid',*/}
-                        {/*        borderColor: 'divider',*/}
-                        {/*    }}*/}
-                        {/*>*/}
-                        {/*    <IconSearch size={18} color="#64748B" />*/}
-                        {/*    <Typography*/}
-                        {/*        variant="body2"*/}
-                        {/*        color="text.secondary"*/}
-                        {/*        sx={{ fontWeight: 600 }}*/}
-                        {/*    >*/}
-                        {/*        Buscar clientes, faturas, propostas...*/}
-                        {/*    </Typography>*/}
-                        {/*</Box>*/}
-
+                    {/* ── Direita: ações + avatar ────────────────── */}
+                    <Stack direction="row" alignItems="center" gap={1} sx={{ flexShrink: 0 }}>
                         {actions}
-
-                        {/*<IconButton*/}
-                        {/*    sx={{*/}
-                        {/*        width: 42,*/}
-                        {/*        height: 42,*/}
-                        {/*        bgcolor: 'grey.100',*/}
-                        {/*        display: { xs: 'none', sm: 'inline-flex' },*/}
-                        {/*    }}*/}
-                        {/*>*/}
-                        {/*    <IconRefresh size={20} />*/}
-                        {/*</IconButton>*/}
-
-                        {/*<IconButton*/}
-                        {/*    sx={{*/}
-                        {/*        width: 42,*/}
-                        {/*        height: 42,*/}
-                        {/*        bgcolor: 'grey.100',*/}
-                        {/*    }}*/}
-                        {/*>*/}
-                        {/*    <Badge color="error" variant="dot">*/}
-                        {/*        <IconBell size={20} />*/}
-                        {/*    </Badge>*/}
-                        {/*</IconButton>*/}
-
                         <AppUserMenu user={auth?.user} />
                     </Stack>
                 </Stack>

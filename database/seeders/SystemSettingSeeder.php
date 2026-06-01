@@ -11,10 +11,10 @@ class SystemSettingSeeder extends Seeder
     {
         $service = app(SystemSettingService::class);
 
-        $service->set(
-            'default_discount_percentage',
-            20,
-            'float'
-        );
+        // Taxa de desconto padrão para novos clientes
+        $service->set('default_discount_percentage', 20, 'float');
+
+        // Taxa de administração padrão para novos produtores
+        $service->set('default_producer_fee_percentage', 15, 'float');
     }
 }

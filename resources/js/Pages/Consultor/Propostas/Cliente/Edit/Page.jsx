@@ -8,6 +8,7 @@ import {
     FormControl,
     FormControlLabel,
     FormLabel,
+    InputAdornment,
     MenuItem,
     Radio,
     RadioGroup,
@@ -247,6 +248,11 @@ const Page = ({ proposal, concessionarias = [] }) => {
                                     helperText={errors.media_consumo}
                                     type="number"
                                     fullWidth
+                                    slotProps={{
+                                        input: {
+                                            endAdornment: <InputAdornment position="end">kWh/mês</InputAdornment>,
+                                        },
+                                    }}
                                 />
                             </Grid>
 
@@ -278,6 +284,11 @@ const Page = ({ proposal, concessionarias = [] }) => {
                                     helperText={errors.valor_medio}
                                     type="number"
                                     fullWidth
+                                    slotProps={{
+                                        input: {
+                                            startAdornment: <InputAdornment position="start">R$</InputAdornment>,
+                                        },
+                                    }}
                                 />
                             </Grid>
 

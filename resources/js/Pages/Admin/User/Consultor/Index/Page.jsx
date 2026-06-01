@@ -1,337 +1,134 @@
-import React from "react";
+import Layout from '@/Layouts/UserLayout/Layout.jsx';
+import DataTableCard from '@/Components/DataDisplay/DataTableCard';
+import DataTableEmpty from '@/Components/DataDisplay/DataTableEmpty';
+import DataTablePagination from '@/Components/DataDisplay/DataTablePagination';
+import InfoCell from '@/Components/DataDisplay/InfoCell';
+import FilterBar from '@/Components/Filters/FilterBar';
+import FilterSelect from '@/Components/Filters/FilterSelect';
+import FilterTextField from '@/Components/Filters/FilterTextField';
+import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Button, Chip, Stack, TableCell, TableRow, Typography } from '@mui/material';
+import { IconArrowRight, IconPlus, IconUserDollar } from '@tabler/icons-react';
 
-import { Link } from "@inertiajs/react";
+function safeRoute(n, p) { try { return route(n, p); } catch { return '#'; } }
 
-import Layout from "@/Layouts/UserLayout/Layout.jsx";
+const STATUS_MAP = {
+    '1': { label: 'Ativo',     color: 'success' },
+    '0': { label: 'Bloqueado', color: 'error' },
+};
 
-import Grid from "@mui/material/Grid2";
+export default function Page({ consultores = [], filters = {} }) {
+    const items = consultores?.data ?? (Array.isArray(consultores) ? consultores : []);
 
-import {
-    Avatar,
-    Box,
-    Button,
-    Card,
-    CardContent,
-    Chip,
-    Stack,
-    Typography,
-} from "@mui/material";
+    const { data, setData, processing } = useForm({
+        search: filters.search ?? '',
+        status: filters.status ?? '',
+    });
 
-import {
-    IconArrowRight,
-    IconPlus,
-    IconUser,
-} from "@tabler/icons-react";
+    function submit() {
+        router.get(safeRoute('admin.user.consultor.index'),
+            { search: data.search, status: data.status },
+            { preserveState: true, preserveScroll: true, replace: true }
+        );
+    }
 
-export default function Page({
-                                 consultores = [],
-                             }) {
+    function clear() {
+        router.get(safeRoute('admin.user.consultor.index'), {},
+            { preserveState: true, preserveScroll: true, replace: true }
+        );
+    }
 
     return (
         <Layout
             titlePage="Consultores"
             menu="consultores"
             subMenu="consultores-cadastrados"
+            breadcrumbs={[{ label: 'Admin' }, { label: 'Consultores' }]}
         >
-
-            <Stack spacing={3}>
-
-                <Grid
-                    container
-                    justifyContent="space-between"
-                    alignItems="center"
-                >
-
-                    <Grid>
-
-                        <Box>
-
-                            <Typography
-                                variant="h3"
-                                fontWeight={800}
-                            >
-                                Consultores
-                            </Typography>
-
-                        </Box>
-
-                    </Grid>
-
-                    <Grid>
-
-                        <Link
-                            href={route('admin.user.consultor.create')}
-                        >
-
-                            <Button
-                                variant="contained"
-                                size="large"
-                                startIcon={<IconPlus size={20} />}
-                            >
-                                Novo Consultor
-                            </Button>
-
-                        </Link>
-
-                    </Grid>
-
-                </Grid>
-
-                <Grid
-                    container
-                    spacing={3}
-                >
-
-                    {consultores.map((consultor) => (
-
-                        <Grid
-                            size={{
-                                xs: 12,
-                                md: 6,
-                                xl: 4,
-                            }}
-                            key={consultor.id}
-                        >
-
-                            <Card
-                                className="cv-card"
-                                sx={{
-                                    height: '100%',
-                                }}
-                            >
-
-                                <CardContent>
-
-                                    <Stack spacing={3}>
-
-                                        <Stack
-                                            direction="row"
-                                            spacing={2}
-                                            alignItems="center"
-                                        >
-
-                                            <Avatar
-                                                sx={{
-                                                    width: 64,
-                                                    height: 64,
-                                                    fontSize: 28,
-                                                    fontWeight: 800,
-                                                }}
-                                            >
-                                                <IconUser size={28} />
-                                            </Avatar>
-
-                                            <Box flex={1}>
-
-                                                <Typography
-                                                    variant="h5"
-                                                    fontWeight={800}
-                                                >
-                                                    {consultor.nome}
-                                                </Typography>
-
-                                                <Typography
-                                                    color="text.secondary"
-                                                    fontSize={14}
-                                                >
-                                                    {consultor.email}
-                                                </Typography>
-
-                                            </Box>
-
-                                        </Stack>
-
-                                        <Grid
-                                            container
-                                            spacing={2}
-                                        >
-
-                                            <Grid size={6}>
-
-                                                <Typography
-                                                    variant="caption"
-                                                    color="text.secondary"
-                                                >
-                                                    Documento
-                                                </Typography>
-
-                                                <Typography
-                                                    fontWeight={700}
-                                                >
-                                                    {
-                                                        consultor.user_data?.cpf
-                                                        || consultor.user_data?.cnpj
-                                                        || '-'
-                                                    }
-                                                </Typography>
-
-                                            </Grid>
-
-                                            <Grid size={6}>
-
-                                                <Typography
-                                                    variant="caption"
-                                                    color="text.secondary"
-                                                >
-                                                    Status
-                                                </Typography>
-
-                                                <Box mt={0.5}>
-
-                                                    <Chip
-                                                        label={consultor.status_nome}
-                                                        color={
-                                                            consultor.status == 1
-                                                                ? 'success'
-                                                                : 'error'
-                                                        }
-                                                        size="small"
-                                                    />
-
-                                                </Box>
-
-                                            </Grid>
-
-                                        </Grid>
-
-                                        <Grid
-                                            container
-                                            spacing={2}
-                                        >
-
-                                            <Grid size={6}>
-
-                                                <Typography
-                                                    variant="caption"
-                                                    color="text.secondary"
-                                                >
-                                                    Clientes
-                                                </Typography>
-
-                                                <Typography
-                                                    variant="h5"
-                                                    fontWeight={800}
-                                                >
-                                                    {consultor.clientes_count || 0}
-                                                </Typography>
-
-                                            </Grid>
-
-                                            <Grid size={6}>
-
-                                                <Typography
-                                                    variant="caption"
-                                                    color="text.secondary"
-                                                >
-                                                    Produtores
-                                                </Typography>
-
-                                                <Typography
-                                                    variant="h5"
-                                                    fontWeight={800}
-                                                >
-                                                    {consultor.produtores_count || 0}
-                                                </Typography>
-
-                                            </Grid>
-
-                                        </Grid>
-
-                                        <Grid
-                                            container
-                                            spacing={2}
-                                        >
-
-                                            <Grid size={12}>
-
-                                                <Typography
-                                                    variant="caption"
-                                                    color="text.secondary"
-                                                >
-                                                    Celular
-                                                </Typography>
-
-                                                <Typography
-                                                    fontWeight={700}
-                                                >
-                                                    {
-                                                        consultor.contatos?.celular
-                                                        || '-'
-                                                    }
-                                                </Typography>
-
-                                            </Grid>
-
-                                        </Grid>
-
-                                        <Link
-                                            href={route(
-                                                'admin.user.consultor.show',
-                                                consultor.id
-                                            )}
-                                        >
-
-                                            <Button
-                                                fullWidth
-                                                variant="outlined"
-                                                endIcon={<IconArrowRight />}
-                                            >
-                                                Visualizar Consultor
-                                            </Button>
-
-                                        </Link>
-
-                                    </Stack>
-
-                                </CardContent>
-
-                            </Card>
-
-                        </Grid>
-
-                    ))}
-
-                    {consultores.length === 0 && (
-
-                        <Grid size={12}>
-
-                            <Card className="cv-card">
-
-                                <CardContent>
-
-                                    <Box
-                                        py={8}
-                                        textAlign="center"
-                                    >
-
-                                        <Typography
-                                            variant="h5"
-                                            fontWeight={700}
-                                            mb={1}
-                                        >
-                                            Nenhum consultor encontrado
-                                        </Typography>
-
-                                        <Typography
-                                            color="text.secondary"
-                                        >
-                                            Cadastre o primeiro consultor da plataforma.
-                                        </Typography>
-
-                                    </Box>
-
-                                </CardContent>
-
-                            </Card>
-
-                        </Grid>
-
-                    )}
-
-                </Grid>
-
-            </Stack>
-
+            <Head title="Consultores" />
+
+            <DataTableCard
+                title="Consultores Cadastrados"
+                icon={IconUserDollar}
+                actions={
+                    <Button component={Link} href={safeRoute('admin.user.consultor.create')}
+                        variant="contained" startIcon={<IconPlus size={17} />}>
+                        Novo Consultor
+                    </Button>
+                }
+                filters={
+                    <FilterBar onSubmit={submit} onClear={clear} processing={processing}>
+                        <FilterTextField
+                            label="Buscar" placeholder="Nome ou e-mail..."
+                            value={data.search} onChange={v => setData('search', v)}
+                        />
+                        <FilterSelect
+                            label="Status" value={data.status}
+                            onChange={v => setData('status', v)}
+                            options={[{ value: '1', label: 'Ativo' }, { value: '0', label: 'Bloqueado' }]}
+                        />
+                    </FilterBar>
+                }
+                isEmpty={items.length === 0}
+                empty={
+                    <DataTableEmpty
+                        title="Nenhum consultor encontrado"
+                        description="Cadastre o primeiro consultor ou ajuste os filtros."
+                        icon={IconUserDollar}
+                        actionLabel="Novo Consultor"
+                        actionHref={safeRoute('admin.user.consultor.create')}
+                    />
+                }
+                head={
+                    <TableRow>
+                        <TableCell>Consultor</TableCell>
+                        <TableCell>E-mail</TableCell>
+                        <TableCell align="right">Clientes</TableCell>
+                        <TableCell align="right">Produtores</TableCell>
+                        <TableCell>Status</TableCell>
+                        <TableCell align="right">Ação</TableCell>
+                    </TableRow>
+                }
+                pagination={
+                    consultores?.links ? (
+                        <DataTablePagination
+                            links={consultores.links}
+                            meta={{ from: consultores.from, to: consultores.to, total: consultores.total }}
+                        />
+                    ) : null
+                }
+            >
+                {items.map(c => {
+                    const st = STATUS_MAP[String(c.status)] ?? { label: c.status_nome ?? c.status ?? '—', color: 'default' };
+                    return (
+                        <TableRow key={c.id} hover>
+                            <TableCell>
+                                <InfoCell title={c.name} subtitle={`#${c.id}`} color="primary.main" />
+                            </TableCell>
+                            <TableCell>
+                                <Typography variant="body2" color="text.secondary">{c.email}</Typography>
+                            </TableCell>
+                            <TableCell align="right">
+                                <Typography variant="body2" sx={{ fontWeight: 700 }}>{c.clientes_count ?? 0}</Typography>
+                            </TableCell>
+                            <TableCell align="right">
+                                <Typography variant="body2" sx={{ fontWeight: 700 }}>{c.produtores_count ?? 0}</Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Chip label={st.label} color={st.color} size="small" />
+                            </TableCell>
+                            <TableCell align="right">
+                                <Stack direction="row" gap={0.5} justifyContent="flex-end">
+                                    <Button component={Link} href={safeRoute('admin.user.consultor.show', c.id)}
+                                        size="small" variant="outlined" startIcon={<IconArrowRight size={14} />}>
+                                        Ver
+                                    </Button>
+                                </Stack>
+                            </TableCell>
+                        </TableRow>
+                    );
+                })}
+            </DataTableCard>
         </Layout>
-    )
+    );
 }

@@ -16,27 +16,30 @@ class ConsultorController extends Controller
 {
     public function index()
     {
-        $consultores = User::query()
-            ->with([
-                'userData',
-            ])
-            ->withCount([
-                'clientes',
-                'produtores',
-            ])
-            ->where(
-                'role_id',
-                RoleUser::$CONSULTOR
-            )
-            ->latest()
-            ->get();
+        $filters = request()->only(['search', 'status']);
 
-        return Inertia::render(
-            'Admin/User/Consultor/Index/Page',
-            [
-                'consultores' => $consultores,
-            ]
-        );
+        $query = User::query()
+            ->with(['userData'])
+            ->withCount(['clientes', 'produtores'])
+            ->where('role_id', RoleUser::$CONSULTOR)
+            ->latest();
+
+        if (!empty($filters['search'])) {
+            $s = '%' . $filters['search'] . '%';
+            $query->where(fn ($q) =>
+                $q->where('name', 'like', $s)
+                  ->orWhere('email', 'like', $s)
+            );
+        }
+
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        return Inertia::render('Admin/User/Consultor/Index/Page', [
+            'consultores' => $query->paginate(20)->withQueryString(),
+            'filters'     => $filters,
+        ]);
     }
 
     public function create()

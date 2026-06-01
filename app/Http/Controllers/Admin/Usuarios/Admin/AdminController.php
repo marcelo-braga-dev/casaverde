@@ -22,13 +22,26 @@ class AdminController extends Controller
     {
         $this->ensureAdmin();
 
-        $admins = User::query()
+        $filters = request()->only(['search', 'status']);
+
+        $query = User::query()
             ->where('role_id', RoleUser::$ADMIN)
-            ->orderByDesc('id')
-            ->paginate(15);
+            ->orderByDesc('id');
+
+        if (!empty($filters['search'])) {
+            $s = '%' . $filters['search'] . '%';
+            $query->where(fn ($q) =>
+                $q->where('name', 'like', $s)->orWhere('email', 'like', $s)
+            );
+        }
+
+        if (!empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
 
         return Inertia::render('Admin/User/Admin/Index/Page', [
-            'admins' => $admins,
+            'admins'  => $query->paginate(15)->withQueryString(),
+            'filters' => $filters,
         ]);
     }
 

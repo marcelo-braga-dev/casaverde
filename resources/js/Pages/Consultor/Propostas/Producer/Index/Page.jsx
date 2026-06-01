@@ -1,110 +1,144 @@
-import Layout from "@/Layouts/UserLayout/Layout.jsx";
-import { Head, Link } from "@inertiajs/react";
-import {
-    Button,
-    Card,
-    CardContent,
-    CardHeader,
-    Chip,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-} from "@mui/material";
-import { IconEye, IconFileText, IconPlus } from "@tabler/icons-react";
+import Layout from '@/Layouts/UserLayout/Layout.jsx';
+import DataTableCard from '@/Components/DataDisplay/DataTableCard';
+import DataTableEmpty from '@/Components/DataDisplay/DataTableEmpty';
+import DataTablePagination from '@/Components/DataDisplay/DataTablePagination';
+import FilterBar from '@/Components/Filters/FilterBar';
+import FilterSelect from '@/Components/Filters/FilterSelect';
+import FilterTextField from '@/Components/Filters/FilterTextField';
+import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Button, Chip, Stack, TableCell, TableRow, Typography } from '@mui/material';
+import { IconBolt, IconEye, IconPlus } from '@tabler/icons-react';
 
-const Page = ({ proposals }) => {
-    const items = proposals?.data ?? [];
+function safeRoute(n, p) { try { return route(n, p); } catch { return '#'; } }
 
-    const getClientName = (proposal) => {
-        const producer = proposal?.producer_profile;
+const STATUS_OPTS = [
+    { value: 'emitida',   label: 'Emitida' },
+    { value: 'enviada',   label: 'Enviada' },
+    { value: 'aprovada',  label: 'Aprovada' },
+    { value: 'rejeitada', label: 'Rejeitada' },
+    { value: 'pendente',  label: 'Pendente' },
+];
 
-        return producer?.nome || producer?.razao_social || producer?.nome_fantasia || "Cliente não informado";
-    };
-
-    return (
-        <Layout titlePage="Propostas Comerciais" menu="produtores" subMenu="produtores-propostas">
-            <Head title="Propostas Comerciais" />
-
-            <Card>
-                <CardHeader
-                    title="Lista de Propostas"
-                    avatar={<IconFileText />}
-                    action={
-                        <Link href={route("consultor.propostas.produtor.create")}>
-                            <Button color="success" startIcon={<IconPlus />} variant="contained">
-                                Nova Proposta
-                            </Button>
-                        </Link>
-                    }
-                />
-
-                <CardContent>
-                    <TableContainer>
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>Código</TableCell>
-                                    <TableCell>Produtor</TableCell>
-                                    <TableCell>Consultor</TableCell>
-                                    <TableCell>Emitido Em</TableCell>
-                                    <TableCell>Status</TableCell>
-                                    <TableCell align="right">Ações</TableCell>
-                                </TableRow>
-                            </TableHead>
-
-                            <TableBody>
-                                {items.map((proposal) => (
-                                    <TableRow key={proposal.id}>
-                                        <TableCell>{proposal?.proposal_code ?? proposal.id}</TableCell>
-                                        <TableCell>{getClientName(proposal)}</TableCell>
-                                        <TableCell>{proposal?.consultor?.name ?? "Não informado"}</TableCell>
-                                        <TableCell>{proposal?.created_at}</TableCell>
-                                        <TableCell>
-                                            <Chip
-                                                label={proposal?.status ?? "Sem status"}
-                                                color={proposal?.status === "emitida" ? "success" : "default"}
-                                                size="small"
-                                            />
-                                        </TableCell>
-                                        <TableCell align="right">
-                                            <Link href={route("consultor.propostas.produtor.show", proposal.id)}>
-                                                <Button size="small" variant="outlined" startIcon={<IconEye />}>
-                                                    Ver
-                                                </Button>
-                                            </Link>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-
-                                {items.length === 0 && (
-                                    <TableRow>
-                                        <TableCell colSpan={8}>Nenhuma proposta encontrada.</TableCell>
-                                    </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-
-                    <div className="mt-4 flex justify-center gap-2">
-                        {proposals?.links?.map((link, index) => (
-                            <Link
-                                key={index}
-                                href={link.url ?? "#"}
-                                preserveScroll
-                                className={`px-3 py-2 rounded border ${
-                                    link.active ? "bg-green-600 text-white" : "bg-white text-gray-700"
-                                } ${!link.url ? "opacity-50 pointer-events-none" : ""}`}
-                                dangerouslySetInnerHTML={{ __html: link.label }}
-                            />
-                        ))}
-                    </div>
-                </CardContent>
-            </Card>
-        </Layout>
-    );
+const STATUS_COLORS = {
+    emitida: 'info', enviada: 'primary', aprovada: 'success',
+    rejeitada: 'error', pendente: 'default',
 };
 
-export default Page;
+function producerName(p) {
+    const pr = p?.producer_profile;
+    return pr?.nome || pr?.razao_social || pr?.nome_fantasia || '—';
+}
+
+export default function Page({ proposals, filters = {} }) {
+    const items = proposals?.data ?? [];
+
+    const { data, setData, processing } = useForm({
+        search: filters.search ?? '',
+        status: filters.status ?? '',
+    });
+
+    function submit() {
+        router.get(safeRoute('consultor.propostas.produtor.index'),
+            { search: data.search, status: data.status },
+            { preserveState: true, preserveScroll: true, replace: true }
+        );
+    }
+
+    function clear() {
+        router.get(safeRoute('consultor.propostas.produtor.index'), {},
+            { preserveState: true, preserveScroll: true, replace: true }
+        );
+    }
+
+    return (
+        <Layout
+            titlePage="Propostas de Produtor"
+            menu="produtores"
+            subMenu="produtores-propostas"
+            breadcrumbs={[{ label: 'Produtores' }, { label: 'Propostas' }]}
+        >
+            <Head title="Propostas de Produtor" />
+
+            <DataTableCard
+                title="Propostas de Produtor Solar"
+                icon={IconBolt}
+                actions={
+                    <Button component={Link} href={safeRoute('consultor.propostas.produtor.create')}
+                        variant="contained" startIcon={<IconPlus size={17} />}>
+                        Nova Proposta
+                    </Button>
+                }
+                filters={
+                    <FilterBar onSubmit={submit} onClear={clear} processing={processing}>
+                        <FilterTextField
+                            label="Buscar produtor" placeholder="Nome, CPF, CNPJ..."
+                            value={data.search} onChange={v => setData('search', v)}
+                        />
+                        <FilterSelect
+                            label="Status" value={data.status}
+                            onChange={v => setData('status', v)} options={STATUS_OPTS}
+                        />
+                    </FilterBar>
+                }
+                isEmpty={items.length === 0}
+                empty={
+                    <DataTableEmpty
+                        title="Nenhuma proposta encontrada"
+                        description="Crie a primeira proposta de produtor ou ajuste os filtros."
+                        icon={IconBolt}
+                        actionLabel="Nova Proposta"
+                        actionHref={safeRoute('consultor.propostas.produtor.create')}
+                    />
+                }
+                head={
+                    <TableRow>
+                        <TableCell>Código</TableCell>
+                        <TableCell>Produtor</TableCell>
+                        <TableCell>Consultor</TableCell>
+                        <TableCell align="right">Potência</TableCell>
+                        <TableCell align="right">Geração Média</TableCell>
+                        <TableCell>Status</TableCell>
+                        <TableCell align="right">Ação</TableCell>
+                    </TableRow>
+                }
+                pagination={
+                    <DataTablePagination
+                        links={proposals?.links}
+                        meta={{ from: proposals?.from, to: proposals?.to, total: proposals?.total }}
+                    />
+                }
+            >
+                {items.map(p => (
+                    <TableRow key={p.id} hover>
+                        <TableCell>
+                            <Typography variant="body2" sx={{ fontFamily: 'monospace', fontWeight: 700, color: 'primary.main' }}>
+                                {p.proposal_code ?? `#${p.id}`}
+                            </Typography>
+                        </TableCell>
+                        <TableCell>
+                            <Typography variant="body2" sx={{ fontWeight: 700 }}>{producerName(p)}</Typography>
+                        </TableCell>
+                        <TableCell>
+                            <Typography variant="body2" color="text.secondary">{p.consultor?.name ?? '—'}</Typography>
+                        </TableCell>
+                        <TableCell align="right">
+                            <Typography variant="body2">{p.potencia_usina ? `${p.potencia_usina} kWp` : '—'}</Typography>
+                        </TableCell>
+                        <TableCell align="right">
+                            <Typography variant="body2">{p.media_geracao ? `${p.media_geracao} kWh` : '—'}</Typography>
+                        </TableCell>
+                        <TableCell>
+                            <Chip label={p.status ?? '—'} color={STATUS_COLORS[p.status] ?? 'default'} size="small" />
+                        </TableCell>
+                        <TableCell align="right">
+                            <Button component={Link} href={safeRoute('consultor.propostas.produtor.show', p.id)}
+                                size="small" variant="outlined" startIcon={<IconEye size={15} />}>
+                                Ver
+                            </Button>
+                        </TableCell>
+                    </TableRow>
+                ))}
+            </DataTableCard>
+        </Layout>
+    );
+}

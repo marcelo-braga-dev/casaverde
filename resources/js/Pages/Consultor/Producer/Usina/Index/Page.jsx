@@ -1,104 +1,137 @@
-import Layout from "@/Layouts/UserLayout/Layout.jsx";
-import { Head, Link } from "@inertiajs/react";
-import {
-    Button,
-    Card,
-    CardContent,
-    CardHeader,
-    Chip,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-} from "@mui/material";
-import { IconEye, IconPlus, IconSolarElectricity } from "@tabler/icons-react";
+import Layout from '@/Layouts/UserLayout/Layout.jsx';
+import DataTableCard from '@/Components/DataDisplay/DataTableCard';
+import DataTableEmpty from '@/Components/DataDisplay/DataTableEmpty';
+import DataTablePagination from '@/Components/DataDisplay/DataTablePagination';
+import FilterBar from '@/Components/Filters/FilterBar';
+import FilterSelect from '@/Components/Filters/FilterSelect';
+import FilterTextField from '@/Components/Filters/FilterTextField';
+import { Head, Link, router, useForm } from '@inertiajs/react';
+import { Button, Chip, TableCell, TableRow, Typography } from '@mui/material';
+import { IconEye, IconPlus, IconSolarPanel2 } from '@tabler/icons-react';
 
-const Page = ({ usinas }) => {
+function safeRoute(n, p) { try { return route(n, p); } catch { return '#'; } }
+
+export default function Page({ usinas, filters = {} }) {
     const items = usinas?.data ?? [];
-console.log(items);
+
+    const { data, setData, processing } = useForm({
+        search: filters.search ?? '',
+        status: filters.status ?? '',
+    });
+
+    function submit() {
+        router.get(safeRoute('consultor.producer.usinas.index'),
+            { search: data.search, status: data.status },
+            { preserveState: true, preserveScroll: true, replace: true }
+        );
+    }
+
+    function clear() {
+        router.get(safeRoute('consultor.producer.usinas.index'), {},
+            { preserveState: true, preserveScroll: true, replace: true }
+        );
+    }
+
     return (
-        <Layout titlePage="Usinas Fotovoltáicas" menu="usinas-solar" subMenu="usinas-index">
+        <Layout
+            titlePage="Usinas Fotovoltaicas"
+            menu="usinas-solar"
+            subMenu="usinas-index"
+            breadcrumbs={[{ label: 'Usinas' }, { label: 'Cadastros' }]}
+        >
             <Head title="Usinas" />
 
-            <Card>
-                <CardHeader
-                    title="Lista de Usinas"
-                    avatar={<IconSolarElectricity />}
-                    action={
-                        <Link href={route("consultor.producer.usinas.create")}>
-                            <Button color="success" startIcon={<IconPlus />}>
-                                Cadastrar Usina
-                            </Button>
-                        </Link>
-                    }
-                />
-
-                <CardContent>
-                    <TableContainer>
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell>ID</TableCell>
-                                    <TableCell>Nome</TableCell>
-                                    <TableCell>Produtor</TableCell>
-                                    <TableCell>Consultor</TableCell>
-                                    <TableCell>Grupo</TableCell>
-                                    <TableCell>Concessionária</TableCell>
-                                    <TableCell>Potência</TableCell>
-                                    <TableCell>Status</TableCell>
-                                    <TableCell align="right">Ações</TableCell>
-                                </TableRow>
-                            </TableHead>
-
-                            <TableBody>
-                                {items.map((usina) => (
-                                    <TableRow key={usina.id}>
-                                        <TableCell>#{usina.id}</TableCell>
-                                        <TableCell>{usina.usina_nome}</TableCell>
-                                        <TableCell>{usina?.produtor?.nome ?? "-"}</TableCell>
-                                        <TableCell>{usina?.consultor?.name ?? "-"}</TableCell>
-                                        <TableCell>{usina?.block?.nome ?? "-"}</TableCell>
-                                        <TableCell>{usina?.concessionaria?.nome ?? "-"}</TableCell>
-                                        <TableCell>{`${usina?.potencia_usina}kWp` ?? "-"}</TableCell>
-                                        <TableCell>
-                                            <Chip
-                                                label={usina?.status ?? "Sem status"}
-                                                color={usina?.status === "ativo" ? "success" : "default"}
-                                                size="small"
-                                            />
-                                        </TableCell>
-                                        <TableCell align="right">
-                                            <Link href={route("consultor.producer.usinas.show", usina.id)}>
-                                                <Button size="small" variant="outlined" startIcon={<IconEye />}>
-                                                    Ver
-                                                </Button>
-                                            </Link>
-                                        </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-
-                    <div className="mt-4 flex justify-center gap-2">
-                        {usinas?.links?.map((link, index) => (
-                            <Link
-                                key={index}
-                                href={link.url ?? "#"}
-                                preserveScroll
-                                className={`px-3 py-2 rounded border ${
-                                    link.active ? "bg-green-600 text-white" : "bg-white text-gray-700"
-                                } ${!link.url ? "opacity-50 pointer-events-none" : ""}`}
-                                dangerouslySetInnerHTML={{ __html: link.label }}
+            <DataTableCard
+                title="Usinas Cadastradas"
+                icon={IconSolarPanel2}
+                actions={
+                    <Button component={Link} href={safeRoute('consultor.producer.usinas.create')}
+                        variant="contained" startIcon={<IconPlus size={17} />}>
+                        Cadastrar Usina
+                    </Button>
+                }
+                filters={
+                    <FilterBar onSubmit={submit} onClear={clear} processing={processing}>
+                        <FilterTextField
+                            label="Buscar" placeholder="Nome, UC, concessionária, produtor..."
+                            value={data.search} onChange={v => setData('search', v)}
+                        />
+                        <FilterSelect
+                            label="Status" value={data.status}
+                            onChange={v => setData('status', v)}
+                            options={[{ value: 'ativo', label: 'Ativo' }, { value: 'inativo', label: 'Inativo' }]}
+                        />
+                    </FilterBar>
+                }
+                isEmpty={items.length === 0}
+                empty={
+                    <DataTableEmpty
+                        title="Nenhuma usina encontrada"
+                        description="Cadastre a primeira usina ou ajuste os filtros."
+                        icon={IconSolarPanel2}
+                        actionLabel="Cadastrar Usina"
+                        actionHref={safeRoute('consultor.producer.usinas.create')}
+                    />
+                }
+                head={
+                    <TableRow>
+                        <TableCell>Usina</TableCell>
+                        <TableCell>UC</TableCell>
+                        <TableCell>Produtor</TableCell>
+                        <TableCell>Concessionária</TableCell>
+                        <TableCell>Bloco</TableCell>
+                        <TableCell align="right">Potência</TableCell>
+                        <TableCell>Status</TableCell>
+                        <TableCell align="right">Ação</TableCell>
+                    </TableRow>
+                }
+                pagination={
+                    <DataTablePagination
+                        links={usinas?.links}
+                        meta={{ from: usinas?.from, to: usinas?.to, total: usinas?.total }}
+                    />
+                }
+            >
+                {items.map(u => (
+                    <TableRow key={u.id} hover>
+                        <TableCell>
+                            <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                                {u.usina_nome ?? `Usina #${u.id}`}
+                            </Typography>
+                        </TableCell>
+                        <TableCell>
+                            <Typography variant="body2" color="text.secondary">{u.uc ?? '—'}</Typography>
+                        </TableCell>
+                        <TableCell>
+                            <Typography variant="body2">{u.produtor?.nome ?? u.produtor?.razao_social ?? '—'}</Typography>
+                        </TableCell>
+                        <TableCell>
+                            <Typography variant="body2">{u.concessionaria?.nome ?? '—'}</Typography>
+                        </TableCell>
+                        <TableCell>
+                            <Typography variant="body2" color="text.secondary">{u.block?.nome ?? '—'}</Typography>
+                        </TableCell>
+                        <TableCell align="right">
+                            <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                                {u.potencia_usina ? `${u.potencia_usina} kWp` : '—'}
+                            </Typography>
+                        </TableCell>
+                        <TableCell>
+                            <Chip
+                                label={u.status ?? '—'}
+                                color={u.status === 'ativo' ? 'success' : 'default'}
+                                size="small"
                             />
-                        ))}
-                    </div>
-                </CardContent>
-            </Card>
+                        </TableCell>
+                        <TableCell align="right">
+                            <Button component={Link} href={safeRoute('consultor.producer.usinas.show', u.id)}
+                                size="small" variant="outlined" startIcon={<IconEye size={15} />}>
+                                Ver
+                            </Button>
+                        </TableCell>
+                    </TableRow>
+                ))}
+            </DataTableCard>
         </Layout>
     );
-};
-
-export default Page;
+}

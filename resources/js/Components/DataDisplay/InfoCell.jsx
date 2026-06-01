@@ -1,47 +1,51 @@
 import { Avatar, Box, Stack, Typography } from '@mui/material';
 
 export default function InfoCell({
-                                     title,
-                                     subtitle,
-                                     avatar,
-                                     icon: Icon,
-                                     color = 'primary.main',
-                                 }) {
+    title,
+    subtitle,
+    avatar,
+    icon: Icon,
+    color = 'primary.main',
+}) {
     const initials = title
-        ? String(title)
-            .split(' ')
-            .map((word) => word[0])
-            .slice(0, 2)
-            .join('')
-            .toUpperCase()
-        : 'CV';
+        ? String(title).split(' ').map(w => w[0]).slice(0, 2).join('').toUpperCase()
+        : '—';
 
     return (
         <Stack direction="row" alignItems="center" gap={1.2}>
+            {/* Avatar */}
             {avatar ? (
-                <Avatar src={avatar} sx={{ width: 40, height: 40 }} />
+                <Avatar
+                    src={avatar}
+                    sx={{ width: 34, height: 34, borderRadius: 2 }}
+                    variant="rounded"
+                />
             ) : (
                 <Avatar
+                    variant="rounded"
                     sx={{
-                        width: 40,
-                        height: 40,
+                        width: 34,
+                        height: 34,
+                        borderRadius: 1.5,
                         bgcolor: color,
                         color: '#FFFFFF',
-                        fontWeight: 900,
-                        fontSize: 13,
+                        fontWeight: 800,
+                        fontSize: '0.71875rem',
+                        flexShrink: 0,
                     }}
                 >
-                    {Icon ? <Icon size={20} /> : initials}
+                    {Icon ? <Icon size={17} /> : initials}
                 </Avatar>
             )}
 
+            {/* Texto */}
             <Box sx={{ minWidth: 0 }}>
                 <Typography
-                    variant="subtitle2"
+                    variant="body2"
                     noWrap
-                    sx={{ fontWeight: 850 }}
+                    sx={{ fontWeight: 700, lineHeight: 1.3, color: 'text.primary' }}
                 >
-                    {title || 'Não informado'}
+                    {title || '—'}
                 </Typography>
 
                 {subtitle && (
@@ -49,6 +53,7 @@ export default function InfoCell({
                         variant="caption"
                         color="text.secondary"
                         noWrap
+                        sx={{ display: 'block', lineHeight: 1.3, mt: 0.2 }}
                     >
                         {subtitle}
                     </Typography>

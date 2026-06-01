@@ -17,8 +17,11 @@ class ClienteController extends Controller
     {
         $this->authorize('viewAny', ClientProfile::class);
 
+        $filters = request()->only(['search', 'status', 'tipo_pessoa']);
+
         return Inertia::render('Consultor/Cliente/Profile/Index/Page', [
-            'clients' => $repository->paginate(20),
+            'clients' => $repository->paginate(20, $filters),
+            'filters' => $filters,
         ]);
     }
 

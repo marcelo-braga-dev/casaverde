@@ -3,6 +3,7 @@ import {
     Button,
     Card,
     CardContent,
+    InputAdornment,
     CardHeader,
     TextField,
 } from "@mui/material";
@@ -36,7 +37,7 @@ const DiscountRuleForm = ({ profile }) => {
                     <Grid container spacing={3}>
                         <Grid size={{ xs: 12, md: 4 }}>
                             <TextField
-                                label="Desconto (%)"
+                                label="Desconto"
                                 value={form.data.discount_percent}
                                 onChange={(e) => form.setData("discount_percent", e.target.value)}
                                 error={!!form.errors.discount_percent}
@@ -44,6 +45,11 @@ const DiscountRuleForm = ({ profile }) => {
                                 type="number"
                                 required
                                 fullWidth
+                                slotProps={{
+                                    input: {
+                                        endAdornment: <InputAdornment position="end">%</InputAdornment>,
+                                    },
+                                }}
                             />
                         </Grid>
 
