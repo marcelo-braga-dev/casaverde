@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\Cliente\ClientAccessInviteController;
 use App\Http\Controllers\Admin\Cliente\ClientDiscountHistoryController;
 use App\Http\Controllers\Admin\Cliente\ClientDiscountRuleController;
+use App\Http\Controllers\Admin\Cliente\ClienteIdentidadeController;
 use App\Http\Controllers\Admin\Cliente\ClientUsinaHistoryController;
 use App\Http\Controllers\Admin\Cliente\ClientUsinaLinkController;
 use App\Http\Controllers\Admin\Cliente\ConvertClientProfileController;
@@ -50,4 +51,7 @@ Route::name('user.')
 
         Route::post('/', [ClientEmailImportSettingController::class, 'store'])
             ->name('cliente.email-import-setting.store');
+
+        Route::put('cliente/{cliente}/identidade', [ClienteIdentidadeController::class, 'update'])
+            ->name('cliente.identidade.update');
     });

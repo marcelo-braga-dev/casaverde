@@ -19,8 +19,9 @@ class RedirectUserByRole
 
         if ($request->routeIs('dashboard')) {
             return match ((int) $user->role_id) {
-                RoleUser::$ADMIN,
-                RoleUser::$CONSULTOR => redirect()->route('admin.dashboard'),
+                RoleUser::$ADMIN => redirect()->route('admin.dashboard'),
+
+                RoleUser::$CONSULTOR => redirect()->route('consultor.dashboard'),
 
                 RoleUser::$CLIENTE => redirect()->route('cliente.dashboard'),
 

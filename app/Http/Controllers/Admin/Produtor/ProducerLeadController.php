@@ -52,7 +52,8 @@ class ProducerLeadController extends Controller
         return Inertia::render('Consultor/Producer/Lead/Show/Page', [
             'lead' => $producerLead->load([
                 'consultor',
-                'producerProfile.user',
+                'producerProfile.consultor',
+                'producerProfile.contacts',
                 'concessionaria',
             ]),
         ]);
@@ -63,7 +64,8 @@ class ProducerLeadController extends Controller
         return Inertia::render('Consultor/Producer/Lead/Edit/Page', [
             'lead' => $producerLead->load([
                 'consultor',
-                'producerProfile.user',
+                'producerProfile.consultor',
+                'producerProfile.contacts',
                 'concessionaria',
             ]),
             'consultores' => User::query()
@@ -71,9 +73,9 @@ class ProducerLeadController extends Controller
                 ->orderBy('name')
                 ->get(['id', 'name']),
             'producerProfiles' => ProducerProfile::query()
-                ->with(['user'])
+                ->with(['consultor', 'contacts'])
                 ->orderByDesc('id')
-                ->get(['id', 'user_id', 'usina_nome', 'admin_nome', 'created_by_user_id']),
+                ->get(['id', 'tipo_pessoa', 'nome', 'razao_social', 'nome_fantasia', 'consultor_user_id', 'contacts_id']),
             'concessionarias' => Concessionaria::query()
                 ->where('status', 'ativo')
                 ->orderBy('nome')

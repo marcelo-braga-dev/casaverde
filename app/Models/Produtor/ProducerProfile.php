@@ -3,7 +3,6 @@
 namespace App\Models\Produtor;
 
 use App\Models\Cliente\ClientDiscountRule;
-use App\Models\Endereco\Address;
 use App\Models\Proposta\ProducerProposal;
 use App\Models\Users\User;
 use App\Models\Users\UserContact;
@@ -58,29 +57,14 @@ class ProducerProfile extends Model
     }
 
     // relations
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'user_id');
-    }
-
-    public function createdBy()
-    {
-        return $this->belongsTo(User::class, 'created_by_user_id');
-    }
-
     public function consultor()
     {
         return $this->belongsTo(User::class, 'consultor_user_id');
     }
 
-    public function adminAddress()
+    public function platformUser()
     {
-        return $this->belongsTo(Address::class, 'admin_address_id');
-    }
-
-    public function usinaAddress()
-    {
-        return $this->belongsTo(Address::class, 'usina_address_id');
+        return $this->belongsTo(User::class, 'platform_user_id');
     }
 
     public function contacts()

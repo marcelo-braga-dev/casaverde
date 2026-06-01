@@ -15,28 +15,30 @@ class DashboardController extends Controller
         $user = auth()->user();
 
         $producerProfile = ProducerProfile::query()
-            ->with(['adminAddress', 'usinaAddress'])
-            ->where('user_id', $user->id)
+            ->with(['consultor', 'contacts', 'usinas.concessionaria'])
+            ->where('platform_user_id', $user->id)
             ->first();
 
-        $usinas = UsinaSolar::query()
-            ->with(['consultor', 'concessionaria', 'block', 'address'])
-            ->where('user_id', $user->id)
-            ->orderByDesc('id')
-            ->get();
+        $usinas = $producerProfile
+            ? UsinaSolar::query()
+                ->with(['consultor', 'concessionaria', 'block'])
+                ->where('producer_profile_id', $producerProfile->id)
+                ->orderByDesc('id')
+                ->get()
+            : collect();
 
-        $leads = ProducerLead::query()
-            ->with(['consultor', 'concessionaria'])
-            ->whereHas('producerProfile', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })
-            ->orderByDesc('id')
-            ->get();
+        $leads = $producerProfile
+            ? ProducerLead::query()
+                ->with(['consultor', 'concessionaria'])
+                ->where('producer_profile_id', $producerProfile->id)
+                ->orderByDesc('id')
+                ->get()
+            : collect();
 
         return Inertia::render('Produtor/Dashboard/Page', [
             'producerProfile' => $producerProfile,
-            'usinas' => $usinas,
-            'leads' => $leads,
+            'usinas'          => $usinas,
+            'leads'           => $leads,
         ]);
     }
 }

@@ -174,27 +174,16 @@ class UsinaSolarController extends Controller
 
     private function syncProducerProfileWithUsina(UsinaSolar $usina, array $data): void
     {
-        $profile = ProducerProfile::query()->find($usina->user_id);
+        $profile = $usina->producer_profile_id
+            ? ProducerProfile::query()->find($usina->producer_profile_id)
+            : null;
 
         if (!$profile) {
             return;
         }
 
-        $profile->update([
-            'inversores' => $data['inversores'] ?? $profile->inversores,
-            'status' => $profile->status === 'novo' ? 'em_integracao' : $profile->status,
-            'modulos' => $data['modulos'] ?? $profile->modulos,
-
-            'usina_address_id' => $data['address_id'] ?? $profile->usina_address_id,
-            'potencia_kw' => $data['potencia_usina'] ?? $profile->potencia_kw,
-            'potencia_kwp' => $data['potencia_usina'] ?? $profile->potencia_kwp,
-            'geracao_anual' => isset($data['media_geracao'])
-                ? ((float)$data['media_geracao'] * 12)
-                : $profile->geracao_anual,
-
-            'prazo_locacao' => $data['prazo_locacao'] ?? $profile->prazo_locacao,
-
-
-        ]);
+        if ($profile->status === 'lead' || $profile->status === 'prospect') {
+            $profile->update(['status' => 'em_integracao']);
+        }
     }
 }

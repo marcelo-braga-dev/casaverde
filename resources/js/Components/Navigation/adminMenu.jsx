@@ -125,7 +125,18 @@ export const adminMenu = [
         icon: <IconUserCog />,
         id: 'admin',
         cor: 'brown',
-        subItems: [],
+        subItems: [
+            {
+                id: 'admin-cadastrados',
+                title: 'Administradores',
+                link: safeRoute('admin.user.admin.index'),
+            },
+            {
+                id: 'admin-cadastrar',
+                title: 'Novo Administrador',
+                link: safeRoute('admin.user.admin.create'),
+            },
+        ],
     },
     {
         title: 'Financeiro',
@@ -233,9 +244,9 @@ export const adminMenu = [
         id: 'suporte',
         subItems: [
             {
-                id: 'suporte-produtores',
-                title: 'Suporte Geral',
-                link: safeRoute('auth.suporte.produtor.index'),
+                id: 'suporte-tickets',
+                title: 'Todos os Chamados',
+                link: safeRoute('support.tickets.index'),
             },
         ],
     },

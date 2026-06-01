@@ -95,6 +95,11 @@ class ConcessionaireBill extends Model
             ->where('is_resolved', false);
     }
 
+    public function charges()
+    {
+        return $this->hasMany(\App\Models\Cobranca\CustomerCharge::class, 'concessionaire_bill_id');
+    }
+
     public function getPdfLinkAttribute(): ?string
     {
         return $this->pdf_url;

@@ -106,32 +106,34 @@ class ProdutorPropostaRepository
 
     private function garantirProducerProfile(int $userId, array $data): void
     {
-        $existingProfile = ProducerProfile::query()
-            ->where('user_id', $userId)
-            ->first();
+        $cpf  = isset($data['cpf'])  ? preg_replace('/\D/', '', $data['cpf'])  : null;
+        $cnpj = isset($data['cnpj']) ? preg_replace('/\D/', '', $data['cnpj']) : null;
 
-        if ($existingProfile) {
-            return;
+        $tipoPessoa     = $data['tipo_pessoa'] ?? null;
+        $documentField  = $tipoPessoa === 'pj' ? 'cnpj' : 'cpf';
+        $documentValue  = $tipoPessoa === 'pj' ? $cnpj  : $cpf;
+
+        if ($documentValue) {
+            $existingProfile = ProducerProfile::query()
+                ->where($documentField, $documentValue)
+                ->first();
+
+            if ($existingProfile) {
+                return;
+            }
         }
 
-        $tipoPessoa = $data['tipo_pessoa'] ?? null;
-        $potencia = $data['dados']['potencia'] ?? null;
-        $geracaoMedia = $data['dados']['geracao_media'] ?? null;
-        $prazoLocacao = $data['dados']['prazo_locacao'] ?? null;
-
         ProducerProfile::query()->create([
-            'user_id' => $userId,
-            'created_by_user_id' => auth()->id(),
-            'admin_nome' => $data['nome'] ?? $data['razao_social'] ?? null,
-            'admin_qualificacao' => $tipoPessoa === 'pj' ? 'Pessoa Jurídica' : 'Pessoa Física',
-            'usina_nome' => $data['razao_social'] ?? $data['nome_fantasia'] ?? $data['nome'] ?? null,
-            'usina_cnpj' => $data['cnpj'] ?? null,
-            'potencia_kw' => $potencia,
-            'potencia_kwp' => $potencia,
-            'geracao_anual' => $geracaoMedia !== null ? ((float) $geracaoMedia * 12) : null,
-            'prazo_locacao' => $prazoLocacao,
-            'descricao' => 'Perfil criado automaticamente a partir da proposta de produtor.',
-            'status' => 'novo',
+            'tipo_pessoa'       => $tipoPessoa ?? 'pf',
+            'cpf'               => $cpf,
+            'cnpj'              => $cnpj,
+            'nome'              => $data['nome'] ?? null,
+            'razao_social'      => $data['razao_social'] ?? null,
+            'nome_fantasia'     => $data['nome_fantasia'] ?? null,
+            'platform_user_id'  => $userId,
+            'consultor_user_id' => auth()->id(),
+            'status'            => 'prospect',
+            'is_active_producer' => false,
         ]);
     }
 }

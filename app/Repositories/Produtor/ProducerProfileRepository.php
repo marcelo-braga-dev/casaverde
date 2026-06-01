@@ -12,25 +12,15 @@ class ProducerProfileRepository
         $user = auth()->user();
 
         $query = ProducerProfile::query()
-            ->with([
-                'user',
-                'createdBy',
-                'adminAddress',
-                'usinaAddress',
-            ])
+            ->with(['consultor', 'contacts'])
             ->orderByDesc('id');
 
         if ($user && $user->role_id === RoleUser::$CONSULTOR) {
-            $query->where(function ($subQuery) use ($user) {
-                $subQuery->where('created_by_user_id', $user->id)
-                    ->orWhereHas('user', function ($userQuery) use ($user) {
-                        $userQuery->where('consultor_id', $user->id);
-                    });
-            });
+            $query->where('consultor_user_id', $user->id);
         }
 
         if ($user && $user->role_id === RoleUser::$PRODUTOR) {
-            $query->where('user_id', $user->id);
+            $query->where('platform_user_id', $user->id);
         }
 
         return $query;
@@ -39,5 +29,10 @@ class ProducerProfileRepository
     public function paginate(int $perPage = 15)
     {
         return $this->queryList()->paginate($perPage);
+    }
+
+    public function findById(int $id): ?ProducerProfile
+    {
+        return $this->queryList()->find($id);
     }
 }

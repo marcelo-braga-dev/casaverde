@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Auth\ClienteActivationController;
 use App\Http\Controllers\Auth\ProdutorActivationController;
 use App\Http\Controllers\Webhook\Payments\CoraWebhookController;
 use Illuminate\Support\Facades\Route;

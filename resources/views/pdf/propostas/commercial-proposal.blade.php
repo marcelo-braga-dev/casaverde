@@ -14,31 +14,27 @@
 
         body {
             font-family: DejaVu Sans, sans-serif;
-            font-size: 12px;
-            color: #1F2937;
+            font-size: 11px;
+            color: #1E293B;
             margin: 0;
             padding: 0;
             background: #FFFFFF;
+            line-height: 1.55;
         }
 
         .page {
-            padding: 34px;
+            padding: 30px 34px 34px;
         }
 
+        /* ══════════════════════════════════════
+           HERO
+        ══════════════════════════════════════ */
         .hero {
-            background: linear-gradient(
-                135deg,
-                #0F3D2E 0%,
-                #14532D 100%
-            );
-
-            border-radius: 18px;
-
-            padding: 32px;
-
+            background: #064E3B;
+            border-radius: 12px;
+            padding: 26px 28px 22px;
             color: #FFFFFF;
-
-            margin-bottom: 26px;
+            margin-bottom: 20px;
         }
 
         .hero-top {
@@ -46,24 +42,26 @@
         }
 
         .logo {
-            height: 58px;
-            margin-bottom: 22px;
+            height: 48px;
+            margin-bottom: 14px;
         }
 
         .proposal-title {
-            font-size: 30px;
+            font-size: 24px;
             font-weight: 900;
-            margin-bottom: 10px;
+            margin-bottom: 5px;
+            letter-spacing: -0.5px;
         }
 
         .proposal-subtitle {
-            font-size: 13px;
-            opacity: .92;
-            line-height: 1.5;
+            font-size: 11px;
+            color: rgba(255,255,255,.75);
+            line-height: 1.6;
+            max-width: 480px;
         }
 
         .hero-grid {
-            margin-top: 26px;
+            margin-top: 18px;
             width: 100%;
         }
 
@@ -73,9 +71,9 @@
             vertical-align: top;
             margin-right: 2%;
             background: rgba(255,255,255,.10);
-            border: 1px solid rgba(255,255,255,.14);
-            border-radius: 14px;
-            padding: 16px;
+            border: 1px solid rgba(255,255,255,.20);
+            border-radius: 8px;
+            padding: 11px 14px;
         }
 
         .hero-card:last-child {
@@ -83,37 +81,51 @@
         }
 
         .hero-label {
-            font-size: 11px;
+            font-size: 9px;
             text-transform: uppercase;
-            opacity: .75;
-            margin-bottom: 8px;
+            letter-spacing: 1px;
+            color: #6EE7B7;
+            margin-bottom: 5px;
+            font-weight: 700;
         }
 
         .hero-value {
-            font-size: 18px;
+            font-size: 15px;
             font-weight: 800;
+            color: #FFFFFF;
         }
 
+        /* ══════════════════════════════════════
+           SECTION
+        ══════════════════════════════════════ */
         .section {
-            margin-bottom: 24px;
+            margin-bottom: 18px;
         }
 
         .section-title {
-            font-size: 18px;
+            font-size: 10px;
             font-weight: 800;
-            margin-bottom: 14px;
-            color: #0F172A;
-            padding-bottom: 8px;
-            border-bottom: 2px solid #E5E7EB;
+            margin-bottom: 10px;
+            color: #065F46;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #A7F3D0;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
         }
 
+        /* ══════════════════════════════════════
+           CARD
+        ══════════════════════════════════════ */
         .card {
-            border: 1px solid #E5E7EB;
-            border-radius: 16px;
-            padding: 20px;
+            border: 1px solid #E2E8F0;
+            border-radius: 10px;
+            padding: 16px 18px;
             background: #FFFFFF;
         }
 
+        /* ══════════════════════════════════════
+           INFO GRID — CLIENTE
+        ══════════════════════════════════════ */
         .grid-2 {
             width: 100%;
         }
@@ -126,60 +138,49 @@
 
         .grid-col.right {
             margin-left: 3%;
+            border-left: 1px solid #F1F5F9;
+            padding-left: 16px;
         }
 
         .info-row {
-            margin-bottom: 10px;
+            display: table;
+            width: 100%;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px dashed #F1F5F9;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
         }
 
         .label {
+            display: table-cell;
             font-weight: 700;
-            color: #374151;
+            color: #94A3B8;
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            width: 42%;
+            vertical-align: middle;
         }
 
         .value {
-            color: #111827;
-        }
-
-        .highlight-box {
-            margin-top: 26px;
-
-            background: linear-gradient(
-                135deg,
-                #DCFCE7 0%,
-                #ECFCCB 100%
-            );
-
-            border: 1px solid #BBF7D0;
-
-            border-radius: 18px;
-
-            padding: 26px;
-
-            text-align: center;
-        }
-
-        .highlight-title {
-            font-size: 15px;
-            color: #166534;
+            display: table-cell;
+            color: #1E293B;
             font-weight: 700;
-            margin-bottom: 10px;
+            font-size: 11.5px;
+            vertical-align: middle;
         }
 
-        .highlight-percent {
-            font-size: 42px;
-            font-weight: 900;
-            color: #166534;
-            margin-bottom: 12px;
-        }
-
-        .highlight-description {
-            font-size: 14px;
-            color: #166534;
-        }
-
+        /* ══════════════════════════════════════
+           ECONOMY CARDS
+        ══════════════════════════════════════ */
         .economy-boxes {
-            margin-top: 26px;
+            margin-top: 0;
+            margin-bottom: 16px;
         }
 
         .economy-card {
@@ -187,74 +188,197 @@
             display: inline-block;
             vertical-align: top;
             margin-right: 1%;
-            border-radius: 14px;
-            padding: 18px;
-            background: #F9FAFB;
-            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 13px 12px 12px;
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-top: 3px solid #CBD5E1;
+            text-align: center;
         }
+
+        .economy-card:nth-child(1) { border-top-color: #3B82F6; }
+        .economy-card:nth-child(2) { border-top-color: #10B981; }
+        .economy-card:nth-child(3) { border-top-color: #F59E0B; }
+        .economy-card:nth-child(4) { border-top-color: #8B5CF6; }
 
         .economy-card:last-child {
             margin-right: 0;
         }
 
         .economy-title {
-            font-size: 11px;
+            font-size: 8.5px;
             text-transform: uppercase;
-            color: #6B7280;
-            margin-bottom: 10px;
+            letter-spacing: 0.6px;
+            color: #64748B;
+            margin-bottom: 7px;
+            font-weight: 700;
         }
 
         .economy-value {
-            font-size: 20px;
-            font-weight: 800;
-            color: #111827;
+            font-size: 17px;
+            font-weight: 900;
+            color: #0F172A;
+            letter-spacing: -0.5px;
         }
 
+        /* ══════════════════════════════════════
+           HIGHLIGHT
+        ══════════════════════════════════════ */
+        .highlight-box {
+            margin-top: 0;
+            background: #064E3B;
+            border: none;
+            border-radius: 10px;
+            padding: 20px 24px;
+            text-align: center;
+        }
+
+        .highlight-title {
+            font-size: 9px;
+            color: #6EE7B7;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 10px;
+        }
+
+        .highlight-percent {
+            font-size: 44px;
+            font-weight: 900;
+            color: #ECFDF5;
+            margin-bottom: 4px;
+            letter-spacing: -2px;
+            line-height: 1;
+        }
+
+        .highlight-amount {
+            font-size: 26px;
+            font-weight: 900;
+            color: #6EE7B7;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .highlight-description {
+            font-size: 11px;
+            color: rgba(255,255,255,.65);
+        }
+
+        /* ══════════════════════════════════════
+           TABELA COMPARATIVO
+        ══════════════════════════════════════ */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 14px;
+            margin-top: 0;
         }
 
         thead {
-            background: #14532D;
+            background: #064E3B;
             color: #FFFFFF;
         }
 
         th {
-            padding: 14px;
-            font-size: 12px;
+            padding: 10px 14px;
+            font-size: 10px;
             text-align: center;
             font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #FFFFFF;
+        }
+
+        th:first-child {
+            text-align: left;
+            border-radius: 7px 0 0 0;
+            padding-left: 16px;
+        }
+
+        th:last-child {
+            border-radius: 0 7px 0 0;
+            background: #047857;
         }
 
         td {
-            padding: 14px;
-            border-bottom: 1px solid #E5E7EB;
+            padding: 10px 14px;
+            border-bottom: 1px solid #F1F5F9;
             text-align: center;
-            font-size: 12px;
+            font-size: 11.5px;
+        }
+
+        td:first-child {
+            text-align: left;
+            font-weight: 700;
+            color: #334155;
+            padding-left: 16px;
+        }
+
+        td:last-child {
+            background: #F0FDF4;
+        }
+
+        tbody tr:nth-child(odd) {
+            background: #FFFFFF;
         }
 
         tbody tr:nth-child(even) {
-            background: #F9FAFB;
+            background: #F8FAFC;
+        }
+
+        tbody tr:nth-child(even) td:last-child {
+            background: #DCFCE7;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        .td-concessionaria {
+            color: #475569;
+            font-size: 11.5px;
+        }
+
+        .td-casaverde {
+            color: #065F46;
+            font-weight: 800;
         }
 
         .positive {
             color: #15803D;
+            font-weight: 900;
+        }
+
+        /* ══════════════════════════════════════
+           NOTAS
+        ══════════════════════════════════════ */
+        .notes-content {
+            font-size: 11px;
+            color: #475569;
+            line-height: 1.7;
+        }
+
+        /* ══════════════════════════════════════
+           FOOTER
+        ══════════════════════════════════════ */
+        .footer {
+            margin-top: 28px;
+            padding-top: 14px;
+            border-top: 1px solid #E2E8F0;
+            font-size: 9.5px;
+            color: #94A3B8;
+            line-height: 1.7;
+        }
+
+        .footer strong {
+            color: #64748B;
             font-weight: 700;
         }
 
-        .footer {
-            margin-top: 40px;
-            padding-top: 24px;
-            border-top: 1px solid #E5E7EB;
-            font-size: 11px;
-            color: #6B7280;
-            line-height: 1.6;
-        }
-
+        /* ══════════════════════════════════════
+           ASSINATURA
+        ══════════════════════════════════════ */
         .signature-area {
-            margin-top: 70px;
+            margin-top: 50px;
         }
 
         .signature-box {
@@ -265,13 +389,17 @@
         }
 
         .signature-line {
-            border-top: 1px solid #111827;
-            margin-bottom: 10px;
+            border-top: 1px solid #94A3B8;
+            margin-bottom: 6px;
             padding-top: 10px;
+            font-size: 11px;
+            color: #334155;
+            font-weight: 700;
         }
 
         .text-muted {
-            color: #6B7280;
+            color: #94A3B8;
+            font-size: 9.5px;
         }
 
     </style>
@@ -283,7 +411,7 @@
 
     $valorMedio = (float) ($proposal->valor_medio ?? 0);
 
-    $taxaReducao = (float) ($proposal->taxa_reducao ?? 0);
+    $taxaReducao = (float) ($proposal->discount_percent ?? 0);
 
     $valorCasaVerde = $valorMedio * (
         1 - ($taxaReducao / 100)
@@ -372,30 +500,21 @@
                 <div class="grid-col">
 
                     <div class="info-row">
-                        <span class="label">
-                            Cliente:
-                        </span>
-
+                        <span class="label">Cliente</span>
                         <span class="value">
                             {{ $proposal->clientProfile->display_name }}
                         </span>
                     </div>
 
                     <div class="info-row">
-                        <span class="label">
-                            Documento:
-                        </span>
-
+                        <span class="label">Documento</span>
                         <span class="value">
                             {{ $proposal->clientProfile->documento ?? '-' }}
                         </span>
                     </div>
 
                     <div class="info-row">
-                        <span class="label">
-                            Unidade Consumidora:
-                        </span>
-
+                        <span class="label">Unidade Consumidora</span>
                         <span class="value">
                             {{ $proposal->unidade_consumidora ?? '-' }}
                         </span>
@@ -406,32 +525,23 @@
                 <div class="grid-col right">
 
                     <div class="info-row">
-                        <span class="label">
-                            Cidade:
-                        </span>
-
-                        <span class="value">
-                            {{ $proposal->clientProfile->cidade ?? '-' }}
-                        </span>
-                    </div>
-
-                    <div class="info-row">
-                        <span class="label">
-                            Concessionária:
-                        </span>
-
+                        <span class="label">Concessionária</span>
                         <span class="value">
                             {{ $proposal->concessionaria?->nome ?? '-' }}
                         </span>
                     </div>
 
                     <div class="info-row">
-                        <span class="label">
-                            Consultor:
-                        </span>
-
+                        <span class="label">Consultor</span>
                         <span class="value">
-                            {{ $proposal->consultor?->nome ?? '-' }}
+                            {{ $proposal->consultor?->name ?? '-' }}
+                        </span>
+                    </div>
+
+                    <div class="info-row">
+                        <span class="label">Emitida em</span>
+                        <span class="value">
+                            {{ $proposal->issued_at?->format('d/m/Y') ?? '-' }}
                         </span>
                     </div>
 
@@ -513,14 +623,7 @@
                     {{ number_format($taxaReducao, 2, ',', '.') }}%
                 </div>
 
-                <div
-                    style="
-                        font-size: 34px;
-                        font-weight: 900;
-                        color: #166534;
-                        margin-bottom: 12px;
-                    "
-                >
+                <div class="highlight-amount">
                     R$ {{ number_format($economiaAnual, 2, ',', '.') }}
                 </div>
 
@@ -547,96 +650,41 @@
 
                 <thead>
                 <tr>
-                    <th>
-                        Período
-                    </th>
-
-                    <th>
-                        Concessionária
-                    </th>
-
-                    <th>
-                        Casa Verde
-                    </th>
-
-                    <th>
-                        Economia
-                    </th>
+                    <th>Período</th>
+                    <th>Concessionária</th>
+                    <th>Casa Verde</th>
+                    <th>Economia</th>
                 </tr>
                 </thead>
 
                 <tbody>
 
                 <tr>
-                    <td>
-                        Mensal
-                    </td>
-
-                    <td>
-                        R$ {{ number_format($valorMedio, 2, ',', '.') }}
-                    </td>
-
-                    <td>
-                        R$ {{ number_format($valorCasaVerde, 2, ',', '.') }}
-                    </td>
-
-                    <td class="positive">
-                        R$ {{ number_format($economiaMensal, 2, ',', '.') }}
-                    </td>
+                    <td>Mensal</td>
+                    <td class="td-concessionaria">R$ {{ number_format($valorMedio, 2, ',', '.') }}</td>
+                    <td class="td-casaverde">R$ {{ number_format($valorCasaVerde, 2, ',', '.') }}</td>
+                    <td class="positive">R$ {{ number_format($economiaMensal, 2, ',', '.') }}</td>
                 </tr>
 
                 <tr>
-                    <td>
-                        Trimestral
-                    </td>
-
-                    <td>
-                        R$ {{ number_format($valorMedio * 3, 2, ',', '.') }}
-                    </td>
-
-                    <td>
-                        R$ {{ number_format($valorCasaVerde * 3, 2, ',', '.') }}
-                    </td>
-
-                    <td class="positive">
-                        R$ {{ number_format($economiaTrimestral, 2, ',', '.') }}
-                    </td>
+                    <td>Trimestral</td>
+                    <td class="td-concessionaria">R$ {{ number_format($valorMedio * 3, 2, ',', '.') }}</td>
+                    <td class="td-casaverde">R$ {{ number_format($valorCasaVerde * 3, 2, ',', '.') }}</td>
+                    <td class="positive">R$ {{ number_format($economiaTrimestral, 2, ',', '.') }}</td>
                 </tr>
 
                 <tr>
-                    <td>
-                        Semestral
-                    </td>
-
-                    <td>
-                        R$ {{ number_format($valorMedio * 6, 2, ',', '.') }}
-                    </td>
-
-                    <td>
-                        R$ {{ number_format($valorCasaVerde * 6, 2, ',', '.') }}
-                    </td>
-
-                    <td class="positive">
-                        R$ {{ number_format($economiaSemestral, 2, ',', '.') }}
-                    </td>
+                    <td>Semestral</td>
+                    <td class="td-concessionaria">R$ {{ number_format($valorMedio * 6, 2, ',', '.') }}</td>
+                    <td class="td-casaverde">R$ {{ number_format($valorCasaVerde * 6, 2, ',', '.') }}</td>
+                    <td class="positive">R$ {{ number_format($economiaSemestral, 2, ',', '.') }}</td>
                 </tr>
 
                 <tr>
-                    <td>
-                        Anual
-                    </td>
-
-                    <td>
-                        R$ {{ number_format($valorMedio * 12, 2, ',', '.') }}
-                    </td>
-
-                    <td>
-                        R$ {{ number_format($valorCasaVerde * 12, 2, ',', '.') }}
-                    </td>
-
-                    <td class="positive">
-                        R$ {{ number_format($economiaAnual, 2, ',', '.') }}
-                    </td>
+                    <td>Anual</td>
+                    <td class="td-concessionaria">R$ {{ number_format($valorMedio * 12, 2, ',', '.') }}</td>
+                    <td class="td-casaverde">R$ {{ number_format($valorCasaVerde * 12, 2, ',', '.') }}</td>
+                    <td class="positive">R$ {{ number_format($economiaAnual, 2, ',', '.') }}</td>
                 </tr>
 
                 </tbody>
@@ -657,7 +705,9 @@
 
             <div class="card">
 
-                {!! nl2br(e($proposal->notes)) !!}
+                <div class="notes-content">
+                    {!! nl2br(e($proposal->notes)) !!}
+                </div>
 
             </div>
 
@@ -693,6 +743,10 @@
                 Cliente
             </div>
 
+            <div class="text-muted">
+                Assinatura e carimbo
+            </div>
+
         </div>
 
         <div
@@ -702,6 +756,10 @@
 
             <div class="signature-line">
                 Casa Verde Energia
+            </div>
+
+            <div class="text-muted">
+                Consultor responsável
             </div>
 
         </div>

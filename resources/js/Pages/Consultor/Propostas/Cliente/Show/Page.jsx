@@ -119,7 +119,7 @@ console.log(proposal)
                     <Grid container spacing={3}>
                         <Grid size={12}>
                             <Typography variant="subtitle2">Endereço</Typography>
-                            <Typography>{proposal?.address.full_address}</Typography>
+                            <Typography>{proposal?.address?.full_address ?? 'Não informado'}</Typography>
                         </Grid>
                     </Grid>
                 </CardContent>

@@ -11,12 +11,23 @@ import {
     IconChevronRight,
     IconLeaf,
 } from '@tabler/icons-react';
+import { usePage } from '@inertiajs/react';
 import { useMenuDrawer } from '@/Contexts/Drawer/DrawerContext';
 import adminMenu from '@/Components/Navigation/adminMenu';
+import consultorMenu from '@/Components/Navigation/consultorMenu';
+import clienteMenu from '@/Components/Navigation/clienteMenu';
+import produtorMenu from '@/Components/Navigation/produtorMenu';
 import AppSidebarMenuGroup from './AppSidebarMenuGroup';
 
 export default function AppSidebar({ expandedWidth, collapsedWidth }) {
     const { collapsed, toggleCollapsed } = useMenuDrawer();
+    const { auth } = usePage().props;
+    const roleId = auth?.user?.role_id;
+    const menuItems =
+        roleId === 2 ? consultorMenu :
+        roleId === 3 ? produtorMenu  :
+        roleId === 4 ? clienteMenu   :
+        adminMenu;
 
     const width = collapsed ? collapsedWidth : expandedWidth;
 
@@ -211,7 +222,7 @@ export default function AppSidebar({ expandedWidth, collapsedWidth }) {
                         },
                     }}
                 >
-                    {adminMenu.map((item) => (
+                    {menuItems.map((item) => (
                         <AppSidebarMenuGroup
                             key={item.id}
                             item={item}
