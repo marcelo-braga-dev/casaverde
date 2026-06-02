@@ -32,4 +32,5 @@ Route::middleware(['auth', 'role:admin,consultor'])
         require __DIR__ . '/cockpit.php';
         require __DIR__ . '/operational-alerts.php';
         require __DIR__ . '/integracao.php';
+        require __DIR__ . '/acesso.php';
     });

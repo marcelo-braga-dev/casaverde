@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Admin\Usuarios\Cliente;
 
 use App\Http\Controllers\Controller;
+use App\Models\Acesso\UserAccessLog;
 use App\Models\Importacao\ImportEmailAccount;
 use App\Models\Usina\Concessionaria;
 use App\Http\Requests\Cliente\StoreClientProfileRequest;
 use App\Models\Cliente\ClientProfile;
 use App\Models\Usina\UsinaSolar;
 use App\Repositories\Cliente\ClientProfileRepository;
+use App\Services\Acesso\GerenciarAcessoService;
 use App\Services\Cliente\CreateOrFindClientProfileService;
 use Inertia\Inertia;
 
@@ -83,7 +85,7 @@ class ClienteController extends Controller
                 ->orderBy('nome')
                 ->get(['id', 'nome']),
 
-            // Emails disponíveis no pool (livres + o atual do cliente, se houver)
+            // Emails disponíveis no pool
             'availableEmails' => ImportEmailAccount::query()
                 ->where('is_active', true)
                 ->where(function ($q) use ($cliente) {
@@ -92,6 +94,11 @@ class ClienteController extends Controller
                 })
                 ->orderBy('email')
                 ->get(['id', 'email', 'label', 'client_profile_id']),
+
+            // Histórico de acesso do usuário plataforma do cliente
+            'accessHistory' => $cliente->platform_user_id
+                ? app(GerenciarAcessoService::class)->historico($cliente->platform_user_id)
+                : [],
         ]);
     }
 
