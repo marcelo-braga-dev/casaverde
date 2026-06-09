@@ -1,17 +1,25 @@
 import { useForm } from "@inertiajs/react";
 import {
+    Alert,
+    Box,
     Button,
     Card,
     CardContent,
-    CardHeader,
+    Divider,
     MenuItem,
+    Stack,
     TextField,
+    Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import { IconPlugConnected } from "@tabler/icons-react";
+import { IconLink, IconPlugConnected } from "@tabler/icons-react";
 
 const AttachUsinaForm = ({ profile, usinas = [] }) => {
+    const consumerUnits = profile?.consumer_units ?? profile?.consumerUnits ?? [];
+    const activeUnits = consumerUnits.filter(uc => uc.status === 'active');
+
     const form = useForm({
+        consumer_unit_id: "",
         usina_id: "",
         started_at: "",
         notes: "",
@@ -19,25 +27,64 @@ const AttachUsinaForm = ({ profile, usinas = [] }) => {
 
     const submit = (e) => {
         e.preventDefault();
-
         form.post(route("consultor.user.cliente.usina.store", profile.id), {
             preserveScroll: true,
             onSuccess: () => {
-                form.reset("usina_id", "started_at", "notes");
+                form.reset("consumer_unit_id", "usina_id", "started_at", "notes");
             },
         });
     };
-    
-    return (
-        <Card sx={{ marginBottom: 4 }}>
-            <CardHeader title="Vincular Cliente à Usina" avatar={<IconPlugConnected />} />
 
+    if (activeUnits.length === 0) {
+        return (
+            <Alert severity="info" sx={{ mb: 3 }}>
+                Cadastre ao menos uma <strong>Unidade Consumidora (UC)</strong> ativa na aba "UCs" antes de vincular uma usina.
+            </Alert>
+        );
+    }
+
+    return (
+        <Card sx={{ mb: 3 }}>
             <CardContent>
+                <Stack direction="row" alignItems="center" gap={1.5} mb={2}>
+                    <Box sx={{
+                        width: 36, height: 36, borderRadius: 2,
+                        background: 'linear-gradient(135deg,#10b981,#059669)',
+                        display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff',
+                    }}>
+                        <IconLink size={18} />
+                    </Box>
+                    <Typography variant="h6" sx={{ fontWeight: 950 }}>
+                        Vincular UC à Usina
+                    </Typography>
+                </Stack>
+                <Divider sx={{ mb: 2 }} />
+
                 <form onSubmit={submit}>
                     <Grid container spacing={3}>
-                        <Grid size={{ xs: 12, md: 6 }}>
+                        <Grid size={{ xs: 12, md: 4 }}>
                             <TextField
-                                label="Usina"
+                                label="Unidade Consumidora (UC)"
+                                value={form.data.consumer_unit_id}
+                                onChange={(e) => form.setData("consumer_unit_id", e.target.value)}
+                                error={!!form.errors.consumer_unit_id}
+                                helperText={form.errors.consumer_unit_id}
+                                select
+                                required
+                                fullWidth
+                            >
+                                <MenuItem value="">Selecione a UC...</MenuItem>
+                                {activeUnits.map((uc) => (
+                                    <MenuItem key={uc.id} value={uc.id}>
+                                        {uc.uc_code}{uc.label ? ` — ${uc.label}` : ''}
+                                    </MenuItem>
+                                ))}
+                            </TextField>
+                        </Grid>
+
+                        <Grid size={{ xs: 12, md: 4 }}>
+                            <TextField
+                                label="Usina Solar"
                                 value={form.data.usina_id}
                                 onChange={(e) => form.setData("usina_id", e.target.value)}
                                 error={!!form.errors.usina_id}
@@ -46,15 +93,21 @@ const AttachUsinaForm = ({ profile, usinas = [] }) => {
                                 required
                                 fullWidth
                             >
+                                <MenuItem value="">Selecione a usina...</MenuItem>
                                 {usinas.map((usina) => (
                                     <MenuItem key={usina.id} value={usina.id}>
-                                        {`#${usina.id} - ${usina.usina_nome}` || `Usina #${usina.id}`}
+                                        {usina.usina_nome}
+                                        {usina.produtor?.nome_fantasia
+                                            ? ` — ${usina.produtor.nome_fantasia}`
+                                            : usina.produtor?.nome
+                                                ? ` — ${usina.produtor.nome}`
+                                                : ''}
                                     </MenuItem>
                                 ))}
                             </TextField>
                         </Grid>
 
-                        <Grid size={{ xs: 12, md: 3 }}>
+                        <Grid size={{ xs: 12, md: 4 }}>
                             <TextField
                                 label="Data de Início"
                                 value={form.data.started_at}
@@ -76,13 +129,19 @@ const AttachUsinaForm = ({ profile, usinas = [] }) => {
                                 error={!!form.errors.notes}
                                 helperText={form.errors.notes}
                                 multiline
-                                rows={3}
+                                rows={2}
                                 fullWidth
                             />
                         </Grid>
 
                         <Grid size={12}>
-                            <Button type="submit" color="success" disabled={form.processing}>
+                            <Button
+                                type="submit"
+                                variant="contained"
+                                color="success"
+                                startIcon={<IconPlugConnected size={16} />}
+                                disabled={form.processing}
+                            >
                                 Vincular Usina
                             </Button>
                         </Grid>

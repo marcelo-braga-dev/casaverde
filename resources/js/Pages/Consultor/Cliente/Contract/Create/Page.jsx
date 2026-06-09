@@ -191,7 +191,7 @@ const ContractFormFields = ({
 
                         {data.tipo_pessoa === "pf" && (
                             <>
-                                <Grid size={{ xs: 12, md: 6 }}>
+                                <Grid size={{ xs: 12, md: 9 }}>
                                     <TextField
                                         label="Nome Completo"
                                         value={data.nome}
@@ -217,6 +217,17 @@ const ContractFormFields = ({
 
                                 <Grid size={{ xs: 12, md: 3 }}>
                                     <TextField
+                                        label="RG"
+                                        value={data.rg}
+                                        onChange={(e) => setData("rg", e.target.value)}
+                                        error={!!errors.rg}
+                                        helperText={errors.rg}
+                                        fullWidth
+                                    />
+                                </Grid>
+
+                                <Grid size={{ xs: 12, md: 3 }}>
+                                    <TextField
                                         label="Data de Nascimento"
                                         type="date"
                                         value={data.data_nascimento}
@@ -229,29 +240,17 @@ const ContractFormFields = ({
                                     />
                                 </Grid>
 
-                                <Grid size={{ xs: 12, md: 3 }}>
-                                    <TextField
-                                        label="RG"
-                                        value={data.rg}
-                                        onChange={(e) => setData("rg", e.target.value)}
-                                        error={!!errors.rg}
-                                        helperText={errors.rg}
-                                        required
-                                        fullWidth
-                                    />
-                                </Grid>
-
-                                <Grid size={{ xs: 12, md: 3 }}>
-                                    <TextField
-                                        label="Gênero"
-                                        value={data.genero}
-                                        onChange={(e) => setData("genero", e.target.value)}
-                                        error={!!errors.genero}
-                                        helperText={errors.genero}
-                                        required
-                                        fullWidth
-                                    />
-                                </Grid>
+                                {/*<Grid size={{ xs: 12, md: 3 }}>*/}
+                                {/*    <TextField*/}
+                                {/*        label="Gênero"*/}
+                                {/*        value={data.genero}*/}
+                                {/*        onChange={(e) => setData("genero", e.target.value)}*/}
+                                {/*        error={!!errors.genero}*/}
+                                {/*        helperText={errors.genero}*/}
+                                {/*        required*/}
+                                {/*        fullWidth*/}
+                                {/*    />*/}
+                                {/*</Grid>*/}
 
                                 <Grid size={{ xs: 12, md: 3 }}>
                                     <TextField
@@ -260,7 +259,6 @@ const ContractFormFields = ({
                                         onChange={(e) => setData("estado_civil", e.target.value)}
                                         error={!!errors.estado_civil}
                                         helperText={errors.estado_civil}
-                                        required
                                         fullWidth
                                     />
                                 </Grid>
@@ -272,7 +270,6 @@ const ContractFormFields = ({
                                         onChange={(e) => setData("profissao", e.target.value)}
                                         error={!!errors.profissao}
                                         helperText={errors.profissao}
-                                        required
                                         fullWidth
                                     />
                                 </Grid>

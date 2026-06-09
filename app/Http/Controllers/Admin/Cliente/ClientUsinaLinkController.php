@@ -16,11 +16,14 @@ class ClientUsinaLinkController extends Controller
     ) {
         $this->authorize('update', $clientProfile);
 
+        $validated = $request->validated();
+
         $service->handle(
-            $clientProfile,
-            (int) $request->validated()['usina_id'],
-            $request->validated()['started_at'],
-            $request->validated()['notes'] ?? null,
+            clientProfile:  $clientProfile,
+            usinaId:        (int) $validated['usina_id'],
+            startedAt:      $validated['started_at'],
+            notes:          $validated['notes'] ?? null,
+            consumerUnitId: isset($validated['consumer_unit_id']) ? (int) $validated['consumer_unit_id'] : null,
         );
 
         return redirect()

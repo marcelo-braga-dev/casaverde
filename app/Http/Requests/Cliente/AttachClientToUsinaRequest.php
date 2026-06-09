@@ -15,9 +15,10 @@ class AttachClientToUsinaRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'usina_id' => ['required', 'integer', 'exists:usina_solars,id'],
-            'started_at' => ['required', 'date'],
-            'notes' => ['nullable', 'string'],
+            'consumer_unit_id' => ['nullable', 'integer', 'exists:consumer_units,id'],
+            'usina_id'         => ['required', 'integer', 'exists:usina_solars,id'],
+            'started_at'       => ['required', 'date'],
+            'notes'            => ['nullable', 'string'],
         ];
     }
 }

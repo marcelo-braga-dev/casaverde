@@ -66,6 +66,7 @@ class ClienteController extends Controller
                 'activeUsinaLink.usina',
                 'activeDiscountRule',
                 'usinaLinks.usina',
+                'usinaLinks.consumerUnit',
                 'discountRules',
                 'emailImportSetting.concessionaria',
                 'emailImportSetting.emailAccount',
@@ -73,6 +74,8 @@ class ClienteController extends Controller
                 'proposals.contract',
                 'accessInvites',
                 'proposals.address',
+                'consumerUnits.concessionaria',
+                'consumerUnits.activeUsinaLink.usina.produtor',
             ]),
 
             'usinas' => UsinaSolar::query()

@@ -127,6 +127,17 @@ class ClientProfile extends Model
         return $this->hasMany(ClientAccessInvite::class, 'client_profile_id');
     }
 
+    public function consumerUnits()
+    {
+        return $this->hasMany(ConsumerUnit::class, 'client_profile_id');
+    }
+
+    public function activeConsumerUnits()
+    {
+        return $this->hasMany(ConsumerUnit::class, 'client_profile_id')
+            ->where('status', 'active');
+    }
+
     public function usinaLinks()
     {
         return $this->hasMany(ClientUsinaLink::class, 'client_profile_id');

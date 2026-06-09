@@ -33,9 +33,9 @@ class CommercialProposal extends BaseModel
     protected $casts = [
         'issued_at' => 'date',
         'valid_until' => 'date',
-        'media_consumo' => 'decimal:2',
-        'discount_percent' => 'decimal:2',
-        'valor_medio' => 'decimal:2',
+        'valor_medio' => 'float',
+        'media_consumo' => 'float',
+        'discount_percent' => 'float',
     ];
 
     protected $appends = ['proposal_code'];

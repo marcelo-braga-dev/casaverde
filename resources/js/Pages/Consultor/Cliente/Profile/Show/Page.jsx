@@ -5,12 +5,14 @@ import AccessHistoryCard from '@/Components/Acesso/AccessHistoryCard.jsx';
 import ClientInfoCard from './Partials/ClientInfoCard.jsx';
 import AttachUsinaForm from './Partials/AttachUsinaForm.jsx';
 import UsinaList from './Partials/UsinaList.jsx';
+import UnidadesConsumidorasCard from './Partials/UnidadesConsumidorasCard.jsx';
 import DiscountRuleForm from './Partials/DiscountRuleForm.jsx';
 import DiscountRulesList from './Partials/DiscountRulesList.jsx';
 import ClientEmailImportSettingForm from './Partials/ClientEmailImportSettingForm.jsx';
 import ClientProposalsList from './Partials/ClientProposalsList.jsx';
 import { Alert, Box, Paper, Stack } from '@mui/material';
 import {
+    IconBolt,
     IconDiscount2,
     IconFileText,
     IconMailCog,
@@ -36,11 +38,11 @@ const Page = ({
     const { flash } = usePage().props;
     const profile = clientProfile ?? client;
 
-    const usinaLinks      = profile?.usina_links ?? profile?.usinaLinks ?? [];
-    const discountRules   = profile?.discount_rules ?? profile?.discountRules ?? [];
+    const usinaLinks         = profile?.usina_links ?? profile?.usinaLinks ?? [];
+    const discountRules      = profile?.discount_rules ?? profile?.discountRules ?? [];
     const emailImportSetting = profile?.email_import_setting ?? profile?.emailImportSetting ?? null;
-    const proposals       = profile?.proposals ?? [];
-    const platformUser    = profile?.platform_user ?? null;
+    const proposals          = profile?.proposals ?? [];
+    const platformUser       = profile?.platform_user ?? null;
 
     const [value, setValue] = React.useState('1');
 
@@ -59,11 +61,12 @@ const Page = ({
                         <TabContext value={value}>
                             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                                 <TabList onChange={(_, v) => setValue(v)} aria-label="tabs do cliente">
-                                    <Tab icon={<IconFileText />}  label="Propostas"   value="1" />
-                                    <Tab icon={<IconSolarPanel2 />} label="Usinas"    value="2" />
-                                    <Tab icon={<IconDiscount2 />} label="Margens"     value="3" />
-                                    <Tab icon={<IconMailCog />}   label="Integração"  value="4" />
-                                    <Tab icon={<IconShield />}    label="Acesso"       value="5" />
+                                    <Tab icon={<IconFileText />}    label="Propostas"   value="1" />
+                                    <Tab icon={<IconBolt />}        label="UCs"         value="2" />
+                                    <Tab icon={<IconSolarPanel2 />} label="Usinas"      value="3" />
+                                    <Tab icon={<IconDiscount2 />}   label="Margens"     value="4" />
+                                    <Tab icon={<IconMailCog />}     label="Integração"  value="5" />
+                                    <Tab icon={<IconShield />}      label="Acesso"      value="6" />
                                 </TabList>
                             </Box>
 
@@ -72,16 +75,23 @@ const Page = ({
                             </TabPanel>
 
                             <TabPanel value="2">
+                                <UnidadesConsumidorasCard
+                                    profile={profile}
+                                    concessionarias={concessionarias}
+                                />
+                            </TabPanel>
+
+                            <TabPanel value="3">
                                 <AttachUsinaForm profile={profile} usinas={usinas} usinaLinks={usinaLinks} />
                                 <UsinaList profile={profile} usinaLinks={usinaLinks} />
                             </TabPanel>
 
-                            <TabPanel value="3">
+                            <TabPanel value="4">
                                 <DiscountRuleForm profile={profile} />
                                 <DiscountRulesList discountRules={discountRules} />
                             </TabPanel>
 
-                            <TabPanel value="4">
+                            <TabPanel value="5">
                                 <ClientEmailImportSettingForm
                                     profile={profile}
                                     concessionarias={concessionarias}
@@ -90,7 +100,7 @@ const Page = ({
                                 />
                             </TabPanel>
 
-                            <TabPanel value="5">
+                            <TabPanel value="6">
                                 <Stack spacing={3}>
                                     <PlataformaAcessoForm
                                         platformUser={platformUser}

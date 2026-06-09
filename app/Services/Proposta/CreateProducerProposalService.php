@@ -29,7 +29,7 @@ class CreateProducerProposalService
             if (!empty($data['producer_profile_id'])) {
 
                 $client = ProducerProfile::query()
-                    ->with('activeDiscountRule')
+                    ->with('activeFeeRule')
                     ->findOrFail($data['producer_profile_id']);
 
                 $clientAlreadyExists = true;
