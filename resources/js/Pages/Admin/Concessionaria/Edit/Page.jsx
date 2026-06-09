@@ -9,7 +9,7 @@ import {
     TextField,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import { IconDeviceFloppy, IconSettingsBolt } from "@tabler/icons-react";
+import { IconDeviceFloppy, IconSettings } from "@tabler/icons-react";
 
 export default function Page({ concessionaria }) {
     const { data, setData, processing, errors } = useForm({
@@ -30,7 +30,7 @@ export default function Page({ concessionaria }) {
             <Head title="Editar Concessionária" />
 
             <Card>
-                <CardHeader title="Editar dados da Concessionária" avatar={<IconSettingsBolt />} />
+                <CardHeader title="Editar dados da Concessionária" avatar={<IconSettings />} />
 
                 <CardContent>
                     <form onSubmit={submit}>

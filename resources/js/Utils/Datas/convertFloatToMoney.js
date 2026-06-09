@@ -4,7 +4,7 @@ function convertFloatToMoney(valor) {
             currency: 'BRL'
         });
 
-    return 0
+    return 'R$ 0,00';
 }
 
 export default convertFloatToMoney

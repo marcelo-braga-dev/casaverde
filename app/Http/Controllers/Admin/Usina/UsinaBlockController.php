@@ -34,7 +34,7 @@ class UsinaBlockController extends Controller
     public function show(UsinaBlock $usinaBlock)
     {
         return Inertia::render('Consultor/Producer/Usina-Block/Show/Page', [
-            'block' => $usinaBlock->load('usinas'),
+            'block' => $usinaBlock->load('usinas.produtor'),
         ]);
     }
 

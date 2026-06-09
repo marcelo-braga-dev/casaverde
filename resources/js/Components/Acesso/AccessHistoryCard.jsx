@@ -63,7 +63,6 @@ export default function AccessHistoryCard({ history = [], title = 'Histórico de
             <CardContent sx={{ p: 0 }}>
                 {history.length === 0 ? (
                     <Box sx={{ py: 4, textAlign: 'center' }}>
-                        <IconHistory size={36} style={{ opacity: 0.2 }} />
                         <Typography color="text.secondary" sx={{ mt: 1, fontSize: 13 }}>
                             Nenhum registro de acesso encontrado.
                         </Typography>

@@ -15,6 +15,7 @@ class ClientContract extends Model
         'contract_code',
         'commercial_proposal_id',
         'client_profile_id',
+        'consumer_unit_id',
         'user_id',
         'status',
         'issued_at',
@@ -53,6 +54,11 @@ class ClientContract extends Model
     public function clientProfile()
     {
         return $this->belongsTo(ClientProfile::class, 'client_profile_id');
+    }
+
+    public function consumerUnit()
+    {
+        return $this->belongsTo(ConsumerUnit::class, 'consumer_unit_id');
     }
 
     public function user()

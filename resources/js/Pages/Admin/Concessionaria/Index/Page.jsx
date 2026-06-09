@@ -13,7 +13,7 @@ import {
     TableHead,
     TableRow,
 } from "@mui/material";
-import { IconEye, IconSettingsBolt } from "@tabler/icons-react";
+import { IconEye, IconSettings } from "@tabler/icons-react";
 
 export default function Page({ concessionarias }) {
     const items = concessionarias?.data ?? [];
@@ -25,7 +25,7 @@ export default function Page({ concessionarias }) {
             <Card>
                 <CardHeader
                     title="Lista de Concessionárias"
-                    avatar={<IconSettingsBolt />}
+                    avatar={<IconSettings />}
                     // action={
                     //     <Link href={route("admin.concessionaria.create")}>
                     //         <Button color="success" startIcon={<IconPlus />}>

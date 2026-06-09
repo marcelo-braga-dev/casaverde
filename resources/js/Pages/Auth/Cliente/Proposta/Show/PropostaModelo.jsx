@@ -33,11 +33,12 @@ const PropostaModelo = ({dados, imagemGrafico}) => {
                     {dados?.client_profile?.razao_social &&
                         <Text style={styles.field}><Text style={styles.label}>Razão Social:</Text> {dados?.client_profile?.razao_social}</Text>}
 
-                    <View style={styles.tableRow}>
+                    {/*<View style={styles.tableRow}>*/}
                         {dados?.client_profile?.cnpj &&
                             <Text style={{
                                 width: '100%',
                                 paddingRight: 4,
+                                marginBottom: 5,
                             }}>
                                 <Text style={styles.field}><Text style={styles.label}>CNPJ:</Text> {dados?.client_profile?.cnpj}</Text>
                             </Text>
@@ -46,18 +47,19 @@ const PropostaModelo = ({dados, imagemGrafico}) => {
                             <Text style={{
                                 width: '100%',
                                 paddingRight: 4,
+                                marginBottom: 5,
                             }}>
                                 <Text style={styles.field}><Text style={styles.label}>CPF:</Text> {dados?.client_profile?.cpf}</Text>
                             </Text>
                         }
+                    {/*</View>*/}
 
-
-                    </View>
                     <View style={styles.tableRow}>
                         {dados?.client_profile?.contacts?.celular &&
                             <Text style={{
                                 width: '30%',
                                 paddingRight: 4,
+                                marginBottom: 5,
                             }}>
                                 <Text style={styles.field}><Text style={styles.label}>Celular:</Text> {dados?.client_profile?.contacts?.celular}</Text>
                             </Text>
@@ -67,6 +69,7 @@ const PropostaModelo = ({dados, imagemGrafico}) => {
                             <Text style={{
                                 width: '30%',
                                 paddingRight: 4,
+                                marginBottom: 5,
                             }}>
                                 <Text style={styles.field}><Text style={styles.label}>Telefone:</Text> {dados?.client_profile?.contacts?.telefone}</Text>
                             </Text>
@@ -76,19 +79,22 @@ const PropostaModelo = ({dados, imagemGrafico}) => {
                             <Text style={{
                                 width: '40%',
                                 paddingRight: 4,
+                                marginBottom: 5,
                             }}>
                                 <Text style={styles.field}><Text style={styles.label}>E-mail:</Text> {dados?.client_profile?.contacts?.email}</Text>
                             </Text>
                         }
                     </View>
-                    {dados?.proposal?.address?.full_address &&
-                        <Text style={styles.field}><Text style={styles.label}>Endereço:</Text> {dados?.proposal?.address?.full_address}</Text>}
+
+                    {dados?.address?.full_address && <Text style={styles.field}><Text style={styles.label}>Endereço:</Text> {dados?.address?.full_address}</Text>}
+                    {dados?.unidade_consumidora && <Text style={styles.field}><Text style={styles.label}>Unidade Consumidora:</Text> {dados?.unidade_consumidora}</Text>}
+
                 </View>
 
                 {/* Proposta */}
                 <Text style={styles.sectionTitle}>PROPOSTA</Text>
                 <View style={styles.fieldGroup}>
-                    <Text style={styles.field}><Text style={styles.label}>Gasto Mensal:</Text> R$ {convertFloatToMoney(dados?.valor_medio)}</Text>
+                    <Text style={styles.field}><Text style={styles.label}>Gasto Mensal:</Text>{convertFloatToMoney(dados?.valor_medio)}</Text>
                     <Text style={styles.field}><Text style={styles.label}>Média de Consumo Mensal:</Text> {dados?.media_consumo} kWh/mês</Text>
                     <Text style={styles.field}><Text style={styles.label}>Prazo do Contrato:</Text> {dados?.prazo_locacao} meses</Text>
                 </View>
@@ -96,8 +102,6 @@ const PropostaModelo = ({dados, imagemGrafico}) => {
                 <View style={{marginBottom: 12, textAlign: 'center'}}>
                     <Text style={{fontWeight: 'bold', color: 'green', fontSize: 14, marginBottom: 4}}><Text>Taxa de Redução na Conta de
                         Energia:</Text> {dados?.discount_percent}%</Text>
-                    {/*<Text style={{fontWeight: 'bold', color: 'green', fontSize: 12, marginBottom: 4}}><Text>Desconto Anual*/}
-                    {/*    Estimado:</Text> {convertFloatToMoney(dados?.desconto_anual)}*</Text>*/}
                 </View>
 
                 {/* Tabela */}
@@ -196,7 +200,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
     },
     field: {
-        marginBottom: 4,
+        marginBottom: 5,
     },
     label: {
         fontWeight: 'bold',

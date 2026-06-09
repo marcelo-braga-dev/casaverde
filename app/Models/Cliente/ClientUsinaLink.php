@@ -14,6 +14,7 @@ class ClientUsinaLink extends Model
 
     protected $fillable = [
         'client_profile_id',
+        'consumer_unit_id',
         'usina_id',
         'started_at',
         'ended_at',
@@ -38,6 +39,11 @@ class ClientUsinaLink extends Model
     public function clientProfile()
     {
         return $this->belongsTo(ClientProfile::class);
+    }
+
+    public function consumerUnit()
+    {
+        return $this->belongsTo(ConsumerUnit::class, 'consumer_unit_id');
     }
 
     public function usina()

@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\Cliente\ClientUsinaHistoryController;
 use App\Http\Controllers\Admin\Cliente\ClientUsinaLinkController;
 use App\Http\Controllers\Admin\Cliente\ConvertClientProfileController;
 use App\Http\Controllers\Admin\Cliente\ClientContractDataController;
+use App\Http\Controllers\Admin\Cliente\ConsumerUnitController;
 use App\Http\Controllers\Admin\Fatura\ClientEmailImportSettingController;
 use App\Http\Controllers\Admin\Usuarios\Cliente\ClienteController;
 use App\Http\Controllers\Admin\Cliente\ClientContactController;
@@ -54,4 +55,14 @@ Route::name('user.')
 
         Route::put('cliente/{cliente}/identidade', [ClienteIdentidadeController::class, 'update'])
             ->name('cliente.identidade.update');
+
+        // UCs (Unidades Consumidoras)
+        Route::post('cliente/{clientProfile}/consumer-unit', [ConsumerUnitController::class, 'store'])
+            ->name('cliente.consumer-unit.store');
+
+        Route::put('cliente/{clientProfile}/consumer-unit/{consumerUnit}', [ConsumerUnitController::class, 'update'])
+            ->name('cliente.consumer-unit.update');
+
+        Route::delete('cliente/{clientProfile}/consumer-unit/{consumerUnit}', [ConsumerUnitController::class, 'destroy'])
+            ->name('cliente.consumer-unit.destroy');
     });
