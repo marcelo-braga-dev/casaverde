@@ -32,15 +32,23 @@ import {
     IconUsers,
 } from "@tabler/icons-react";
 
-export default function Page({
-                                 consultor,
-                                 stats,
-                                 clients,
-                                 proposals,
-                                 usinas,
-                                 producers,
-                             }) {
+import AccessHistoryCard from '@/Components/Acesso/AccessHistoryCard.jsx';
+import { router } from '@inertiajs/react';
+import { CircularProgress, Tooltip } from '@mui/material';
+import { IconLock, IconLockOpen } from '@tabler/icons-react';
+import { useState as useStateAccess } from 'react';
 
+function safeRoute(n, p) { try { return route(n, p); } catch { return '#'; } }
+
+export default function Page({
+    consultor,
+    stats,
+    clients,
+    proposals,
+    usinas,
+    producers,
+    accessHistory = [],
+}) {
     return (
         <Layout
             menu="consultores"
@@ -48,7 +56,7 @@ export default function Page({
 
             <Stack spacing={3}>
 
-                <HeroSection consultor={consultor}/>
+                <HeroSection consultor={consultor} />
 
                 <Grid container spacing={3}>
 
@@ -195,10 +203,70 @@ export default function Page({
                     routeName="admin.produtores.show"
                 />
 
+                {/* ── Histórico de acesso ─────────────────────── */}
+                <AccessHistoryCard
+                    history={accessHistory}
+                    title={`Histórico de Acesso — ${consultor?.name}`}
+                />
+
+                {/* ── Bloquear / Liberar ──────────────────────── */}
+                <BlockAccessCard user={consultor} />
+
             </Stack>
 
         </Layout>
     )
+}
+
+function BlockAccessCard({ user }) {
+    const [loading, setLoading] = useStateAccess(false);
+    const isBlocked = String(user?.status) === '0';
+
+    function toggle() {
+        setLoading(true);
+        const routeName = isBlocked ? 'admin.acesso.liberar' : 'admin.acesso.bloquear';
+        router.post(safeRoute(routeName, user?.id), {}, {
+            preserveScroll: true,
+            onFinish: () => setLoading(false),
+        });
+    }
+
+    return (
+        <Card>
+            <CardContent>
+                <Stack direction="row" alignItems="center" justifyContent="space-between">
+                    <Box>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>Status de acesso</Typography>
+                        <Typography variant="body2" color="text.secondary">
+                            {isBlocked
+                                ? 'Este consultor está bloqueado e não pode acessar a plataforma.'
+                                : 'Este consultor tem acesso ativo à plataforma.'}
+                        </Typography>
+                    </Box>
+                    <Stack direction="row" gap={1} alignItems="center">
+                        <Chip
+                            label={isBlocked ? 'Bloqueado' : 'Ativo'}
+                            color={isBlocked ? 'error' : 'success'}
+                            size="small"
+                        />
+                        <Button
+                            variant="outlined"
+                            color={isBlocked ? 'success' : 'error'}
+                            size="small"
+                            startIcon={loading
+                                ? <CircularProgress size={13} color="inherit" />
+                                : isBlocked ? <IconLockOpen size={15} /> : <IconLock size={15} />
+                            }
+                            onClick={toggle}
+                            disabled={loading}
+                        >
+                            {isBlocked ? 'Liberar acesso' : 'Bloquear acesso'}
+                        </Button>
+                    </Stack>
+                </Stack>
+            </CardContent>
+        </Card>
+    );
 }
 
 function HeroSection({

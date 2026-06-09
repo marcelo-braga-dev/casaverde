@@ -8,6 +8,7 @@ use App\Models\Endereco\Address;
 use App\Models\Produtor\ProducerProfile;
 use App\Models\Users\User;
 use App\Repositories\Produtor\ProducerProfileRepository;
+use App\Services\Acesso\GerenciarAcessoService;
 use App\Services\Produtor\CreateOrFindProducerProfileService;
 use App\src\Roles\RoleUser;
 use Inertia\Inertia;
@@ -61,13 +62,13 @@ class ProducerProfileController extends Controller
 
     public function show(ProducerProfile $producerProfile)
     {
+        $producerProfile->load(['proposals', 'consultor', 'usinas', 'usinas.activeClientLinks', 'platformUser']);
+
         return Inertia::render('Consultor/Producer/Profile/Show/Page', [
-            'producer' => $producerProfile->load([
-                'proposals',
-                'consultor',
-                'usinas',
-                'usinas.activeClientLinks',
-            ]),
+            'producer'      => $producerProfile,
+            'accessHistory' => $producerProfile->platform_user_id
+                ? app(GerenciarAcessoService::class)->historico($producerProfile->platform_user_id)
+                : [],
         ]);
     }
 

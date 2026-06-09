@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Admin\Usuarios\Consultor;
 
 use App\Http\Controllers\Controller;
+use App\Models\Acesso\UserAccessLog;
 use App\Models\Cliente\ClientProfile;
 use App\Models\Proposta\CommercialProposal;
 use App\Models\Users\User;
 use App\Models\Usina\UsinaSolar;
 use App\Repositories\Consultor\ConsultorRepository;
+use App\Services\Acesso\GerenciarAcessoService;
 use App\src\Roles\RoleUser;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -156,6 +158,8 @@ class ConsultorController extends Controller
                 'usinas' => $usinas,
 
                 'producers' => $producers,
+
+                'accessHistory' => app(GerenciarAcessoService::class)->historico($consultor->id),
             ]
         );
     }
