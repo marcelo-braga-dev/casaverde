@@ -2,6 +2,8 @@
 
 namespace App\Services\Fatura;
 
+use App\Models\Cliente\ClientProfile;
+use App\Models\Cliente\ConsumerUnit;
 use App\Models\Fatura\ConcessionaireBill;
 use App\Models\Importacao\ClientEmailImportSetting;
 use Illuminate\Http\UploadedFile;
@@ -16,6 +18,7 @@ class StoreParsedConcessionaireBillService
         private readonly PdfTextExtractorService $pdfTextExtractorService,
         private readonly CopelBillParserService $copelBillParserService,
         private readonly ProtectedPdfResolverService $protectedPdfResolverService,
+        private readonly ResolveConsumerUnitService $consumerUnitResolver,
     ) {
     }
 
@@ -26,6 +29,7 @@ class StoreParsedConcessionaireBillService
             $file = $data['pdf'];
 
             $clientProfileId = (int) $data['client_profile_id'];
+            $clientProfile = ClientProfile::findOrFail($clientProfileId);
 
             $path = sprintf(
                 'concessionaire-bills/%d/%s/%s.pdf',
@@ -42,8 +46,15 @@ class StoreParsedConcessionaireBillService
                 ->where('client_profile_id', $clientProfileId)
                 ->first();
 
+            $consumerUnit = !empty($data['consumer_unit_id'])
+                ? ConsumerUnit::query()
+                    ->where('client_profile_id', $clientProfileId)
+                    ->find($data['consumer_unit_id'])
+                : null;
+
             $bill = new ConcessionaireBill([
                 'client_profile_id' => $clientProfileId,
+                'consumer_unit_id' => $consumerUnit?->id,
                 'usina_id' => $data['usina_id'] ?? null,
                 'concessionaria_id' => $data['concessionaria_id'] ?? null,
                 'created_by_user_id' => auth()->id(),
@@ -83,15 +94,22 @@ class StoreParsedConcessionaireBillService
                     'parser_status' => 'success',
                     'parser_error' => null,
                 ]);
+
+                if (!$consumerUnit) {
+                    $consumerUnit = $this->consumerUnitResolver->handle($clientProfile, $parsed['unidade_consumidora']);
+                    $bill->consumer_unit_id = $consumerUnit?->id;
+                }
             } catch (Throwable $e) {
                 $referenceMonth = (int) ($data['reference_month'] ?? now()->month);
                 $referenceYear = (int) ($data['reference_year'] ?? now()->year);
+
+                $unidadeConsumidora = preg_replace('/\D+/', '', $data['unidade_consumidora'] ?? '0');
 
                 $bill->fill([
                     'reference_month' => $referenceMonth,
                     'reference_year' => $referenceYear,
                     'reference_label' => sprintf('%02d/%04d', $referenceMonth, $referenceYear),
-                    'unidade_consumidora' => preg_replace('/\D+/', '', $data['unidade_consumidora'] ?? '0'),
+                    'unidade_consumidora' => $unidadeConsumidora,
                     'numero_instalacao' => $data['numero_instalacao'] ?? null,
                     'vencimento' => $data['vencimento'] ?? now()->toDateString(),
                     'valor_total' => $data['valor_total'] ?? 0,
@@ -99,8 +117,18 @@ class StoreParsedConcessionaireBillService
                     'parser_status' => 'error',
                     'parser_error' => $e->getMessage(),
                 ]);
+
+                if (!$consumerUnit) {
+                    $consumerUnit = $this->consumerUnitResolver->handle($clientProfile, $unidadeConsumidora);
+                    $bill->consumer_unit_id = $consumerUnit?->id;
+                }
             } finally {
                 $this->protectedPdfResolverService->cleanup($tempUnlockedFile);
+            }
+
+            if (!$bill->usina_id) {
+                $bill->usina_id = $consumerUnit?->activeUsinaLink?->usina_id
+                    ?? $clientProfile->activeUsinaLink?->usina_id;
             }
 
             $bill->save();

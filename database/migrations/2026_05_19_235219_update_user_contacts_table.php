@@ -8,9 +8,8 @@ return new class extends Migration {
     public function up(): void
     {
         Schema::table('user_contacts', function (Blueprint $table) {
-            $table->dropForeign(
-                'user_contacts_user_id_foreign'
-            );
+            $table->dropForeign(['user_id']);
+            $table->dropIndex(['user_id']);
 
             $table->dropColumn([
                 'user_id',

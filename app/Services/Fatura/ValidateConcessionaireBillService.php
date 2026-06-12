@@ -20,6 +20,7 @@ class ValidateConcessionaireBillService
             $bill->load([
                 'clientProfile.activeUsinaLink.usina',
                 'clientProfile.activeDiscountRule',
+                'consumerUnit.activeUsinaLink.usina',
             ]);
 
             if ($bill->parser_status === 'error') {
@@ -49,14 +50,23 @@ class ValidateConcessionaireBillService
                 );
             }
 
-            $activeUsinaLink = $bill->clientProfile?->activeUsinaLink;
+            if (!$bill->consumer_unit_id) {
+                $issues[] = $this->makeIssue(
+                    $bill->id,
+                    'missing_consumer_unit',
+                    'error',
+                    'Esta fatura não está vinculada a nenhuma Unidade Consumidora do cliente.'
+                );
+            }
+
+            $activeUsinaLink = $bill->consumerUnit?->activeUsinaLink ?? $bill->clientProfile?->activeUsinaLink;
 
             if (!$activeUsinaLink) {
                 $issues[] = $this->makeIssue(
                     $bill->id,
                     'missing_active_usina',
                     'error',
-                    'O cliente não possui vínculo ativo com usina.'
+                    'A Unidade Consumidora não possui vínculo ativo com usina.'
                 );
             }
 
@@ -87,19 +97,23 @@ class ValidateConcessionaireBillService
                 );
             }
 
-            $duplicateExists = ConcessionaireBill::query()
+            $duplicateQuery = ConcessionaireBill::query()
                 ->where('id', '!=', $bill->id)
-                ->where('client_profile_id', $bill->client_profile_id)
-                ->where('unidade_consumidora', $bill->unidade_consumidora)
-                ->where('reference_label', $bill->reference_label)
-                ->exists();
+                ->where('reference_label', $bill->reference_label);
 
-            if ($duplicateExists) {
+            if ($bill->consumer_unit_id) {
+                $duplicateQuery->where('consumer_unit_id', $bill->consumer_unit_id);
+            } else {
+                $duplicateQuery->where('client_profile_id', $bill->client_profile_id)
+                    ->where('unidade_consumidora', $bill->unidade_consumidora);
+            }
+
+            if ($duplicateQuery->exists()) {
                 $issues[] = $this->makeIssue(
                     $bill->id,
                     'duplicate_reference',
                     'error',
-                    'Já existe outra fatura para este cliente, referência e unidade consumidora.'
+                    'Já existe outra fatura para esta Unidade Consumidora e referência.'
                 );
             }
 
@@ -108,7 +122,7 @@ class ValidateConcessionaireBillService
                     $bill->id,
                     'unit_mismatch',
                     'warning',
-                    'A usina informada na fatura não corresponde ao vínculo ativo do cliente.'
+                    'A usina informada na fatura não corresponde ao vínculo ativo da Unidade Consumidora.'
                 );
             }
 

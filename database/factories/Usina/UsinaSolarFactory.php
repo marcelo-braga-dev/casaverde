@@ -3,6 +3,7 @@
 namespace Database\Factories\Usina;
 
 use App\Enums\Usina\UsinaOperationalStatus;
+use App\Models\Usina\Concessionaria;
 use App\Models\Usina\UsinaSolar;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -16,7 +17,7 @@ class UsinaSolarFactory extends Factory
             'usina_nome'             => 'Usina ' . fake()->word(),
             'producer_profile_id'    => null,
             'consultor_user_id'      => null,
-            'concessionaria_id'      => null,
+            'concessionaria_id'      => Concessionaria::factory(),
             'usina_block_id'         => null,
             'address_id'             => null,
             'status'                 => 'ativo',

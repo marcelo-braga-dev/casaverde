@@ -108,11 +108,12 @@ const ExtractedField = ({ label, value, validation = "text" }) => {
 };
 
 /* ─── Page ────────────────────────────────────────────────────────────── */
-const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [] }) => {
+const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [], consumerUnits = [] }) => {
     const [tab, setTab] = useState("dados");
 
     const initialData = useMemo(() => ({
         review_status: bill.review_status ?? "pending_review",
+        consumer_unit_id: bill.consumer_unit_id ?? "",
         usina_id: bill.usina_id ?? suggestedUsinaId ?? "",
         concessionaria_id: bill.concessionaria_id ?? bill.concessionaria?.id ?? "",
         review_notes: bill.review_notes ?? "",
@@ -284,6 +285,11 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [] }) => {
                                     <Stack spacing={0}>
                                         <InfoRow label="Cliente">{bill.client_profile?.nome || bill.client_profile?.razao_social || "—"}</InfoRow>
                                         <InfoRow label="Código do cliente">{bill.client_profile?.client_code || "—"}</InfoRow>
+                                        <InfoRow label="Unidade Consumidora">
+                                            {bill.consumer_unit?.display_label || bill.consumer_unit?.uc_code || (
+                                                <Typography variant="body2" fontWeight={700} color="error.main">Não vinculada</Typography>
+                                            )}
+                                        </InfoRow>
                                         <InfoRow label="Usina vinculada">{bill.usina?.uc || "—"}</InfoRow>
                                         <InfoRow label="Usina sugerida">{suggestedUsinaId || "—"}</InfoRow>
                                         <InfoRow label="Parser">
@@ -355,6 +361,14 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [] }) => {
                                                 <InputLabel>Status da revisão</InputLabel>
                                                 <Select label="Status da revisão" value={data.review_status} onChange={(e) => setData("review_status", e.target.value)}>
                                                     {reviewStatuses.map((s) => <MenuItem key={s} value={s}>{getStatusLabel(s)}</MenuItem>)}
+                                                </Select>
+                                            </FormControl>
+
+                                            <FormControl fullWidth size="small" error={Boolean(errors.consumer_unit_id)}>
+                                                <InputLabel>Unidade Consumidora</InputLabel>
+                                                <Select label="Unidade Consumidora" value={data.consumer_unit_id} onChange={(e) => setData("consumer_unit_id", e.target.value)}>
+                                                    <MenuItem value="">Nenhuma</MenuItem>
+                                                    {consumerUnits.map((uc) => <MenuItem key={uc.id} value={uc.id}>{uc.display_label || uc.uc_code}</MenuItem>)}
                                                 </Select>
                                             </FormControl>
 

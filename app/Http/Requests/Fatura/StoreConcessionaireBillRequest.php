@@ -4,6 +4,7 @@ namespace App\Http\Requests\Fatura;
 
 use App\src\Roles\RoleUser;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreConcessionaireBillRequest extends FormRequest
 {
@@ -16,6 +17,12 @@ class StoreConcessionaireBillRequest extends FormRequest
     {
         return [
             'client_profile_id' => ['required', 'integer', 'exists:client_profiles,id'],
+            'consumer_unit_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('consumer_units', 'id')
+                    ->where('client_profile_id', $this->input('client_profile_id')),
+            ],
             'usina_id' => ['nullable', 'integer', 'exists:usina_solars,id'],
             'concessionaria_id' => ['required', 'integer', 'exists:concessionarias,id'],
             'reference_month' => ['nullable', 'integer', 'min:1', 'max:12'],

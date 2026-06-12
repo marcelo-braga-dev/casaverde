@@ -15,6 +15,7 @@ class ConcessionaireBill extends Model
 
     protected $fillable = [
         'client_profile_id',
+        'consumer_unit_id',
         'usina_id',
         'created_by_user_id',
         'reviewed_by_user_id',
@@ -67,6 +68,11 @@ class ConcessionaireBill extends Model
     public function clientProfile()
     {
         return $this->belongsTo(ClientProfile::class);
+    }
+
+    public function consumerUnit()
+    {
+        return $this->belongsTo(\App\Models\Cliente\ConsumerUnit::class, 'consumer_unit_id');
     }
 
     public function usina()

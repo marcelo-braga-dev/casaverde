@@ -5,10 +5,13 @@ namespace App\Models\Cliente;
 use App\Models\Endereco\Address;
 use App\Models\Fatura\ConcessionaireBill;
 use App\Models\Usina\Concessionaria;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class ConsumerUnit extends Model
 {
+    use HasFactory;
+
     protected $table = 'consumer_units';
 
     protected $fillable = [
@@ -22,6 +25,24 @@ class ConsumerUnit extends Model
     ];
 
     protected $appends = ['display_label'];
+
+    protected static function booted(): void
+    {
+        static::saving(function (ConsumerUnit $consumerUnit) {
+            $consumerUnit->uc_code = static::normalizeCode($consumerUnit->uc_code);
+        });
+    }
+
+    public static function normalizeCode(?string $value): ?string
+    {
+        if (!$value) {
+            return $value;
+        }
+
+        $digits = preg_replace('/\D+/', '', $value);
+
+        return $digits !== '' ? $digits : $value;
+    }
 
     // ── Relationships ─────────────────────────────────────────────────────
 

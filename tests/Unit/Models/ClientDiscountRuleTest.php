@@ -1,7 +1,10 @@
 <?php
 
 use App\Models\Cliente\ClientDiscountRule;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+
+uses(Tests\TestCase::class, RefreshDatabase::class);
 
 describe('ClientDiscountRule model', function () {
 
