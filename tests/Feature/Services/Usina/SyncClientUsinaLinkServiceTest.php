@@ -89,7 +89,7 @@ describe('SyncClientUsinaLinkService', function () {
 
         $oldLink->refresh();
         expect($oldLink->is_active)->toBeFalse()
-            ->and($oldLink->status)->toBe(ClientUsinaLinkStatus::Finished->value);
+            ->and($oldLink->status)->toBe(ClientUsinaLinkStatus::Finished);
     });
 
     it('does not create link when transaction fails due to insufficient energy', function () {
@@ -125,7 +125,7 @@ describe('SyncClientUsinaLinkService', function () {
 
         $link->refresh();
         expect($link->is_active)->toBeFalse()
-            ->and($link->status)->toBe(ClientUsinaLinkStatus::Cancelled->value);
+            ->and($link->status)->toBe(ClientUsinaLinkStatus::Cancelled);
     });
 
     it('recalculates usina energy after cancellation', function () {

@@ -2,6 +2,7 @@
 
 namespace Database\Factories\Fatura;
 
+use App\Enums\Fatura\BillParserStatus;
 use App\Models\Cliente\ClientProfile;
 use App\Models\Fatura\ConcessionaireBill;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -27,7 +28,7 @@ class ConcessionaireBillFactory extends Factory
             'vencimento'            => now()->addDays(15)->toDateString(),
             'valor_total'           => 250.00,
             'consumo_kwh'           => 300.00,
-            'pdf_disk'              => null,
+            'pdf_disk'              => 'local',
             'pdf_path'              => null,
             'pdf_original_name'     => null,
             'pdf_url'               => null,
@@ -35,7 +36,7 @@ class ConcessionaireBillFactory extends Factory
             'extracted_payload'     => null,
             'import_status'         => 'imported',
             'review_status'         => 'pending_review',
-            'parser_status'         => null,
+            'parser_status'         => BillParserStatus::PENDING->value,
             'parser_error'          => null,
             'notes'                 => null,
             'reviewed_at'           => null,

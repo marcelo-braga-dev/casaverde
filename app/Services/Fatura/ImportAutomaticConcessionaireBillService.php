@@ -22,6 +22,7 @@ class ImportAutomaticConcessionaireBillService
         private readonly CopelBillParserService           $parser,
         private readonly ProtectedPdfResolverService      $pdfResolver,
         private readonly ValidateConcessionaireBillService $validator,
+        private readonly ResolveConsumerUnitService       $consumerUnitResolver,
     ) {}
 
     /**
@@ -180,7 +181,9 @@ class ImportAutomaticConcessionaireBillService
 
             // Passo 5: Persistir fatura no banco
             $stepFailed = 'store';
-            $bill = DB::transaction(function () use ($clientProfile, $storedPath, $attachment, $rawText, $parsed, $setting) {
+            $consumerUnit = $this->consumerUnitResolver->handle($clientProfile, $parsed['unidade_consumidora']);
+
+            $bill = DB::transaction(function () use ($clientProfile, $consumerUnit, $storedPath, $attachment, $rawText, $parsed, $setting) {
                 $bill = ConcessionaireBill::updateOrCreate(
                     [
                         'client_profile_id'   => $clientProfile->id,
@@ -189,7 +192,9 @@ class ImportAutomaticConcessionaireBillService
                     ],
                     [
                         'created_by_user_id' => null,
-                        'usina_id'           => $clientProfile->activeUsinaLink?->usina_id,
+                        'consumer_unit_id'   => $consumerUnit?->id,
+                        'usina_id'           => $consumerUnit?->activeUsinaLink?->usina_id
+                            ?? $clientProfile->activeUsinaLink?->usina_id,
                         'concessionaria_id'  => $setting->concessionaria_id,
                         'import_source'      => 'email',
                         'reference_month'    => $parsed['reference_month'],

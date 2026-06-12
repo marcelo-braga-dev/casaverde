@@ -9,27 +9,31 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Remove a foreign key somente se existir
-        $foreignKey = DB::select("
-            SELECT CONSTRAINT_NAME
-            FROM information_schema.KEY_COLUMN_USAGE
-            WHERE TABLE_SCHEMA = DATABASE()
-            AND TABLE_NAME = 'produtor_propostas'
-            AND COLUMN_NAME = 'concessionaria_id'
-            AND REFERENCED_TABLE_NAME IS NOT NULL
-        ");
+        $isMySql = DB::connection()->getDriverName() === 'mysql';
 
-        if (!empty($foreignKey)) {
-
-            $constraintName = $foreignKey[0]->CONSTRAINT_NAME;
-
-            DB::statement("
-                ALTER TABLE produtor_propostas
-                DROP FOREIGN KEY {$constraintName}
+        // Remove a foreign key somente se existir (consulta específica do MySQL)
+        if ($isMySql) {
+            $foreignKey = DB::select("
+                SELECT CONSTRAINT_NAME
+                FROM information_schema.KEY_COLUMN_USAGE
+                WHERE TABLE_SCHEMA = DATABASE()
+                AND TABLE_NAME = 'produtor_propostas'
+                AND COLUMN_NAME = 'concessionaria_id'
+                AND REFERENCED_TABLE_NAME IS NOT NULL
             ");
+
+            if (!empty($foreignKey)) {
+
+                $constraintName = $foreignKey[0]->CONSTRAINT_NAME;
+
+                DB::statement("
+                    ALTER TABLE produtor_propostas
+                    DROP FOREIGN KEY {$constraintName}
+                ");
+            }
         }
 
-        Schema::table('produtor_propostas', function (Blueprint $table) {
+        Schema::table('produtor_propostas', function (Blueprint $table) use ($isMySql) {
 
             if (
                 Schema::hasColumn('produtor_propostas', 'geracao') &&
@@ -49,7 +53,9 @@ return new class extends Migration
                 $table->dropColumn('potencia_ac');
             }
 
-            if (Schema::hasColumn('produtor_propostas', 'concessionaria_id')) {
+            // SQLite não permite dropar uma coluna que faz parte de uma foreign key
+            // da própria tabela sem recriá-la; a FK já foi removida acima no MySQL.
+            if ($isMySql && Schema::hasColumn('produtor_propostas', 'concessionaria_id')) {
                 $table->dropColumn('concessionaria_id');
             }
         });

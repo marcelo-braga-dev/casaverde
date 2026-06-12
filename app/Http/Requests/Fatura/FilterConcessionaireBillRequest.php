@@ -16,6 +16,7 @@ class FilterConcessionaireBillRequest extends FormRequest
     {
         return [
             'client_profile_id' => ['nullable', 'integer', 'exists:client_profiles,id'],
+            'consumer_unit_id' => ['nullable', 'integer', 'exists:consumer_units,id'],
             'usina_id' => ['nullable', 'integer', 'exists:usina_solars,id'],
             'reference_label' => ['nullable', 'string', 'max:7'],
             'review_status' => ['nullable', 'string', 'max:50'],

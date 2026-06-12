@@ -14,6 +14,7 @@ class ConcessionaireBillRepository
         $query = ConcessionaireBill::query()
             ->with([
                 'clientProfile',
+                'consumerUnit',
                 'usina',
                 'createdBy',
                 'reviewedBy',
@@ -29,6 +30,10 @@ class ConcessionaireBillRepository
 
         if (!empty($filters['client_profile_id'])) {
             $query->where('client_profile_id', $filters['client_profile_id']);
+        }
+
+        if (!empty($filters['consumer_unit_id'])) {
+            $query->where('consumer_unit_id', $filters['consumer_unit_id']);
         }
 
         if (!empty($filters['usina_id'])) {
@@ -63,6 +68,10 @@ class ConcessionaireBillRepository
                             ->orWhere('razao_social', 'like', "%{$search}%")
                             ->orWhere('cpf', 'like', "%{$search}%")
                             ->orWhere('cnpj', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('consumerUnit', function ($sub) use ($search) {
+                        $sub->where('uc_code', 'like', "%{$search}%")
+                            ->orWhere('label', 'like', "%{$search}%");
                     });
             });
         }
@@ -80,6 +89,7 @@ class ConcessionaireBillRepository
         return ConcessionaireBill::query()
             ->with([
                 'clientProfile',
+                'consumerUnit',
                 'usina',
                 'createdBy',
                 'reviewedBy',

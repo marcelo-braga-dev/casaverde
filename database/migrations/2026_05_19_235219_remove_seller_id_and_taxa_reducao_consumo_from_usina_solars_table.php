@@ -8,12 +8,28 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        $database = DB::getDatabaseName();
+        $isMySql = DB::connection()->getDriverName() === 'mysql';
 
-        $this->dropForeignIfExists('usina_solars', 'usina_solars_seller_id_foreign', $database);
-        $this->dropForeignIfExists('usina_solars', 'usina_solars_user_id_foreign', $database);
+        if ($isMySql) {
+            $database = DB::getDatabaseName();
 
-        Schema::table('usina_solars', function (Blueprint $table) use ($database) {
+            $this->dropForeignIfExists('usina_solars', 'usina_solars_seller_id_foreign', $database);
+            $this->dropForeignIfExists('usina_solars', 'usina_solars_user_id_foreign', $database);
+        } else {
+            // SQLite não permite remover colunas que fazem parte de uma foreign key
+            // da própria tabela via DROP COLUMN; a constraint precisa ser removida antes
+            // (o que dispara a reconstrução nativa da tabela para o driver sqlite).
+            Schema::table('usina_solars', function (Blueprint $table) {
+                if (Schema::hasColumn('usina_solars', 'user_id')) {
+                    $table->dropForeign(['user_id']);
+                }
+                if (Schema::hasColumn('usina_solars', 'seller_id')) {
+                    $table->dropForeign(['seller_id']);
+                }
+            });
+        }
+
+        Schema::table('usina_solars', function (Blueprint $table) {
             $columnsToDrop = [];
             foreach (['user_id', 'seller_id', 'taxa_reducao_consumo'] as $col) {
                 if (Schema::hasColumn('usina_solars', $col)) {

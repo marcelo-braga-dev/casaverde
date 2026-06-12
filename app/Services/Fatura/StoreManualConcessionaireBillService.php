@@ -2,6 +2,8 @@
 
 namespace App\Services\Fatura;
 
+use App\Models\Cliente\ClientProfile;
+use App\Models\Cliente\ConsumerUnit;
 use App\Models\Fatura\ConcessionaireBill;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -9,11 +11,17 @@ use Illuminate\Support\Str;
 
 class StoreManualConcessionaireBillService
 {
+    public function __construct(
+        private readonly ResolveConsumerUnitService $consumerUnitResolver,
+    ) {
+    }
+
     public function handle(array $data): ConcessionaireBill
     {
         return DB::transaction(function () use ($data) {
             $file = $data['pdf'];
             $clientProfileId = (int) $data['client_profile_id'];
+            $clientProfile = ClientProfile::findOrFail($clientProfileId);
 
             $path = sprintf(
                 'concessionaire-bills/%d/%s/%s.pdf',
@@ -28,16 +36,27 @@ class StoreManualConcessionaireBillService
                 . '/'
                 . $data['reference_year'];
 
+            $unidadeConsumidora = !empty($data['unidade_consumidora'])
+                ? preg_replace('/\D+/', '', $data['unidade_consumidora'])
+                : null;
+
+            $consumerUnit = !empty($data['consumer_unit_id'])
+                ? ConsumerUnit::query()->where('client_profile_id', $clientProfileId)->find($data['consumer_unit_id'])
+                : $this->consumerUnitResolver->handle($clientProfile, $unidadeConsumidora);
+
             $bill = ConcessionaireBill::create([
                 'client_profile_id' => $clientProfileId,
-                'usina_id' => $data['usina_id'] ?? null,
+                'consumer_unit_id' => $consumerUnit?->id,
+                'usina_id' => $data['usina_id']
+                    ?? $consumerUnit?->activeUsinaLink?->usina_id
+                    ?? $clientProfile->activeUsinaLink?->usina_id,
                 'created_by_user_id' => auth()->id(),
                 'import_source' => 'manual',
                 'concessionaria' => 'copel',
                 'reference_month' => $data['reference_month'],
                 'reference_year' => $data['reference_year'],
                 'reference_label' => $referenceLabel,
-                'unidade_consumidora' => preg_replace('/\D+/', '', $data['unidade_consumidora']),
+                'unidade_consumidora' => $unidadeConsumidora ?? $consumerUnit?->uc_code,
                 'numero_instalacao' => $data['numero_instalacao'] ?? null,
                 'vencimento' => $data['vencimento'],
                 'valor_total' => $data['valor_total'],

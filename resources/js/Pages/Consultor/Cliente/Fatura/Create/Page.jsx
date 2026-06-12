@@ -13,15 +13,33 @@ import {
     TextField,
 } from "@mui/material";
 import { IconDeviceFloppy, IconFileInvoice, IconX } from "@tabler/icons-react";
+import { useMemo } from "react";
 
-const Page = ({ concessionarias = [], usinas = [], clients = [] }) => {
+const Page = ({ concessionarias = [], usinas = [], clients = [], consumerUnits = [] }) => {
     const { data, setData, post, processing, errors } = useForm({
         concessionaria_id: "",
         usina_id: "",
         client_profile_id: "",
+        consumer_unit_id: "",
         import_source: "manual",
         pdf: null,
     });
+
+    const clientConsumerUnits = useMemo(
+        () =>
+            consumerUnits.filter(
+                (uc) => String(uc.client_profile_id) === String(data.client_profile_id)
+            ),
+        [consumerUnits, data.client_profile_id]
+    );
+
+    const handleClientChange = (clientProfileId) => {
+        setData((current) => ({
+            ...current,
+            client_profile_id: clientProfileId,
+            consumer_unit_id: "",
+        }));
+    };
 
     const submit = (e) => {
         e.preventDefault();
@@ -83,7 +101,7 @@ const Page = ({ concessionarias = [], usinas = [], clients = [] }) => {
                                     <Select
                                         label="Cliente"
                                         value={data.client_profile_id}
-                                        onChange={(e) => setData("client_profile_id", e.target.value)}
+                                        onChange={(e) => handleClientChange(e.target.value)}
                                     >
                                         <MenuItem value="">Selecione</MenuItem>
                                         {clients.map((client) => (
@@ -94,6 +112,24 @@ const Page = ({ concessionarias = [], usinas = [], clients = [] }) => {
                                                     client.cpf ||
                                                     client.cnpj ||
                                                     `Cliente #${client.id}`}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </Grid>
+
+                            <Grid item xs={12} md={4}>
+                                <FormControl fullWidth error={Boolean(errors.consumer_unit_id)} disabled={!data.client_profile_id}>
+                                    <InputLabel>Unidade Consumidora</InputLabel>
+                                    <Select
+                                        label="Unidade Consumidora"
+                                        value={data.consumer_unit_id}
+                                        onChange={(e) => setData("consumer_unit_id", e.target.value)}
+                                    >
+                                        <MenuItem value="">A identificar pelo PDF</MenuItem>
+                                        {clientConsumerUnits.map((uc) => (
+                                            <MenuItem key={uc.id} value={uc.id}>
+                                                {uc.display_label || uc.uc_code}
                                             </MenuItem>
                                         ))}
                                     </Select>

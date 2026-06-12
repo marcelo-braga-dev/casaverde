@@ -1,6 +1,9 @@
 <?php
 
 use App\Models\Cliente\ClientProfile;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+
+uses(Tests\TestCase::class, RefreshDatabase::class);
 
 describe('ClientProfile model', function () {
 

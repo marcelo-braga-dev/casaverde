@@ -25,6 +25,9 @@ class ReviewConcessionaireBillService
             }
 
             $bill->forceFill([
+                'consumer_unit_id' => array_key_exists('consumer_unit_id', $data)
+                    ? $this->nullableInteger($data['consumer_unit_id'])
+                    : $bill->consumer_unit_id,
                 'usina_id' => $data['usina_id'] ?? null,
                 'concessionaria_id' => $data['concessionaria_id'] ?? $bill->concessionaria_id,
 

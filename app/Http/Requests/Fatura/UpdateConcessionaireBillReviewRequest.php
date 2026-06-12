@@ -4,6 +4,7 @@ namespace App\Http\Requests\Fatura;
 
 use App\src\Roles\RoleUser;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateConcessionaireBillReviewRequest extends FormRequest
 {
@@ -15,6 +16,12 @@ class UpdateConcessionaireBillReviewRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'consumer_unit_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('consumer_units', 'id')
+                    ->where('client_profile_id', $this->route('fatura')?->client_profile_id),
+            ],
             'usina_id' => ['nullable', 'integer', 'exists:usina_solars,id'],
             'concessionaria_id' => ['required', 'integer', 'exists:concessionarias,id'],
 

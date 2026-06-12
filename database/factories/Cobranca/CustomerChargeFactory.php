@@ -4,6 +4,7 @@ namespace Database\Factories\Cobranca;
 
 use App\Models\Cliente\ClientProfile;
 use App\Models\Cobranca\CustomerCharge;
+use App\Models\Fatura\ConcessionaireBill;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class CustomerChargeFactory extends Factory
@@ -21,7 +22,7 @@ class CustomerChargeFactory extends Factory
             'platform_user_id'        => null,
             'usina_id'                => null,
             'concessionaria_id'       => null,
-            'concessionaire_bill_id'  => null,
+            'concessionaire_bill_id'  => ConcessionaireBill::factory(),
             'reference_month'         => now()->month,
             'reference_year'          => now()->year,
             'reference_label'         => now()->format('m/Y'),

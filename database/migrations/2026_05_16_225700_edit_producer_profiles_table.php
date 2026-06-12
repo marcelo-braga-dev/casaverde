@@ -8,35 +8,39 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('producer_profiles', function (Blueprint $table) {
+        $isMySql = DB::connection()->getDriverName() === 'mysql';
+
+        Schema::table('producer_profiles', function (Blueprint $table) use ($isMySql) {
 
             /*
             |--------------------------------------------------------------------------
             | REMOVER FOREIGN KEYS
             |--------------------------------------------------------------------------
             */
-            Schema::table('producer_profiles', function (Blueprint $table) {
+            if ($isMySql) {
+                Schema::table('producer_profiles', function (Blueprint $table) {
 
-                $this->dropForeignIfExists(
-                    'producer_profiles',
-                    'producer_profiles_user_id_foreign'
-                );
+                    $this->dropForeignIfExists(
+                        'producer_profiles',
+                        'producer_profiles_user_id_foreign'
+                    );
 
-                $this->dropForeignIfExists(
-                    'producer_profiles',
-                    'producer_profiles_created_by_user_id_foreign'
-                );
+                    $this->dropForeignIfExists(
+                        'producer_profiles',
+                        'producer_profiles_created_by_user_id_foreign'
+                    );
 
-                $this->dropForeignIfExists(
-                    'producer_profiles',
-                    'producer_profiles_admin_address_id_foreign'
-                );
+                    $this->dropForeignIfExists(
+                        'producer_profiles',
+                        'producer_profiles_admin_address_id_foreign'
+                    );
 
-                $this->dropForeignIfExists(
-                    'producer_profiles',
-                    'producer_profiles_usina_address_id_foreign'
-                );
-            });
+                    $this->dropForeignIfExists(
+                        'producer_profiles',
+                        'producer_profiles_usina_address_id_foreign'
+                    );
+                });
+            }
 //            if (Schema::hasColumn('producer_profiles', 'user_id')) {
 //                $table->dropForeign(['user_id']);
 //            }
@@ -104,6 +108,17 @@ return new class extends Migration
                 'created_at',
                 'updated_at'
             ];
+
+            // SQLite não permite dropar colunas que fazem parte de uma foreign key
+            // da própria tabela sem recriá-la; as FKs já foram removidas acima no MySQL.
+            if (!$isMySql) {
+                $columnsToDrop = array_diff($columnsToDrop, [
+                    'admin_address_id',
+                    'created_by_user_id',
+                    'user_id',
+                    'usina_address_id',
+                ]);
+            }
 
             foreach ($columnsToDrop as $column) {
                 if (Schema::hasColumn('producer_profiles', $column)) {

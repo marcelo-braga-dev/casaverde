@@ -7,6 +7,7 @@ use App\Http\Requests\Fatura\FilterConcessionaireBillRequest;
 use App\Http\Requests\Fatura\StoreConcessionaireBillRequest;
 use App\Http\Requests\Fatura\UpdateConcessionaireBillReviewRequest;
 use App\Models\Cliente\ClientProfile;
+use App\Models\Cliente\ConsumerUnit;
 use App\Models\Fatura\ConcessionaireBill;
 use App\Models\Usina\Concessionaria;
 use App\Models\Usina\UsinaSolar;
@@ -49,6 +50,10 @@ class ConcessionaireBillController extends Controller
             'clients' => ClientProfile::query()
                 ->orderByDesc('id')
                 ->get(['id', 'client_code', 'nome', 'razao_social', 'cpf', 'cnpj']),
+
+            'consumerUnits' => ConsumerUnit::query()
+                ->orderBy('uc_code')
+                ->get(['id', 'client_profile_id', 'uc_code', 'label', 'status']),
         ]);
     }
 
@@ -75,6 +80,7 @@ class ConcessionaireBillController extends Controller
             'clientProfile.activeUsinaLink.usina',
             'clientProfile.activeDiscountRule',
             'clientProfile.emailImportSetting.concessionaria',
+            'consumerUnit.activeUsinaLink.usina',
             'concessionaria',
             'usina',
             'createdBy',
@@ -97,6 +103,11 @@ class ConcessionaireBillController extends Controller
             'usinas' => UsinaSolar::query()
                 ->orderByDesc('id')
                 ->get(['id', 'uc']),
+
+            'consumerUnits' => ConsumerUnit::query()
+                ->where('client_profile_id', $fatura->client_profile_id)
+                ->orderBy('uc_code')
+                ->get(['id', 'client_profile_id', 'uc_code', 'label', 'status']),
         ]);
     }
 
