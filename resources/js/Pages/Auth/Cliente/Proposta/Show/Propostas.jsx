@@ -1,11 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import PropostaPdf from './PropostaModelo.jsx';
 import {Button} from "@mui/material";
-import {pdf, PDFViewer} from '@react-pdf/renderer';
+import {pdf} from '@react-pdf/renderer';
 
 import VisualizadorPDF from './VisualizadorPDF';
 import {IconDownload, IconEdit} from "@tabler/icons-react";
-import Grid from "@mui/material/Grid2";
 import DescontosGrafico from "@/Pages/Auth/Cliente/Proposta/Show/Graficos/DescontosGrafico.jsx";
 import {Link} from "@inertiajs/react";
 
@@ -72,17 +71,17 @@ function PropostaBaixar({idProposta, dadosProposta}) {
                 </a>
             </div>
 
-            <Grid container>
-                {isWebView && <Grid size={12}>
-                    {urlPdf ? <VisualizadorPDF pdfUrl={urlPdf}/> : 'Carregando...'}
-                </Grid>}
-            </Grid>
-
-            {!isWebView && <div style={{width: '100%', height: '70vh', border: '1px solid #ccc'}}>
-                <PDFViewer width="100%" height="100%">
-                    <PropostaPdf idProposta={idProposta} imagemGrafico={imagemGrafico} dados={dadosProposta}/>
-                </PDFViewer>
-            </div>}
+            {!urlPdf ? (
+                <div style={{width: '100%', height: '70vh', border: '1px solid #ccc', display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                    Gerando PDF...
+                </div>
+            ) : isWebView ? (
+                <VisualizadorPDF pdfUrl={urlPdf}/>
+            ) : (
+                <div style={{width: '100%', height: '70vh', border: '1px solid #ccc'}}>
+                    <iframe src={urlPdf} width="100%" height="100%" style={{border: 'none'}} title="Visualizador PDF"/>
+                </div>
+            )}
 
             <div style={{marginTop: 50}}>
                 <DescontosGrafico onExport={setImagemGrafico} idProposta={idProposta} dados={dadosProposta}/>

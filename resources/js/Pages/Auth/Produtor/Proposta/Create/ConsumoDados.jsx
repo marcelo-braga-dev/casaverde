@@ -1,14 +1,9 @@
 import Grid from "@mui/material/Grid2";
 import { Card, CardContent, CardHeader, InputAdornment, MenuItem, TextField } from "@mui/material";
 import { IconFileInvoice } from "@tabler/icons-react";
-import { useEffect } from "react";
-import useInputMask from "@/Utils/Masks/InputsMask.js";
+import formatarMoneyReal from "@/Utils/Formatters/formatarMoney.js";
 
 const ConsumoDados = ({ data, setData }) => {
-    useEffect(() => {
-        useInputMask();
-    }, []);
-
     const updateDados = (field, value) => {
         setData("dados", {
             ...data.dados,
@@ -57,8 +52,7 @@ const ConsumoDados = ({ data, setData }) => {
                         <TextField
                             label="Valor do Investimento"
                             value={data?.dados?.valor_investimento ?? ""}
-                            onChange={(e) => updateDados("valor_investimento", e.target.value)}
-                            className="money"
+                            onChange={(e) => updateDados("valor_investimento", formatarMoneyReal(e.target.value))}
                             required
                             fullWidth
                             slotProps={{

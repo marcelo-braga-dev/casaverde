@@ -20,6 +20,7 @@ import {
     IconSolarPanel,
     IconBolt,
 } from "@tabler/icons-react";
+import formatCurrency from "@/Utils/formatCurrency.js";
 
 const cardSx = {
     borderRadius: "var(--cv-radius-xl)",
@@ -237,7 +238,7 @@ export default function Page({ producer }) {
                                 <SectionHeader icon={<IconCalendar size={18} />} title="Contrato e Financeiro" />
                                 <Stack>
                                     <InfoRow label="Prazo de locação" value={producer.prazo_locacao ? `${producer.prazo_locacao} meses` : null} />
-                                    <InfoRow label="Parcela fixa" value={producer.parcela_fixa} />
+                                    <InfoRow label="Parcela fixa" value={producer.parcela_fixa != null ? formatCurrency(producer.parcela_fixa) : null} />
                                     <InfoRow label="Taxa de administração" value={producer.taxa_administracao ? `${producer.taxa_administracao}%` : null} />
                                     <InfoRow label="Data do contrato" value={producer.contrato_data} />
                                 </Stack>

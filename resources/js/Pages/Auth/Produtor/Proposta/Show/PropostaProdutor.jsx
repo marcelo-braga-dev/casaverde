@@ -3,41 +3,47 @@ import Grid from "@mui/material/Grid2";
 import {IconDownload} from "@tabler/icons-react";
 import {useEffect, useRef, useState} from "react";
 import PropostaClientePage from "./DadosProposta.jsx";
-import TextInfo from "@/Components/DataDisplay/TextInfo.jsx";
 
-const PropostaProdutor = ({proposal, idProposta}) => {
+const PropostaProdutor = ({proposal, investmentSummary}) => {
     const [layout, setLayout] = useState([])
-    const [dados, setDados] = useState([])
+    const [urlPdf, setUrlPdf] = useState(null)
+    const [pdfError, setPdfError] = useState(false)
     const proposalRef = useRef(null);
-console.log(proposal)
+
     useEffect(() => {
-        fethcDadosProposta()
         fethcLayout()
     }, []);
 
-    const fethcDadosProposta = async () => {
-        const response = await axios.get(route('auth.produtor.proposta.api.get-dados', {id: idProposta}))
-        setDados(response.data)
-    }
+    useEffect(() => {
+        if (layout.capa) {
+            gerarPdf()
+        }
+    }, [layout]);
 
     const fethcLayout = async () => {
         const response = await axios.get(route('auth.produtor.proposta.api.layout-pdf'))
         setLayout(response.data)
     }
 
-    const generatePdf = async () => {
+    const gerarPdf = async () => {
         const htmlContent = proposalRef.current.innerHTML;
+
         try {
             const response = await axios.post(route('auth.produtor.proposta.api.gerar-pdf'), {html: htmlContent})
-
-            const url = response.data.urlPdf
-            const link = document.createElement('a');
-            link.href = url;
-            link.setAttribute('download', 'proposta_comercial.pdf');
-            document.body.appendChild(link);
-            link.click();
-        } finally {
+            setUrlPdf(response.data.urlPdf)
+        } catch (error) {
+            console.error('Erro ao gerar PDF:', error);
+            setPdfError(true)
         }
+    };
+
+    const baixarPdf = () => {
+        const link = document.createElement('a');
+        link.href = urlPdf;
+        link.setAttribute('download', 'proposta_comercial.pdf');
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
     };
 
     return (
@@ -45,30 +51,25 @@ console.log(proposal)
             <Paper variant="outlined" sx={{padding: 2, marginBottom: 4}}>
                 <Grid container justifyContent="space-between" alignItems="center">
                     <Grid size={{xs: 6}}>
-                        <Button color="error" onClick={generatePdf} startIcon={<IconDownload/>}>Baixar PDF</Button>
+                        <Button color="error" onClick={baixarPdf} disabled={!urlPdf} startIcon={<IconDownload/>}>Baixar PDF</Button>
                     </Grid>
                 </Grid>
             </Paper>
             {layout.capa && (
-                <Grid container>
-                    <Grid size={{xs: 12}} sx={{display: {xs: 'none', lg: 'block'}}}>
-                        <Paper sx={{padding: 2}} variant="outlined">
-                            <div style={{textAlign: 'center', pageBreakAfter: 'always'}}>
-                                <img src={layout.capa} alt="Capa" loading="lazy"/>
-                            </div>
-
-                            <div ref={proposalRef}>
-                                <PropostaClientePage proposal={proposal} dados={dados}/>
-                            </div>
-
-                            <div style={{textAlign: 'center', pageBreakAfter: 'always'}}>
-                                <img src={layout.page_2} alt="Capa" loading="lazy"/>
-                            </div>
-                        </Paper>
-                    </Grid>
-
-                </Grid>
+                <div style={{display: 'none'}}>
+                    <div ref={proposalRef}>
+                        <PropostaClientePage proposal={proposal} investmentSummary={investmentSummary}/>
+                    </div>
+                </div>
             )}
+
+            <div style={{width: '100%', height: '70vh', border: '1px solid #ccc', marginTop: 16}}>
+                {urlPdf
+                    ? <iframe src={urlPdf} width="100%" height="100%" style={{border: 'none'}} title="Visualizador PDF"/>
+                    : <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%'}}>
+                        {pdfError ? 'Não foi possível gerar o PDF. Tente novamente mais tarde.' : 'Gerando PDF...'}
+                    </div>}
+            </div>
         </>)
 }
 export default PropostaProdutor

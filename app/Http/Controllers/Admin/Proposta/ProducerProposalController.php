@@ -10,9 +10,8 @@ use App\Models\Produtor\ProducerProfile;
 use App\Models\Proposta\CommercialProposal;
 use App\Models\Proposta\ProducerProposal;
 use App\Models\Usina\Concessionaria;
-use App\Repositories\Proposta\CommercialProposalRepository;
 use App\Repositories\Proposta\ProposalProducerRepository;
-use App\Services\Proposta\CreateCommercialProposalService;
+use App\Services\Proposta\CalculateProducerProposalInvestmentService;
 use App\Services\Proposta\CreateProducerProposalService;
 use App\Services\Proposta\GenerateCommercialProposalPdfService;
 use Illuminate\Http\Request;
@@ -27,13 +26,13 @@ class ProducerProposalController extends Controller
 
         return Inertia::render('Consultor/Propostas/Producer/Index/Page', [
             'proposals' => $repository->paginate(15, $filters),
-            'filters'   => $filters,
+            'filters' => $filters,
         ]);
     }
 
     public function create(Request $request)
     {
-        //$this->authorize('create', CommercialProposal::class);
+        // $this->authorize('create', CommercialProposal::class);
 
         $selectedProducer = null;
 
@@ -68,7 +67,7 @@ class ProducerProposalController extends Controller
         StoreProducerProposalRequest $request,
         CreateProducerProposalService $service
     ) {
-        //$this->authorize('create', CommercialProposal::class);
+        // $this->authorize('create', CommercialProposal::class);
 
         $result = $service->handle($request->validated());
 
@@ -79,17 +78,20 @@ class ProducerProposalController extends Controller
             ->with('producer_message', $result['producer_message']);
     }
 
-    public function show(ProducerProposal $proposal)
+    public function show(ProducerProposal $proposal, CalculateProducerProposalInvestmentService $investmentService)
     {
-        //$this->authorize('view', $proposal);
+        // $this->authorize('view', $proposal);
+
+        $proposal->load([
+            'producerProfile.activeFeeRule',
+            'consultor',
+            'concessionaria',
+            'address',
+        ]);
 
         return Inertia::render('Consultor/Propostas/Producer/Show/Page', [
-            'proposal' => $proposal->load([
-                'producerProfile',
-                'consultor',
-                'concessionaria',
-                'address',
-            ]),
+            'proposal' => $proposal,
+            'investmentSummary' => $investmentService->handle($proposal),
         ]);
     }
 
@@ -184,7 +186,7 @@ class ProducerProposalController extends Controller
             ->filter(fn ($value) => filled($value))
             ->isNotEmpty();
 
-        if (!$hasAddress) {
+        if (! $hasAddress) {
             return null;
         }
 

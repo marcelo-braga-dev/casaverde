@@ -1,5 +1,5 @@
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
-import {Head, router, useForm} from "@inertiajs/react";
+import {Head, useForm} from "@inertiajs/react";
 import {
     Button,
     Card,
@@ -11,28 +11,28 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { IconDeviceFloppy, IconSettings } from "@tabler/icons-react";
-import formatarMoneyReal, { formatarMoneyInicial } from "@/Utils/Formatters/formatarMoney.js";
+import formatarMoneyReal from "@/Utils/Formatters/formatarMoney.js";
 
-export default function Page({ concessionaria }) {
-    const { data, setData, processing, errors } = useForm({
-        nome: concessionaria?.nome ?? "",
-        tarifa_gd2: formatarMoneyInicial(concessionaria?.tarifa_gd2),
-        estado: concessionaria?.estado ?? "",
-        status: concessionaria?.status ?? "ativo",
+export default function Page() {
+    const { data, setData, post, processing, errors } = useForm({
+        nome: "",
+        tarifa_gd2: "",
+        estado: "",
+        status: "ativo",
     });
 
     const submit = (e) => {
         e.preventDefault();
 
-        router.post(route("admin.concessionaria.update", concessionaria.id), {...data, _method: "PUT" });
+        post(route("admin.concessionaria.store"));
     };
 
     return (
-        <Layout titlePage="Editar Concessionária" menu="concessionarias" subMenu="concessionarias-index" backPage>
-            <Head title="Editar Concessionária" />
+        <Layout titlePage="Nova Concessionária" menu="concessionarias" subMenu="concessionarias-index" backPage>
+            <Head title="Nova Concessionária" />
 
             <Card>
-                <CardHeader title="Editar dados da Concessionária" avatar={<IconSettings />} />
+                <CardHeader title="Cadastrar Concessionária" avatar={<IconSettings />} />
 
                 <CardContent>
                     <form onSubmit={submit}>
@@ -61,6 +61,7 @@ export default function Page({ concessionaria }) {
                                             startAdornment: <InputAdornment position="start">R$</InputAdornment>,
                                         },
                                     }}
+                                    required
                                     fullWidth
                                 />
                             </Grid>
@@ -69,9 +70,11 @@ export default function Page({ concessionaria }) {
                                 <TextField
                                     label="Estado"
                                     value={data.estado}
-                                    onChange={(e) => setData("estado", e.target.value)}
+                                    onChange={(e) => setData("estado", e.target.value.toUpperCase())}
                                     error={!!errors.estado}
                                     helperText={errors.estado}
+                                    inputProps={{ maxLength: 2 }}
+                                    required
                                     fullWidth
                                 />
                             </Grid>
@@ -100,7 +103,7 @@ export default function Page({ concessionaria }) {
                                     startIcon={<IconDeviceFloppy />}
                                     disabled={processing}
                                 >
-                                    Atualizar
+                                    Cadastrar
                                 </Button>
                             </Grid>
                         </Grid>

@@ -1,6 +1,7 @@
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
 import { useState } from "react";
 import { Head, useForm } from "@inertiajs/react";
+import formatarMoneyReal from "@/Utils/Formatters/formatarMoney.js";
 import {
     Button,
     Card,
@@ -394,9 +395,7 @@ const Page = ({ concessionarias = [], clients = [], selectedClient = null }) => 
                                 <TextField
                                     label="Valor Médio"
                                     value={data.valor_medio ?? ""}
-                                    className="mask-money"
-                                    onChange={(e) => setData("valor_medio", e.target.value)}
-                                    onBlur={(e) => setData("valor_medio", e.target.value)}
+                                    onChange={(e) => setData("valor_medio", formatarMoneyReal(e.target.value))}
                                     slotProps={{
                                         input: {
                                             startAdornment: <InputAdornment position="start">R$</InputAdornment>,

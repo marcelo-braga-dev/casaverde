@@ -23,6 +23,7 @@ import {
     IconMapPin,
     IconUser,
 } from "@tabler/icons-react";
+import formatCurrency from "@/Utils/formatCurrency.js";
 
 /* ─── helpers ─────────────────────────────────────────────────────────── */
 const show = (v) => v || "Não informado";
@@ -174,7 +175,7 @@ const Page = ({ contract }) => {
                                 <InfoRow label="Média de Consumo">{show(proposal?.media_consumo)}</InfoRow>
                                 <InfoRow label="Taxa de Redução">{proposal?.discount_percent ? `${proposal.discount_percent}%` : "Não informado"}</InfoRow>
                                 <InfoRow label="Prazo de Locação">{show(proposal?.prazo_locacao ? `${proposal?.prazo_locacao} meses`: null)}</InfoRow>
-                                <InfoRow label="Valor Médio">{show(proposal?.valor_medio)}</InfoRow>
+                                <InfoRow label="Valor Médio">{proposal?.valor_medio != null ? formatCurrency(proposal.valor_medio) : "Não informado"}</InfoRow>
                                 <InfoRow label="Validade da Proposta">{formatDate(proposal?.valid_until)}</InfoRow>
                             </Stack>
                         </CardContent>

@@ -1,6 +1,37 @@
 import React from 'react';
 
-const DadosProposta = ({proposal}) => {console.log(proposal)
+const STATUS_LABELS = {
+    rascunho: 'Rascunho',
+    emitida: 'Emitida',
+    aprovada: 'Aprovada',
+    recusada: 'Recusada',
+    expirada: 'Expirada',
+    convertida: 'Convertida',
+};
+
+const fmtMoney = (v, opts = {}) => v != null
+    ? `R$ ${Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2, ...opts })}`
+    : '—';
+
+const fmtMoneyPrecise = v => fmtMoney(v, { maximumFractionDigits: 4 });
+
+const fmtNumber = v => v != null ? Number(v).toLocaleString('pt-BR', { maximumFractionDigits: 2 }) : '—';
+
+const fmtPercent = v => v != null ? `${Number(v).toLocaleString('pt-BR', { maximumFractionDigits: 2 })}%` : '—';
+
+const fmtDate = v => {
+    if (!v) return '—';
+    try {
+        return String(v).substring(0, 10).split('-').reverse().join('/');
+    } catch {
+        return v;
+    }
+};
+
+const DadosProposta = ({proposal, investmentSummary}) => {
+    const producer = proposal?.producer_profile;
+    const contacts = producer?.contacts;
+
     return (
         <>
             <div style={styles.container}>
@@ -8,54 +39,76 @@ const DadosProposta = ({proposal}) => {console.log(proposal)
                     <div style={styles.overlayText}>
                         <div>
                             <div style={styles.sectionTitle}>INFORMAÇÕES DO INVESTIDOR</div>
-                            {proposal?.producer_profile?.nome && <p style={styles.sectionText}><strong>Nome:</strong> {proposal?.producer_profile?.nome}</p>}
-                            {proposal?.producer_profile?.nome_fantasia &&
-                                <p style={styles.sectionText}><strong>Nome Fantasia:</strong> {proposal?.producer_profile?.nome_fantasia}</p>}
-                            {proposal?.producer_profile?.razao_social &&
-                                <p style={styles.sectionText}><strong>Razão Social:</strong> {proposal?.producer_profile?.razao_social}</p>}
-                            {proposal?.producer_profile?.cnpj && <p style={styles.sectionText}><strong>CNPJ:</strong> {proposal?.producer_profile?.cnpj}</p>}
-                            {proposal?.producer_profile?.cpf && <p style={styles.sectionText}><strong>CPF:</strong> {proposal?.producer_profile?.cpf}</p>}
-                            {proposal?.produtor?.contatos?.celular && <p style={styles.sectionText}><strong>Celular:</strong> {proposal?.produtor?.contatos?.celular}</p>}
-                            {proposal?.produtor?.contatos?.email && <p style={styles.sectionText}><strong>E-mail:</strong> {proposal?.produtor?.contatos?.email}</p>}
+                            {producer?.nome && <p style={styles.sectionText}><strong>Nome:</strong> {producer.nome}</p>}
+                            {producer?.nome_fantasia && <p style={styles.sectionText}><strong>Nome Fantasia:</strong> {producer.nome_fantasia}</p>}
+                            {producer?.razao_social && <p style={styles.sectionText}><strong>Razão Social:</strong> {producer.razao_social}</p>}
+                            {producer?.cnpj && <p style={styles.sectionText}><strong>CNPJ:</strong> {producer.cnpj}</p>}
+                            {producer?.cpf && <p style={styles.sectionText}><strong>CPF:</strong> {producer.cpf}</p>}
+                            {contacts?.celular && <p style={styles.sectionText}><strong>Celular:</strong> {contacts.celular}</p>}
+                            {contacts?.telefone && <p style={styles.sectionText}><strong>Telefone:</strong> {contacts.telefone}</p>}
+                            {contacts?.email && <p style={styles.sectionText}><strong>E-mail:</strong> {contacts.email}</p>}
+                            {proposal?.consultor?.name && <p style={styles.sectionText}><strong>Consultor responsável:</strong> {proposal.consultor.name}</p>}
                         </div>
 
                         <div>
                             <div style={styles.sectionTitle}>INFORMAÇÕES DA USINA SOLAR</div>
-                            {proposal?.media_geracao && <p style={styles.sectionText}><strong>Média Geração:</strong> {proposal?.media_geracao} kWh/mês</p>}
-                            {proposal?.potencia_usina && <p style={styles.sectionText}><strong>Potência da Usina:</strong> {proposal?.potencia_usina} kWp</p>}
-                            {proposal?.concessionaria?.nome && <p style={styles.sectionText}><strong>Concessionária:</strong> {proposal?.concessionaria?.nome} kWp</p>}
-                            {proposal?.taxa_reducao && <p style={styles.sectionText}><strong>Redução da Conta de Energia:</strong> {proposal?.taxa_reducao}%</p>}
-                            {proposal?.endereco?.endereco_completo && <p style={styles.sectionText}><strong>Endereço da Usina:</strong> {proposal?.endereco?.endereco_completo}</p>}
+                            {proposal?.potencia_usina && <p style={styles.sectionText}><strong>Potência da Usina:</strong> {proposal.potencia_usina} kWp</p>}
+                            {proposal?.media_geracao && <p style={styles.sectionText}><strong>Média de Geração:</strong> {proposal.media_geracao} kWh/mês</p>}
+                            {proposal?.concessionaria?.nome && <p style={styles.sectionText}><strong>Concessionária:</strong> {proposal.concessionaria.nome}{proposal.concessionaria.estado ? ` (${proposal.concessionaria.estado})` : ''}</p>}
+                            {investmentSummary?.consumer_discount_percent != null && <p style={styles.sectionText}><strong>Redução da Conta de Energia:</strong> {fmtPercent(investmentSummary.consumer_discount_percent)}</p>}
+                            {proposal?.address?.full_address && <p style={styles.sectionText}><strong>Endereço da Usina:</strong> {proposal.address.full_address}</p>}
                         </div>
+
                         <div>
                             <div style={styles.sectionTitle}>PROPOSTA DE INVESTIMENTO</div>
-                            {proposal?.valor_investimento && <p style={styles.sectionText}><strong>Valor do Investimento:</strong> R$ {proposal?.valor_investimento}</p>}
-                            {proposal?.prazo_contrato && <p style={styles.sectionText}><strong>Prazo do Contrato:</strong> {proposal?.prazo_contrato} meses</p>}
+                            {proposal?.proposal_code && <p style={styles.sectionText}><strong>Código da Proposta:</strong> {proposal.proposal_code}</p>}
+                            {proposal?.status && <p style={styles.sectionText}><strong>Status:</strong> {STATUS_LABELS[proposal.status] ?? proposal.status}</p>}
+                            {proposal?.valor_investimento && <p style={styles.sectionText}><strong>Valor do Investimento:</strong> {fmtMoney(proposal.valor_investimento)}</p>}
+                            {proposal?.prazo_contrato && <p style={styles.sectionText}><strong>Prazo do Contrato:</strong> {proposal.prazo_contrato} meses</p>}
+                            {proposal?.issued_at && <p style={styles.sectionText}><strong>Emitida em:</strong> {fmtDate(proposal.issued_at)}</p>}
+                            {proposal?.valid_until && <p style={styles.sectionText}><strong>Válida até:</strong> {fmtDate(proposal.valid_until)}</p>}
                         </div>
+
                         <table style={styles.table}>
                             <tbody>
                             <tr>
-                                <td>Tarifa Consumidor Grupo B</td>
-                                <td>R$ 0,81</td>
+                                <td style={styles.tableCellLabel}>Tarifa Consumidor Grupo B</td>
+                                <td style={styles.tableCellValue}>{fmtMoneyPrecise(investmentSummary?.tarifa_grupo_b)} / kWh</td>
                             </tr>
                             <tr>
-                                <td>Redução de consumo para Consumidor</td>
-                                <td>R$ 0,20 (25%)</td>
+                                <td style={styles.tableCellLabel}>Redução de consumo para Consumidor</td>
+                                <td style={styles.tableCellValue}>{fmtMoneyPrecise(investmentSummary?.consumer_discount_value)} / kWh ({fmtPercent(investmentSummary?.consumer_discount_percent)})</td>
                             </tr>
                             <tr>
-                                <td>Dedução operacionalização</td>
-                                <td>R$ {proposal?.fill_percent}</td>
+                                <td style={styles.tableCellLabel}>Dedução operacionalização</td>
+                                <td style={styles.tableCellValue}>{fmtMoneyPrecise(investmentSummary?.admin_fee_value_kwh)} / kWh ({fmtPercent(investmentSummary?.admin_fee_percent)})</td>
                             </tr>
                             <tr>
-                                <td>Produção Média Anual de energia</td>
-                                <td>{proposal?.geracao_anual} kWh/ano</td>
+                                <td style={styles.tableCellLabel}>Valor pago ao Produtor por kWh</td>
+                                <td style={styles.tableCellValue}>{fmtMoneyPrecise(investmentSummary?.valor_pago_produtor_kwh)} / kWh</td>
                             </tr>
                             <tr>
-                                <td>Pagamento anual Bruto</td>
-                                <td>R$ {proposal?.retorno_anual_bruto} ano (Produção Anual * 0.41)</td>
+                                <td style={styles.tableCellLabel}>Produção Média Mensal de energia</td>
+                                <td style={styles.tableCellValue}>{fmtNumber(proposal?.media_geracao)} kWh/mês</td>
+                            </tr>
+                            <tr>
+                                <td style={styles.tableCellLabel}>Pagamento Anual Bruto</td>
+                                <td style={styles.tableCellValue}>{fmtMoney(investmentSummary?.pagamento_anual_bruto)} /ano</td>
+                            </tr>
+                            <tr>
+                                <td style={styles.tableCellLabel}>Pagamento Anual Líquido</td>
+                                <td style={styles.tableCellValue}>{fmtMoney(investmentSummary?.pagamento_anual_liquido)} /ano</td>
                             </tr>
                             </tbody>
                         </table>
+
+                        <p style={styles.disclaimer}>
+                            Os valores apresentados nesta proposta são uma simulação aproximada, baseada nas
+                            informações e parâmetros disponíveis no momento da emissão. Eles não constituem garantia
+                            de resultado e podem variar de acordo com a geração real de energia, tarifas vigentes,
+                            condições contratuais e outros fatores. A Casa Verde não se responsabiliza caso os
+                            valores efetivamente alcançados sejam diferentes dos valores simulados.
+                        </p>
 
                     </div>
                 </div>
@@ -80,6 +133,7 @@ const styles = {
         left: '0',
         width: '100%',
         height: '100%',
+        boxSizing: 'border-box',
         color: '#000',
         padding: 100,
         paddingBlockStart: 300,
@@ -101,10 +155,28 @@ const styles = {
         fontWeight: 'bold',
         marginBottom: '10px',
         marginTop: 30,
+        borderCollapse: 'collapse',
+        width: '100%',
+    },
+    tableCellLabel: {
+        padding: '4px 10px 4px 0',
+        textAlign: 'left',
+    },
+    tableCellValue: {
+        padding: '4px 0',
+        textAlign: 'right',
     },
     sectionText: {
         fontSize: '18px',
         marginBottom: '5px',
+    },
+    disclaimer: {
+        fontSize: '12px',
+        fontStyle: 'italic',
+        fontWeight: 'normal',
+        color: '#555',
+        marginTop: '15px',
+        lineHeight: 1.4,
     },
 };
 

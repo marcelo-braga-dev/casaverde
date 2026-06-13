@@ -13,8 +13,9 @@ class SystemSettingController extends Controller
     {
         return Inertia::render('Admin/Configuracao/Page', [
             'settings' => [
-                'default_discount_percentage'     => $service->get('default_discount_percentage',     20),
+                'default_discount_percentage' => $service->get('default_discount_percentage', 20),
                 'default_producer_fee_percentage' => $service->get('default_producer_fee_percentage', 15),
+                'producer_proposal_consumer_discount_percentage' => $service->get('producer_proposal_consumer_discount_percentage', 20),
             ],
         ]);
     }
@@ -33,6 +34,13 @@ class SystemSettingController extends Controller
         $service->set(
             'default_producer_fee_percentage',
             $request->default_producer_fee_percentage,
+            'float',
+            $userId,
+        );
+
+        $service->set(
+            'producer_proposal_consumer_discount_percentage',
+            $request->producer_proposal_consumer_discount_percentage,
             'float',
             $userId,
         );

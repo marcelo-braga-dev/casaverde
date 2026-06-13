@@ -2,12 +2,15 @@
 
 namespace App\Http\Requests\Usina;
 
+use App\Http\Requests\Concerns\NormalizesNumbers;
 use App\src\Roles\RoleUser;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
 class StoreConcessionariaRequest extends FormRequest
 {
+    use NormalizesNumbers;
+
     public function authorize(): bool
     {
         return auth()->check() && auth()->user()?->role_id === RoleUser::$ADMIN;
@@ -34,6 +37,7 @@ class StoreConcessionariaRequest extends FormRequest
     {
         $this->merge([
             'estado' => $this->estado ? strtoupper(trim($this->estado)) : null,
+            'tarifa_gd2' => $this->normalizeNumber($this->tarifa_gd2),
         ]);
     }
 }

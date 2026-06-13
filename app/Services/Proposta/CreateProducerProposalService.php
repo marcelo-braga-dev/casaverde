@@ -19,14 +19,14 @@ class CreateProducerProposalService
 
             $clientAlreadyExists = false;
 
-            $defaultDiscount = (float) app(SystemSettingService::class)
-                ->get('default_discount_percentage');
+            $defaultFeePercent = (float) app(SystemSettingService::class)
+                ->get('default_producer_fee_percentage', 15);
 
             // =============================
             // CLIENTE
             // =============================
 
-            if (!empty($data['producer_profile_id'])) {
+            if (! empty($data['producer_profile_id'])) {
 
                 $client = ProducerProfile::query()
                     ->with('activeFeeRule')
@@ -48,11 +48,11 @@ class CreateProducerProposalService
                 app(StoreProducerFeeRuleService::class)
                     ->handle(
                         producerProfile: $client,
-                        feePercent: $defaultDiscount,
+                        feePercent: $defaultFeePercent,
                         startsOn: now()->toDateTimeString(),
                     );
 
-                $client->load('activeDiscountRule');
+                $client->load('activeFeeRule');
             }
 
             // =============================
@@ -64,14 +64,14 @@ class CreateProducerProposalService
             );
 
             // =============================
-            // DESCONTO ATIVO
+            // TAXA DE ADMINISTRAÇÃO ATIVA
             // =============================
 
-            $activeDiscount = $client->activeDiscountRule;
+            $activeFeeRule = $client->activeFeeRule;
 
-            $discountPercent = $activeDiscount
-                ? (float) $activeDiscount->discount_percent
-                : $defaultDiscount;
+            $feePercent = $activeFeeRule
+                ? (float) $activeFeeRule->fee_percent
+                : $defaultFeePercent;
 
             // =============================
             // PROPOSTA
@@ -86,7 +86,7 @@ class CreateProducerProposalService
                 'issued_at' => now(),
                 'valid_until' => $data['valid_until'] ?? null,
                 'media_geracao' => $data['media_geracao'] ?? null,
-                'fill_percent' => $discountPercent,
+                'fill_percent' => $feePercent,
                 'prazo_contrato' => $data['prazo_contrato'] ?? null,
                 'valor_investimento' => $data['valor_investimento'] ?? null,
                 'potencia_usina' => $data['potencia_usina'] ?? null,
@@ -109,7 +109,7 @@ class CreateProducerProposalService
     {
         $filtered = collect($data)
             ->map(fn ($value) => $value === '' ? null : $value)
-            ->filter(fn ($value) => !is_null($value))
+            ->filter(fn ($value) => ! is_null($value))
             ->toArray();
 
         if (empty($filtered)) {

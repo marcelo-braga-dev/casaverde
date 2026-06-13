@@ -1,6 +1,7 @@
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
 import {useState} from "react";
 import {Head, useForm} from "@inertiajs/react";
+import formatarMoneyReal from "@/Utils/Formatters/formatarMoney.js";
 import {
     Button,
     Card,
@@ -416,10 +417,9 @@ const Page = ({concessionarias = [], producers = [], selectedProducer = null}) =
                                 <TextField
                                     label="Valor Investimento"
                                     value={data.valor_investimento}
-                                    onChange={(e) => setData("valor_investimento", e.target.value)}
+                                    onChange={(e) => setData("valor_investimento", formatarMoneyReal(e.target.value))}
                                     error={!!errors.valor_investimento}
                                     helperText={errors.valor_investimento}
-                                    type="number"
                                     slotProps={{
                                         input: {
                                             startAdornment: <InputAdornment position="start">R$</InputAdornment>,

@@ -6,10 +6,13 @@ import {useEffect, useState} from "react";
 import useInputMask from "@/Utils/Masks/InputsMask.js";
 import Endereco from "@/Components/UserData/Endereco.jsx";
 import {router, useForm} from "@inertiajs/react";
+import formatarMoneyReal from "@/Utils/Formatters/formatarMoney.js";
 
 const Page = ({contratante}) => {
     const {data, setData} = useForm({
-        produtorId: contratante.id
+        produtorId: contratante.id,
+        parcela_fixa: "",
+        taxa_administracao: "",
     })
 
     const [enderecoUsina, setEnderecoUsina] = useState({});
@@ -242,8 +245,8 @@ const Page = ({contratante}) => {
                             <Grid size={{xs: 12, md: 3}}>
                                 <TextField
                                     label="Parcela Fixa"
-                                    onChange={e => setData('parcela_fixa', e.target.value)}
-                                    className="money"
+                                    value={data.parcela_fixa}
+                                    onChange={e => setData('parcela_fixa', formatarMoneyReal(e.target.value))}
                                     required
                                     fullWidth
                                     slotProps={{input: {startAdornment: <InputAdornment position="center">R$</InputAdornment>}}}
@@ -252,10 +255,12 @@ const Page = ({contratante}) => {
                             <Grid size={{xs: 12, md: 3}}>
                                 <TextField
                                     label="Taxa Administração"
-                                    className="money"
+                                    type="number"
+                                    value={data.taxa_administracao}
                                     onChange={e => setData('taxa_administracao', e.target.value)}
                                     required
                                     fullWidth
+                                    inputProps={{ min: 0, max: 100, step: 0.01 }}
                                     slotProps={{
                                         input: {
                                             endAdornment: <InputAdornment position="center">%</InputAdornment>,

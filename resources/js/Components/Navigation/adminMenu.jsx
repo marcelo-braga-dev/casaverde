@@ -261,6 +261,11 @@ export const adminMenu = [
                 link: safeRoute('admin.settings.index'),
             },
             {
+                id: 'config-concessionarias',
+                title: 'Concessionárias',
+                link: safeRoute('admin.concessionaria.index'),
+            },
+            {
                 id: 'config-integracao',
                 title: 'Configurações de Integração',
                 link: safeRoute('admin.integracao.index'),

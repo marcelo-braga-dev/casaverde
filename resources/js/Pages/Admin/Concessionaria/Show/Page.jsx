@@ -19,6 +19,7 @@ import {
     IconBolt,
     IconSettings,
 } from "@tabler/icons-react";
+import formatCurrency from "@/Utils/formatCurrency.js";
 
 const cardSx = {
     borderRadius: "var(--cv-radius-xl)",
@@ -205,7 +206,7 @@ export default function Page({ concessionaria }) {
                     <MetricCard
                         icon={<IconBolt size={22} />}
                         label="Tarifa GD2"
-                        value={concessionaria?.tarifa_gd2 ? `R$ ${concessionaria.tarifa_gd2}` : "—"}
+                        value={concessionaria?.tarifa_gd2 != null ? formatCurrency(concessionaria.tarifa_gd2) : "—"}
                         color="#f59e0b"
                     />
                 </Stack>
@@ -222,7 +223,7 @@ export default function Page({ concessionaria }) {
                                     <InfoRow label="Estado" value={concessionaria?.estado} />
                                     <InfoRow
                                         label="Tarifa GD2"
-                                        value={concessionaria?.tarifa_gd2 ? `R$ ${concessionaria.tarifa_gd2}` : null}
+                                        value={concessionaria?.tarifa_gd2 != null ? formatCurrency(concessionaria.tarifa_gd2) : null}
                                         highlight
                                     />
                                     <InfoRow label="Status" value={isAtivo ? "Ativa" : "Inativa"} />
