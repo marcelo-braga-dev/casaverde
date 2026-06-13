@@ -22,7 +22,7 @@ import {
     IconBolt,
 } from "@tabler/icons-react";
 import PropostaBaixar from "@/Pages/Auth/Cliente/Proposta/Show/Propostas.jsx";
-import convertFloatToMoney from "@/Utils/Datas/convertFloatToMoney.js";
+import formatCurrency from "@/Utils/formatCurrency.js";
 
 const cardSx = {
     borderRadius: "var(--cv-radius-xl)",
@@ -236,9 +236,7 @@ const Page = ({ proposal }) => {
                                         </Typography>
                                     </Stack>
                                     <Typography variant="h4" sx={{ fontWeight: 900, letterSpacing: "-0.04em" }}>
-                                        {proposal?.valor_medio
-                                            ? `R$ ${convertFloatToMoney(proposal.valor_medio)}`
-                                            : "—"}
+                                        {proposal?.valor_medio != null ? formatCurrency(proposal.valor_medio) : "—"}
                                     </Typography>
                                     <Typography variant="caption" sx={{ opacity: 0.75, mt: 0.5, display: "block" }}>
                                         Estimativa mensal após desconto

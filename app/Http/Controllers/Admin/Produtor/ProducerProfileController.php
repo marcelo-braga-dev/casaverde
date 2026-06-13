@@ -9,19 +9,24 @@ use App\Models\Produtor\ProducerProfile;
 use App\Models\Users\User;
 use App\Repositories\Produtor\ProducerProfileRepository;
 use App\Services\Acesso\GerenciarAcessoService;
+use App\Services\Config\SystemSettingService;
 use App\Services\Produtor\CreateOrFindProducerProfileService;
 use App\src\Roles\RoleUser;
 use Inertia\Inertia;
 
 class ProducerProfileController extends Controller
 {
+    public function __construct(
+        private SystemSettingService $settingService,
+    ) {}
+
     public function index(ProducerProfileRepository $repository)
     {
         $filters = request()->only(['search', 'status', 'tipo_pessoa']);
 
         return Inertia::render('Consultor/Producer/Profile/Index/Page', [
             'producers' => $repository->paginate(20, $filters),
-            'filters'   => $filters,
+            'filters' => $filters,
         ]);
     }
 
@@ -42,11 +47,10 @@ class ProducerProfileController extends Controller
         ]);
     }
 
-    public function store(StoreProducerProfileRequest        $request,
-                          CreateOrFindProducerProfileService $service
-    )
-    {
-        //$this->authorize('create', ProducerProfile::class);
+    public function store(StoreProducerProfileRequest $request,
+        CreateOrFindProducerProfileService $service
+    ) {
+        // $this->authorize('create', ProducerProfile::class);
         $result = $service->handle($request->validated());
 
         return redirect()
@@ -62,10 +66,11 @@ class ProducerProfileController extends Controller
 
     public function show(ProducerProfile $producerProfile)
     {
-        $producerProfile->load(['proposals', 'consultor', 'usinas', 'usinas.activeClientLinks', 'platformUser']);
+        $producerProfile->load(['proposals', 'consultor', 'usinas', 'usinas.activeClientLinks', 'platformUser', 'activeFeeRule']);
 
         return Inertia::render('Consultor/Producer/Profile/Show/Page', [
-            'producer'      => $producerProfile,
+            'producer' => $producerProfile,
+            'defaultFeePercentage' => (float) $this->settingService->get('default_producer_fee_percentage', 15),
             'accessHistory' => $producerProfile->platform_user_id
                 ? app(GerenciarAcessoService::class)->historico($producerProfile->platform_user_id)
                 : [],
@@ -95,7 +100,7 @@ class ProducerProfileController extends Controller
 
         return redirect()->route('consultor.producer.profiles.index')
             ->with([
-                'success' => "Produtor deletado com sucesso",
+                'success' => 'Produtor deletado com sucesso',
             ]);
     }
 }

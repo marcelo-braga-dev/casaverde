@@ -13,7 +13,8 @@ import {
     TableHead,
     TableRow,
 } from "@mui/material";
-import { IconEye, IconSettings } from "@tabler/icons-react";
+import { IconEye, IconPlus, IconSettings } from "@tabler/icons-react";
+import formatCurrency from "@/Utils/formatCurrency.js";
 
 export default function Page({ concessionarias }) {
     const items = concessionarias?.data ?? [];
@@ -26,13 +27,13 @@ export default function Page({ concessionarias }) {
                 <CardHeader
                     title="Lista de Concessionárias"
                     avatar={<IconSettings />}
-                    // action={
-                    //     <Link href={route("admin.concessionaria.create")}>
-                    //         <Button color="success" startIcon={<IconPlus />}>
-                    //             Nova Concessionária
-                    //         </Button>
-                    //     </Link>
-                    // }
+                    action={
+                        <Link href={route("admin.concessionaria.create")}>
+                            <Button color="success" startIcon={<IconPlus />}>
+                                Nova Concessionária
+                            </Button>
+                        </Link>
+                    }
                 />
 
                 <CardContent>
@@ -51,14 +52,14 @@ export default function Page({ concessionarias }) {
                             <TableBody>
                                 {items.length === 0 && (
                                     <TableRow>
-                                        <TableCell colSpan={6}>Nenhuma concessionária encontrada.</TableCell>
+                                        <TableCell colSpan={5}>Nenhuma concessionária encontrada.</TableCell>
                                     </TableRow>
                                 )}
 
                                 {items.map((item) => (
                                     <TableRow key={item.id}>
                                         <TableCell>{item.nome}</TableCell>
-                                        <TableCell>{item.tarifa_gd2 ?? "Não informado"}</TableCell>
+                                        <TableCell>{item.tarifa_gd2 != null ? formatCurrency(item.tarifa_gd2) : "Não informado"}</TableCell>
                                         <TableCell>{item.estado ?? "Não informado"}</TableCell>
                                         <TableCell>
                                             <Chip

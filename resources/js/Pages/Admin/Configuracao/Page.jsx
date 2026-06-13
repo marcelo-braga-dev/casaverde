@@ -16,6 +16,7 @@ import {
 import Grid from '@mui/material/Grid2';
 import {
     IconCheck,
+    IconFileText,
     IconLeaf,
     IconPercentage,
     IconSettings,
@@ -74,6 +75,7 @@ export default function Page({ settings }) {
     const { data, setData, put, processing, errors } = useForm({
         default_discount_percentage:     settings?.default_discount_percentage     ?? 20,
         default_producer_fee_percentage: settings?.default_producer_fee_percentage ?? 15,
+        producer_proposal_consumer_discount_percentage: settings?.producer_proposal_consumer_discount_percentage ?? 20,
     });
 
     function submit(e) {
@@ -85,9 +87,9 @@ export default function Page({ settings }) {
         <Layout
             titlePage="Configurações da Plataforma"
             menu="config"
-            subMenu="config-defaults"
+            subMenu="config-propostas"
             subtitle="Parâmetros globais aplicados automaticamente a novos cadastros."
-            breadcrumbs={[{ label: 'Admin' }, { label: 'Configurações' }]}
+            breadcrumbs={[{ label: 'Admin' }, { label: 'Configurações' }, { label: 'Propostas' }]}
         >
             <Head title="Configurações da Plataforma" />
 
@@ -219,6 +221,56 @@ export default function Page({ settings }) {
 
                                 <Alert severity="info" sx={{ py: 0.5 }}>
                                     Esta configuração se aplica apenas a <strong>novos produtores</strong>. Produtores já cadastrados mantêm suas próprias regras de taxa.
+                                </Alert>
+                            </Stack>
+                        </SectionCard>
+
+                        {/* Proposta para Produtor */}
+                        <SectionCard
+                            icon={IconFileText}
+                            color="linear-gradient(135deg,#7c3aed,#5b21b6)"
+                            title="Proposta para Produtor — Resumo do Investimento"
+                            description="Parâmetros usados no cálculo dos valores exibidos na proposta de investimento do produtor."
+                        >
+                            <Stack spacing={2}>
+                                <Grid container spacing={3} alignItems="flex-start">
+                                    <Grid size={{ xs: 12, sm: 5 }}>
+                                        <TextField
+                                            fullWidth
+                                            label="Redução de consumo do Consumidor (%)"
+                                            type="number"
+                                            value={data.producer_proposal_consumer_discount_percentage}
+                                            onChange={e => setData('producer_proposal_consumer_discount_percentage', Number(e.target.value))}
+                                            error={!!errors.producer_proposal_consumer_discount_percentage}
+                                            helperText={errors.producer_proposal_consumer_discount_percentage}
+                                            inputProps={{ min: 0, max: 100, step: 0.01 }}
+                                            InputProps={{
+                                                endAdornment: (
+                                                    <InputAdornment position="end">
+                                                        <IconPercentage size={16} style={{ opacity: 0.5 }} />
+                                                    </InputAdornment>
+                                                ),
+                                            }}
+                                        />
+                                    </Grid>
+                                    <Grid size={{ xs: 12, sm: 7 }}>
+                                        <Box sx={{ bgcolor: 'grey.50', borderRadius: 2, p: 2, border: '1px solid', borderColor: 'grey.200' }}>
+                                            <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.05em', display: 'block', mb: 0.5 }}>
+                                                Como funciona
+                                            </Typography>
+                                            <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.65 }}>
+                                                Percentual de desconto exibido na proposta como "Redução de consumo para Consumidor",
+                                                aplicado sobre a Tarifa Consumidor Grupo B da concessionária vinculada à proposta.
+                                            </Typography>
+                                        </Box>
+                                    </Grid>
+                                </Grid>
+
+                                <Alert severity="info" sx={{ py: 0.5 }}>
+                                    Os demais valores da proposta são calculados automaticamente: a <strong>Tarifa Consumidor Grupo B</strong> vem
+                                    da concessionária vinculada à proposta (cadastro em Concessionárias), a <strong>Dedução de operacionalização</strong> vem
+                                    da taxa de administração ativa do produtor (ou da taxa padrão configurada acima), e a <strong>Produção Média Anual</strong> e o
+                                    {' '}<strong>Pagamento Anual Bruto</strong> são calculados a partir da média de geração informada na proposta.
                                 </Alert>
                             </Stack>
                         </SectionCard>

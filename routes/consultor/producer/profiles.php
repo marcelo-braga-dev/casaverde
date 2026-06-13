@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\Produtor\ProducerFeeRuleController;
 use App\Http\Controllers\Admin\Produtor\ProducerIdentidadeController;
 use App\Http\Controllers\Admin\Produtor\ProducerProfileController;
 use Illuminate\Support\Facades\Route;
@@ -17,4 +18,7 @@ Route::name('producer.profiles.')
 
         Route::put('/{producerProfile}/identidade', [ProducerIdentidadeController::class, 'update'])
             ->name('identidade.update');
+
+        Route::put('/{producerProfile}/fee-rule', [ProducerFeeRuleController::class, 'update'])
+            ->name('fee-rule.update');
     });

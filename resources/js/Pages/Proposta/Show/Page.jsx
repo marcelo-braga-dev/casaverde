@@ -1,6 +1,7 @@
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
 import { Head, Link } from "@inertiajs/react";
 import { Button, Card, CardContent, Divider, Stack, Typography } from "@mui/material";
+import formatCurrency from "@/Utils/formatCurrency.js";
 
 export default function Page({ proposal }) {
     return (
@@ -54,7 +55,7 @@ export default function Page({ proposal }) {
                                 Prazo de locação: {proposal.prazo_locacao || "-"} meses
                             </Typography>
                             <Typography>
-                                Valor médio: {proposal.valor_medio || "-"}
+                                Valor médio: {proposal.valor_medio != null ? formatCurrency(proposal.valor_medio) : "-"}
                             </Typography>
                             <Typography>
                                 Unidade consumidora: {proposal.unidade_consumidora || "-"}

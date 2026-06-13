@@ -11,7 +11,6 @@ const useInputMask = () => {
         $('.mobile').find('input').mask('(00) 0 0000-0000');
         $('.cpf').find('input').mask('000.000.000-00');
         $('.cnpj').find('input').mask('00.000.000/0000-00');
-        $('.money').find('input').mask('000.000.000.000.000,00', {reverse: true});
         $('.rg').find('input').mask('000.000.000-X',
             {
                 reverse: true,

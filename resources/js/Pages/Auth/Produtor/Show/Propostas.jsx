@@ -4,6 +4,7 @@ import {IconFileTypePdf} from "@tabler/icons-react";
 import {Link} from "@inertiajs/react";
 import Box from "@mui/material/Box";
 import React, {useEffect, useState} from "react";
+import formatCurrency from "@/Utils/formatCurrency.js";
 
 const Propostas = () => {
     const [propostas, setPropostas] = useState([])
@@ -95,7 +96,7 @@ const Propostas = () => {
                                     <Grid size={{xs: 12, md: 6}}>
                                         <Stack direction="row" spacing={2}>
                                             <Typography fontWeight="bold">Valor da Proposta:</Typography>
-                                            <Typography>R$ {item.valor_investimento}</Typography>
+                                            <Typography>{formatCurrency(item.valor_investimento)}</Typography>
                                         </Stack>
                                     </Grid>
                                     <Grid size={{xs: 12, md: 6}}>

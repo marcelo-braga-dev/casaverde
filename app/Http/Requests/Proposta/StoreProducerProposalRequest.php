@@ -2,13 +2,15 @@
 
 namespace App\Http\Requests\Proposta;
 
+use App\Http\Requests\Concerns\NormalizesNumbers;
 use App\Models\Cliente\ClientProfile;
 use App\src\Roles\RoleUser;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class StoreProducerProposalRequest extends FormRequest
 {
+    use NormalizesNumbers;
+
     public function authorize(): bool
     {
         return auth()->check() && in_array(auth()->user()?->role_id, [RoleUser::$ADMIN, RoleUser::$CONSULTOR], true);
@@ -44,7 +46,7 @@ class StoreProducerProposalRequest extends FormRequest
             'potencia_usina' => ['nullable'],
             'prazo_contrato' => ['nullable'],
             'media_geracao' => ['nullable'],
-            'valor_investimento' => ['nullable'],
+            'valor_investimento' => ['nullable', 'numeric'],
             'valid_until' => ['nullable', 'date'],
             'notes' => ['nullable'],
         ];
@@ -57,6 +59,7 @@ class StoreProducerProposalRequest extends FormRequest
             'cnpj' => ClientProfile::normalizeDocument($this->cnpj),
             'telefone' => ClientProfile::normalizeDocument($this->telefone),
             'email' => $this->email ? mb_strtolower(trim($this->email)) : null,
+            'valor_investimento' => $this->normalizeNumber($this->valor_investimento),
         ]);
     }
 }
