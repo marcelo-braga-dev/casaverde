@@ -22,7 +22,7 @@ class CancelCustomerChargeService
             $charge->loadMissing('paymentSlips');
 
             foreach ($charge->paymentSlips as $paymentSlip) {
-                if (!in_array($paymentSlip->status, ['paid', 'cancelled', 'expired'], true)) {
+                if (! in_array($paymentSlip->status, ['paid', 'cancelled', 'expired'], true)) {
                     $paymentSlip->update([
                         'status' => 'cancelled',
                         'cancelled_at' => now(),
@@ -31,7 +31,7 @@ class CancelCustomerChargeService
                 }
             }
 
-            $notes = trim(($charge->notes ? $charge->notes . "\n" : '') . ($reason ? 'Cancelamento: ' . $reason : 'Cobrança cancelada.'));
+            $notes = trim(($charge->notes ? $charge->notes."\n" : '').($reason ? 'Cancelamento: '.$reason : 'Cobrança cancelada.'));
 
             $charge->update([
                 'status' => 'cancelled',

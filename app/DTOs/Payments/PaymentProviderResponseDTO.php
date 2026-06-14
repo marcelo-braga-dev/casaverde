@@ -18,6 +18,5 @@ class PaymentProviderResponseDTO
         public readonly ?float $paidAmount = null,
         public readonly ?string $paidAt = null,
         public readonly array $rawPayload = [],
-    ) {
-    }
+    ) {}
 }

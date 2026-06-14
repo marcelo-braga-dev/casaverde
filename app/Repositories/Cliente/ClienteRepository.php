@@ -22,7 +22,7 @@ class ClienteRepository
 
         DB::transaction(function () use ($data, $userData) {
             $role = RoleUser::$CLIENTE;
-            $service = new CreateUserService();
+            $service = new CreateUserService;
 
             // Conta Acesso
             $user = $service->createUser($userData, $role, $data->senha, auth()->id());

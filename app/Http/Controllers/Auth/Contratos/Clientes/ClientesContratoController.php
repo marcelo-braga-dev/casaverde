@@ -7,8 +7,8 @@ use Inertia\Inertia;
 
 class ClientesContratoController extends Controller
 {
-   public function index()
-   {
-       return Inertia::render('Auth/Contratos/Clientes/Index/Page');
-   }
+    public function index()
+    {
+        return Inertia::render('Auth/Contratos/Clientes/Index/Page');
+    }
 }

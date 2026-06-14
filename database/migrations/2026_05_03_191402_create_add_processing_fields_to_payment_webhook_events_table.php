@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('payment_webhook_events', function (Blueprint $table) {
-            if (!Schema::hasColumn('payment_webhook_events', 'payment_slip_id')) {
+            if (! Schema::hasColumn('payment_webhook_events', 'payment_slip_id')) {
                 $table->foreignId('payment_slip_id')
                     ->nullable()
                     ->after('event_type')
@@ -17,19 +17,19 @@ return new class extends Migration
                     ->nullOnDelete();
             }
 
-            if (!Schema::hasColumn('payment_webhook_events', 'provider_payment_id')) {
+            if (! Schema::hasColumn('payment_webhook_events', 'provider_payment_id')) {
                 $table->string('provider_payment_id')
                     ->nullable()
                     ->after('payment_slip_id');
             }
 
-            if (!Schema::hasColumn('payment_webhook_events', 'attempts')) {
+            if (! Schema::hasColumn('payment_webhook_events', 'attempts')) {
                 $table->unsignedInteger('attempts')
                     ->default(0)
                     ->after('status');
             }
 
-            if (!Schema::hasColumn('payment_webhook_events', 'last_attempt_at')) {
+            if (! Schema::hasColumn('payment_webhook_events', 'last_attempt_at')) {
                 $table->timestamp('last_attempt_at')
                     ->nullable()
                     ->after('attempts');

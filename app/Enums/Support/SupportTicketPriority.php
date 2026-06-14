@@ -4,17 +4,17 @@ namespace App\Enums\Support;
 
 enum SupportTicketPriority: string
 {
-    case Baixa   = 'baixa';
-    case Normal  = 'normal';
-    case Alta    = 'alta';
+    case Baixa = 'baixa';
+    case Normal = 'normal';
+    case Alta = 'alta';
     case Urgente = 'urgente';
 
     public function label(): string
     {
         return match ($this) {
-            self::Baixa   => 'Baixa',
-            self::Normal  => 'Normal',
-            self::Alta    => 'Alta',
+            self::Baixa => 'Baixa',
+            self::Normal => 'Normal',
+            self::Alta => 'Alta',
             self::Urgente => 'Urgente',
         };
     }
@@ -22,9 +22,9 @@ enum SupportTicketPriority: string
     public function color(): string
     {
         return match ($this) {
-            self::Baixa   => 'default',
-            self::Normal  => 'info',
-            self::Alta    => 'warning',
+            self::Baixa => 'default',
+            self::Normal => 'info',
+            self::Alta => 'warning',
             self::Urgente => 'error',
         };
     }

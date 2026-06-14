@@ -1,3 +1,4 @@
+import Endereco from '@/Components/UserData/Endereco.jsx';
 import { useForm } from '@inertiajs/react';
 import {
     Alert,
@@ -48,11 +49,22 @@ function UcForm({ profile, uc = null, concessionarias = [], onClose }) {
     const isEdit = !!uc;
 
     const form = useForm({
-        uc_code:           uc?.uc_code ?? '',
-        label:             uc?.label ?? '',
-        concessionaria_id: uc?.concessionaria_id ?? '',
-        status:            uc?.status ?? 'active',
-        notes:             uc?.notes ?? '',
+        uc_code:                  uc?.uc_code ?? '',
+        label:                    uc?.label ?? '',
+        consumo_previsto_kwh_mes: uc?.consumo_previsto_kwh_mes ?? '',
+        concessionaria_id:        uc?.concessionaria_id ?? '',
+        status:                   uc?.status ?? 'active',
+        notes:                    uc?.notes ?? '',
+        address: {
+            cep:         uc?.address?.cep ?? '',
+            rua:         uc?.address?.rua ?? '',
+            numero:      uc?.address?.numero ?? '',
+            complemento: uc?.address?.complemento ?? '',
+            bairro:      uc?.address?.bairro ?? '',
+            cidade:      uc?.address?.cidade ?? '',
+            estado:      uc?.address?.estado ?? '',
+            referencia:  uc?.address?.referencia ?? '',
+        },
     });
 
     function submit(e) {
@@ -98,6 +110,19 @@ function UcForm({ profile, uc = null, concessionarias = [], onClose }) {
                     </Grid>
                     <Grid size={{ xs: 12, sm: 6 }}>
                         <TextField
+                            label="Consumo Previsto kWh/mês"
+                            value={form.data.consumo_previsto_kwh_mes}
+                            onChange={e => form.setData('consumo_previsto_kwh_mes', e.target.value)}
+                            error={!!form.errors.consumo_previsto_kwh_mes}
+                            helperText={form.errors.consumo_previsto_kwh_mes ?? 'Usado para calcular a alocação na usina'}
+                            type="number"
+                            inputProps={{ min: 0, step: '0.01' }}
+                            required
+                            fullWidth
+                        />
+                    </Grid>
+                    <Grid size={{ xs: 12, sm: 6 }}>
+                        <TextField
                             label="Concessionária"
                             value={form.data.concessionaria_id}
                             onChange={e => form.setData('concessionaria_id', e.target.value)}
@@ -125,6 +150,13 @@ function UcForm({ profile, uc = null, concessionarias = [], onClose }) {
                         />
                     </Grid>
                 </Grid>
+
+                <Endereco
+                    title="Endereço da UC"
+                    endereco={form.data.address}
+                    setEndereco={(value) => form.setData('address', value)}
+                    required
+                />
             </DialogContent>
             <DialogActions sx={{ px: 3, pb: 2 }}>
                 <Button variant="outlined" color="inherit" onClick={onClose}>
@@ -234,6 +266,7 @@ export default function UnidadesConsumidorasCard({ profile, concessionarias = []
                                     <TableCell sx={{ fontWeight: 800 }}>Código UC</TableCell>
                                     <TableCell sx={{ fontWeight: 800 }}>Rótulo</TableCell>
                                     <TableCell sx={{ fontWeight: 800 }}>Concessionária</TableCell>
+                                    <TableCell sx={{ fontWeight: 800 }}>Consumo Previsto</TableCell>
                                     <TableCell sx={{ fontWeight: 800 }}>Usina Vinculada</TableCell>
                                     <TableCell sx={{ fontWeight: 800 }}>Status</TableCell>
                                     <TableCell align="right" sx={{ fontWeight: 800 }}>Ações</TableCell>
@@ -256,6 +289,11 @@ export default function UnidadesConsumidorasCard({ profile, concessionarias = []
                                             </TableCell>
                                             <TableCell>
                                                 {uc.concessionaria?.nome ?? <Typography variant="body2" color="text.secondary">—</Typography>}
+                                            </TableCell>
+                                            <TableCell>
+                                                {uc.consumo_previsto_kwh_mes != null
+                                                    ? `${Number(uc.consumo_previsto_kwh_mes).toLocaleString('pt-BR')} kWh/mês`
+                                                    : <Typography variant="body2" color="text.secondary">—</Typography>}
                                             </TableCell>
                                             <TableCell>
                                                 {usina ? (

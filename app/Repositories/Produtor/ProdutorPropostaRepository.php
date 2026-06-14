@@ -47,7 +47,7 @@ class ProdutorPropostaRepository
                 'taxa_reducao' => $data['taxa_reducao'] ?? null,
             ]);
 
-            if (!empty($data['endereco']) && is_array($data['endereco'])) {
+            if (! empty($data['endereco']) && is_array($data['endereco'])) {
                 $proposta->endereco()->create($data['endereco']);
             }
 
@@ -68,7 +68,7 @@ class ProdutorPropostaRepository
                 ->first();
         }
 
-        if (!$registroExistente && $cnpj) {
+        if (! $registroExistente && $cnpj) {
             $registroExistente = UserData::query()
                 ->where('cnpj', $cnpj)
                 ->first();
@@ -80,11 +80,11 @@ class ProdutorPropostaRepository
             return (int) $registroExistente->user_id;
         }
 
-        if (!$cpf && !$cnpj) {
+        if (! $cpf && ! $cnpj) {
             throw new InvalidArgumentException('CPF ou CNPJ do produtor é obrigatório para cadastrar um novo produtor.');
         }
 
-        $service = new CreateUserService();
+        $service = new CreateUserService;
 
         $user = $service->createUser(
             produtor: $userData,
@@ -95,23 +95,23 @@ class ProdutorPropostaRepository
 
         $user->userData()->create($userData);
 
-        if (!empty($userData['contato']) && is_array($userData['contato'])) {
+        if (! empty($userData['contato']) && is_array($userData['contato'])) {
             $user->contatos()->create($userData['contato']);
         }
 
-//        $this->garantirProducerProfile($user->id, $userData);
+        //        $this->garantirProducerProfile($user->id, $userData);
 
         return (int) $user->id;
     }
 
     private function garantirProducerProfile(int $userId, array $data): void
     {
-        $cpf  = isset($data['cpf'])  ? preg_replace('/\D/', '', $data['cpf'])  : null;
+        $cpf = isset($data['cpf']) ? preg_replace('/\D/', '', $data['cpf']) : null;
         $cnpj = isset($data['cnpj']) ? preg_replace('/\D/', '', $data['cnpj']) : null;
 
-        $tipoPessoa     = $data['tipo_pessoa'] ?? null;
-        $documentField  = $tipoPessoa === 'pj' ? 'cnpj' : 'cpf';
-        $documentValue  = $tipoPessoa === 'pj' ? $cnpj  : $cpf;
+        $tipoPessoa = $data['tipo_pessoa'] ?? null;
+        $documentField = $tipoPessoa === 'pj' ? 'cnpj' : 'cpf';
+        $documentValue = $tipoPessoa === 'pj' ? $cnpj : $cpf;
 
         if ($documentValue) {
             $existingProfile = ProducerProfile::query()
@@ -124,15 +124,15 @@ class ProdutorPropostaRepository
         }
 
         ProducerProfile::query()->create([
-            'tipo_pessoa'       => $tipoPessoa ?? 'pf',
-            'cpf'               => $cpf,
-            'cnpj'              => $cnpj,
-            'nome'              => $data['nome'] ?? null,
-            'razao_social'      => $data['razao_social'] ?? null,
-            'nome_fantasia'     => $data['nome_fantasia'] ?? null,
-            'platform_user_id'  => $userId,
+            'tipo_pessoa' => $tipoPessoa ?? 'pf',
+            'cpf' => $cpf,
+            'cnpj' => $cnpj,
+            'nome' => $data['nome'] ?? null,
+            'razao_social' => $data['razao_social'] ?? null,
+            'nome_fantasia' => $data['nome_fantasia'] ?? null,
+            'platform_user_id' => $userId,
             'consultor_user_id' => auth()->id(),
-            'status'            => 'prospect',
+            'status' => 'prospect',
             'is_active_producer' => false,
         ]);
     }

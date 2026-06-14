@@ -32,7 +32,8 @@ class ProducerProfile extends Model
     ];
 
     protected $appends = ['producer_code'];
-    protected $with    = ['contacts'];
+
+    protected $with = ['contacts'];
 
     // ── Getters ───────────────────────────────────────────────────────────
 

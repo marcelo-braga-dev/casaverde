@@ -28,19 +28,18 @@ class AdminController extends Controller
             ->where('role_id', RoleUser::$ADMIN)
             ->orderByDesc('id');
 
-        if (!empty($filters['search'])) {
-            $s = '%' . $filters['search'] . '%';
-            $query->where(fn ($q) =>
-                $q->where('name', 'like', $s)->orWhere('email', 'like', $s)
+        if (! empty($filters['search'])) {
+            $s = '%'.$filters['search'].'%';
+            $query->where(fn ($q) => $q->where('name', 'like', $s)->orWhere('email', 'like', $s)
             );
         }
 
-        if (!empty($filters['status'])) {
+        if (! empty($filters['status'])) {
             $query->where('status', $filters['status']);
         }
 
         return Inertia::render('Admin/User/Admin/Index/Page', [
-            'admins'  => $query->paginate(15)->withQueryString(),
+            'admins' => $query->paginate(15)->withQueryString(),
             'filters' => $filters,
         ]);
     }
@@ -57,27 +56,27 @@ class AdminController extends Controller
         $this->ensureAdmin();
 
         $data = $request->validate([
-            'name'     => ['required', 'string', 'min:2', 'max:120'],
-            'email'    => ['required', 'email', 'max:200', 'unique:users,email'],
+            'name' => ['required', 'string', 'min:2', 'max:120'],
+            'email' => ['required', 'email', 'max:200', 'unique:users,email'],
             'password' => ['required', Password::min(6)->letters()->numbers(), 'confirmed'],
-            'status'   => ['required', 'string'],
+            'status' => ['required', 'string'],
         ], [
-            'name.required'      => 'O nome é obrigatório.',
-            'name.min'           => 'O nome deve ter pelo menos 2 caracteres.',
-            'email.required'     => 'O e-mail é obrigatório.',
-            'email.unique'       => 'Este e-mail já está sendo usado.',
-            'email.email'        => 'Informe um e-mail válido.',
-            'password.required'  => 'A senha é obrigatória.',
+            'name.required' => 'O nome é obrigatório.',
+            'name.min' => 'O nome deve ter pelo menos 2 caracteres.',
+            'email.required' => 'O e-mail é obrigatório.',
+            'email.unique' => 'Este e-mail já está sendo usado.',
+            'email.email' => 'Informe um e-mail válido.',
+            'password.required' => 'A senha é obrigatória.',
             'password.confirmed' => 'As senhas não coincidem.',
-            'status.required'    => 'O status é obrigatório.',
+            'status.required' => 'O status é obrigatório.',
         ]);
 
         $admin = User::create([
-            'name'     => $data['name'],
-            'email'    => $data['email'],
+            'name' => $data['name'],
+            'email' => $data['email'],
             'password' => Hash::make($data['password']),
-            'role_id'  => RoleUser::$ADMIN,
-            'status'   => $data['status'],
+            'role_id' => RoleUser::$ADMIN,
+            'status' => $data['status'],
         ]);
 
         return redirect()
@@ -111,24 +110,24 @@ class AdminController extends Controller
         abort_unless($admin->isAdmin(), 404);
 
         $data = $request->validate([
-            'name'     => ['required', 'string', 'min:2', 'max:120'],
-            'email'    => ['required', 'email', 'max:200', "unique:users,email,{$admin->id}"],
+            'name' => ['required', 'string', 'min:2', 'max:120'],
+            'email' => ['required', 'email', 'max:200', "unique:users,email,{$admin->id}"],
             'password' => ['nullable', Password::min(6)->letters()->numbers(), 'confirmed'],
-            'status'   => ['required', 'string'],
+            'status' => ['required', 'string'],
         ], [
-            'name.required'      => 'O nome é obrigatório.',
-            'email.required'     => 'O e-mail é obrigatório.',
-            'email.unique'       => 'Este e-mail já está sendo usado por outra conta.',
+            'name.required' => 'O nome é obrigatório.',
+            'email.required' => 'O e-mail é obrigatório.',
+            'email.unique' => 'Este e-mail já está sendo usado por outra conta.',
             'password.confirmed' => 'As senhas não coincidem.',
         ]);
 
         $updates = [
-            'name'   => $data['name'],
-            'email'  => $data['email'],
+            'name' => $data['name'],
+            'email' => $data['email'],
             'status' => $data['status'],
         ];
 
-        if (!empty($data['password'])) {
+        if (! empty($data['password'])) {
             $updates['password'] = Hash::make($data['password']);
         }
 

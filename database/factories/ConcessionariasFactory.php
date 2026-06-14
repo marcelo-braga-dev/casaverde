@@ -7,12 +7,12 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 
 class ConcessionariasFactory extends Factory
 {
-   protected $model = Concessionarias::class;
+    protected $model = Concessionarias::class;
 
-   public function definition(): array
-   {
-      return [
+    public function definition(): array
+    {
+        return [
 
-      ];
-   }
+        ];
+    }
 }

@@ -12,10 +12,10 @@ class UserContactFactory extends Factory
     public function definition(): array
     {
         return [
-            'email'     => fake()->unique()->safeEmail(),
-            'celular'   => '41999990000',
+            'email' => fake()->unique()->safeEmail(),
+            'celular' => '41999990000',
             'celular_2' => null,
-            'telefone'  => null,
+            'telefone' => null,
         ];
     }
 }

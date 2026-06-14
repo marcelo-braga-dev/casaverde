@@ -16,9 +16,9 @@ class AttachClientToUsinaRequest extends FormRequest
     {
         return [
             'consumer_unit_id' => ['nullable', 'integer', 'exists:consumer_units,id'],
-            'usina_id'         => ['required', 'integer', 'exists:usina_solars,id'],
-            'started_at'       => ['required', 'date'],
-            'notes'            => ['nullable', 'string'],
+            'usina_id' => ['required', 'integer', 'exists:usina_solars,id'],
+            'started_at' => ['required', 'date'],
+            'notes' => ['nullable', 'string'],
         ];
     }
 }

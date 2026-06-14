@@ -3,11 +3,13 @@
 namespace App\Models\Fatura;
 
 use App\Models\Cliente\ClientProfile;
-use App\Models\Usina\UsinaSolar;
+use App\Models\Cliente\ConsumerUnit;
+use App\Models\Cobranca\CustomerCharge;
 use App\Models\Users\User;
+use App\Models\Usina\Concessionaria;
+use App\Models\Usina\UsinaSolar;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Usina\Concessionaria;
 
 class ConcessionaireBill extends Model
 {
@@ -72,7 +74,7 @@ class ConcessionaireBill extends Model
 
     public function consumerUnit()
     {
-        return $this->belongsTo(\App\Models\Cliente\ConsumerUnit::class, 'consumer_unit_id');
+        return $this->belongsTo(ConsumerUnit::class, 'consumer_unit_id');
     }
 
     public function usina()
@@ -103,7 +105,12 @@ class ConcessionaireBill extends Model
 
     public function charges()
     {
-        return $this->hasMany(\App\Models\Cobranca\CustomerCharge::class, 'concessionaire_bill_id');
+        return $this->hasMany(CustomerCharge::class, 'concessionaire_bill_id');
+    }
+
+    public function customerCharge()
+    {
+        return $this->hasOne(CustomerCharge::class, 'concessionaire_bill_id');
     }
 
     public function getPdfLinkAttribute(): ?string

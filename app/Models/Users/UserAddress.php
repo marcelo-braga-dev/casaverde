@@ -22,20 +22,20 @@ class UserAddress extends Model
 
     public function getCidadeEstadoAttribute()
     {
-        return ($this->attributes['cidade'] ?: '-') . '/' . ($this->attributes['estado'] ?: '-');
+        return ($this->attributes['cidade'] ?: '-').'/'.($this->attributes['estado'] ?: '-');
     }
 
     public function getEnderecoCompletoAttribute()
     {
         return implode(', ', array_filter([
-            trim(($this->attributes['rua'] ?? '') .
-                (isset($this->attributes['numero']) ? ', ' . $this->attributes['numero'] : '')),
+            trim(($this->attributes['rua'] ?? '').
+                (isset($this->attributes['numero']) ? ', '.$this->attributes['numero'] : '')),
             $this->attributes['complemento'] ?? null,
             $this->attributes['bairro'] ?? null,
-            trim(($this->attributes['cidade'] ?? '') .
-                (isset($this->attributes['estado']) ? ' - ' . $this->attributes['estado'] : '')),
+            trim(($this->attributes['cidade'] ?? '').
+                (isset($this->attributes['estado']) ? ' - '.$this->attributes['estado'] : '')),
             trim(
-                (isset($this->attributes['cep']) ? '' . FormatValues::formatCep($this->attributes['cep']) : ''))
+                (isset($this->attributes['cep']) ? ''.FormatValues::formatCep($this->attributes['cep']) : '')),
         ]));
     }
 

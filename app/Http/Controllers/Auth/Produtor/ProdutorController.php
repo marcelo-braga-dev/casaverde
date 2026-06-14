@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Repositories\Produtor\ProdutorRepository;
 use App\Utils\AlertMessage;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
 class ProdutorController extends Controller
@@ -35,21 +36,24 @@ class ProdutorController extends Controller
             ], [
                 'email.unique' => 'Este e-mail já está cadastrado.',
                 'cpf.unique' => 'Este CPF já está cadastrado.',
-                'cnpj.unique' => 'Este CNPJ já está cadastrado.'
+                'cnpj.unique' => 'Este CNPJ já está cadastrado.',
             ]);
 
-        } catch (\Illuminate\Validation\ValidationException $exception) {
+        } catch (ValidationException $exception) {
             AlertMessage::error($exception->getMessage());
+
             return redirect()->back();
         }
 
         try {
-            $userId = (new ProdutorRepository())->create($request);
+            $userId = (new ProdutorRepository)->create($request);
 
             AlertMessage::success('Cadastrado com sucesso!');
+
             return redirect()->route('auth.produtor.show', [$userId, 'tab' => 'propostas']);
         } catch (\Exception $exception) {
             AlertMessage::error($exception->getMessage());
+
             return redirect()->back();
         }
     }
@@ -58,7 +62,7 @@ class ProdutorController extends Controller
     {
         $tab = $request->tab;
 
-        $usuario = (new ProdutorRepository())->findAllData($id);
+        $usuario = (new ProdutorRepository)->findAllData($id);
 
         return Inertia::render('Auth/Produtor/Show/Page', compact('usuario', 'tab'));
     }

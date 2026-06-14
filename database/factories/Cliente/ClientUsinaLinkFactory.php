@@ -15,15 +15,15 @@ class ClientUsinaLinkFactory extends Factory
     public function definition(): array
     {
         return [
-            'client_profile_id'  => ClientProfile::factory(),
-            'usina_id'           => UsinaSolar::factory(),
-            'started_at'         => now()->subMonth(),
-            'ended_at'           => null,
-            'is_active'          => true,
-            'notes'              => null,
+            'client_profile_id' => ClientProfile::factory(),
+            'usina_id' => UsinaSolar::factory(),
+            'started_at' => now()->subMonth(),
+            'ended_at' => null,
+            'is_active' => true,
+            'notes' => null,
             'allocated_energy_kwh' => 500.000,
-            'discount_percentage'  => 15.00,
-            'status'             => ClientUsinaLinkStatus::Active->value,
+            'discount_percentage' => 15.00,
+            'status' => ClientUsinaLinkStatus::Active->value,
             'created_by_user_id' => null,
             'updated_by_user_id' => null,
         ];
@@ -33,8 +33,8 @@ class ClientUsinaLinkFactory extends Factory
     {
         return $this->state(fn () => [
             'is_active' => false,
-            'status'    => ClientUsinaLinkStatus::Finished->value,
-            'ended_at'  => now(),
+            'status' => ClientUsinaLinkStatus::Finished->value,
+            'ended_at' => now(),
         ]);
     }
 
@@ -42,8 +42,8 @@ class ClientUsinaLinkFactory extends Factory
     {
         return $this->state(fn () => [
             'is_active' => false,
-            'status'    => ClientUsinaLinkStatus::Cancelled->value,
-            'ended_at'  => now(),
+            'status' => ClientUsinaLinkStatus::Cancelled->value,
+            'ended_at' => now(),
         ]);
     }
 }

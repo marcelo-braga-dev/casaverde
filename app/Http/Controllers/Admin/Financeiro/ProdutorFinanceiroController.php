@@ -7,8 +7,8 @@ use Inertia\Inertia;
 
 class ProdutorFinanceiroController extends Controller
 {
-   public function index()
-   {
+    public function index()
+    {
         return Inertia::render('Admin/Financeiro/Produtor/Index/Page');
-   }
+    }
 }

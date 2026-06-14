@@ -105,7 +105,7 @@ export default function ExecutiveCockpitPage() {
 
                     <Grid item xs={12} md={3}>
                         <MetricCard
-                            title="Faturas aprovadas"
+                            title="Faturas de Concessionárias Aprovadas"
                             value={cockpit.financial.approved_count}
                         />
                     </Grid>

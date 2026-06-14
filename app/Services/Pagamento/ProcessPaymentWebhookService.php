@@ -13,8 +13,7 @@ class ProcessPaymentWebhookService
     public function __construct(
         private readonly CoraWebhookPayloadMapper $coraMapper,
         private readonly MarkPaymentAsPaidService $markPaymentAsPaidService,
-    ) {
-    }
+    ) {}
 
     public function handle(PaymentWebhookEvent $event): PaymentWebhookEvent
     {
@@ -54,8 +53,9 @@ class ProcessPaymentWebhookService
         $providerPaymentId = $event->provider_payment_id
             ?: $this->coraMapper->providerPaymentId($payload);
 
-        if (!$providerPaymentId) {
+        if (! $providerPaymentId) {
             $this->ignore($event, 'Webhook sem ID do pagamento no provider.');
+
             return;
         }
 
@@ -64,8 +64,9 @@ class ProcessPaymentWebhookService
             ->where('provider_payment_id', $providerPaymentId)
             ->first();
 
-        if (!$slip) {
+        if (! $slip) {
             $this->ignore($event, 'Pagamento não encontrado no sistema.');
+
             return;
         }
 

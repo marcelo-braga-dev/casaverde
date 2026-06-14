@@ -64,7 +64,7 @@ class UserData extends Model
 
     public function getDataNascimentoAttribute(): ?string
     {
-        if (!empty($this->attributes['data_nascimento'])) {
+        if (! empty($this->attributes['data_nascimento'])) {
             return Carbon::parse($this->attributes['data_nascimento'])->format('d/m/Y');
         }
 

@@ -15,8 +15,7 @@ class ScanUsinaOperationalAlertsService
     public function __construct(
         private readonly UpsertOperationalAlertService $upsertAlertService,
         private readonly ResolveOperationalAlertService $resolveAlertService
-    ) {
-    }
+    ) {}
 
     public function handle(?int $year = null, ?int $month = null, ?int $usinaId = null): array
     {
@@ -75,7 +74,7 @@ class ScanUsinaOperationalAlertsService
         $consumedEnergy = (float) $bills->sum('consumo_kwh');
         $remainingEnergy = $availableEnergy - $allocatedEnergy;
 
-        if (!$generation) {
+        if (! $generation) {
             $this->upsertAlertService->handle([
                 'module' => 'usina',
                 'type' => 'missing_generation_record',
@@ -233,8 +232,8 @@ class ScanUsinaOperationalAlertsService
 
     private function scanClientsWithoutBills(
         UsinaSolar $usina,
-                   $activeLinks,
-                   $bills,
+        $activeLinks,
+        $bills,
         int $year,
         int $month
     ): void {

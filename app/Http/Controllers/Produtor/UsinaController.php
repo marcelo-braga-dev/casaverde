@@ -29,7 +29,7 @@ class UsinaController extends Controller
             : collect();
 
         return Inertia::render('Produtor/Usinas/Index/Page', [
-            'usinas'  => $usinas,
+            'usinas' => $usinas,
             'profile' => $profile,
         ]);
     }
@@ -55,7 +55,7 @@ class UsinaController extends Controller
         ]);
 
         return Inertia::render('Produtor/Usinas/Show/Page', [
-            'usina'   => $usina,
+            'usina' => $usina,
             'profile' => $profile,
         ]);
     }

@@ -1,5 +1,5 @@
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
-import { Head, router, useForm } from "@inertiajs/react";
+import { Head, router, useForm, usePage } from "@inertiajs/react";
 import { getStatusLabel } from "@/Utils/statusLabels.js";
 import { useEffect, useMemo, useState } from "react";
 import {
@@ -9,6 +9,10 @@ import {
     Card,
     CardContent,
     Chip,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
     Divider,
     FormControl,
     InputLabel,
@@ -37,6 +41,7 @@ import {
     IconListCheck,
     IconPencil,
     IconReceipt,
+    IconTrash,
     IconWallet,
     IconX,
 } from "@tabler/icons-react";
@@ -109,7 +114,10 @@ const ExtractedField = ({ label, value, validation = "text" }) => {
 
 /* ─── Page ────────────────────────────────────────────────────────────── */
 const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [], consumerUnits = [] }) => {
+    const { flash } = usePage().props;
     const [tab, setTab] = useState("dados");
+    const [deleteOpen, setDeleteOpen] = useState(false);
+    const { delete: destroyBill, processing: deleting } = useForm({});
 
     const initialData = useMemo(() => ({
         review_status: bill.review_status ?? "pending_review",
@@ -165,6 +173,7 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [], consum
 
     const approve = () => { if (!canApprove) return; router.post(route("consultor.cliente.faturas.approve", bill.id), {}, { preserveScroll: true }); };
     const resolveIssue = (issueId) => router.post(route("consultor.cliente.faturas.issues.resolve", issueId), {}, { preserveScroll: true });
+    const confirmDelete = () => destroyBill(route("consultor.cliente.faturas.destroy", bill.id), { onSuccess: () => setDeleteOpen(false) });
     const clearInvalidDecimalOnFocus = (field) => { if (isInvalidNumber(data[field])) setData(field, ""); };
     const formatDecimalOnBlur = (field) => { const n = parseBrazilianNumber(data[field]); if (!Number.isNaN(n) && n > 0) setData(field, n.toFixed(2)); };
 
@@ -172,8 +181,8 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [], consum
     const parserStatusColor = bill.parser_status === "success" ? "success" : bill.parser_status === "error" ? "error" : "default";
 
     return (
-        <Layout titlePage={`Fatura #${bill.id}`} menu="financeiro" subMenu="financeiro-faturas" backPage>
-            <Head title={`Fatura #${bill.id}`} />
+        <Layout titlePage={`Fatura de Concessionária #${bill.id}`} menu="financeiro" subMenu="financeiro-faturas" backPage>
+            <Head title={`Fatura de Concessionária #${bill.id}`} />
 
             {/* ── Hero Card ──────────────────────────────────────────── */}
             <Card sx={{ mb: 3, borderRadius: "var(--cv-radius-xl)", border: "1px solid var(--cv-border-soft)", boxShadow: "var(--cv-shadow-md)", overflow: "hidden" }}>
@@ -184,7 +193,7 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [], consum
                                 <IconFileInvoice size={26} color="#fff" />
                             </Box>
                             <Box>
-                                <Typography variant="h5" fontWeight={900} letterSpacing="-0.03em">Fatura #{bill.id}</Typography>
+                                <Typography variant="h5" fontWeight={900} letterSpacing="-0.03em">Fatura de Concessionária #{bill.id}</Typography>
                                 <Typography variant="body2" color="text.secondary">
                                     {bill.client_profile?.nome || bill.client_profile?.razao_social || "Cliente não vinculado"} · {bill.reference_label || `${bill.reference_month}/${bill.reference_year}` || "Referência não definida"}
                                 </Typography>
@@ -216,6 +225,8 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [], consum
 
             {/* ── Alerts ────────────────────────────────────────────── */}
             <Stack spacing={1} mb={3}>
+                {flash?.error && <Alert severity="error" sx={{ borderRadius: 2 }}>{flash.error}</Alert>}
+                {flash?.success && <Alert severity="success" sx={{ borderRadius: 2 }}>{flash.success}</Alert>}
                 {invalidFields.length > 0 ? (
                     <Alert severity="warning" icon={<IconAlertTriangle size={18} />} sx={{ borderRadius: 2 }}>
                         <strong>{invalidFields.length} campo(s) inválido(s):</strong> {invalidFields.map(f => f.label).join(", ")}. Corrija antes de aprovar.
@@ -224,7 +235,7 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [], consum
                     <Alert severity="success" sx={{ borderRadius: 2 }}>Todos os dados obrigatórios estão preenchidos e válidos.</Alert>
                 )}
                 {hasUnsavedChanges && (
-                    <Alert severity="info" sx={{ borderRadius: 2 }}>Você possui alterações não salvas. Salve antes de aprovar a fatura.</Alert>
+                    <Alert severity="info" sx={{ borderRadius: 2 }}>Você possui alterações não salvas. Salve antes de aprovar a fatura de concessionária.</Alert>
                 )}
                 {pendingIssues.length > 0 && (
                     <Alert severity="error" sx={{ borderRadius: 2 }}>
@@ -306,7 +317,7 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [], consum
                                             <Tooltip title={!canApprove ? "Corrija os campos inválidos e salve antes de aprovar" : ""}>
                                                 <span>
                                                     <Button color="success" variant="contained" startIcon={<IconCircleCheck size={18} />} onClick={approve} disabled={!canApprove} sx={{ fontWeight: 700 }}>
-                                                        Aprovar Fatura
+                                                        Aprovar Fatura de Concessionária
                                                     </Button>
                                                 </span>
                                             </Tooltip>
@@ -318,6 +329,9 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [], consum
                                         )}
                                         <Button href={route("consultor.cliente.faturas.pdf", bill.id)} target="_blank" variant="outlined" startIcon={<IconExternalLink size={18} />}>
                                             Abrir PDF
+                                        </Button>
+                                        <Button color="error" variant="outlined" startIcon={<IconTrash size={18} />} onClick={() => setDeleteOpen(true)} sx={{ fontWeight: 700, ml: "auto" }}>
+                                            Excluir Fatura de Concessionária
                                         </Button>
                                     </Stack>
                                 </TabPanel>
@@ -391,7 +405,7 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [], consum
 
                                 {/* TAB: Pendências */}
                                 <TabPanel value="pendencias" sx={{ p: 2.5 }}>
-                                    <SectionHeader icon={<IconListCheck size={18} color="#fff" />} label="Pendências da Fatura" gradient={pendingIssues.length > 0 ? "linear-gradient(135deg,#ef4444,#dc2626)" : "linear-gradient(135deg,#10b981,#059669)"} />
+                                    <SectionHeader icon={<IconListCheck size={18} color="#fff" />} label="Pendências da Fatura de Concessionária" gradient={pendingIssues.length > 0 ? "linear-gradient(135deg,#ef4444,#dc2626)" : "linear-gradient(135deg,#10b981,#059669)"} />
                                     {bill.issues?.length > 0 ? (
                                         <Stack spacing={1.5}>
                                             {bill.issues.map((issue) => (
@@ -447,7 +461,7 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [], consum
                                         {hasUnsavedChanges ? "Sim" : "Não"}
                                     </Typography>
                                 </InfoRow>
-                                <InfoRow label="Status do parser">{bill.parser_status || "Sem status"}</InfoRow>
+                                <InfoRow label="Status do parser">{bill.parser_status ? getStatusLabel(bill.parser_status) : "Sem status"}</InfoRow>
                                 <InfoRow label="Arquivo PDF">
                                     <Typography variant="body2" fontWeight={700} color={!bill.pdf_original_name ? "error.main" : "text.primary"} noWrap sx={{ maxWidth: 180 }}>
                                         {bill.pdf_original_name || "Inválido"}
@@ -461,11 +475,11 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [], consum
                     {/* PDF viewer */}
                     <Card sx={{ borderRadius: "var(--cv-radius-xl)", border: "1px solid var(--cv-border-soft)", boxShadow: "var(--cv-shadow-md)" }}>
                         <CardContent sx={{ p: 2.5 }}>
-                            <SectionHeader icon={<IconFileInvoice size={18} color="#fff" />} label="PDF da Fatura" gradient="linear-gradient(135deg,#f59e0b,#d97706)" />
+                            <SectionHeader icon={<IconFileInvoice size={18} color="#fff" />} label="PDF da Fatura de Concessionária" gradient="linear-gradient(135deg,#f59e0b,#d97706)" />
                             <Box sx={{ border: "1px solid", borderColor: "divider", borderRadius: 2, overflow: "hidden" }}>
                                 <iframe
                                     src={route("consultor.cliente.faturas.pdf", bill.id)}
-                                    title="PDF da fatura"
+                                    title="PDF da fatura de concessionária"
                                     style={{ width: "100%", height: "560px", border: "none", display: "block" }}
                                 />
                             </Box>
@@ -476,6 +490,30 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [], consum
                     </Card>
                 </Grid>
             </Grid>
+
+            {/* ── Dialog: Excluir fatura de concessionária ──────────────────────────────── */}
+            <Dialog open={deleteOpen} onClose={() => setDeleteOpen(false)} maxWidth="xs" fullWidth>
+                <DialogTitle sx={{ fontWeight: 900 }}>Excluir Fatura de Concessionária</DialogTitle>
+                <Divider />
+                <DialogContent sx={{ pt: 2.5 }}>
+                    <Alert severity="error" sx={{ mb: 2 }}>Esta ação não pode ser desfeita.</Alert>
+                    <Typography>
+                        Deseja excluir permanentemente a fatura de concessionária <strong>#{bill.id}</strong>
+                        {bill.client_profile?.nome || bill.client_profile?.razao_social
+                            ? ` de ${bill.client_profile.nome || bill.client_profile.razao_social}`
+                            : ""}?
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 1.5 }}>
+                        Serão removidos o PDF, as pendências, as cobranças geradas e os boletos/transações de pagamento vinculados a esta fatura de concessionária.
+                    </Typography>
+                </DialogContent>
+                <DialogActions sx={{ p: 2.5 }}>
+                    <Button variant="outlined" color="inherit" onClick={() => setDeleteOpen(false)} disabled={deleting}>Cancelar</Button>
+                    <Button variant="contained" color="error" onClick={confirmDelete} disabled={deleting}>
+                        Excluir Permanentemente
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Layout>
     );
 };

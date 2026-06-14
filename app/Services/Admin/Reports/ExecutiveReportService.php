@@ -2,11 +2,10 @@
 
 namespace App\Services\Admin\Reports;
 
-use App\Models\Cliente\ClientProfile;
 use App\Models\Cliente\ClientContract;
+use App\Models\Cliente\ClientProfile;
 use App\Models\Cobranca\CustomerCharge;
 use App\Models\Fatura\ConcessionaireBill;
-use App\Models\Pagamento\PaymentSlip;
 use App\Models\Proposta\CommercialProposal;
 use App\Models\Usina\UsinaSolar;
 use App\Support\Reports\ReportDateRange;
@@ -91,7 +90,7 @@ class ExecutiveReportService
             ->orderByRaw('YEAR(created_at), MONTH(created_at)')
             ->get()
             ->map(fn ($item) => [
-                'label' => str_pad((string) $item->month, 2, '0', STR_PAD_LEFT) . '/' . $item->year,
+                'label' => str_pad((string) $item->month, 2, '0', STR_PAD_LEFT).'/'.$item->year,
                 'amount' => (float) $item->amount,
                 'paid_amount' => (float) $item->paid_amount,
                 'overdue_amount' => (float) $item->overdue_amount,
@@ -193,7 +192,7 @@ class ExecutiveReportService
                 'label' => $item->clientProfile?->nome
                     ?: $item->clientProfile?->razao_social
                         ?: $item->clientProfile?->nome_fantasia
-                            ?: 'Cliente #' . $item->client_profile_id,
+                            ?: 'Cliente #'.$item->client_profile_id,
                 'value' => (float) $item->amount,
                 'total' => (int) $item->total,
             ])

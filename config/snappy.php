@@ -35,22 +35,22 @@ return [
 
     'pdf' => [
         'enabled' => true,
-        'binary'  => env('WKHTML_PDF_BINARY', '/usr/bin/wkhtmltopdf'),
+        'binary' => env('WKHTML_PDF_BINARY', '/usr/bin/wkhtmltopdf'),
         'timeout' => false,
         'options' => [
-            'enable-local-file-access' => true
+            'enable-local-file-access' => true,
         ],
-        'env'     => [],
+        'env' => [],
     ],
 
     'image' => [
         'enabled' => true,
-        'binary'  => env('WKHTML_IMG_BINARY', '/usr/bin/wkhtmltopdf'),
+        'binary' => env('WKHTML_IMG_BINARY', '/usr/bin/wkhtmltopdf'),
         'timeout' => false,
         'options' => [
-            'enable-local-file-access' => true
+            'enable-local-file-access' => true,
         ],
-        'env'     => [],
+        'env' => [],
     ],
 
 ];

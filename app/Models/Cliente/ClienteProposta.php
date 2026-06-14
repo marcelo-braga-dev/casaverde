@@ -19,7 +19,7 @@ class ClienteProposta extends Model
         'concessionaria_id',
         'prazo_locacao',
         'valor_medio',
-        'unidade_consumidora'
+        'unidade_consumidora',
     ];
 
     protected static function booted()
@@ -45,9 +45,9 @@ class ClienteProposta extends Model
 
     protected $with = ['endereco', 'concessionaria', 'cliente'];
 
-    //--------------
+    // --------------
     // getters
-    //--------------
+    // --------------
     public function getCriadoEmAttribute()
     {
         return Carbon::parse($this->attributes['created_at'])->format('d/m/Y H:i:s');
@@ -58,17 +58,17 @@ class ClienteProposta extends Model
         return $this->attributes['valor_medio'] * 12 * ($this->attributes['taxa_reducao'] / 100);
     }
 
-    //--------------
+    // --------------
     // setters
-    //--------------
+    // --------------
     public function setValorMedioAttribute($value)
     {
         $this->attributes['valor_medio'] = $value ? ConvertValues::moneyToFloat($value) : null;
     }
 
-    //--------------
+    // --------------
     // relations
-    //--------------
+    // --------------
     public function cliente()
     {
         return $this->hasOne(User::class, 'id', 'user_id');

@@ -15,8 +15,7 @@ class ProcessPaymentWebhookJob implements ShouldQueue
 
     public function __construct(
         public readonly int $eventId,
-    ) {
-    }
+    ) {}
 
     public function handle(ProcessPaymentWebhookService $service): void
     {

@@ -13,14 +13,13 @@ class GenerateChargeFromApprovedBillJob implements ShouldQueue
 
     public function __construct(
         public readonly int $billId,
-    ) {
-    }
+    ) {}
 
     public function handle(GenerateCustomerChargeFromBillService $service): void
     {
         $bill = ConcessionaireBill::query()->find($this->billId);
 
-        if (!$bill) {
+        if (! $bill) {
             return;
         }
 

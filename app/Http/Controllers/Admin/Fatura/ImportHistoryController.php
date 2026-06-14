@@ -23,23 +23,23 @@ class ImportHistoryController extends Controller
             ->with(['triggeredByUser', 'clientProfile'])
             ->orderByDesc('started_at');
 
-        if (!empty($filters['status'])) {
+        if (! empty($filters['status'])) {
             $query->where('status', $filters['status']);
         }
 
-        if (!empty($filters['triggered_by'])) {
+        if (! empty($filters['triggered_by'])) {
             $query->where('triggered_by', $filters['triggered_by']);
         }
 
-        if (!empty($filters['client_profile_id'])) {
+        if (! empty($filters['client_profile_id'])) {
             $query->where('client_profile_id', $filters['client_profile_id']);
         }
 
-        if (!empty($filters['date_from'])) {
+        if (! empty($filters['date_from'])) {
             $query->whereDate('started_at', '>=', $filters['date_from']);
         }
 
-        if (!empty($filters['date_to'])) {
+        if (! empty($filters['date_to'])) {
             $query->whereDate('started_at', '<=', $filters['date_to']);
         }
 
@@ -47,9 +47,9 @@ class ImportHistoryController extends Controller
         $stats = $this->getStats();
 
         return Inertia::render('Admin/Fatura/ImportHistory/Index/Page', [
-            'runs'    => $query->paginate(20)->withQueryString(),
+            'runs' => $query->paginate(20)->withQueryString(),
             'filters' => $filters,
-            'stats'   => $stats,
+            'stats' => $stats,
         ]);
     }
 
@@ -66,7 +66,7 @@ class ImportHistoryController extends Controller
             ->paginate(30);
 
         return Inertia::render('Admin/Fatura/ImportHistory/Show/Page', [
-            'run'    => $run,
+            'run' => $run,
             'emails' => $emails,
         ]);
     }
@@ -77,14 +77,14 @@ class ImportHistoryController extends Controller
     {
         $bill = $email->bill;
 
-        abort_if(!$bill || !$bill->pdf_path, 404, 'PDF não encontrado.');
-        abort_if(!Storage::disk('local')->exists($bill->pdf_path), 404, 'Arquivo PDF não encontrado no disco.');
+        abort_if(! $bill || ! $bill->pdf_path, 404, 'PDF não encontrado.');
+        abort_if(! Storage::disk('local')->exists($bill->pdf_path), 404, 'Arquivo PDF não encontrado no disco.');
 
         return response()->file(
             Storage::disk('local')->path($bill->pdf_path),
             [
-                'Content-Type'        => 'application/pdf',
-                'Content-Disposition' => 'inline; filename="' . ($bill->pdf_original_name ?? 'fatura.pdf') . '"',
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="'.($bill->pdf_original_name ?? 'fatura.pdf').'"',
             ]
         );
     }
@@ -100,8 +100,8 @@ class ImportHistoryController extends Controller
         }
 
         $run = $service->run(
-            onlyClient:        $onlyClient,
-            triggeredBy:       'manual',
+            onlyClient: $onlyClient,
+            triggeredBy: 'manual',
             triggeredByUserId: auth()->id(),
         );
 
@@ -120,17 +120,17 @@ class ImportHistoryController extends Controller
     {
         $since = now()->subDays(30);
 
-        $runs  = ImportRun::query()->where('started_at', '>=', $since);
+        $runs = ImportRun::query()->where('started_at', '>=', $since);
         $emails = ImportedConcessionaireEmail::query()
             ->whereHas('importRun', fn ($q) => $q->where('started_at', '>=', $since));
 
         return [
-            'runs_total'      => (clone $runs)->count(),
-            'runs_failed'     => (clone $runs)->where('status', 'failed')->count(),
+            'runs_total' => (clone $runs)->count(),
+            'runs_failed' => (clone $runs)->where('status', 'failed')->count(),
             'emails_imported' => (clone $emails)->where('status', 'success')->count(),
-            'emails_failed'   => (clone $emails)->where('status', 'failed')->count(),
-            'emails_skipped'  => (clone $emails)->where('status', 'skipped')->count(),
-            'last_run_at'     => ImportRun::query()->max('started_at'),
+            'emails_failed' => (clone $emails)->where('status', 'failed')->count(),
+            'emails_skipped' => (clone $emails)->where('status', 'skipped')->count(),
+            'last_run_at' => ImportRun::query()->max('started_at'),
             'last_run_status' => ImportRun::query()->latest('started_at')->value('status'),
         ];
     }

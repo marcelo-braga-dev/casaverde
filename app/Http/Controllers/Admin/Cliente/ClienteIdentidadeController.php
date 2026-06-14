@@ -13,21 +13,21 @@ class ClienteIdentidadeController extends Controller
         $tipoPessoa = $cliente->tipo_pessoa;
 
         $rules = [
-            'email'   => ['nullable', 'email', 'max:200'],
+            'email' => ['nullable', 'email', 'max:200'],
             'celular' => ['nullable', 'string', 'max:20'],
         ];
 
         if ($tipoPessoa === 'pf') {
             $rules['nome'] = ['required', 'string', 'min:2', 'max:150'];
         } else {
-            $rules['razao_social']  = ['required', 'string', 'min:2', 'max:200'];
+            $rules['razao_social'] = ['required', 'string', 'min:2', 'max:200'];
             $rules['nome_fantasia'] = ['nullable', 'string', 'max:200'];
         }
 
         $data = $request->validate($rules, [
-            'nome.required'         => 'O nome é obrigatório.',
+            'nome.required' => 'O nome é obrigatório.',
             'razao_social.required' => 'A razão social é obrigatória.',
-            'email.email'           => 'Informe um e-mail válido.',
+            'email.email' => 'Informe um e-mail válido.',
         ]);
 
         // Atualiza perfil

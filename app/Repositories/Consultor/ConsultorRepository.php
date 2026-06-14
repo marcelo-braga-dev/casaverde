@@ -16,7 +16,7 @@ class ConsultorRepository
     {
         return DB::transaction(function () use ($data) {
             $role = RoleUser::$CONSULTOR;
-            $service = new CreateUserService();
+            $service = new CreateUserService;
 
             $dto = CreateUsuarioDTO::fromArray($data);
             $userData = $dto->toArray();
@@ -37,7 +37,7 @@ class ConsultorRepository
 
     public function getAll()
     {
-        return (new Vendedor())->getAll()
+        return (new Vendedor)->getAll()
             ->orderByDesc('id')
             ->get();
     }

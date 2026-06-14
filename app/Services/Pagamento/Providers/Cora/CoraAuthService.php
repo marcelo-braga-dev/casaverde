@@ -28,13 +28,13 @@ class CoraAuthService
                 'client_secret' => $account->client_secret,
             ]);
 
-        if (!$response->successful()) {
-            throw new RuntimeException('Falha ao autenticar na Cora: ' . $response->body());
+        if (! $response->successful()) {
+            throw new RuntimeException('Falha ao autenticar na Cora: '.$response->body());
         }
 
         $token = $response->json('access_token');
 
-        if (!$token) {
+        if (! $token) {
             throw new RuntimeException('Token da Cora não retornado.');
         }
 
@@ -43,6 +43,6 @@ class CoraAuthService
 
     private function cacheKey(PaymentProviderAccount $account): string
     {
-        return 'payment_provider:cora:token:' . $account->id;
+        return 'payment_provider:cora:token:'.$account->id;
     }
 }

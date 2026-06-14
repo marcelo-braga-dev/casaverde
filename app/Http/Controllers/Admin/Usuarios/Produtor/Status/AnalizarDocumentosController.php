@@ -11,14 +11,14 @@ class AnalizarDocumentosController extends Controller
 {
     public function show($id)
     {
-        $produtor = (new ProdutorRepository())->findAllData($id);
+        $produtor = (new ProdutorRepository)->findAllData($id);
 
         return Inertia::render('Admin/User/Produtor/Status/AnalizarDocumentos', compact('produtor'));
     }
 
     public function update($id)
     {
-        (new User())->find($id)->update(['status' => 'documentacao-aprovada']);
+        (new User)->find($id)->update(['status' => 'documentacao-aprovada']);
 
         return redirect()->route('auth.produtor.index');
     }

@@ -3,13 +3,14 @@
 namespace App\Models\Cliente;
 
 use App\Models\Alert\OperationalAlert;
+use App\Models\Fatura\ConcessionaireBill;
+use App\Models\Importacao\ClientEmailImportSetting;
 use App\Models\Proposta\CommercialProposal;
 use App\Models\Users\User;
 use App\Models\Users\UserContact;
 use App\Utils\FormatValues;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Importacao\ClientEmailImportSetting;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class ClientProfile extends Model
@@ -48,7 +49,7 @@ class ClientProfile extends Model
     protected static function booted(): void
     {
         static::creating(function (ClientProfile $clientProfile) {
-            if (!$clientProfile->client_code) {
+            if (! $clientProfile->client_code) {
                 $clientProfile->client_code = static::generateClientCode();
             }
 
@@ -64,7 +65,7 @@ class ClientProfile extends Model
 
     public static function normalizeDocument(?string $value): ?string
     {
-        if (!$value) {
+        if (! $value) {
             return null;
         }
 
@@ -74,15 +75,15 @@ class ClientProfile extends Model
     public static function generateClientCode(): string
     {
         do {
-            $code = 'C' . str_pad((string) random_int(1, 999), 3, '0', STR_PAD_LEFT);
+            $code = 'C'.str_pad((string) random_int(1, 999), 3, '0', STR_PAD_LEFT);
         } while (static::query()->where('client_code', $code)->exists());
 
         return $code;
     }
 
-    //////////////
+    // ////////////
     // getters
-    //////////////
+    // ////////////
     public function getCpfAttribute()
     {
         return isset($this->attributes['cpf']) && $this->attributes['cpf']
@@ -104,9 +105,9 @@ class ClientProfile extends Model
             : ($this->nome ?: '-');
     }
 
-    //////////////
+    // ////////////
     // relations
-    //////////////
+    // ////////////
     public function consultor()
     {
         return $this->belongsTo(User::class, 'consultor_user_id');
@@ -172,7 +173,7 @@ class ClientProfile extends Model
 
     public function scopeSomenteDoConsultor($query, ?int $consultorId)
     {
-        if (!$consultorId) {
+        if (! $consultorId) {
             return $query;
         }
 
@@ -181,7 +182,7 @@ class ClientProfile extends Model
 
     public function concessionaireBills()
     {
-        return $this->hasMany(\App\Models\Fatura\ConcessionaireBill::class, 'client_profile_id');
+        return $this->hasMany(ConcessionaireBill::class, 'client_profile_id');
     }
 
     public function emailImportSetting()
@@ -191,7 +192,7 @@ class ClientProfile extends Model
 
     public function contracts()
     {
-        return $this->hasMany(\App\Models\Cliente\ClientContract::class, 'client_profile_id');
+        return $this->hasMany(ClientContract::class, 'client_profile_id');
     }
 
     public function operationalAlerts()

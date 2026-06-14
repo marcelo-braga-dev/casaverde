@@ -9,7 +9,7 @@ class GetProdutorApiController extends Controller
 {
     public function __invoke()
     {
-        $produtores = (new ProdutorRepository())->getAll();
+        $produtores = (new ProdutorRepository)->getAll();
 
         return response()->json($produtores);
     }

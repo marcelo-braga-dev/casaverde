@@ -5,6 +5,7 @@ namespace App\Models\Usina;
 use App\Enums\Usina\UsinaOperationalStatus;
 use App\Models\Alert\OperationalAlert;
 use App\Models\Cliente\ClientUsinaLink;
+use App\Models\Endereco\Address;
 use App\Models\Produtor\ProducerProfile;
 use App\Models\Users\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -82,7 +83,7 @@ class UsinaSolar extends Model
 
     public function address()
     {
-        return $this->belongsTo(\App\Models\Endereco\Address::class, 'address_id');
+        return $this->belongsTo(Address::class, 'address_id');
     }
 
     public function clientLinks()
@@ -105,19 +106,19 @@ class UsinaSolar extends Model
     {
         return max(
             0,
-            (float)$this->energia_disponivel_kwh - (float)$this->energia_alocada_kwh
+            (float) $this->energia_disponivel_kwh - (float) $this->energia_alocada_kwh
         );
     }
 
     public function getUtilizationPercentageAttribute(): float
     {
-        $availableEnergy = (float)$this->energia_disponivel_kwh;
+        $availableEnergy = (float) $this->energia_disponivel_kwh;
 
         if ($availableEnergy <= 0) {
             return 0;
         }
 
-        return round(((float)$this->energia_alocada_kwh / $availableEnergy) * 100, 2);
+        return round(((float) $this->energia_alocada_kwh / $availableEnergy) * 100, 2);
     }
 
     public function operationalAlerts()

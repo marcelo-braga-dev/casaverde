@@ -7,10 +7,10 @@ use App\Repositories\Cliente\ClientePropostaRepository;
 
 class GetPropostaController extends Controller
 {
-   public function __invoke()
-   {
-       $registros = (new ClientePropostaRepository())->get();
+    public function __invoke()
+    {
+        $registros = (new ClientePropostaRepository)->get();
 
-       return response()->json($registros);
-   }
+        return response()->json($registros);
+    }
 }

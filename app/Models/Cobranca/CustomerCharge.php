@@ -5,9 +5,10 @@ namespace App\Models\Cobranca;
 use App\Models\BaseModel;
 use App\Models\Cliente\ClientProfile;
 use App\Models\Fatura\ConcessionaireBill;
+use App\Models\Pagamento\PaymentSlip;
+use App\Models\Users\User;
 use App\Models\Usina\Concessionaria;
 use App\Models\Usina\UsinaSolar;
-use App\Models\Users\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class CustomerCharge extends BaseModel
@@ -109,17 +110,17 @@ class CustomerCharge extends BaseModel
 
     public function paymentSlips()
     {
-        return $this->hasMany(\App\Models\Pagamento\PaymentSlip::class, 'customer_charge_id');
+        return $this->hasMany(PaymentSlip::class, 'customer_charge_id');
     }
 
     public function canBeCancelled(): bool
     {
-        return !in_array($this->status, ['paid', 'cancelled'], true);
+        return ! in_array($this->status, ['paid', 'cancelled'], true);
     }
 
     public function canBeMarkedAsPaid(): bool
     {
-        return !in_array($this->status, ['paid', 'cancelled'], true);
+        return ! in_array($this->status, ['paid', 'cancelled'], true);
     }
 
     public function canBeMarkedAsOverdue(): bool

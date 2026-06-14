@@ -16,7 +16,7 @@ class ContratoUsinaController extends Controller
 
     public function create(Request $request)
     {
-        $produtor = (new ProdutorRepository())->findAllData($request->produtor);
+        $produtor = (new ProdutorRepository)->findAllData($request->produtor);
 
         return Inertia::render('Admin/Contratos/Usinas/Create/Page', compact('produtor'));
     }

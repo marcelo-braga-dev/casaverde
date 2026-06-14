@@ -3,6 +3,7 @@ import {
     IconBrandWhatsapp,
     IconChartHistogram,
     IconHeadset,
+    IconPlug,
     IconReportMoney,
     IconSettings, IconSolarPanel2,
     IconUserBolt,
@@ -45,6 +46,11 @@ export const adminMenu = [
                 id: 'clientes-contratos',
                 title: 'Contratos',
                 link: safeRoute('consultor.cliente.contratos.index'),
+            },
+            {
+                id: 'consumer-units-index',
+                title: 'Unidades Consumidoras',
+                link: safeRoute('consultor.cliente.consumer-units.index'),
             },
         ],
     },
@@ -145,8 +151,8 @@ export const adminMenu = [
         subItems: [
             {
                 id: 'financeiro-faturas',
-                title: 'Faturas',
-                link: safeRoute('consultor.cliente.faturas.index'),
+                title: 'Faturas de Concessionárias',
+                link: safeRoute('admin.relatorios.faturas'),
             },
             {
                 id: 'financeiro-cobrancas',
@@ -200,11 +206,6 @@ export const adminMenu = [
                 link: safeRoute('admin.relatorios.cobrancas'),
             },
             {
-                id: 'relatorios-faturas',
-                title: 'Faturas',
-                link: safeRoute('admin.relatorios.faturas'),
-            },
-            {
                 id: 'relatorios-pagamentos',
                 title: 'Pagamentos',
                 link: safeRoute('admin.relatorios.pagamentos'),
@@ -226,6 +227,11 @@ export const adminMenu = [
         icon: <IconBrandWhatsapp />,
         id: 'whatsapp',
         subItems: [
+            {
+                id: 'whatsapp-templates',
+                title: 'Templates de Mensagens',
+                link: safeRoute('admin.whatsapp.templates.index'),
+            },
             {
                 id: 'whatsapp-chat',
                 title: 'Whatsapp App',
@@ -265,6 +271,13 @@ export const adminMenu = [
                 title: 'Concessionárias',
                 link: safeRoute('admin.concessionaria.index'),
             },
+        ],
+    },
+    {
+        title: 'Integrações',
+        icon: <IconPlug />,
+        id: 'integracoes',
+        subItems: [
             {
                 id: 'config-integracao',
                 title: 'Configurações de Integração',

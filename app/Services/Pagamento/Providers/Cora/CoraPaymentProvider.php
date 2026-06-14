@@ -15,8 +15,7 @@ class CoraPaymentProvider implements PaymentProviderContract
     public function __construct(
         private readonly CoraAuthService $authService,
         private readonly CoraHttpClient $httpClient,
-    ) {
-    }
+    ) {}
 
     public function providerName(): string
     {
@@ -39,8 +38,8 @@ class CoraPaymentProvider implements PaymentProviderContract
             ->client($this->account, $token)
             ->post('/invoices', $payload);
 
-        if (!$response->successful()) {
-            throw new RuntimeException('Falha ao gerar pagamento na Cora: ' . $response->body());
+        if (! $response->successful()) {
+            throw new RuntimeException('Falha ao gerar pagamento na Cora: '.$response->body());
         }
 
         return $this->mapResponse($response->json());
@@ -52,10 +51,10 @@ class CoraPaymentProvider implements PaymentProviderContract
 
         $response = $this->httpClient
             ->client($this->account, $token)
-            ->get('/invoices/' . $providerPaymentId);
+            ->get('/invoices/'.$providerPaymentId);
 
-        if (!$response->successful()) {
-            throw new RuntimeException('Falha ao consultar pagamento na Cora: ' . $response->body());
+        if (! $response->successful()) {
+            throw new RuntimeException('Falha ao consultar pagamento na Cora: '.$response->body());
         }
 
         return $this->mapResponse($response->json());
@@ -67,7 +66,7 @@ class CoraPaymentProvider implements PaymentProviderContract
 
         $response = $this->httpClient
             ->client($this->account, $token)
-            ->delete('/invoices/' . $providerPaymentId);
+            ->delete('/invoices/'.$providerPaymentId);
 
         return $response->successful();
     }

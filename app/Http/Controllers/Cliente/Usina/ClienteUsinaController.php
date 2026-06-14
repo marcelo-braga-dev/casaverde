@@ -39,9 +39,9 @@ class ClienteUsinaController extends Controller
             : [];
 
         return Inertia::render('Cliente/Usina/Show/Page', [
-            'profile'   => $profile,
-            'usina'     => $usina,
-            'link'      => $profile?->activeUsinaLink,
+            'profile' => $profile,
+            'usina' => $usina,
+            'link' => $profile?->activeUsinaLink,
             'historico' => $historico,
         ]);
     }

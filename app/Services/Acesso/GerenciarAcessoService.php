@@ -4,7 +4,6 @@ namespace App\Services\Acesso;
 
 use App\Models\Acesso\UserAccessLog;
 use App\Models\Users\User;
-use App\src\Roles\RoleUser;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -18,9 +17,9 @@ class GerenciarAcessoService
         string $name,
         string $email,
         string $password,
-        int    $roleId,
+        int $roleId,
         callable $vincularAoPerfil,
-        ?int   $existingUserId = null,
+        ?int $existingUserId = null,
     ): User {
         return DB::transaction(function () use ($name, $email, $password, $roleId, $vincularAoPerfil, $existingUserId) {
             $isNew = is_null($existingUserId);
@@ -28,11 +27,11 @@ class GerenciarAcessoService
             if ($isNew) {
                 // Cria novo usuário
                 $user = User::create([
-                    'name'    => $name,
-                    'email'   => $email,
-                    'password'=> Hash::make($password),
+                    'name' => $name,
+                    'email' => $email,
+                    'password' => Hash::make($password),
                     'role_id' => $roleId,
-                    'status'  => '1',
+                    'status' => '1',
                     'email_verified_at' => now(),
                 ]);
             } else {
@@ -50,7 +49,7 @@ class GerenciarAcessoService
             // Log do evento
             UserAccessLog::record(
                 userId: $user->id,
-                event:  $isNew ? 'access_created' : 'access_updated',
+                event: $isNew ? 'access_created' : 'access_updated',
                 extra: [
                     'performed_by_user_id' => auth()->id(),
                     'notes' => $isNew
@@ -72,7 +71,7 @@ class GerenciarAcessoService
 
         UserAccessLog::record(
             userId: $user->id,
-            event:  'blocked',
+            event: 'blocked',
             extra: [
                 'performed_by_user_id' => auth()->id(),
                 'notes' => $notes ?: 'Acesso bloqueado pelo administrador.',
@@ -89,7 +88,7 @@ class GerenciarAcessoService
 
         UserAccessLog::record(
             userId: $user->id,
-            event:  'unblocked',
+            event: 'unblocked',
             extra: [
                 'performed_by_user_id' => auth()->id(),
                 'notes' => $notes ?: 'Acesso liberado pelo administrador.',
@@ -109,26 +108,37 @@ class GerenciarAcessoService
             ->limit($limit)
             ->get()
             ->map(fn ($log) => [
-                'id'             => $log->id,
-                'event'          => $log->event,
-                'event_label'    => $log->event_label,
-                'event_color'    => $log->event_color,
-                'ip_address'     => $log->ip_address,
-                'user_agent'     => $this->simplifyUserAgent($log->user_agent),
-                'performed_by'   => $log->performedBy?->name,
-                'notes'          => $log->notes,
-                'created_at'     => $log->created_at?->format('d/m/Y H:i:s'),
+                'id' => $log->id,
+                'event' => $log->event,
+                'event_label' => $log->event_label,
+                'event_color' => $log->event_color,
+                'ip_address' => $log->ip_address,
+                'user_agent' => $this->simplifyUserAgent($log->user_agent),
+                'performed_by' => $log->performedBy?->name,
+                'notes' => $log->notes,
+                'created_at' => $log->created_at?->format('d/m/Y H:i:s'),
             ])
             ->toArray();
     }
 
     private function simplifyUserAgent(?string $ua): ?string
     {
-        if (!$ua) return null;
-        if (str_contains($ua, 'Chrome'))  return 'Chrome';
-        if (str_contains($ua, 'Firefox')) return 'Firefox';
-        if (str_contains($ua, 'Safari'))  return 'Safari';
-        if (str_contains($ua, 'Edge'))    return 'Edge';
+        if (! $ua) {
+            return null;
+        }
+        if (str_contains($ua, 'Chrome')) {
+            return 'Chrome';
+        }
+        if (str_contains($ua, 'Firefox')) {
+            return 'Firefox';
+        }
+        if (str_contains($ua, 'Safari')) {
+            return 'Safari';
+        }
+        if (str_contains($ua, 'Edge')) {
+            return 'Edge';
+        }
+
         return mb_substr($ua, 0, 40);
     }
 }

@@ -9,7 +9,7 @@ class GetDadosPropostaProdutorController extends Controller
 {
     public function __invoke($id)
     {
-        $proposta = (new ProdutorPropostas())
+        $proposta = (new ProdutorPropostas)
             ->find($id);
 
         return response()->json($proposta);

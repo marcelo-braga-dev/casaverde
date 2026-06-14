@@ -15,7 +15,7 @@ class ClientReportService
 
             'general' => $this->generalDashboard($filters),
 
-            'client' => !empty($filters['client_id'])
+            'client' => ! empty($filters['client_id'])
                 ? $this->clientDashboard(
                     (int) $filters['client_id'],
                     $filters
@@ -49,17 +49,17 @@ class ClientReportService
                 'concessionaria',
                 'usina',
             ])
-            ->when(!empty($filters['client_id']), function ($query) use ($filters) {
+            ->when(! empty($filters['client_id']), function ($query) use ($filters) {
                 $query->where('client_profile_id', $filters['client_id']);
             })
-            ->when(!empty($filters['start_date']), function ($query) use ($filters) {
+            ->when(! empty($filters['start_date']), function ($query) use ($filters) {
                 $query->whereDate(
                     'due_date',
                     '>=',
                     Carbon::parse($filters['start_date'])
                 );
             })
-            ->when(!empty($filters['end_date']), function ($query) use ($filters) {
+            ->when(! empty($filters['end_date']), function ($query) use ($filters) {
                 $query->whereDate(
                     'due_date',
                     '<=',
@@ -105,7 +105,7 @@ class ClientReportService
 
                 'total_consumption_kwh' => round(
                     $charges->sum(fn ($charge) => (
-                    float) ($charge->bill?->consumo_kwh ?? 0)
+                        float)($charge->bill?->consumo_kwh ?? 0)
                     ),
                     2
                 ),
@@ -138,8 +138,8 @@ class ClientReportService
                         '0',
                         STR_PAD_LEFT
                     )
-                    . '/'
-                    . $charge->reference_year
+                    .'/'
+                    .$charge->reference_year
                 ))
                 ->map(function ($monthCharges, $label) {
                     $original = $monthCharges->sum('original_amount');
@@ -270,8 +270,8 @@ class ClientReportService
                                 '0',
                                 STR_PAD_LEFT
                             )
-                            . '/'
-                            . $charge->reference_year
+                            .'/'
+                            .$charge->reference_year
                         ),
 
                         'original_amount' => (float) $charge->original_amount,
@@ -279,13 +279,13 @@ class ClientReportService
                         'final_amount' => (float) $charge->final_amount,
 
                         'economy_amount' => round(
-                        max(
-                            0,
-                            $charge->original_amount
-                            - $charge->final_amount
+                            max(
+                                0,
+                                $charge->original_amount
+                                - $charge->final_amount
+                            ),
+                            2
                         ),
-                        2
-                    ),
 
                         'discount_percent' => (float) $charge->discount_percent,
 
@@ -309,8 +309,8 @@ class ClientReportService
                                 '0',
                                 STR_PAD_LEFT
                             )
-                            . '/'
-                            . $charge->reference_year
+                            .'/'
+                            .$charge->reference_year
                         ),
 
                         'original_amount' => (float) $charge->original_amount,
@@ -322,8 +322,8 @@ class ClientReportService
                         'status' => $charge->status,
 
                         'due_date' => optional(
-                        $charge->due_date
-                    )->format('d/m/Y'),
+                            $charge->due_date
+                        )->format('d/m/Y'),
                     ];
                 })
                 ->values()

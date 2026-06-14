@@ -15,7 +15,7 @@ class CreateUserService
     {
         $name = $produtor['nome'] ?? $produtor['razao_social'] ?? null;
 
-        if (!$name) {
+        if (! $name) {
             throw new RuntimeException('Nome ou razão social é obrigatório para criar o usuário.');
         }
 

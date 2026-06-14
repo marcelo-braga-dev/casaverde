@@ -58,8 +58,13 @@ export const consultorMenu = [
             },
             {
                 id: 'clientes-faturas',
-                title: 'Faturas de Energia',
-                link: safeRoute('consultor.cliente.faturas.index'),
+                title: 'Faturas de Concessionária',
+                link: safeRoute('admin.relatorios.faturas'),
+            },
+            {
+                id: 'consumer-units-index',
+                title: 'Unidades Consumidoras',
+                link: safeRoute('consultor.cliente.consumer-units.index'),
             },
         ],
     },
@@ -111,11 +116,6 @@ export const consultorMenu = [
                 id: 'relatorios-clientes',
                 title: 'Clientes',
                 link: safeRoute('admin.relatorios.clientes'),
-            },
-            {
-                id: 'relatorios-faturas',
-                title: 'Faturas',
-                link: safeRoute('admin.relatorios.faturas'),
             },
             {
                 id: 'relatorios-usinas',

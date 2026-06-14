@@ -41,7 +41,7 @@ class ValidateConcessionaireBillService
                 );
             }
 
-            if (!$bill->clientProfile?->is_active_client) {
+            if (! $bill->clientProfile?->is_active_client) {
                 $issues[] = $this->makeIssue(
                     $bill->id,
                     'client_not_active',
@@ -50,7 +50,7 @@ class ValidateConcessionaireBillService
                 );
             }
 
-            if (!$bill->consumer_unit_id) {
+            if (! $bill->consumer_unit_id) {
                 $issues[] = $this->makeIssue(
                     $bill->id,
                     'missing_consumer_unit',
@@ -61,7 +61,7 @@ class ValidateConcessionaireBillService
 
             $activeUsinaLink = $bill->consumerUnit?->activeUsinaLink ?? $bill->clientProfile?->activeUsinaLink;
 
-            if (!$activeUsinaLink) {
+            if (! $activeUsinaLink) {
                 $issues[] = $this->makeIssue(
                     $bill->id,
                     'missing_active_usina',
@@ -70,7 +70,7 @@ class ValidateConcessionaireBillService
                 );
             }
 
-            if (!$bill->clientProfile?->activeDiscountRule) {
+            if (! $bill->clientProfile?->activeDiscountRule) {
                 $issues[] = $this->makeIssue(
                     $bill->id,
                     'missing_discount_rule',

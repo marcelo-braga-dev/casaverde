@@ -13,7 +13,7 @@ class RedirectUserByRole
     {
         $user = $request->user();
 
-        if (!$user) {
+        if (! $user) {
             return $next($request);
         }
 

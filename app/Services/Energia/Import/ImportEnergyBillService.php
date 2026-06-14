@@ -20,8 +20,7 @@ class ImportEnergyBillService
         private readonly ImapEnergyBillFetcherService $fetcher,
         private readonly ProtectedPdfTextExtractorService $extractor,
         private readonly EnergyBillPdfParserService $parser,
-    ) {
-    }
+    ) {}
 
     public function importForSetting(ClientEmailImportSetting $setting): array
     {
@@ -43,11 +42,11 @@ class ImportEnergyBillService
                 $alreadyImported = ImportedEnergyBillEmail::query()
                     ->where('user_id', $setting->user_id)
                     ->where(function ($query) use ($message, $attachmentHash) {
-                        if (!empty($message['uid'])) {
+                        if (! empty($message['uid'])) {
                             $query->orWhere('message_uid', $message['uid']);
                         }
 
-                        if (!empty($message['message_id'])) {
+                        if (! empty($message['message_id'])) {
                             $query->orWhere('message_id', $message['message_id']);
                         }
 
@@ -57,6 +56,7 @@ class ImportEnergyBillService
 
                 if ($alreadyImported) {
                     $result['skipped']++;
+
                     continue;
                 }
 

@@ -9,15 +9,15 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('concessionaire_bills', function (Blueprint $table) {
-            if (!Schema::hasColumn('concessionaire_bills', 'nome')) {
+            if (! Schema::hasColumn('concessionaire_bills', 'nome')) {
                 $table->string('nome')->nullable()->after('numero_instalacao');
             }
 
-            if (!Schema::hasColumn('concessionaire_bills', 'review_notes')) {
+            if (! Schema::hasColumn('concessionaire_bills', 'review_notes')) {
                 $table->text('review_notes')->nullable()->after('notes');
             }
 
-            if (!Schema::hasColumn('concessionaire_bills', 'reviewed_by_id')) {
+            if (! Schema::hasColumn('concessionaire_bills', 'reviewed_by_id')) {
                 $table->foreignId('reviewed_by_id')
                     ->nullable()
                     ->after('reviewed_by_user_id')
@@ -25,7 +25,7 @@ return new class extends Migration
                     ->nullOnDelete();
             }
 
-            if (!Schema::hasColumn('concessionaire_bills', 'created_by_id')) {
+            if (! Schema::hasColumn('concessionaire_bills', 'created_by_id')) {
                 $table->foreignId('created_by_id')
                     ->nullable()
                     ->after('created_by_user_id')
@@ -33,11 +33,11 @@ return new class extends Migration
                     ->nullOnDelete();
             }
 
-            if (!Schema::hasColumn('concessionaire_bills', 'parser_status')) {
+            if (! Schema::hasColumn('concessionaire_bills', 'parser_status')) {
                 $table->string('parser_status')->default('pending')->after('review_status');
             }
 
-            if (!Schema::hasColumn('concessionaire_bills', 'parser_error')) {
+            if (! Schema::hasColumn('concessionaire_bills', 'parser_error')) {
                 $table->text('parser_error')->nullable()->after('parser_status');
             }
         });

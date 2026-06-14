@@ -10,7 +10,7 @@ class ReprocessPaymentWebhookEventController extends Controller
 {
     public function store(PaymentWebhookEvent $webhook)
     {
-        if (!$webhook->canBeReprocessed()) {
+        if (! $webhook->canBeReprocessed()) {
             return redirect()
                 ->back()
                 ->with('warning', 'Este webhook não pode ser reprocessado.');

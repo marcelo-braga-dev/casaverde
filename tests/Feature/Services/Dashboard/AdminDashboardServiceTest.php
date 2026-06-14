@@ -3,7 +3,6 @@
 use App\Models\Cliente\ClientProfile;
 use App\Models\Cobranca\CustomerCharge;
 use App\Models\Fatura\ConcessionaireBill;
-use App\Models\Users\User;
 use App\Models\Usina\UsinaSolar;
 use App\Services\Admin\Dashboard\AdminDashboardService;
 

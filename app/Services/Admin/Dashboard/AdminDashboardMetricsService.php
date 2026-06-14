@@ -156,7 +156,7 @@ class AdminDashboardMetricsService
             ->orderByRaw('YEAR(paid_at), MONTH(paid_at)')
             ->get()
             ->map(fn ($item) => [
-                'label' => str_pad((string) $item->month, 2, '0', STR_PAD_LEFT) . '/' . $item->year,
+                'label' => str_pad((string) $item->month, 2, '0', STR_PAD_LEFT).'/'.$item->year,
                 'amount' => (float) $item->amount,
                 'total' => (int) $item->total,
             ])
@@ -176,7 +176,7 @@ class AdminDashboardMetricsService
                 'client_name' => $charge->clientProfile?->display_name
                     ?? $charge->clientProfile?->nome
                         ?? $charge->clientProfile?->razao_social
-                        ?? 'Cliente #' . $charge->client_profile_id,
+                        ?? 'Cliente #'.$charge->client_profile_id,
                 'reference_label' => $charge->reference_label,
                 'status' => $charge->status,
                 'final_amount' => (float) $charge->final_amount,
@@ -219,7 +219,7 @@ class AdminDashboardMetricsService
                 'client_name' => $bill->clientProfile?->display_name
                     ?? $bill->clientProfile?->nome
                         ?? $bill->clientProfile?->razao_social
-                        ?? 'Cliente #' . $bill->client_profile_id,
+                        ?? 'Cliente #'.$bill->client_profile_id,
                 'reference_label' => $bill->reference_label,
                 'valor_total' => (float) $bill->valor_total,
                 'created_at' => optional($bill->created_at)->format('d/m/Y H:i'),

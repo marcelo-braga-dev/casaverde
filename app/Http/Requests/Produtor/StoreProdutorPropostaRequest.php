@@ -34,14 +34,14 @@ class StoreProdutorPropostaRequest extends FormRequest
             ],
 
             'nome' => [
-                Rule::requiredIf(fn () => !$this->filled('produtor_id') && $this->input('tipo_pessoa') !== 'pj'),
+                Rule::requiredIf(fn () => ! $this->filled('produtor_id') && $this->input('tipo_pessoa') !== 'pj'),
                 'nullable',
                 'string',
                 'max:255',
             ],
 
             'razao_social' => [
-                Rule::requiredIf(fn () => !$this->filled('produtor_id') && $this->input('tipo_pessoa') === 'pj'),
+                Rule::requiredIf(fn () => ! $this->filled('produtor_id') && $this->input('tipo_pessoa') === 'pj'),
                 'nullable',
                 'string',
                 'max:255',
@@ -52,14 +52,14 @@ class StoreProdutorPropostaRequest extends FormRequest
             'email' => ['nullable', 'email', 'max:255'],
 
             'cpf' => [
-                Rule::requiredIf(fn () => !$this->filled('produtor_id') && $this->input('tipo_pessoa') !== 'pj' && !$this->filled('cnpj')),
+                Rule::requiredIf(fn () => ! $this->filled('produtor_id') && $this->input('tipo_pessoa') !== 'pj' && ! $this->filled('cnpj')),
                 'nullable',
                 'string',
                 'max:14',
             ],
 
             'cnpj' => [
-                Rule::requiredIf(fn () => !$this->filled('produtor_id') && $this->input('tipo_pessoa') === 'pj' && !$this->filled('cpf')),
+                Rule::requiredIf(fn () => ! $this->filled('produtor_id') && $this->input('tipo_pessoa') === 'pj' && ! $this->filled('cpf')),
                 'nullable',
                 'string',
                 'max:18',
@@ -79,7 +79,7 @@ class StoreProdutorPropostaRequest extends FormRequest
             'contato' => ['nullable', 'array'],
 
             'contato.celular' => [
-                Rule::requiredIf(fn () => !$this->filled('produtor_id')),
+                Rule::requiredIf(fn () => ! $this->filled('produtor_id')),
                 'nullable',
                 'string',
                 'max:20',
@@ -125,7 +125,7 @@ class StoreProdutorPropostaRequest extends FormRequest
 
             'endereco' => [
                 ...$endereco,
-                'cep' => !empty($endereco['cep']) ? preg_replace('/\D+/', '', $endereco['cep']) : null,
+                'cep' => ! empty($endereco['cep']) ? preg_replace('/\D+/', '', $endereco['cep']) : null,
             ],
 
             'dados' => [
@@ -138,10 +138,10 @@ class StoreProdutorPropostaRequest extends FormRequest
 
             'contato' => [
                 ...$contato,
-                'celular' => !empty($contato['celular']) ? preg_replace('/\D+/', '', $contato['celular']) : null,
-                'celular_2' => !empty($contato['celular_2']) ? preg_replace('/\D+/', '', $contato['celular_2']) : null,
-                'telefone' => !empty($contato['telefone']) ? preg_replace('/\D+/', '', $contato['telefone']) : null,
-                'email' => !empty($contato['email']) ? mb_strtolower(trim($contato['email'])) : null,
+                'celular' => ! empty($contato['celular']) ? preg_replace('/\D+/', '', $contato['celular']) : null,
+                'celular_2' => ! empty($contato['celular_2']) ? preg_replace('/\D+/', '', $contato['celular_2']) : null,
+                'telefone' => ! empty($contato['telefone']) ? preg_replace('/\D+/', '', $contato['telefone']) : null,
+                'email' => ! empty($contato['email']) ? mb_strtolower(trim($contato['email'])) : null,
             ],
 
             'taxa_reducao' => $this->normalizeNumber($this->input('taxa_reducao')),

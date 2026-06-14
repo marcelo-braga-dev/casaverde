@@ -8,7 +8,7 @@ describe('ApproveCustomerChargeService', function () {
 
     beforeEach(function () {
         $this->service = app(ApproveCustomerChargeService::class);
-        $this->admin   = User::factory()->admin()->create();
+        $this->admin = User::factory()->admin()->create();
         $this->actingAs($this->admin);
     });
 
@@ -20,20 +20,20 @@ describe('ApproveCustomerChargeService', function () {
         expect($updated->status)->toBe('open');
 
         $this->assertDatabaseHas('customer_charges', [
-            'id'     => $charge->id,
+            'id' => $charge->id,
             'status' => 'open',
         ]);
     });
 
     it('sets approved_by_user_id to the authenticated user', function () {
-        $charge  = CustomerCharge::factory()->draft()->create();
+        $charge = CustomerCharge::factory()->draft()->create();
         $updated = $this->service->handle($charge);
 
         expect($updated->approved_by_user_id)->toBe($this->admin->id);
     });
 
     it('sets approved_at timestamp on approval', function () {
-        $charge  = CustomerCharge::factory()->draft()->create();
+        $charge = CustomerCharge::factory()->draft()->create();
         $updated = $this->service->handle($charge);
 
         expect($updated->approved_at)->not()->toBeNull();
@@ -42,7 +42,7 @@ describe('ApproveCustomerChargeService', function () {
     it('throws InvalidArgumentException when charge is not in draft status', function () {
         $charge = CustomerCharge::factory()->open()->create();
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('rascunho');
 
         $this->service->handle($charge);
@@ -51,7 +51,7 @@ describe('ApproveCustomerChargeService', function () {
     it('throws when trying to approve a paid charge', function () {
         $charge = CustomerCharge::factory()->paid()->create();
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $this->service->handle($charge);
     });
@@ -59,13 +59,13 @@ describe('ApproveCustomerChargeService', function () {
     it('throws when trying to approve a cancelled charge', function () {
         $charge = CustomerCharge::factory()->cancelled()->create();
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
 
         $this->service->handle($charge);
     });
 
     it('returns a fresh charge instance', function () {
-        $charge  = CustomerCharge::factory()->draft()->create();
+        $charge = CustomerCharge::factory()->draft()->create();
         $updated = $this->service->handle($charge);
 
         expect($updated)->toBeInstanceOf(CustomerCharge::class)

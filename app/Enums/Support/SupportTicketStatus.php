@@ -4,34 +4,34 @@ namespace App\Enums\Support;
 
 enum SupportTicketStatus: string
 {
-    case Novo             = 'novo';
-    case EmAtendimento    = 'em_atendimento';
+    case Novo = 'novo';
+    case EmAtendimento = 'em_atendimento';
     case AguardandoCliente = 'aguardando_cliente';
-    case Resolvido        = 'resolvido';
-    case Fechado          = 'fechado';
-    case Cancelado        = 'cancelado';
+    case Resolvido = 'resolvido';
+    case Fechado = 'fechado';
+    case Cancelado = 'cancelado';
 
     public function label(): string
     {
         return match ($this) {
-            self::Novo              => 'Novo',
-            self::EmAtendimento     => 'Em Atendimento',
+            self::Novo => 'Novo',
+            self::EmAtendimento => 'Em Atendimento',
             self::AguardandoCliente => 'Aguardando Cliente',
-            self::Resolvido         => 'Resolvido',
-            self::Fechado           => 'Fechado',
-            self::Cancelado         => 'Cancelado',
+            self::Resolvido => 'Resolvido',
+            self::Fechado => 'Fechado',
+            self::Cancelado => 'Cancelado',
         };
     }
 
     public function color(): string
     {
         return match ($this) {
-            self::Novo              => 'info',
-            self::EmAtendimento     => 'warning',
+            self::Novo => 'info',
+            self::EmAtendimento => 'warning',
             self::AguardandoCliente => 'secondary',
-            self::Resolvido         => 'success',
-            self::Fechado           => 'default',
-            self::Cancelado         => 'error',
+            self::Resolvido => 'success',
+            self::Fechado => 'default',
+            self::Cancelado => 'error',
         };
     }
 
@@ -49,12 +49,12 @@ enum SupportTicketStatus: string
     public function allowedTransitions(): array
     {
         return match ($this) {
-            self::Novo              => [self::EmAtendimento, self::Cancelado],
-            self::EmAtendimento     => [self::AguardandoCliente, self::Resolvido, self::Cancelado],
+            self::Novo => [self::EmAtendimento, self::Cancelado],
+            self::EmAtendimento => [self::AguardandoCliente, self::Resolvido, self::Cancelado],
             self::AguardandoCliente => [self::EmAtendimento, self::Resolvido, self::Cancelado],
-            self::Resolvido         => [self::Fechado, self::EmAtendimento],
-            self::Fechado           => [],
-            self::Cancelado         => [],
+            self::Resolvido => [self::Fechado, self::EmAtendimento],
+            self::Fechado => [],
+            self::Cancelado => [],
         };
     }
 

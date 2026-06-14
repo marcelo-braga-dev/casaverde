@@ -18,7 +18,7 @@ class ConvertValues
         $valorLimpo = str_replace('.', '', $valorLimpo);
         $valorLimpo = str_replace(',', '.', $valorLimpo);
 
-        return is_numeric($valorLimpo) ? (float)$valorLimpo : 0.0;
+        return is_numeric($valorLimpo) ? (float) $valorLimpo : 0.0;
     }
 
     public static function floatToMoney(?float $valor): string

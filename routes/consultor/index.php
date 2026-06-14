@@ -10,10 +10,11 @@ Route::middleware(['auth', 'role:admin,consultor'])
 
         Route::get('/dashboard', ConsultorDashboardController::class)->name('dashboard');
 
-        require __DIR__ . '/cliente/client.php';
-        require __DIR__ . '/cliente/faturas.php';
-        require __DIR__ . '/cliente/contratos.php';
-        require __DIR__ . '/producer/index.php';
-        require __DIR__ . '/propostas/cliente-propostas.php';
-        require __DIR__ . '/propostas/producer-propostas.php';
+        require __DIR__.'/cliente/client.php';
+        require __DIR__.'/cliente/faturas.php';
+        require __DIR__.'/cliente/contratos.php';
+        require __DIR__.'/cliente/unidades-consumidoras.php';
+        require __DIR__.'/producer/index.php';
+        require __DIR__.'/propostas/cliente-propostas.php';
+        require __DIR__.'/propostas/producer-propostas.php';
     });

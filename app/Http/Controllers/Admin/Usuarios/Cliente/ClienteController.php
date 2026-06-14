@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\Admin\Usuarios\Cliente;
 
 use App\Http\Controllers\Controller;
-use App\Models\Acesso\UserAccessLog;
-use App\Models\Importacao\ImportEmailAccount;
-use App\Models\Usina\Concessionaria;
 use App\Http\Requests\Cliente\StoreClientProfileRequest;
 use App\Models\Cliente\ClientProfile;
+use App\Models\Importacao\ImportEmailAccount;
+use App\Models\Usina\Concessionaria;
 use App\Models\Usina\UsinaSolar;
 use App\Repositories\Cliente\ClientProfileRepository;
 use App\Services\Acesso\GerenciarAcessoService;
@@ -36,10 +35,9 @@ class ClienteController extends Controller
     }
 
     public function store(
-        StoreClientProfileRequest        $request,
+        StoreClientProfileRequest $request,
         CreateOrFindClientProfileService $service
-    )
-    {
+    ) {
         $this->authorize('create', ClientProfile::class);
 
         $result = $service->handle($request->validated());
@@ -75,6 +73,7 @@ class ClienteController extends Controller
                 'accessInvites',
                 'proposals.address',
                 'consumerUnits.concessionaria',
+                'consumerUnits.address',
                 'consumerUnits.activeUsinaLink.usina.produtor',
             ]),
 
@@ -93,7 +92,7 @@ class ClienteController extends Controller
                 ->where('is_active', true)
                 ->where(function ($q) use ($cliente) {
                     $q->whereNull('client_profile_id')
-                      ->orWhere('client_profile_id', $cliente->id);
+                        ->orWhere('client_profile_id', $cliente->id);
                 })
                 ->orderBy('email')
                 ->get(['id', 'email', 'label', 'client_profile_id']),
@@ -127,7 +126,7 @@ class ClienteController extends Controller
 
         return redirect()->route('consultor.user.cliente.index')
             ->with([
-                'success' => "Cliente deletado com sucesso",
+                'success' => 'Cliente deletado com sucesso',
             ]);
     }
 }

@@ -11,9 +11,9 @@ use App\Services\Consultor\Dashboard\ConsultorDashboardService;
 describe('ConsultorDashboardService', function () {
 
     beforeEach(function () {
-        $this->service   = app(ConsultorDashboardService::class);
+        $this->service = app(ConsultorDashboardService::class);
         $this->consultor = User::factory()->consultor()->create();
-        $this->other     = User::factory()->consultor()->create();
+        $this->other = User::factory()->consultor()->create();
     });
 
     it('returns zero metrics when consultor has no data', function () {
@@ -79,15 +79,15 @@ describe('ConsultorDashboardService', function () {
 
     it('counts pending bills from consultor clients', function () {
         $client = ClientProfile::factory()->create(['consultor_user_id' => $this->consultor->id]);
-        $other  = ClientProfile::factory()->create(['consultor_user_id' => $this->other->id]);
+        $other = ClientProfile::factory()->create(['consultor_user_id' => $this->other->id]);
 
         ConcessionaireBill::factory()->create([
             'client_profile_id' => $client->id,
-            'review_status'     => 'pending_review',
+            'review_status' => 'pending_review',
         ]);
         ConcessionaireBill::factory()->create([
             'client_profile_id' => $other->id,
-            'review_status'     => 'pending_review',
+            'review_status' => 'pending_review',
         ]);
 
         $data = $this->service->handle($this->consultor->id);
@@ -132,11 +132,11 @@ describe('ConsultorDashboardService', function () {
     it('counts clients created this month', function () {
         ClientProfile::factory()->create([
             'consultor_user_id' => $this->consultor->id,
-            'created_at'        => now(),
+            'created_at' => now(),
         ]);
         ClientProfile::factory()->create([
             'consultor_user_id' => $this->consultor->id,
-            'created_at'        => now()->subMonth(2),
+            'created_at' => now()->subMonth(2),
         ]);
 
         $data = $this->service->handle($this->consultor->id);

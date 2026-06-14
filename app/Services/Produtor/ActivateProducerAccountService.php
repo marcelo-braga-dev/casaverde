@@ -19,7 +19,7 @@ class ActivateProducerAccountService
                 ->lockForUpdate()
                 ->first();
 
-            if (!$invite || !$invite->canBeUsed()) {
+            if (! $invite || ! $invite->canBeUsed()) {
                 throw ValidationException::withMessages([
                     'token' => 'Convite inválido, expirado ou já utilizado.',
                 ]);
@@ -27,7 +27,7 @@ class ActivateProducerAccountService
 
             $producerProfile = $invite->producerProfile;
 
-            if (!$producerProfile) {
+            if (! $producerProfile) {
                 throw ValidationException::withMessages([
                     'token' => 'Perfil do produtor não encontrado.',
                 ]);

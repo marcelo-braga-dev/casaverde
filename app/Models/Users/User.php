@@ -9,8 +9,8 @@ use App\Models\Produtor\ProducerProfile;
 use App\Models\Usina\UsinaSolar;
 use App\src\Roles\RoleUser;
 use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -68,7 +68,7 @@ class User extends Authenticatable
     {
         $user = Auth::user();
 
-        if (!$user) {
+        if (! $user) {
             return $query->whereRaw('1 = 0');
         }
 
@@ -89,7 +89,7 @@ class User extends Authenticatable
     {
         $user = Auth::user();
 
-        if (!$user) {
+        if (! $user) {
             return $query->whereRaw('1 = 0');
         }
 
@@ -137,6 +137,11 @@ class User extends Authenticatable
     public function userData(): HasOne
     {
         return $this->hasOne(UserData::class, 'user_id', 'id');
+    }
+
+    public function contatos(): HasOne
+    {
+        return $this->hasOne(UserContact::class, 'user_id');
     }
 
     public function usina(): HasOne

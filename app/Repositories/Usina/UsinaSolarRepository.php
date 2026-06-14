@@ -21,28 +21,26 @@ class UsinaSolarRepository
         }
 
         // Busca textual
-        if (!empty($filters['search'])) {
-            $search = '%' . $filters['search'] . '%';
+        if (! empty($filters['search'])) {
+            $search = '%'.$filters['search'].'%';
             $query->where(function ($q) use ($search) {
                 $q->where('usina_nome', 'like', $search)
-                  ->orWhere('uc', 'like', $search)
-                  ->orWhereHas('produtor', fn ($p) =>
-                      $p->where('nome', 'like', $search)
+                    ->orWhere('uc', 'like', $search)
+                    ->orWhereHas('produtor', fn ($p) => $p->where('nome', 'like', $search)
                         ->orWhere('razao_social', 'like', $search)
-                  )
-                  ->orWhereHas('concessionaria', fn ($c) =>
-                      $c->where('nome', 'like', $search)
-                  );
+                    )
+                    ->orWhereHas('concessionaria', fn ($c) => $c->where('nome', 'like', $search)
+                    );
             });
         }
 
         // Status
-        if (!empty($filters['status'])) {
+        if (! empty($filters['status'])) {
             $query->where('status', $filters['status']);
         }
 
         // Concessionária
-        if (!empty($filters['concessionaria_id'])) {
+        if (! empty($filters['concessionaria_id'])) {
             $query->where('concessionaria_id', $filters['concessionaria_id']);
         }
 

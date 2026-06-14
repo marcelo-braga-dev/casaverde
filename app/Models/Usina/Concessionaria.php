@@ -2,6 +2,8 @@
 
 namespace App\Models\Usina;
 
+use App\Models\Fatura\ConcessionaireBill;
+use App\Models\Proposta\CommercialProposal;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -34,11 +36,11 @@ class Concessionaria extends Model
 
     public function proposals()
     {
-        return $this->hasMany(\App\Models\Proposta\CommercialProposal::class, 'concessionaria_id');
+        return $this->hasMany(CommercialProposal::class, 'concessionaria_id');
     }
 
     public function bills()
     {
-        return $this->hasMany(\App\Models\Fatura\ConcessionaireBill::class, 'concessionaria_id');
+        return $this->hasMany(ConcessionaireBill::class, 'concessionaria_id');
     }
 }

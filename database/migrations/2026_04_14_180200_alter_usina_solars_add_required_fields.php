@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('usina_solars', function (Blueprint $table) {
-            if (!Schema::hasColumn('usina_solars', 'consultor_user_id')) {
+            if (! Schema::hasColumn('usina_solars', 'consultor_user_id')) {
                 $table->foreignId('consultor_user_id')
                     ->nullable()
                     ->after('user_id');
@@ -20,7 +20,7 @@ return new class extends Migration
                     ->nullOnDelete();
             }
 
-            if (!Schema::hasColumn('usina_solars', 'concessionaria_id')) {
+            if (! Schema::hasColumn('usina_solars', 'concessionaria_id')) {
                 $table->foreignId('concessionaria_id')
                     ->nullable()
                     ->after('consultor_user_id');
@@ -31,7 +31,7 @@ return new class extends Migration
                     ->nullOnDelete();
             }
 
-            if (!Schema::hasColumn('usina_solars', 'address_id')) {
+            if (! Schema::hasColumn('usina_solars', 'address_id')) {
                 $table->foreignId('address_id')
                     ->nullable()
                     ->after('usina_block_id');
@@ -42,31 +42,31 @@ return new class extends Migration
                     ->nullOnDelete();
             }
 
-            if (!Schema::hasColumn('usina_solars', 'uc')) {
+            if (! Schema::hasColumn('usina_solars', 'uc')) {
                 $table->string('uc')->nullable()->after('status');
             }
 
-            if (!Schema::hasColumn('usina_solars', 'media_geracao')) {
+            if (! Schema::hasColumn('usina_solars', 'media_geracao')) {
                 $table->decimal('media_geracao', 12, 2)->nullable();
             }
 
-            if (!Schema::hasColumn('usina_solars', 'prazo_locacao')) {
+            if (! Schema::hasColumn('usina_solars', 'prazo_locacao')) {
                 $table->integer('prazo_locacao')->nullable();
             }
 
-            if (!Schema::hasColumn('usina_solars', 'potencia_usina')) {
+            if (! Schema::hasColumn('usina_solars', 'potencia_usina')) {
                 $table->decimal('potencia_usina', 12, 2)->nullable();
             }
 
-            if (!Schema::hasColumn('usina_solars', 'taxa_comissao')) {
+            if (! Schema::hasColumn('usina_solars', 'taxa_comissao')) {
                 $table->decimal('taxa_comissao', 8, 2)->nullable();
             }
 
-            if (!Schema::hasColumn('usina_solars', 'inversores')) {
+            if (! Schema::hasColumn('usina_solars', 'inversores')) {
                 $table->text('inversores')->nullable();
             }
 
-            if (!Schema::hasColumn('usina_solars', 'modulos')) {
+            if (! Schema::hasColumn('usina_solars', 'modulos')) {
                 $table->text('modulos')->nullable();
             }
         });

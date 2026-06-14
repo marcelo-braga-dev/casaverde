@@ -23,12 +23,14 @@ import Grid from '@mui/material/Grid2';
 import {
     IconArrowRight,
     IconBolt,
+    IconBrandWhatsapp,
     IconCalendar,
     IconCash,
     IconFileInvoice,
     IconLeaf,
     IconWallet,
 } from '@tabler/icons-react';
+import WhatsAppButton from '@/Components/WhatsApp/WhatsAppButton';
 
 function safeRoute(name, params) {
     try { return typeof route === 'function' && route().has(name) ? route(name, params) : '#'; }
@@ -52,6 +54,8 @@ function BillStatusChip({ status }) {
     const map = {
         approved:       { label: 'Aprovada',   color: 'success' },
         pending_review: { label: 'Em Revisão', color: 'warning' },
+        reviewed:       { label: 'Revisada',   color: 'info' },
+        corrected:      { label: 'Corrigida',  color: 'info' },
         rejected:       { label: 'Rejeitada',  color: 'error' },
     };
     const c = map[status] ?? { label: status ?? '-', color: 'default' };
@@ -69,6 +73,9 @@ export default function Page({ dashboard }) {
     const chart    = dashboard?.energyChart ?? [];
 
     const discount = summary.active_discount_percent ?? 0;
+
+    const consultor = profile?.consultor;
+    const currentMonthLabel = new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' }).format(new Date());
 
     return (
         <Layout
@@ -125,6 +132,23 @@ export default function Page({ dashboard }) {
                                 >
                                     Cobranças
                                 </Button>
+                                {consultor && (
+                                    <WhatsAppButton
+                                        templateKey="falar_consultor"
+                                        phone={consultor.contatos?.celular}
+                                        variables={{
+                                            consultor_nome: consultor.name?.split(' ')[0] ?? consultor.name,
+                                            cliente_nome: profile.display_name,
+                                            usina_nome: profile.active_usina_link?.usina?.usina_nome ?? 'minha usina',
+                                            mes_referencia: bills[0]?.reference_label
+                                                ?? (bills[0] ? `${bills[0].reference_month}/${bills[0].reference_year}` : currentMonthLabel),
+                                        }}
+                                        label="Falar com Consultor"
+                                        variant="contained"
+                                        startIcon={<IconBrandWhatsapp size={17} />}
+                                        sx={{ bgcolor: '#25D366', color: '#fff', '&:hover': { bgcolor: '#1ebe5b' } }}
+                                    />
+                                )}
                             </Stack>
                         </Stack>
                     </CardContent>

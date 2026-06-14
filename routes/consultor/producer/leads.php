@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\Produtor\ProducerLeadController;
 use Illuminate\Support\Facades\Route;
+
 /**
  * @deprecated
  */

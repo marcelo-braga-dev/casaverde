@@ -5,8 +5,8 @@ namespace App\Models\Alert;
 use App\Enums\Alert\OperationalAlertSeverity;
 use App\Enums\Alert\OperationalAlertStatus;
 use App\Models\Cliente\ClientProfile;
-use App\Models\Usina\UsinaSolar;
 use App\Models\Users\User;
+use App\Models\Usina\UsinaSolar;
 use Illuminate\Database\Eloquent\Model;
 
 class OperationalAlert extends Model

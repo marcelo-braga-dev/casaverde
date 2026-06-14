@@ -14,7 +14,7 @@ class SystemSettingService
             ->where('key', $key)
             ->first();
 
-        if (!$setting) {
+        if (! $setting || $setting->value === null) {
             return $default;
         }
 
@@ -23,6 +23,7 @@ class SystemSettingService
             'float' => (float) $setting->value,
             'boolean' => filter_var($setting->value, FILTER_VALIDATE_BOOLEAN),
             'json' => json_decode($setting->value, true),
+            'encrypted' => decrypt($setting->value),
             default => $setting->value,
         };
     }
@@ -38,9 +39,11 @@ class SystemSettingService
                 'key' => $key,
             ],
             [
-                'value' => is_array($value)
-                    ? json_encode($value)
-                    : (string) $value,
+                'value' => match (true) {
+                    $type === 'encrypted' => encrypt((string) $value),
+                    is_array($value) => json_encode($value),
+                    default => (string) $value,
+                },
 
                 'type' => $type,
 

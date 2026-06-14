@@ -17,6 +17,6 @@ class ApproveConcessionaireBillController extends Controller
 
         return redirect()
             ->back()
-            ->with('success', 'Fatura aprovada com sucesso.');
+            ->with('success', 'Fatura de Concessionária aprovada com sucesso.');
     }
 }

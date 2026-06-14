@@ -9,7 +9,7 @@ class ContratosProdutorApiController extends Controller
 {
     public function getAll($id)
     {
-        $contratos = (new ProdutorContratoRepository())->getAll($id);
+        $contratos = (new ProdutorContratoRepository)->getAll($id);
 
         return response()->json($contratos);
     }

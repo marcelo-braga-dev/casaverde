@@ -25,7 +25,7 @@ class CoraWebhookController extends Controller
             ->where('is_default', true)
             ->first();
 
-        if (!$signatureValidator->isValid($request, $account)) {
+        if (! $signatureValidator->isValid($request, $account)) {
             return response()->json([
                 'ok' => false,
                 'message' => 'Assinatura inválida.',

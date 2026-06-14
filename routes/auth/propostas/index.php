@@ -1,4 +1,3 @@
 <?php
 
-require __DIR__ . '/propostas.php';
-
+require __DIR__.'/propostas.php';

@@ -28,9 +28,12 @@ import MoneyText from "@/Components/Admin/MoneyText.jsx";
 import DateText from "@/Components/Admin/DateText.jsx";
 import ConfirmActionButton from "@/Components/Admin/ConfirmActionButton.jsx";
 import EmptyState from "@/Components/Admin/EmptyState.jsx";
+import WhatsAppButton from "@/Components/WhatsApp/WhatsAppButton";
+import formatCurrency from "@/Utils/formatCurrency.js";
 import {
     IconAdjustments,
     IconBolt,
+    IconBrandWhatsapp,
     IconBuildingBank,
     IconCalendar,
     IconCheck,
@@ -41,6 +44,18 @@ import {
     IconUser,
     IconX,
 } from "@tabler/icons-react";
+
+function formatDateBR(value) {
+    if (!value) return "";
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return String(value);
+    }
+
+    return date.toLocaleDateString("pt-BR");
+}
 
 function getClientName(charge) {
     return (
@@ -162,6 +177,13 @@ export default function Page({ charge }) {
     const clientName = getClientName(charge);
     const statusCfg = STATUS_CONFIG[charge.status] ?? { label: charge.status, color: "#64748b", bg: "#f1f5f9" };
 
+    const clientPhone = charge.client_profile?.contacts?.celular;
+    const mesReferencia = charge.reference_label || `${charge.reference_month}/${charge.reference_year}`;
+    const valorFatura = formatCurrency(charge.final_amount);
+    const dataVencimento = formatDateBR(charge.due_date);
+
+    const whatsappActionSx = { borderColor: "rgba(255,255,255,0.4)", color: "#fff" };
+
     const discountPercent = charge.discount_percent || 0;
     const originalAmt = Number(charge.original_amount || 0);
     const finalAmt = Number(charge.final_amount || 0);
@@ -238,6 +260,59 @@ export default function Page({ charge }) {
                                 />
 
                                 <Stack direction="row" spacing={1} flexWrap="wrap" justifyContent="flex-end">
+                                    {["open", "waiting_payment"].includes(charge.status) && (
+                                        <WhatsAppButton
+                                            templateKey="lembrete_vencimento"
+                                            phone={clientPhone}
+                                            variables={{
+                                                cliente_nome: clientName,
+                                                mes_referencia: mesReferencia,
+                                                valor_fatura: valorFatura,
+                                                data_vencimento: dataVencimento,
+                                            }}
+                                            label="Enviar Lembrete"
+                                            variant="outlined"
+                                            size="small"
+                                            startIcon={<IconBrandWhatsapp size={15} />}
+                                            sx={whatsappActionSx}
+                                        />
+                                    )}
+
+                                    {charge.status === "overdue" && (
+                                        <WhatsAppButton
+                                            templateKey="fatura_vencida"
+                                            phone={clientPhone}
+                                            variables={{
+                                                cliente_nome: clientName,
+                                                mes_referencia: mesReferencia,
+                                                valor_fatura: valorFatura,
+                                                data_vencimento: dataVencimento,
+                                            }}
+                                            label="Cobrar via WhatsApp"
+                                            variant="outlined"
+                                            size="small"
+                                            startIcon={<IconBrandWhatsapp size={15} />}
+                                            sx={whatsappActionSx}
+                                        />
+                                    )}
+
+                                    {charge.status === "paid" && (
+                                        <WhatsAppButton
+                                            templateKey="pagamento_confirmado"
+                                            phone={clientPhone}
+                                            variables={{
+                                                cliente_nome: clientName,
+                                                mes_referencia: mesReferencia,
+                                                valor_fatura: valorFatura,
+                                            }}
+                                            label="Confirmar Pagamento"
+                                            variant="outlined"
+                                            size="small"
+                                            startIcon={<IconBrandWhatsapp size={15} />}
+                                            sx={whatsappActionSx}
+                                        />
+                                    )}
+
                                     {charge.status === "draft" && (
                                         <Tooltip title="Abrir esta cobrança para pagamento">
                                             <span>

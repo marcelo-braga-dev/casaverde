@@ -14,6 +14,7 @@ class ImportEmailAccount extends Model
         'email',
         'label',
         'imap_password',
+        'webmail_url',
         'sender_filter',
         'subject_filter',
         'is_active',
@@ -25,8 +26,8 @@ class ImportEmailAccount extends Model
 
     protected $casts = [
         'imap_password' => 'encrypted',
-        'is_active'     => 'boolean',
-        'assigned_at'   => 'datetime',
+        'is_active' => 'boolean',
+        'assigned_at' => 'datetime',
     ];
 
     // ── Relationships ─────────────────────────────────────────────────────
@@ -55,15 +56,25 @@ class ImportEmailAccount extends Model
 
     public function getStatusLabelAttribute(): string
     {
-        if (!$this->is_active) return 'Inativo';
-        if ($this->client_profile_id) return 'Vinculado';
+        if (! $this->is_active) {
+            return 'Inativo';
+        }
+        if ($this->client_profile_id) {
+            return 'Vinculado';
+        }
+
         return 'Disponível';
     }
 
     public function getStatusColorAttribute(): string
     {
-        if (!$this->is_active) return 'default';
-        if ($this->client_profile_id) return 'warning';
+        if (! $this->is_active) {
+            return 'default';
+        }
+        if ($this->client_profile_id) {
+            return 'warning';
+        }
+
         return 'success';
     }
 

@@ -41,25 +41,25 @@ return new class extends Migration
                     );
                 });
             }
-//            if (Schema::hasColumn('producer_profiles', 'user_id')) {
-//                $table->dropForeign(['user_id']);
-//            }
-//
-//            if (Schema::hasColumn('producer_profiles', 'created_by_user_id')) {
-//                $table->dropForeign(['created_by_user_id']);
-//            }
-//
-//            if (Schema::hasColumn('producer_profiles', 'admin_address_id')) {
-//                $table->dropForeign(['admin_address_id']);
-//            }
-//
-//            if (Schema::hasColumn('producer_profiles', 'usina_address_id')) {
-//                $table->dropForeign(['usina_address_id']);
-//            }
-//
-//            if (Schema::hasColumn('producer_profiles', 'user_id')) {
-//                $table->dropForeign(['user_id']);
-//            }
+            //            if (Schema::hasColumn('producer_profiles', 'user_id')) {
+            //                $table->dropForeign(['user_id']);
+            //            }
+            //
+            //            if (Schema::hasColumn('producer_profiles', 'created_by_user_id')) {
+            //                $table->dropForeign(['created_by_user_id']);
+            //            }
+            //
+            //            if (Schema::hasColumn('producer_profiles', 'admin_address_id')) {
+            //                $table->dropForeign(['admin_address_id']);
+            //            }
+            //
+            //            if (Schema::hasColumn('producer_profiles', 'usina_address_id')) {
+            //                $table->dropForeign(['usina_address_id']);
+            //            }
+            //
+            //            if (Schema::hasColumn('producer_profiles', 'user_id')) {
+            //                $table->dropForeign(['user_id']);
+            //            }
 
             /*
             |--------------------------------------------------------------------------
@@ -106,12 +106,12 @@ return new class extends Migration
                 'contrato_data',
 
                 'created_at',
-                'updated_at'
+                'updated_at',
             ];
 
             // SQLite não permite dropar colunas que fazem parte de uma foreign key
             // da própria tabela sem recriá-la; as FKs já foram removidas acima no MySQL.
-            if (!$isMySql) {
+            if (! $isMySql) {
                 $columnsToDrop = array_diff($columnsToDrop, [
                     'admin_address_id',
                     'created_by_user_id',
@@ -137,45 +137,45 @@ return new class extends Migration
 
             // IDENTIFICAÇÃO
 
-            if (!Schema::hasColumn('producer_profiles', 'tipo_pessoa')) {
+            if (! Schema::hasColumn('producer_profiles', 'tipo_pessoa')) {
                 $table->enum('tipo_pessoa', ['pf', 'pj'])
                     ->default('pj')
                     ->after('status');
             }
 
-            if (!Schema::hasColumn('producer_profiles', 'cpf')) {
+            if (! Schema::hasColumn('producer_profiles', 'cpf')) {
                 $table->string('cpf', 11)
                     ->nullable()
                     ->unique();
             }
 
-            if (!Schema::hasColumn('producer_profiles', 'cnpj')) {
+            if (! Schema::hasColumn('producer_profiles', 'cnpj')) {
                 $table->string('cnpj', 14)
                     ->nullable()
                     ->unique();
             }
 
-            if (!Schema::hasColumn('producer_profiles', 'nome')) {
+            if (! Schema::hasColumn('producer_profiles', 'nome')) {
                 $table->string('nome')->nullable();
             }
 
-            if (!Schema::hasColumn('producer_profiles', 'razao_social')) {
+            if (! Schema::hasColumn('producer_profiles', 'razao_social')) {
                 $table->string('razao_social')->nullable();
             }
 
-            if (!Schema::hasColumn('producer_profiles', 'nome_fantasia')) {
+            if (! Schema::hasColumn('producer_profiles', 'nome_fantasia')) {
                 $table->string('nome_fantasia')->nullable();
             }
 
             // RELACIONAMENTOS
 
-            if (!Schema::hasColumn('producer_profiles', 'consultor_user_id')) {
+            if (! Schema::hasColumn('producer_profiles', 'consultor_user_id')) {
                 $table->foreignId('consultor_user_id')
                     ->nullable()
                     ->constrained('users')
                     ->nullOnDelete();
             }
-            if (!Schema::hasColumn('producer_profiles', 'platform_user_id')) {
+            if (! Schema::hasColumn('producer_profiles', 'platform_user_id')) {
                 $table->foreignId('platform_user_id')
                     ->nullable()
                     ->constrained('users')
@@ -184,12 +184,12 @@ return new class extends Migration
 
             // STATUS
 
-            if (!Schema::hasColumn('producer_profiles', 'is_active_producer')) {
+            if (! Schema::hasColumn('producer_profiles', 'is_active_producer')) {
                 $table->boolean('is_active_producer')
                     ->default(false);
             }
 
-            if (!Schema::hasColumn('producer_profiles', 'activated_at')) {
+            if (! Schema::hasColumn('producer_profiles', 'activated_at')) {
                 $table->timestamp('activated_at')
                     ->nullable();
             }

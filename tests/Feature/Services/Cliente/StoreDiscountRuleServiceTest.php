@@ -8,7 +8,7 @@ describe('StoreDiscountRuleService', function () {
 
     beforeEach(function () {
         $this->service = app(StoreDiscountRuleService::class);
-        $this->client  = ClientProfile::factory()->create();
+        $this->client = ClientProfile::factory()->create();
     });
 
     it('creates a discount rule for the client', function () {
@@ -24,7 +24,7 @@ describe('StoreDiscountRuleService', function () {
 
         $this->assertDatabaseHas('client_discount_rules', [
             'client_profile_id' => $this->client->id,
-            'discount_percent'  => 20.0,
+            'discount_percent' => 20.0,
         ]);
     });
 

@@ -28,7 +28,7 @@ class ImportRun extends Model
     ];
 
     protected $casts = [
-        'started_at'  => 'datetime',
+        'started_at' => 'datetime',
         'finished_at' => 'datetime',
     ];
 
@@ -58,24 +58,25 @@ class ImportRun extends Model
     public function finish(array $totals = [], ?string $error = null): void
     {
         $startMs = $this->started_at->getPreciseTimestamp(3);
-        $nowMs   = now()->getPreciseTimestamp(3);
+        $nowMs = now()->getPreciseTimestamp(3);
 
         $this->update(array_merge([
-            'status'       => $error ? 'failed' : ($totals['failed'] > 0 ? 'partial' : 'completed'),
-            'finished_at'  => now(),
-            'duration_ms'  => (int) ($nowMs - $startMs),
-            'error_message'=> $error,
+            'status' => $error ? 'failed' : (($totals['total_failed'] ?? 0) > 0 ? 'partial' : 'completed'),
+            'finished_at' => now(),
+            'duration_ms' => (int) ($nowMs - $startMs),
+            'error_message' => $error,
         ], $totals));
     }
 
     public static function generateCode(): string
     {
-        return 'RUN-' . now()->format('Ymd-His');
+        return 'RUN-'.now()->format('Ymd-His');
     }
 
     public function getSuccessRateAttribute(): float
     {
         $total = $this->total_processed - $this->total_skipped;
+
         return $total > 0
             ? round(($this->total_imported / $total) * 100, 1)
             : 0;

@@ -3,7 +3,6 @@
 namespace App\Repositories\Cliente;
 
 use App\Models\Cliente\ClienteProposta;
-use App\Models\Users\User;
 use App\Models\Users\UserData;
 use App\Services\Config\ConfigService;
 use App\Services\Users\CreateUserService;
@@ -22,7 +21,7 @@ class ClientePropostaRepository
             $proposta = ClienteProposta::create([
                 'user_id' => $clienteId,
                 'concessionaria_id' => $data?->concessionaria_id,
-                'taxa_reducao' => (new ConfigService())->getTaxaReducao(),
+                'taxa_reducao' => (new ConfigService)->getTaxaReducao(),
                 'media_consumo' => $data?->dados['media_consumo'] ?? null,
                 'prazo_locacao' => $data?->dados['prazo_locacao'],
                 'valor_medio' => $data?->dados['valor_medio'],
@@ -37,7 +36,7 @@ class ClientePropostaRepository
                 'bairro' => $data?->endereco['bairro'] ?? null,
                 'cidade' => $data?->endereco['cidade'] ?? null,
                 'estado' => $data?->endereco['estado'] ?? null,
-                'referencia' => $data?->endereco['referencia'] ?? null
+                'referencia' => $data?->endereco['referencia'] ?? null,
             ]);
         });
     }
@@ -57,7 +56,7 @@ class ClientePropostaRepository
             ->get();
     }
 
-    function verificarOuCriarUsuarioPorDocumento($userData): int
+    public function verificarOuCriarUsuarioPorDocumento($userData): int
     {
         $cnpj = preg_replace('/\D/', '', $userData['cnpj'] ?? null);
         $cpf = preg_replace('/\D/', '', $userData['cpf'] ?? null);
@@ -70,10 +69,12 @@ class ClientePropostaRepository
             $registroExistente = UserData::where('cnpj', $cnpj)->first();
         }
 
-        if ($registroExistente) return $registroExistente->user_id;
+        if ($registroExistente) {
+            return $registroExistente->user_id;
+        }
 
         $role = RoleUser::$CLIENTE;
-        $service = new CreateUserService();
+        $service = new CreateUserService;
 
         // Conta Acesso
         $user = $service->createUser($userData, $role, null, auth()->id());

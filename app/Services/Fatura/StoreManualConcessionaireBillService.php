@@ -13,8 +13,7 @@ class StoreManualConcessionaireBillService
 {
     public function __construct(
         private readonly ResolveConsumerUnitService $consumerUnitResolver,
-    ) {
-    }
+    ) {}
 
     public function handle(array $data): ConcessionaireBill
     {
@@ -33,14 +32,14 @@ class StoreManualConcessionaireBillService
             Storage::disk('local')->put($path, file_get_contents($file->getRealPath()));
 
             $referenceLabel = str_pad((string) $data['reference_month'], 2, '0', STR_PAD_LEFT)
-                . '/'
-                . $data['reference_year'];
+                .'/'
+                .$data['reference_year'];
 
-            $unidadeConsumidora = !empty($data['unidade_consumidora'])
+            $unidadeConsumidora = ! empty($data['unidade_consumidora'])
                 ? preg_replace('/\D+/', '', $data['unidade_consumidora'])
                 : null;
 
-            $consumerUnit = !empty($data['consumer_unit_id'])
+            $consumerUnit = ! empty($data['consumer_unit_id'])
                 ? ConsumerUnit::query()->where('client_profile_id', $clientProfileId)->find($data['consumer_unit_id'])
                 : $this->consumerUnitResolver->handle($clientProfile, $unidadeConsumidora);
 

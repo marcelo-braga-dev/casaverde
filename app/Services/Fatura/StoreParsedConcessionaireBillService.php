@@ -19,8 +19,7 @@ class StoreParsedConcessionaireBillService
         private readonly CopelBillParserService $copelBillParserService,
         private readonly ProtectedPdfResolverService $protectedPdfResolverService,
         private readonly ResolveConsumerUnitService $consumerUnitResolver,
-    ) {
-    }
+    ) {}
 
     public function handle(array $data): ConcessionaireBill
     {
@@ -46,7 +45,7 @@ class StoreParsedConcessionaireBillService
                 ->where('client_profile_id', $clientProfileId)
                 ->first();
 
-            $consumerUnit = !empty($data['consumer_unit_id'])
+            $consumerUnit = ! empty($data['consumer_unit_id'])
                 ? ConsumerUnit::query()
                     ->where('client_profile_id', $clientProfileId)
                     ->find($data['consumer_unit_id'])
@@ -95,7 +94,7 @@ class StoreParsedConcessionaireBillService
                     'parser_error' => null,
                 ]);
 
-                if (!$consumerUnit) {
+                if (! $consumerUnit) {
                     $consumerUnit = $this->consumerUnitResolver->handle($clientProfile, $parsed['unidade_consumidora']);
                     $bill->consumer_unit_id = $consumerUnit?->id;
                 }
@@ -118,7 +117,7 @@ class StoreParsedConcessionaireBillService
                     'parser_error' => $e->getMessage(),
                 ]);
 
-                if (!$consumerUnit) {
+                if (! $consumerUnit) {
                     $consumerUnit = $this->consumerUnitResolver->handle($clientProfile, $unidadeConsumidora);
                     $bill->consumer_unit_id = $consumerUnit?->id;
                 }
@@ -126,7 +125,7 @@ class StoreParsedConcessionaireBillService
                 $this->protectedPdfResolverService->cleanup($tempUnlockedFile);
             }
 
-            if (!$bill->usina_id) {
+            if (! $bill->usina_id) {
                 $bill->usina_id = $consumerUnit?->activeUsinaLink?->usina_id
                     ?? $clientProfile->activeUsinaLink?->usina_id;
             }

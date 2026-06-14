@@ -10,7 +10,7 @@ class DashboardController extends Controller
 {
     public function __invoke(AdminDashboardMetricsService $service)
     {
-        //return Inertia::render('Admin/Dashboard/Page', [
+        // return Inertia::render('Admin/Dashboard/Page', [
         return Inertia::render('Dashboard/Index', [
             'dashboard' => $service->handle(),
         ]);

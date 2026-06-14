@@ -22,7 +22,7 @@ class ClientePerfilController extends Controller
 
         return Inertia::render('Cliente/Perfil/Show/Page', [
             'profile' => $profile,
-            'user'    => auth()->user()->only(['id', 'name', 'email', 'status', 'role_id']),
+            'user' => auth()->user()->only(['id', 'name', 'email', 'status', 'role_id']),
         ]);
     }
 }

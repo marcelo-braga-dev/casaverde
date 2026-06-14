@@ -13,8 +13,7 @@ class ClientActivationInviteMail extends Mailable
 
     public function __construct(
         public ClientAccessInvite $invite
-    ) {
-    }
+    ) {}
 
     public function build()
     {

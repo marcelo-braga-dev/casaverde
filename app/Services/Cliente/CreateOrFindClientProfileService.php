@@ -5,7 +5,6 @@ namespace App\Services\Cliente;
 use App\Models\Cliente\ClientProfile;
 use App\Models\Users\UserContact;
 use App\Services\Config\SystemSettingService;
-use App\src\Roles\RoleUser;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
@@ -17,11 +16,11 @@ class CreateOrFindClientProfileService
         $cpf = ClientProfile::normalizeDocument($data['cpf'] ?? null);
         $cnpj = ClientProfile::normalizeDocument($data['cnpj'] ?? null);
 
-        if ($tipoPessoa === 'pf' && !$cpf) {
+        if ($tipoPessoa === 'pf' && ! $cpf) {
             throw new InvalidArgumentException('CPF é obrigatório para pessoa física.');
         }
 
-        if ($tipoPessoa === 'pj' && !$cnpj) {
+        if ($tipoPessoa === 'pj' && ! $cnpj) {
             throw new InvalidArgumentException('CNPJ é obrigatório para pessoa jurídica.');
         }
 
@@ -46,7 +45,7 @@ class CreateOrFindClientProfileService
 
             $consultorId = $data['consultor_user_id'] ?? null;
 
-            if (!$consultorId && $authUser) {
+            if (! $consultorId && $authUser) {
                 $consultorId = $authUser->id;
             }
 
@@ -69,7 +68,7 @@ class CreateOrFindClientProfileService
                 'is_active_client' => false,
             ]);
 
-            $defaultDiscount = (float)app(SystemSettingService::class)
+            $defaultDiscount = (float) app(SystemSettingService::class)
                 ->get('default_discount_percentage');
 
             app(StoreDiscountRuleService::class)

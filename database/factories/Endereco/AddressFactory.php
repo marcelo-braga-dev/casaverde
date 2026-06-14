@@ -12,16 +12,16 @@ class AddressFactory extends Factory
     public function definition(): array
     {
         return [
-            'cep'         => '80010000',
-            'rua'         => fake()->streetName(),
-            'numero'      => (string) fake()->buildingNumber(),
+            'cep' => '80010000',
+            'rua' => fake()->streetName(),
+            'numero' => (string) fake()->buildingNumber(),
             'complemento' => null,
-            'bairro'      => fake()->word(),
-            'cidade'      => 'Curitiba',
-            'estado'      => 'PR',
-            'referencia'  => null,
-            'latitude'    => null,
-            'longitude'   => null,
+            'bairro' => fake()->word(),
+            'cidade' => 'Curitiba',
+            'estado' => 'PR',
+            'referencia' => null,
+            'latitude' => null,
+            'longitude' => null,
         ];
     }
 }

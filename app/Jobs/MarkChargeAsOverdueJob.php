@@ -12,22 +12,21 @@ class MarkChargeAsOverdueJob implements ShouldQueue
 
     public function __construct(
         public readonly int $chargeId,
-    ) {
-    }
+    ) {}
 
     public function handle(): void
     {
         $charge = CustomerCharge::query()->find($this->chargeId);
 
-        if (!$charge) {
+        if (! $charge) {
             return;
         }
 
-        if (!in_array($charge->status, ['open', 'waiting_payment'], true)) {
+        if (! in_array($charge->status, ['open', 'waiting_payment'], true)) {
             return;
         }
 
-        if (!$charge->due_date) {
+        if (! $charge->due_date) {
             return;
         }
 

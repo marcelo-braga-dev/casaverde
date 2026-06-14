@@ -30,7 +30,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(CommercialProposal::class, CommercialProposalPolicy::class);
 
         // Rastreamento automático de login/logout
-        Event::listen(Login::class,  LogUserLogin::class);
+        Event::listen(Login::class, LogUserLogin::class);
         Event::listen(Logout::class, LogUserLogout::class);
     }
 }

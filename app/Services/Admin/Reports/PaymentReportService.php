@@ -16,11 +16,11 @@ class PaymentReportService
             ->whereBetween('created_at', [$range->startDate, $range->endDate])
             ->orderByDesc('id');
 
-        if (!empty($filters['status'])) {
+        if (! empty($filters['status'])) {
             $query->where('status', $filters['status']);
         }
 
-        if (!empty($filters['provider'])) {
+        if (! empty($filters['provider'])) {
             $query->where('provider', $filters['provider']);
         }
 

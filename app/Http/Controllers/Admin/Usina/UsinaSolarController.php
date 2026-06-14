@@ -3,28 +3,28 @@
 namespace App\Http\Controllers\Admin\Usina;
 
 use App\Http\Controllers\Controller;
-use App\Models\Proposta\CommercialProposal;
-use App\src\Usina\UsinaStatus;
 use App\Http\Requests\Usina\StoreUsinaSolarRequest;
 use App\Models\Endereco\Address;
 use App\Models\Produtor\ProducerProfile;
+use App\Models\Users\User;
 use App\Models\Usina\Concessionaria;
 use App\Models\Usina\UsinaBlock;
 use App\Models\Usina\UsinaSolar;
-use App\Models\Users\User;
+use App\Repositories\Usina\UsinaSolarRepository;
 use App\src\Roles\RoleUser;
+use App\src\Usina\UsinaStatus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 
 class UsinaSolarController extends Controller
 {
-    public function index(\App\Repositories\Usina\UsinaSolarRepository $repository)
+    public function index(UsinaSolarRepository $repository)
     {
         $filters = request()->only(['search', 'status', 'concessionaria_id']);
 
         return Inertia::render('Consultor/Producer/Usina/Index/Page', [
-            'usinas'  => $repository->paginate(20, $filters),
+            'usinas' => $repository->paginate(20, $filters),
             'filters' => $filters,
         ]);
     }
@@ -95,7 +95,7 @@ class UsinaSolarController extends Controller
             ->filter(fn ($value) => filled($value))
             ->isNotEmpty();
 
-        if (!$hasAddress) {
+        if (! $hasAddress) {
             return $usina->address;
         }
 
@@ -178,7 +178,7 @@ class UsinaSolarController extends Controller
             ? ProducerProfile::query()->find($usina->producer_profile_id)
             : null;
 
-        if (!$profile) {
+        if (! $profile) {
             return;
         }
 

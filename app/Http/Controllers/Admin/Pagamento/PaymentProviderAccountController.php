@@ -37,7 +37,7 @@ class PaymentProviderAccountController extends Controller
             unset($data['webhook_secret']);
         }
 
-        if (!empty($data['is_default'])) {
+        if (! empty($data['is_default'])) {
             PaymentProviderAccount::query()
                 ->where('provider', $data['provider'])
                 ->update(['is_default' => false]);
@@ -80,7 +80,7 @@ class PaymentProviderAccountController extends Controller
             unset($data['webhook_secret']);
         }
 
-        if (!empty($data['is_default'])) {
+        if (! empty($data['is_default'])) {
             PaymentProviderAccount::query()
                 ->where('provider', $data['provider'])
                 ->where('id', '!=', $paymentProviderAccount->id)
@@ -96,7 +96,7 @@ class PaymentProviderAccountController extends Controller
 
     private function decodeSettings(?string $settings): array
     {
-        if (!$settings) {
+        if (! $settings) {
             return [];
         }
 

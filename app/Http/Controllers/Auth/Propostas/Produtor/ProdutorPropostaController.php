@@ -7,8 +7,8 @@ use Inertia\Inertia;
 
 class ProdutorPropostaController extends Controller
 {
-   public function index()
-   {
-       return Inertia::render('Auth/Propostas/Produtor/index/Page');
-   }
+    public function index()
+    {
+        return Inertia::render('Auth/Propostas/Produtor/index/Page');
+    }
 }

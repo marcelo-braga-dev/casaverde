@@ -32,7 +32,7 @@ class ImportedConcessionaireEmail extends Model
     ];
 
     protected $casts = [
-        'received_at'  => 'datetime',
+        'received_at' => 'datetime',
         'processed_at' => 'datetime',
     ];
 
@@ -60,34 +60,34 @@ class ImportedConcessionaireEmail extends Model
     {
         return match ($this->status) {
             'processing' => 'Processando',
-            'success'    => 'Sucesso',
-            'skipped'    => 'Ignorado',
-            'failed'     => 'Falhou',
-            default      => $this->status ?? '—',
+            'success' => 'Sucesso',
+            'skipped' => 'Ignorado',
+            'failed' => 'Falhou',
+            default => $this->status ?? '—',
         };
     }
 
     public function getStatusColorAttribute(): string
     {
         return match ($this->status) {
-            'success'    => 'success',
-            'skipped'    => 'info',
+            'success' => 'success',
+            'skipped' => 'info',
             'processing' => 'warning',
-            'failed'     => 'error',
-            default      => 'default',
+            'failed' => 'error',
+            default => 'default',
         };
     }
 
     public function getStepFailedLabelAttribute(): ?string
     {
         return match ($this->step_failed) {
-            'fetch'    => 'Busca IMAP',
-            'unlock'   => 'Desbloqueio PDF',
-            'extract'  => 'Extração de texto',
-            'parse'    => 'Leitura dos dados',
-            'store'    => 'Armazenamento',
+            'fetch' => 'Busca IMAP',
+            'unlock' => 'Desbloqueio PDF',
+            'extract' => 'Extração de texto',
+            'parse' => 'Leitura dos dados',
+            'store' => 'Armazenamento',
             'validate' => 'Validação',
-            default    => $this->step_failed,
+            default => $this->step_failed,
         };
     }
 }

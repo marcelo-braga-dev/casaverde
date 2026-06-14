@@ -5,6 +5,7 @@ namespace App\Models\Proposta;
 use App\Models\BaseModel;
 use App\Models\Cliente\ClientContract;
 use App\Models\Cliente\ClientProfile;
+use App\Models\Endereco\Address;
 use App\Models\Users\User;
 use App\Models\Usina\Concessionaria;
 use App\Utils\ConvertValues;
@@ -40,16 +41,17 @@ class CommercialProposal extends BaseModel
 
     protected $appends = ['proposal_code'];
 
-    //------------
+    // ------------
     // getters
-    //------------
+    // ------------
     public function getProposalCodeAttribute($value)
     {
         $id = $this->id;
+
         return "PC$id";
     }
 
-    //------------
+    // ------------
     // setters
     public function setValorMedioAttribute($value)
     {
@@ -75,7 +77,7 @@ class CommercialProposal extends BaseModel
 
     public function address()
     {
-        return $this->belongsTo(\App\Models\Endereco\Address::class, 'address_id');
+        return $this->belongsTo(Address::class, 'address_id');
     }
 
     public function contract()

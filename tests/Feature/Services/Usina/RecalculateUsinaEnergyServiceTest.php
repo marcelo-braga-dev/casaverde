@@ -1,9 +1,9 @@
 <?php
 
+use App\Enums\Cliente\ClientUsinaLinkStatus;
 use App\Models\Cliente\ClientUsinaLink;
 use App\Models\Usina\UsinaSolar;
 use App\Services\Usina\RecalculateUsinaEnergyService;
-use App\Enums\Cliente\ClientUsinaLinkStatus;
 
 describe('RecalculateUsinaEnergyService', function () {
 
@@ -24,17 +24,17 @@ describe('RecalculateUsinaEnergyService', function () {
         $usina = UsinaSolar::factory()->comEnergia(1000.0)->create();
 
         ClientUsinaLink::factory()->create([
-            'usina_id'             => $usina->id,
+            'usina_id' => $usina->id,
             'allocated_energy_kwh' => 300.0,
-            'is_active'            => true,
-            'status'               => ClientUsinaLinkStatus::Active->value,
+            'is_active' => true,
+            'status' => ClientUsinaLinkStatus::Active->value,
         ]);
 
         ClientUsinaLink::factory()->create([
-            'usina_id'             => $usina->id,
+            'usina_id' => $usina->id,
             'allocated_energy_kwh' => 200.0,
-            'is_active'            => true,
-            'status'               => ClientUsinaLinkStatus::Active->value,
+            'is_active' => true,
+            'status' => ClientUsinaLinkStatus::Active->value,
         ]);
 
         $updated = $this->service->handle($usina);
@@ -47,10 +47,10 @@ describe('RecalculateUsinaEnergyService', function () {
         $usina = UsinaSolar::factory()->comEnergia(1000.0)->create();
 
         ClientUsinaLink::factory()->create([
-            'usina_id'             => $usina->id,
+            'usina_id' => $usina->id,
             'allocated_energy_kwh' => 400.0,
-            'is_active'            => false,
-            'status'               => ClientUsinaLinkStatus::Finished->value,
+            'is_active' => false,
+            'status' => ClientUsinaLinkStatus::Finished->value,
         ]);
 
         $updated = $this->service->handle($usina);
@@ -63,10 +63,10 @@ describe('RecalculateUsinaEnergyService', function () {
         $usina = UsinaSolar::factory()->comEnergia(500.0)->create();
 
         ClientUsinaLink::factory()->create([
-            'usina_id'             => $usina->id,
+            'usina_id' => $usina->id,
             'allocated_energy_kwh' => 600.0,
-            'is_active'            => true,
-            'status'               => ClientUsinaLinkStatus::Active->value,
+            'is_active' => true,
+            'status' => ClientUsinaLinkStatus::Active->value,
         ]);
 
         $updated = $this->service->handle($usina);
@@ -78,18 +78,18 @@ describe('RecalculateUsinaEnergyService', function () {
         $usina = UsinaSolar::factory()->comEnergia(800.0)->create();
 
         ClientUsinaLink::factory()->create([
-            'usina_id'             => $usina->id,
+            'usina_id' => $usina->id,
             'allocated_energy_kwh' => 200.0,
-            'is_active'            => true,
-            'status'               => ClientUsinaLinkStatus::Active->value,
+            'is_active' => true,
+            'status' => ClientUsinaLinkStatus::Active->value,
         ]);
 
         $this->service->handle($usina);
 
         $this->assertDatabaseHas('usina_solars', [
-            'id'                  => $usina->id,
+            'id' => $usina->id,
             'energia_alocada_kwh' => 200.0,
-            'energia_saldo_kwh'   => 600.0,
+            'energia_saldo_kwh' => 600.0,
         ]);
     });
 });

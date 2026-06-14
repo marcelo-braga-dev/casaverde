@@ -28,7 +28,7 @@ class ClientAccessInvite extends Model
     protected static function booted(): void
     {
         static::creating(function (ClientAccessInvite $invite) {
-            if (!$invite->token) {
+            if (! $invite->token) {
                 $invite->token = Str::random(80);
             }
 
@@ -61,11 +61,11 @@ class ClientAccessInvite extends Model
 
     public function isUsed(): bool
     {
-        return !is_null($this->used_at);
+        return ! is_null($this->used_at);
     }
 
     public function canBeUsed(): bool
     {
-        return !$this->isUsed() && !$this->isExpired();
+        return ! $this->isUsed() && ! $this->isExpired();
     }
 }

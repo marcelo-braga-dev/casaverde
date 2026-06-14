@@ -4,6 +4,7 @@ namespace App\Repositories\Produtor;
 
 use App\Models\Produtor\ProducerLead;
 use App\src\Roles\RoleUser;
+
 /**
  * @deprecated
  */

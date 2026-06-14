@@ -11,6 +11,7 @@ class GerarPropostaUsinaController extends Controller
     {
         if ($request->hasFile('file')) {
             $path = $request->file('file')->store('pdfs', 'public');
+
             return response()->json(['url' => asset("storage/{$path}")]);
         }
 

@@ -59,7 +59,7 @@ class Address extends Model
                 '$1-$2',
                 $this->cep
             );
-            $address .= ' - CEP: ' . $cep;
+            $address .= ' - CEP: '.$cep;
         }
 
         return $address;

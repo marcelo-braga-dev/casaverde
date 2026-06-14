@@ -7,7 +7,6 @@ use App\Repositories\Cliente\ClienteRepository;
 use App\Repositories\Produtor\ProdutorRepository;
 use App\Utils\AlertMessage;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 
 class ClienteController extends Controller
@@ -26,7 +25,7 @@ class ClienteController extends Controller
     {
         $tab = $request->tab;
 
-        $usuario = (new ProdutorRepository())->findAllData($id);
+        $usuario = (new ProdutorRepository)->findAllData($id);
 
         return Inertia::render('Auth/Cliente/Cliente/Show/Page', compact('usuario', 'tab'));
     }
@@ -34,9 +33,10 @@ class ClienteController extends Controller
     public function store(Request $request)
     {
         try {
-            (new ClienteRepository())->create($request);
+            (new ClienteRepository)->create($request);
         } catch (\DomainException $exception) {
             AlertMessage::error($exception->getMessage());
+
             return redirect()->back();
         }
 

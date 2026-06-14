@@ -10,7 +10,7 @@ class ConvertProspectToActiveClientService
 {
     public function handle(ClientProfile $clientProfile): ClientProfile
     {
-        if (!$clientProfile->consultor_user_id) {
+        if (! $clientProfile->consultor_user_id) {
             throw new InvalidArgumentException('O cliente precisa possuir um consultor responsável.');
         }
 

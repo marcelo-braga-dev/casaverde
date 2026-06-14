@@ -8,18 +8,20 @@ use Illuminate\Console\Command;
 
 class ImportConcessionaireBillsCommand extends Command
 {
-    protected $signature   = 'concessionaire-bills:import {--client_profile_id= : Processa apenas um cliente específico}';
+    protected $signature = 'concessionaire-bills:import {--client_profile_id= : Processa apenas um cliente específico}';
+
     protected $description = 'Importa automaticamente faturas de energia das caixas IMAP configuradas.';
 
     public function handle(ImportAutomaticConcessionaireBillService $service): int
     {
         $clientProfileId = $this->option('client_profile_id');
-        $onlyClient      = null;
+        $onlyClient = null;
 
         if ($clientProfileId) {
             $onlyClient = ClientProfile::find((int) $clientProfileId);
-            if (!$onlyClient) {
+            if (! $onlyClient) {
                 $this->error("client_profile_id {$clientProfileId} não encontrado.");
+
                 return self::FAILURE;
             }
         }
@@ -28,9 +30,9 @@ class ImportConcessionaireBillsCommand extends Command
         $startTime = microtime(true);
 
         $run = $service->run(
-            onlyClient:          $onlyClient,
-            triggeredBy:         'command',
-            triggeredByUserId:   null,
+            onlyClient: $onlyClient,
+            triggeredBy: 'command',
+            triggeredByUserId: null,
         );
 
         $elapsed = round(microtime(true) - $startTime, 2);
@@ -50,7 +52,7 @@ class ImportConcessionaireBillsCommand extends Command
         );
 
         if ($run->error_message) {
-            $this->error('Erro fatal: ' . $run->error_message);
+            $this->error('Erro fatal: '.$run->error_message);
         }
 
         if ($run->total_failed > 0) {

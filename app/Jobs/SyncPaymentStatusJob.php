@@ -13,8 +13,7 @@ class SyncPaymentStatusJob implements ShouldQueue
 
     public function __construct(
         public readonly int $paymentId,
-    ) {
-    }
+    ) {}
 
     public function handle(SyncPaymentSlipService $service): void
     {
@@ -22,15 +21,15 @@ class SyncPaymentStatusJob implements ShouldQueue
             ->with('providerAccount')
             ->find($this->paymentId);
 
-        if (!$payment) {
+        if (! $payment) {
             return;
         }
 
-        if (!$payment->providerAccount) {
+        if (! $payment->providerAccount) {
             return;
         }
 
-        if (!in_array($payment->status, ['pending', 'generated'], true)) {
+        if (! in_array($payment->status, ['pending', 'generated'], true)) {
             return;
         }
 

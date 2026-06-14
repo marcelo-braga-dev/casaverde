@@ -10,8 +10,7 @@ class CancelPaymentSlipService
 {
     public function __construct(
         private readonly PaymentProviderManager $providerManager,
-    ) {
-    }
+    ) {}
 
     public function handle(PaymentSlip $slip): PaymentSlip
     {
@@ -23,11 +22,11 @@ class CancelPaymentSlipService
             throw new InvalidArgumentException('Este pagamento já está cancelado ou expirado.');
         }
 
-        if (!$slip->provider_payment_id) {
+        if (! $slip->provider_payment_id) {
             throw new InvalidArgumentException('Pagamento sem ID no provider.');
         }
 
-        if (!$slip->providerAccount) {
+        if (! $slip->providerAccount) {
             throw new InvalidArgumentException('Pagamento sem conta de provider vinculada.');
         }
 
@@ -35,7 +34,7 @@ class CancelPaymentSlipService
 
         $cancelled = $provider->cancelPayment($slip->provider_payment_id);
 
-        if (!$cancelled) {
+        if (! $cancelled) {
             throw new InvalidArgumentException('Não foi possível cancelar o pagamento no provider.');
         }
 
@@ -45,7 +44,7 @@ class CancelPaymentSlipService
                 'cancelled_at' => now(),
             ]);
 
-            if ($slip->charge && !in_array($slip->charge->status, ['paid', 'cancelled'], true)) {
+            if ($slip->charge && ! in_array($slip->charge->status, ['paid', 'cancelled'], true)) {
                 $slip->charge->update([
                     'status' => 'open',
                 ]);

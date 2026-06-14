@@ -5,20 +5,28 @@ namespace App\DTOs\UsinaSolar;
 class CreateUsinaDTO
 {
     public int $userId;
+
     public string $status;
+
     public int $uc;
+
     public int $mediaGeracao;
+
     public int $prazoLocacao;
+
     public int $concessionaria;
 
     public int $sellerId;
+
     public float $potenciaUsina;
+
     public string $inversores;
+
     public string $modulos;
 
     public static function fromArray(int $userId, $data): CreateUsinaDTO
     {
-        $dto = new self();
+        $dto = new self;
 
         $dto->userId = $userId;
         $dto->uc = $data['uc'] ?? null;

@@ -14,7 +14,7 @@ class ConcessionaireBillFileController extends Controller
         $disk = $fatura->pdf_disk ?? config('filesystems.default');
         $path = $fatura->pdf_path;
 
-        if (!$path || !Storage::disk($disk)->exists($path)) {
+        if (! $path || ! Storage::disk($disk)->exists($path)) {
             abort(404, 'PDF não encontrado.');
         }
 
@@ -22,7 +22,7 @@ class ConcessionaireBillFileController extends Controller
 
         return response()->file($absolutePath, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="' . ($fatura->pdf_original_name ?? 'fatura.pdf') . '"',
+            'Content-Disposition' => 'inline; filename="'.($fatura->pdf_original_name ?? 'fatura.pdf').'"',
         ]);
     }
 }

@@ -3,8 +3,9 @@
 use App\Models\Cliente\ClientAccessInvite;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Carbon;
+use Tests\TestCase;
 
-uses(Tests\TestCase::class, RefreshDatabase::class);
+uses(TestCase::class, RefreshDatabase::class);
 
 describe('ClientAccessInvite model', function () {
 
@@ -25,7 +26,7 @@ describe('ClientAccessInvite model', function () {
     it('isUsed returns true when used_at is set', function () {
         $invite = new ClientAccessInvite([
             'expires_at' => Carbon::now()->addHour(),
-            'used_at'    => Carbon::now(),
+            'used_at' => Carbon::now(),
         ]);
         expect($invite->isUsed())->toBeTrue();
     });
@@ -33,7 +34,7 @@ describe('ClientAccessInvite model', function () {
     it('isUsed returns false when used_at is null', function () {
         $invite = new ClientAccessInvite([
             'expires_at' => Carbon::now()->addHour(),
-            'used_at'    => null,
+            'used_at' => null,
         ]);
         expect($invite->isUsed())->toBeFalse();
     });
@@ -41,7 +42,7 @@ describe('ClientAccessInvite model', function () {
     it('canBeUsed returns true when not used and not expired', function () {
         $invite = new ClientAccessInvite([
             'expires_at' => Carbon::now()->addHour(),
-            'used_at'    => null,
+            'used_at' => null,
         ]);
         expect($invite->canBeUsed())->toBeTrue();
     });
@@ -49,7 +50,7 @@ describe('ClientAccessInvite model', function () {
     it('canBeUsed returns false when already used', function () {
         $invite = new ClientAccessInvite([
             'expires_at' => Carbon::now()->addHour(),
-            'used_at'    => Carbon::now()->subMinute(),
+            'used_at' => Carbon::now()->subMinute(),
         ]);
         expect($invite->canBeUsed())->toBeFalse();
     });
@@ -57,7 +58,7 @@ describe('ClientAccessInvite model', function () {
     it('canBeUsed returns false when expired', function () {
         $invite = new ClientAccessInvite([
             'expires_at' => Carbon::now()->subHour(),
-            'used_at'    => null,
+            'used_at' => null,
         ]);
         expect($invite->canBeUsed())->toBeFalse();
     });

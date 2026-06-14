@@ -13,8 +13,8 @@ class ExecutiveCockpitService
 {
     public function handle(array $filters = []): array
     {
-        $year = (int)($filters['year'] ?? now()->year);
-        $month = (int)($filters['month'] ?? now()->month);
+        $year = (int) ($filters['year'] ?? now()->year);
+        $month = (int) ($filters['month'] ?? now()->month);
 
         $startDate = Carbon::create($year, $month, 1)->startOfMonth();
         $endDate = (clone $startDate)->endOfMonth();
@@ -23,7 +23,7 @@ class ExecutiveCockpitService
             'reference' => [
                 'year' => $year,
                 'month' => $month,
-                'label' => str_pad((string)$month, 2, '0', STR_PAD_LEFT) . '/' . $year,
+                'label' => str_pad((string) $month, 2, '0', STR_PAD_LEFT).'/'.$year,
             ],
 
             'financial' => $this->financialSummary($year, $month),
@@ -52,7 +52,7 @@ class ExecutiveCockpitService
             ->where('reference_year', $year)
             ->where('reference_month', $month);
 
-        $totalValue = (float)$bills->sum('valor_total');
+        $totalValue = (float) $bills->sum('valor_total');
 
         $pendingReview = (clone $bills)
             ->where('review_status', 'pending_review')
@@ -77,23 +77,23 @@ class ExecutiveCockpitService
         $usinas = UsinaSolar::query()->get();
 
         return [
-            'total_available_kwh' => (float)$usinas->sum('energia_disponivel_kwh'),
-            'total_allocated_kwh' => (float)$usinas->sum('energia_alocada_kwh'),
-            'total_remaining_kwh' => (float)$usinas->sum('energia_saldo_kwh'),
+            'total_available_kwh' => (float) $usinas->sum('energia_disponivel_kwh'),
+            'total_allocated_kwh' => (float) $usinas->sum('energia_alocada_kwh'),
+            'total_remaining_kwh' => (float) $usinas->sum('energia_saldo_kwh'),
 
             'critical_usinas_count' => $usinas
-                ->filter(fn($usina) => (float)$usina->energia_saldo_kwh <= 0)
+                ->filter(fn ($usina) => (float) $usina->energia_saldo_kwh <= 0)
                 ->count(),
 
             'low_balance_usinas_count' => $usinas
                 ->filter(function ($usina) {
-                    $available = (float)$usina->energia_disponivel_kwh;
+                    $available = (float) $usina->energia_disponivel_kwh;
 
                     if ($available <= 0) {
                         return false;
                     }
 
-                    $remainingPercentage = ((float)$usina->energia_saldo_kwh / $available) * 100;
+                    $remainingPercentage = ((float) $usina->energia_saldo_kwh / $available) * 100;
 
                     return $remainingPercentage <= 10;
                 })
@@ -177,7 +177,7 @@ class ExecutiveCockpitService
                 return [
                     'consultor_user_id' => $item->consultor_user_id,
                     'consultor_name' => $item->consultor?->name,
-                    'total_clients' => (int)$item->total_clients,
+                    'total_clients' => (int) $item->total_clients,
                 ];
             })
             ->toArray();

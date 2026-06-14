@@ -12,6 +12,5 @@ class CreatePaymentDTO
         public readonly string $paymentMethod,
         public readonly PaymentCustomerDTO $customer,
         public readonly array $metadata = [],
-    ) {
-    }
+    ) {}
 }

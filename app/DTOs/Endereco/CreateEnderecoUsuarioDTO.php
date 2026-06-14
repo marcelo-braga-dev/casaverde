@@ -5,19 +5,26 @@ namespace App\DTOs\Endereco;
 class CreateEnderecoUsuarioDTO
 {
     public int $userId;
-    public ?string $cep;
-    public ?string $rua;
-    public ?string $numero;
-    public ?string $complemento;
-    public ?string $bairro;
-    public ?string $cidade;
-    public ?string $estado;
-    public ?string $referencia;
 
+    public ?string $cep;
+
+    public ?string $rua;
+
+    public ?string $numero;
+
+    public ?string $complemento;
+
+    public ?string $bairro;
+
+    public ?string $cidade;
+
+    public ?string $estado;
+
+    public ?string $referencia;
 
     public static function fromArray(int $userId, $data): CreateEnderecoUsuarioDTO
     {
-        $dto = new self();
+        $dto = new self;
 
         $dto->userId = $userId;
         $dto->cep = $data['cep'] ?? null;

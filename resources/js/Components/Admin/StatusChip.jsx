@@ -22,6 +22,9 @@ const statusMap = {
     corrected: { label: "Corrigida", color: "info" },
     approved: { label: "Aprovada", color: "success" },
 
+    success: { label: "Sucesso", color: "success" },
+    error: { label: "Erro", color: "error" },
+
     issued: { label: "Emitido", color: "primary" },
     signed: { label: "Assinado", color: "success" },
     active: { label: "Ativo", color: "success" },

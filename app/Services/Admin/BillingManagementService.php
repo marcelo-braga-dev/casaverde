@@ -2,9 +2,8 @@
 
 namespace App\Services\Admin;
 
-use App\Models\Cobranca\CustomerCharge;
 use App\Models\Cliente\ClientProfile;
-use Carbon\Carbon;
+use App\Models\Cobranca\CustomerCharge;
 
 class BillingManagementService
 {
@@ -27,7 +26,7 @@ class BillingManagementService
             'reference' => [
                 'year' => $year,
                 'month' => $month,
-                'label' => str_pad((string) $month, 2, '0', STR_PAD_LEFT) . '/' . $year,
+                'label' => str_pad((string) $month, 2, '0', STR_PAD_LEFT).'/'.$year,
             ],
 
             'summary' => [
@@ -135,7 +134,7 @@ class BillingManagementService
 
     private function clientName(?ClientProfile $client): string
     {
-        if (!$client) {
+        if (! $client) {
             return 'Cliente não informado';
         }
 

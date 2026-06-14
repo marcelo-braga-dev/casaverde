@@ -1,4 +1,3 @@
 <?php
 
-require __DIR__ . '/perfil.php';
-
+require __DIR__.'/perfil.php';

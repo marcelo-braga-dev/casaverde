@@ -28,16 +28,16 @@ class AttachClientToUsinaService
 
             $query->update([
                 'is_active' => false,
-                'ended_at'  => $startedAt,
+                'ended_at' => $startedAt,
             ]);
 
             return ClientUsinaLink::create([
                 'client_profile_id' => $clientProfile->id,
-                'consumer_unit_id'  => $consumerUnitId,
-                'usina_id'          => $usinaId,
-                'started_at'        => $startedAt,
-                'notes'             => $notes,
-                'is_active'         => true,
+                'consumer_unit_id' => $consumerUnitId,
+                'usina_id' => $usinaId,
+                'started_at' => $startedAt,
+                'notes' => $notes,
+                'is_active' => true,
             ]);
         });
     }

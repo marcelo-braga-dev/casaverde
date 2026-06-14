@@ -7,10 +7,10 @@ use App\Repositories\Produtor\ProdutorRepository;
 
 class GetKanbanController extends Controller
 {
-   public function __invoke()
-   {
-       $produtores = (new ProdutorRepository())->getGroupByStatus();
+    public function __invoke()
+    {
+        $produtores = (new ProdutorRepository)->getGroupByStatus();
 
-       return response()->json($produtores);
-   }
+        return response()->json($produtores);
+    }
 }

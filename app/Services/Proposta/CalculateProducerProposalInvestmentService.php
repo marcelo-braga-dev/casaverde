@@ -25,12 +25,14 @@ class CalculateProducerProposalInvestmentService
             ?? $this->settingService->get('default_producer_fee_percentage', 15)
         );
 
-        $producaoAnualKwh = (float) ($proposal->media_geracao ?? 0) * 12;
+        $producaoMensalKwh = (float) ($proposal->media_geracao ?? 0);
+        $producaoAnualKwh = $producaoMensalKwh * 12;
 
         $pagamentoAnualBruto = $producaoAnualKwh * $tarifaGrupoB;
         $adminFeeValue = round($pagamentoAnualBruto * $adminFeePercent / 100, 2);
         $consumerDiscountValue = round($tarifaGrupoB * $consumerDiscountPercent / 100, 4);
         $adminFeeValueKwh = round($tarifaGrupoB * $adminFeePercent / 100, 4);
+        $valorPagoProdutorKwh = round($tarifaGrupoB - $consumerDiscountValue - $adminFeeValueKwh, 4);
 
         return [
             'tarifa_grupo_b' => round($tarifaGrupoB, 4),
@@ -39,10 +41,11 @@ class CalculateProducerProposalInvestmentService
             'admin_fee_percent' => $adminFeePercent,
             'admin_fee_value' => $adminFeeValue,
             'admin_fee_value_kwh' => $adminFeeValueKwh,
-            'valor_pago_produtor_kwh' => round($tarifaGrupoB - $consumerDiscountValue - $adminFeeValueKwh, 4),
+            'valor_pago_produtor_kwh' => $valorPagoProdutorKwh,
             'producao_anual_kwh' => round($producaoAnualKwh, 2),
             'pagamento_anual_bruto' => round($pagamentoAnualBruto, 2),
             'pagamento_anual_liquido' => round($pagamentoAnualBruto * (1 - $adminFeePercent / 100), 2),
+            'pagamento_mensal_previsto' => round($producaoMensalKwh * $valorPagoProdutorKwh, 2),
         ];
     }
 }

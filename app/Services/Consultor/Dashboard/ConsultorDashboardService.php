@@ -15,10 +15,10 @@ class ConsultorDashboardService
     public function handle(int $consultorId): array
     {
         return [
-            'summary'          => $this->getSummary($consultorId),
-            'recentClients'    => $this->getRecentClients($consultorId),
-            'recentProposals'  => $this->getRecentProposals($consultorId),
-            'quickActions'     => $this->getQuickActions(),
+            'summary' => $this->getSummary($consultorId),
+            'recentClients' => $this->getRecentClients($consultorId),
+            'recentProposals' => $this->getRecentProposals($consultorId),
+            'quickActions' => $this->getQuickActions(),
         ];
     }
 
@@ -81,17 +81,17 @@ class ConsultorDashboardService
             ->count();
 
         return [
-            'clients_total'             => $clientsTotal,
-            'clients_active'            => $clientsActive,
-            'clients_this_month'        => $clientsThisMonth,
-            'producers_total'           => $producersTotal,
-            'producers_active'          => $producersActive,
-            'usinas_total'              => $usinasTotal,
-            'client_proposals_open'     => $clientProposalsOpen,
-            'producer_proposals_open'   => $producerProposalsOpen,
-            'bills_pending_review'      => $billsPendingReview,
-            'leads_total'               => $leadsTotal,
-            'leads_this_month'          => $leadsOpenThisMonth,
+            'clients_total' => $clientsTotal,
+            'clients_active' => $clientsActive,
+            'clients_this_month' => $clientsThisMonth,
+            'producers_total' => $producersTotal,
+            'producers_active' => $producersActive,
+            'usinas_total' => $usinasTotal,
+            'client_proposals_open' => $clientProposalsOpen,
+            'producer_proposals_open' => $producerProposalsOpen,
+            'bills_pending_review' => $billsPendingReview,
+            'leads_total' => $leadsTotal,
+            'leads_this_month' => $leadsOpenThisMonth,
         ];
     }
 
@@ -120,32 +120,32 @@ class ConsultorDashboardService
     {
         return [
             [
-                'title'       => 'Novo Cliente',
+                'title' => 'Novo Cliente',
                 'description' => 'Cadastre um novo cliente na sua carteira.',
-                'route'       => 'consultor.user.cliente.create',
-                'color'       => 'primary',
-                'icon'        => 'users',
+                'route' => 'consultor.user.cliente.create',
+                'color' => 'primary',
+                'icon' => 'users',
             ],
             [
-                'title'       => 'Proposta para Cliente',
+                'title' => 'Proposta para Cliente',
                 'description' => 'Emita uma nova proposta comercial.',
-                'route'       => 'consultor.propostas.cliente.create',
-                'color'       => 'success',
-                'icon'        => 'file-text',
+                'route' => 'consultor.propostas.cliente.create',
+                'color' => 'success',
+                'icon' => 'file-text',
             ],
             [
-                'title'       => 'Proposta para Produtor',
+                'title' => 'Proposta para Produtor',
                 'description' => 'Emita uma proposta para produtor solar.',
-                'route'       => 'consultor.propostas.produtor.create',
-                'color'       => 'info',
-                'icon'        => 'bolt',
+                'route' => 'consultor.propostas.produtor.create',
+                'color' => 'info',
+                'icon' => 'bolt',
             ],
             [
-                'title'       => 'Novo Produtor',
+                'title' => 'Novo Produtor',
                 'description' => 'Cadastre um produtor solar na carteira.',
-                'route'       => 'consultor.producer.profiles.create',
-                'color'       => 'warning',
-                'icon'        => 'solar',
+                'route' => 'consultor.producer.profiles.create',
+                'color' => 'warning',
+                'icon' => 'solar',
             ],
         ];
     }

@@ -4,6 +4,7 @@ import { usePage } from '@inertiajs/react';
 import { useMenuDrawer } from '@/Contexts/Drawer/DrawerContext';
 import AppUserMenu from './AppUserMenu';
 import AppBreadcrumbs from './AppBreadcrumbs';
+import AppHeaderShortcuts from './AppHeaderShortcuts';
 
 export default function AppHeader({ title, subtitle, actions, breadcrumbs = [] }) {
     const { auth } = usePage().props;
@@ -83,6 +84,7 @@ export default function AppHeader({ title, subtitle, actions, breadcrumbs = [] }
                     {/* ── Direita: ações + avatar ────────────────── */}
                     <Stack direction="row" alignItems="center" gap={1} sx={{ flexShrink: 0 }}>
                         {actions}
+                        <AppHeaderShortcuts />
                         <AppUserMenu user={auth?.user} />
                     </Stack>
                 </Stack>

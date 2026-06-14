@@ -52,7 +52,7 @@ class CopelBillParserService
             '/CONSUMO(?:\s+TOTAL)?\s*[:\-]?\s*([\d\.\,]+)\s*KWH/iu',
         ]);
 
-        if (!$referencia || !$vencimento || !$valorTotal) {
+        if (! $referencia || ! $vencimento || ! $valorTotal) {
             throw new DomainException('Não foi possível localizar os campos obrigatórios da fatura Copel.');
         }
 

@@ -14,7 +14,7 @@ class ContratosProdutorController extends Controller
     {
         $produtorId = $request->get('userId');
 
-        $contratante = (new ProdutorRepository())->findAllData($produtorId);
+        $contratante = (new ProdutorRepository)->findAllData($produtorId);
 
         return Inertia::render('Auth/Produtor/Contrato/Create/Page', compact('contratante'));
     }
@@ -22,7 +22,7 @@ class ContratosProdutorController extends Controller
     public function store(Request $request)
     {
         try {
-            $contratoId = (new ProdutorContratoRepository())->story($request->all());
+            $contratoId = (new ProdutorContratoRepository)->story($request->all());
 
             return redirect()->route('auth.produtor-contratos.show', $contratoId);
         } catch (\Exception) {

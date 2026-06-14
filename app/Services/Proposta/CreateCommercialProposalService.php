@@ -26,7 +26,7 @@ class CreateCommercialProposalService
             // CLIENTE
             // =============================
 
-            if (!empty($data['client_profile_id'])) {
+            if (! empty($data['client_profile_id'])) {
 
                 $client = ClientProfile::query()
                     ->with('activeDiscountRule')
@@ -109,7 +109,7 @@ class CreateCommercialProposalService
     {
         $filtered = collect($data)
             ->map(fn ($value) => $value === '' ? null : $value)
-            ->filter(fn ($value) => !is_null($value))
+            ->filter(fn ($value) => ! is_null($value))
             ->toArray();
 
         if (empty($filtered)) {

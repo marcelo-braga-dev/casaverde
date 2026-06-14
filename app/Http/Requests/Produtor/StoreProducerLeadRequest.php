@@ -5,6 +5,7 @@ namespace App\Http\Requests\Produtor;
 use App\src\Roles\RoleUser;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+
 /**
  * @deprecated
  */

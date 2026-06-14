@@ -2,25 +2,21 @@
 
 namespace App\Repositories\Admin;
 
-use App\DTOs\Endereco\CreateEnderecoUsuarioDTO;
 use App\DTOs\Usuario\CreateUsuarioDTO;
 use App\Models\Users\Admin;
 use App\Models\Users\User;
-use App\Models\Users\UserAddress;
-use App\Models\Users\UserData;
 use App\Services\Users\CreateUserService;
 use App\src\Roles\RoleUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 
 class AdminRepository
 {
     public function create(Request $data)
     {
         DB::transaction(function () use ($data) {
-            $role = (new RoleUser())->admin();
-            $service = new CreateUserService();
+            $role = (new RoleUser)->admin();
+            $service = new CreateUserService;
 
             $dto = CreateUsuarioDTO::fromArray($data);
             $userData = $dto->toArray();
@@ -41,7 +37,7 @@ class AdminRepository
 
     public function getAll()
     {
-        return (new Admin())->getAll()
+        return (new Admin)->getAll()
             ->orderByDesc('id')
             ->get();
     }

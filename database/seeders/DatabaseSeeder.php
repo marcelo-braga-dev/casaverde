@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
         $this->call(UserSeeder::class);
         $this->call(ConcessionariasSeeder::class);
         $this->call(SystemSettingSeeder::class);
+        $this->call(WhatsAppMessageTemplateSeeder::class);
         $this->call(DemoDataSeeder::class);
     }
 }

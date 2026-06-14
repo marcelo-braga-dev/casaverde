@@ -1,6 +1,7 @@
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
-import { Head } from "@inertiajs/react";
+import { Head, usePage } from "@inertiajs/react";
 import {
+    Alert,
     Box,
     Card,
     CardContent,
@@ -12,6 +13,7 @@ import {
 import Grid from "@mui/material/Grid2";
 import {
     IconBolt,
+    IconBrandWhatsapp,
     IconCoins,
     IconCurrencyReal,
     IconFileText,
@@ -19,6 +21,7 @@ import {
     IconUser,
 } from "@tabler/icons-react";
 import PropostaProdutor from "@/Pages/Auth/Produtor/Proposta/Show/PropostaProdutor.jsx";
+import WhatsAppButton from "@/Components/WhatsApp/WhatsAppButton";
 
 const cardSx = {
     borderRadius: "var(--cv-radius-xl)",
@@ -91,6 +94,7 @@ const fmtPercent = v => v != null ? `${Number(v).toLocaleString('pt-BR', { maxim
 const fmtKwh = v => v != null ? `${Number(v).toLocaleString('pt-BR', { maximumFractionDigits: 2 })} kWh` : '—';
 
 const Page = ({ proposal, investmentSummary }) => {
+    const { flash } = usePage().props;
     const producer = proposal?.producer_profile;
     const adminFeePercent = investmentSummary?.admin_fee_percent ?? proposal?.fill_percent;
 
@@ -158,14 +162,52 @@ const Page = ({ proposal, investmentSummary }) => {
                                     </Typography>
                                 </Box>
                             </Stack>
-                            <Chip
-                                label={statusCfg.label}
-                                color={statusCfg.color}
-                                sx={{ fontWeight: 800, fontSize: "0.8rem", px: 1 }}
-                            />
+                            <Stack direction="row" alignItems="center" gap={1.5}>
+                                <Chip
+                                    label={statusCfg.label}
+                                    color={statusCfg.color}
+                                    sx={{ fontWeight: 800, fontSize: "0.8rem", px: 1 }}
+                                />
+
+                                <WhatsAppButton
+                                    templateKey="compartilhar_proposta"
+                                    phone={producer?.contacts?.celular}
+                                    variables={{
+                                        cliente_nome: producerName,
+                                        link_proposta: route("consultor.propostas.produtor.pdf", proposal.id),
+                                    }}
+                                    label="Enviar Proposta"
+                                    variant="contained"
+                                    startIcon={<IconBrandWhatsapp size={17} />}
+                                    sx={{ bgcolor: "#25D366", color: "#fff", "&:hover": { bgcolor: "#1ebe5b" } }}
+                                />
+                            </Stack>
                         </Stack>
                     </CardContent>
                 </Card>
+
+                {flash?.success && (
+                    <Alert
+                        severity="success"
+                        action={
+                            <WhatsAppButton
+                                templateKey="proposta_enviada"
+                                phone={producer?.contacts?.celular}
+                                variables={{
+                                    cliente_nome: producerName,
+                                    link_proposta: route("consultor.propostas.produtor.pdf", proposal.id),
+                                }}
+                                label="Avisar Produtor por WhatsApp"
+                                variant="outlined"
+                                color="success"
+                                size="small"
+                                startIcon={<IconBrandWhatsapp size={16} />}
+                            />
+                        }
+                    >
+                        {flash.success}
+                    </Alert>
+                )}
 
                 <Grid container spacing={3}>
                     {/* Dados principais */}

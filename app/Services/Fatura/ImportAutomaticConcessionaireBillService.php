@@ -18,11 +18,11 @@ class ImportAutomaticConcessionaireBillService
 {
     public function __construct(
         private readonly ImapConcessionaireFetcherService $fetcher,
-        private readonly PdfTextExtractorService          $pdfExtractor,
-        private readonly CopelBillParserService           $parser,
-        private readonly ProtectedPdfResolverService      $pdfResolver,
+        private readonly PdfTextExtractorService $pdfExtractor,
+        private readonly CopelBillParserService $parser,
+        private readonly ProtectedPdfResolverService $pdfResolver,
         private readonly ValidateConcessionaireBillService $validator,
-        private readonly ResolveConsumerUnitService       $consumerUnitResolver,
+        private readonly ResolveConsumerUnitService $consumerUnitResolver,
     ) {}
 
     /**
@@ -35,20 +35,20 @@ class ImportAutomaticConcessionaireBillService
         ?int $triggeredByUserId = null,
     ): ImportRun {
         $run = ImportRun::create([
-            'run_code'            => ImportRun::generateCode(),
-            'triggered_by'        => $triggeredBy,
-            'triggered_by_user_id'=> $triggeredByUserId,
-            'client_profile_id'   => $onlyClient?->id,
-            'status'              => 'running',
-            'started_at'          => now(),
+            'run_code' => ImportRun::generateCode(),
+            'triggered_by' => $triggeredBy,
+            'triggered_by_user_id' => $triggeredByUserId,
+            'client_profile_id' => $onlyClient?->id,
+            'status' => 'running',
+            'started_at' => now(),
         ]);
 
         $totals = [
-            'total_settings'  => 0,
+            'total_settings' => 0,
             'total_processed' => 0,
-            'total_imported'  => 0,
-            'total_skipped'   => 0,
-            'total_failed'    => 0,
+            'total_imported' => 0,
+            'total_skipped' => 0,
+            'total_failed' => 0,
         ];
 
         try {
@@ -66,22 +66,23 @@ class ImportAutomaticConcessionaireBillService
             foreach ($settings as $setting) {
                 $clientProfile = $setting->clientProfile;
 
-                if (!$clientProfile) {
+                if (! $clientProfile) {
                     Log::warning("[ImportRun #{$run->id}] Setting #{$setting->id} sem client_profile vinculado.");
+
                     continue;
                 }
 
                 $result = $this->handle($clientProfile, $setting, $run);
 
                 $totals['total_processed'] += $result['processed'];
-                $totals['total_imported']  += $result['imported'];
-                $totals['total_skipped']   += $result['skipped'];
-                $totals['total_failed']    += $result['failed'];
+                $totals['total_imported'] += $result['imported'];
+                $totals['total_skipped'] += $result['skipped'];
+                $totals['total_failed'] += $result['failed'];
             }
 
             $run->finish($totals);
         } catch (Throwable $e) {
-            Log::error("[ImportRun #{$run->id}] Erro fatal: " . $e->getMessage(), [
+            Log::error("[ImportRun #{$run->id}] Erro fatal: ".$e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
             ]);
             $run->finish($totals, $e->getMessage());
@@ -124,7 +125,7 @@ class ImportAutomaticConcessionaireBillService
         ?ImportRun $run,
         array &$result,
     ): void {
-        $startMs        = now()->getPreciseTimestamp(3);
+        $startMs = now()->getPreciseTimestamp(3);
         $attachmentHash = hash('sha256', $attachment['content']);
 
         // ── Verifica duplicata ───────────────────────────────────────────
@@ -132,52 +133,57 @@ class ImportAutomaticConcessionaireBillService
             ->where('client_profile_id', $clientProfile->id)
             ->where(function ($q) use ($message, $attachmentHash) {
                 $q->where('attachment_hash', $attachmentHash);
-                if (!empty($message['uid']))        $q->orWhere('message_uid', $message['uid']);
-                if (!empty($message['message_id'])) $q->orWhere('message_id', $message['message_id']);
+                if (! empty($message['uid'])) {
+                    $q->orWhere('message_uid', $message['uid']);
+                }
+                if (! empty($message['message_id'])) {
+                    $q->orWhere('message_id', $message['message_id']);
+                }
             })
             ->exists();
 
         if ($alreadyImported) {
             $result['skipped']++;
+
             return;
         }
 
         // ── Cria log de rastreamento ─────────────────────────────────────
         $log = ImportedConcessionaireEmail::create([
-            'client_profile_id'              => $clientProfile->id,
+            'client_profile_id' => $clientProfile->id,
             'client_email_import_setting_id' => $setting->id,
-            'import_run_id'                  => $run?->id,
-            'message_uid'                    => $message['uid']        ?? null,
-            'message_id'                     => $message['message_id'] ?? null,
-            'from_email'                     => $message['from']       ?? null,
-            'subject'                        => $message['subject']    ?? null,
-            'received_at'                    => $message['received_at'] ?? now(),
-            'attachment_name'                => $attachment['filename'],
-            'attachment_hash'                => $attachmentHash,
-            'status'                         => 'processing',
+            'import_run_id' => $run?->id,
+            'message_uid' => $message['uid'] ?? null,
+            'message_id' => $message['message_id'] ?? null,
+            'from_email' => $message['from'] ?? null,
+            'subject' => $message['subject'] ?? null,
+            'received_at' => $message['received_at'] ?? now(),
+            'attachment_name' => $attachment['filename'],
+            'attachment_hash' => $attachmentHash,
+            'status' => 'processing',
         ]);
 
         $tempUnlocked = null;
-        $stepFailed   = null;
+        $stepFailed = null;
 
         try {
             // Passo 1: Salvar PDF
-            $stepFailed  = 'store';
-            $storedPath  = $this->storePdf($clientProfile->id, $attachment['filename'], $attachment['content']);
+            $stepFailed = 'store';
+            $storedPath = $this->storePdf($clientProfile->id, $attachment['filename'], $attachment['content']);
             $absolutePath = Storage::disk('local')->path($storedPath);
 
             // Passo 2: Desbloquear PDF (se tiver senha)
-            $stepFailed   = 'unlock';
-            $pdfPassword  = $setting->pdf_password; // senha individual da fatura
+            $stepFailed = 'unlock';
+            $pdfPassword = $setting->pdf_password; // senha individual da fatura
             $tempUnlocked = $this->pdfResolver->unlockToTempFile($absolutePath, $pdfPassword ?: null);
 
             // Passo 3: Extrair texto
             $stepFailed = 'extract';
-            $rawText    = $this->pdfExtractor->extract($tempUnlocked);
+            $rawText = $this->pdfExtractor->extract($tempUnlocked);
 
             // Passo 4: Fazer o parse dos dados
             $stepFailed = 'parse';
-            $parsed     = $this->parser->parse($rawText);
+            $parsed = $this->parser->parse($rawText);
 
             // Passo 5: Persistir fatura no banco
             $stepFailed = 'store';
@@ -186,33 +192,33 @@ class ImportAutomaticConcessionaireBillService
             $bill = DB::transaction(function () use ($clientProfile, $consumerUnit, $storedPath, $attachment, $rawText, $parsed, $setting) {
                 $bill = ConcessionaireBill::updateOrCreate(
                     [
-                        'client_profile_id'   => $clientProfile->id,
+                        'client_profile_id' => $clientProfile->id,
                         'unidade_consumidora' => $parsed['unidade_consumidora'],
-                        'reference_label'     => $parsed['reference_label'],
+                        'reference_label' => $parsed['reference_label'],
                     ],
                     [
                         'created_by_user_id' => null,
-                        'consumer_unit_id'   => $consumerUnit?->id,
-                        'usina_id'           => $consumerUnit?->activeUsinaLink?->usina_id
+                        'consumer_unit_id' => $consumerUnit?->id,
+                        'usina_id' => $consumerUnit?->activeUsinaLink?->usina_id
                             ?? $clientProfile->activeUsinaLink?->usina_id,
-                        'concessionaria_id'  => $setting->concessionaria_id,
-                        'import_source'      => 'email',
-                        'reference_month'    => $parsed['reference_month'],
-                        'reference_year'     => $parsed['reference_year'],
-                        'numero_instalacao'  => $parsed['numero_instalacao'],
-                        'vencimento'         => $parsed['vencimento'],
-                        'valor_total'        => $parsed['valor_total'],
-                        'consumo_kwh'        => $parsed['consumo_kwh'],
-                        'nome'               => $parsed['nome'] ?? null,
-                        'pdf_disk'           => 'local',
-                        'pdf_path'           => $storedPath,
-                        'pdf_original_name'  => $attachment['filename'],
-                        'raw_text'           => $rawText,
-                        'extracted_payload'  => $parsed,
-                        'import_status'      => 'imported',
-                        'review_status'      => 'pending_review',
-                        'parser_status'      => 'success',
-                        'parser_error'       => null,
+                        'concessionaria_id' => $setting->concessionaria_id,
+                        'import_source' => 'email',
+                        'reference_month' => $parsed['reference_month'],
+                        'reference_year' => $parsed['reference_year'],
+                        'numero_instalacao' => $parsed['numero_instalacao'],
+                        'vencimento' => $parsed['vencimento'],
+                        'valor_total' => $parsed['valor_total'],
+                        'consumo_kwh' => $parsed['consumo_kwh'],
+                        'nome' => $parsed['nome'] ?? null,
+                        'pdf_disk' => 'local',
+                        'pdf_path' => $storedPath,
+                        'pdf_original_name' => $attachment['filename'],
+                        'raw_text' => $rawText,
+                        'extracted_payload' => $parsed,
+                        'import_status' => 'imported',
+                        'review_status' => 'pending_review',
+                        'parser_status' => 'success',
+                        'parser_error' => null,
                     ]
                 );
 
@@ -229,23 +235,23 @@ class ImportAutomaticConcessionaireBillService
             // ── Sucesso ────────────────────────────────────────────────
             $log->update([
                 'concessionaire_bill_id' => $bill->id,
-                'status'                 => 'success',
-                'step_failed'            => null,
-                'duration_ms'            => (int) (now()->getPreciseTimestamp(3) - $startMs),
-                'processed_at'           => now(),
+                'status' => 'success',
+                'step_failed' => null,
+                'duration_ms' => (int) (now()->getPreciseTimestamp(3) - $startMs),
+                'processed_at' => now(),
             ]);
 
             $result['imported']++;
 
         } catch (Throwable $e) {
-            Log::error("[ImportService] Falha na etapa '{$stepFailed}' para cliente #{$clientProfile->id}: " . $e->getMessage());
+            Log::error("[ImportService] Falha na etapa '{$stepFailed}' para cliente #{$clientProfile->id}: ".$e->getMessage());
 
             $log->update([
-                'status'        => 'failed',
+                'status' => 'failed',
                 'error_message' => $e->getMessage(),
-                'step_failed'   => $stepFailed,
-                'duration_ms'   => (int) (now()->getPreciseTimestamp(3) - $startMs),
-                'processed_at'  => now(),
+                'step_failed' => $stepFailed,
+                'duration_ms' => (int) (now()->getPreciseTimestamp(3) - $startMs),
+                'processed_at' => now(),
             ]);
 
             $result['failed']++;
@@ -258,7 +264,7 @@ class ImportAutomaticConcessionaireBillService
 
     private function storePdf(int $clientProfileId, string $filename, string $content): string
     {
-        $ext  = strtolower(pathinfo($filename, PATHINFO_EXTENSION)) ?: 'pdf';
+        $ext = strtolower(pathinfo($filename, PATHINFO_EXTENSION)) ?: 'pdf';
         $safe = Str::slug(pathinfo($filename, PATHINFO_FILENAME), '-');
 
         $path = sprintf(
@@ -272,7 +278,7 @@ class ImportAutomaticConcessionaireBillService
 
         Storage::disk('local')->put($path, $content);
 
-        if (!Storage::disk('local')->exists($path)) {
+        if (! Storage::disk('local')->exists($path)) {
             throw new \RuntimeException("Falha ao salvar o PDF no disco: {$path}");
         }
 

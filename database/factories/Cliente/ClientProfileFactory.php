@@ -11,28 +11,29 @@ class ClientProfileFactory extends Factory
     protected $model = ClientProfile::class;
 
     private static int $cpfCounter = 0;
+
     private static int $cnpjCounter = 0;
 
     public function definition(): array
     {
         $contact = UserContact::create([
-            'email'   => fake()->unique()->safeEmail(),
+            'email' => fake()->unique()->safeEmail(),
             'celular' => '41999990000',
         ]);
 
         return [
-            'tipo_pessoa'       => 'pf',
-            'cpf'               => $this->nextCpf(),
-            'cnpj'              => null,
-            'nome'              => fake()->name(),
-            'razao_social'      => null,
-            'nome_fantasia'     => null,
-            'contacts_id'       => $contact->id,
+            'tipo_pessoa' => 'pf',
+            'cpf' => $this->nextCpf(),
+            'cnpj' => null,
+            'nome' => fake()->name(),
+            'razao_social' => null,
+            'nome_fantasia' => null,
+            'contacts_id' => $contact->id,
             'consultor_user_id' => null,
-            'platform_user_id'  => null,
-            'status'            => 'prospect',
-            'is_active_client'  => false,
-            'activated_at'      => null,
+            'platform_user_id' => null,
+            'status' => 'prospect',
+            'is_active_client' => false,
+            'activated_at' => null,
         ];
     }
 
@@ -40,18 +41,18 @@ class ClientProfileFactory extends Factory
     {
         return $this->state(function () {
             $contact = UserContact::create([
-                'email'   => fake()->unique()->safeEmail(),
+                'email' => fake()->unique()->safeEmail(),
                 'celular' => '41999990001',
             ]);
 
             return [
-                'tipo_pessoa'   => 'pj',
-                'cpf'           => null,
-                'cnpj'          => $this->nextCnpj(),
-                'nome'          => null,
-                'razao_social'  => fake()->company(),
+                'tipo_pessoa' => 'pj',
+                'cpf' => null,
+                'cnpj' => $this->nextCnpj(),
+                'nome' => null,
+                'razao_social' => fake()->company(),
                 'nome_fantasia' => fake()->company(),
-                'contacts_id'   => $contact->id,
+                'contacts_id' => $contact->id,
             ];
         });
     }
@@ -59,16 +60,16 @@ class ClientProfileFactory extends Factory
     public function active(): static
     {
         return $this->state(fn () => [
-            'status'           => 'contrato_assinado',
+            'status' => 'contrato_assinado',
             'is_active_client' => true,
-            'activated_at'     => now(),
+            'activated_at' => now(),
         ]);
     }
 
     public function prospect(): static
     {
         return $this->state(fn () => [
-            'status'           => 'prospect',
+            'status' => 'prospect',
             'is_active_client' => false,
         ]);
     }
@@ -76,12 +77,14 @@ class ClientProfileFactory extends Factory
     private function nextCpf(): string
     {
         self::$cpfCounter++;
+
         return str_pad((string) self::$cpfCounter, 11, '0', STR_PAD_LEFT);
     }
 
     private function nextCnpj(): string
     {
         self::$cnpjCounter++;
-        return str_pad((string)(self::$cnpjCounter + 50000), 14, '0', STR_PAD_LEFT);
+
+        return str_pad((string) (self::$cnpjCounter + 50000), 14, '0', STR_PAD_LEFT);
     }
 }
