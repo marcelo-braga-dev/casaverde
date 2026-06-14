@@ -14,26 +14,26 @@ class UsinaSolarFactory extends Factory
     public function definition(): array
     {
         return [
-            'usina_nome'             => 'Usina ' . fake()->word(),
-            'producer_profile_id'    => null,
-            'consultor_user_id'      => null,
-            'concessionaria_id'      => Concessionaria::factory(),
-            'usina_block_id'         => null,
-            'address_id'             => null,
-            'status'                 => 'ativo',
-            'uc'                     => fake()->numerify('##########'),
-            'media_geracao'          => 1500.00,
-            'prazo_locacao'          => 20,
-            'potencia_usina'         => 15.00,
-            'taxa_comissao'          => 5.00,
-            'inversores'             => 'Growatt 15kW',
-            'modulos'                => '36 x 415W',
-            'operational_status'     => UsinaOperationalStatus::Active,
-            'operation_started_at'   => now()->subYear()->toDateString(),
+            'usina_nome' => 'Usina '.fake()->word(),
+            'producer_profile_id' => null,
+            'consultor_user_id' => null,
+            'concessionaria_id' => Concessionaria::factory(),
+            'usina_block_id' => null,
+            'address_id' => null,
+            'status' => 'ativo',
+            'uc' => fake()->numerify('##########'),
+            'media_geracao' => 1500.00,
+            'prazo_locacao' => 20,
+            'potencia_usina' => 15.00,
+            'taxa_comissao' => 5.00,
+            'inversores' => 'Growatt 15kW',
+            'modulos' => '36 x 415W',
+            'operational_status' => UsinaOperationalStatus::Active,
+            'operation_started_at' => now()->subYear()->toDateString(),
             'energia_disponivel_kwh' => 1500.000,
-            'energia_alocada_kwh'    => 0.000,
-            'energia_saldo_kwh'      => 1500.000,
-            'admin_notes'            => null,
+            'energia_alocada_kwh' => 0.000,
+            'energia_saldo_kwh' => 1500.000,
+            'admin_notes' => null,
         ];
     }
 
@@ -41,8 +41,8 @@ class UsinaSolarFactory extends Factory
     {
         return $this->state(fn () => [
             'energia_disponivel_kwh' => $disponivel,
-            'energia_alocada_kwh'    => 0.000,
-            'energia_saldo_kwh'      => $disponivel,
+            'energia_alocada_kwh' => 0.000,
+            'energia_saldo_kwh' => $disponivel,
         ]);
     }
 
@@ -50,8 +50,8 @@ class UsinaSolarFactory extends Factory
     {
         return $this->state(fn () => [
             'energia_disponivel_kwh' => 500.000,
-            'energia_alocada_kwh'    => 500.000,
-            'energia_saldo_kwh'      => 0.000,
+            'energia_alocada_kwh' => 500.000,
+            'energia_saldo_kwh' => 0.000,
         ]);
     }
 }

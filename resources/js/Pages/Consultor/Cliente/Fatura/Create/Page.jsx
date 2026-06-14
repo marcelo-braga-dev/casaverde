@@ -50,11 +50,11 @@ const Page = ({ concessionarias = [], usinas = [], clients = [], consumerUnits =
     };
 
     return (
-        <Layout titlePage="Cadastrar Fatura" menu="financeiro" subMenu="financeiro-faturas" backPage>
-            <Head title="Cadastrar Fatura" />
+        <Layout titlePage="Cadastrar Fatura de Concessionária" menu="financeiro" subMenu="financeiro-faturas" backPage>
+            <Head title="Cadastrar Fatura de Concessionária" />
 
             <Card>
-                <CardHeader title="Dados da Fatura" avatar={<IconFileInvoice />} />
+                <CardHeader title="Dados da Fatura de Concessionária" avatar={<IconFileInvoice />} />
 
                 <CardContent>
                     <form onSubmit={submit}>
@@ -154,7 +154,7 @@ const Page = ({ concessionarias = [], usinas = [], clients = [], consumerUnits =
                                 <TextField
                                     fullWidth
                                     type="file"
-                                    label="PDF da fatura"
+                                    label="PDF da fatura de concessionária"
                                     InputLabelProps={{ shrink: true }}
                                     inputProps={{ accept: "application/pdf" }}
                                     error={Boolean(errors.pdf)}
@@ -164,7 +164,7 @@ const Page = ({ concessionarias = [], usinas = [], clients = [], consumerUnits =
                             </Grid>
 
                             <Grid item xs={12} display="flex" justifyContent="center" gap={2}>
-                                <Link href={route("consultor.cliente.faturas.index")}>
+                                <Link href={route("admin.relatorios.faturas")}>
                                     <Button color="inherit" startIcon={<IconX />}>
                                         Cancelar
                                     </Button>
@@ -177,7 +177,7 @@ const Page = ({ concessionarias = [], usinas = [], clients = [], consumerUnits =
                                     disabled={processing}
                                     startIcon={<IconDeviceFloppy />}
                                 >
-                                    Salvar Fatura
+                                    Salvar Fatura de Concessionária
                                 </Button>
                             </Grid>
                         </Grid>

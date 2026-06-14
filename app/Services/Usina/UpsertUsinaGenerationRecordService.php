@@ -10,8 +10,7 @@ class UpsertUsinaGenerationRecordService
 {
     public function __construct(
         private readonly RecalculateUsinaEnergyService $recalculateUsinaEnergyService
-    ) {
-    }
+    ) {}
 
     public function handle(array $data): UsinaGenerationRecord
     {

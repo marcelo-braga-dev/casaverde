@@ -7,8 +7,8 @@ use Inertia\Inertia;
 
 class ClienteFinanceiroController extends Controller
 {
-   public function index()
-   {
-       return Inertia::render('Admin/Financeiro/Cliente/Index/Page');
-   }
+    public function index()
+    {
+        return Inertia::render('Admin/Financeiro/Cliente/Index/Page');
+    }
 }

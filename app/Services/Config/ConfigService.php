@@ -8,7 +8,7 @@ class ConfigService
 {
     public function setTaxaReducao(int $valorTaxaReducao)
     {
-        (new Config())->updateOrCreate(
+        (new Config)->updateOrCreate(
             ['name' => 'valor_taxa_reducao'],
             ['value' => $valorTaxaReducao]
         );
@@ -16,6 +16,6 @@ class ConfigService
 
     public function getTaxaReducao()
     {
-        return (new Config())->where('name', 'valor_taxa_reducao')->first()->value ?? 0;
+        return (new Config)->where('name', 'valor_taxa_reducao')->first()->value ?? 0;
     }
 }

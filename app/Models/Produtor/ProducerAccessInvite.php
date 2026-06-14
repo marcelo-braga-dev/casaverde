@@ -28,7 +28,7 @@ class ProducerAccessInvite extends Model
     protected static function booted(): void
     {
         static::creating(function (self $invite) {
-            if (!$invite->token) {
+            if (! $invite->token) {
                 $invite->token = Str::uuid()->toString();
             }
         });
@@ -45,7 +45,7 @@ class ProducerAccessInvite extends Model
             return false;
         }
 
-        if (!$this->expires_at) {
+        if (! $this->expires_at) {
             return true;
         }
 

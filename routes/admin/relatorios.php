@@ -1,18 +1,18 @@
 <?php
 
+use App\Http\Controllers\Admin\Relatorio\BillReportController;
 use App\Http\Controllers\Admin\Relatorio\ChargeReportController;
+use App\Http\Controllers\Admin\Relatorio\ClientReportController;
+use App\Http\Controllers\Admin\Relatorio\ExecutiveReportController;
+use App\Http\Controllers\Admin\Relatorio\ExportBillReportController;
+use App\Http\Controllers\Admin\Relatorio\ExportBillReportPdfController;
+use App\Http\Controllers\Admin\Relatorio\ExportChargeReportController;
+use App\Http\Controllers\Admin\Relatorio\ExportChargeReportPdfController;
+use App\Http\Controllers\Admin\Relatorio\ExportPaymentReportController;
+use App\Http\Controllers\Admin\Relatorio\ExportPaymentReportPdfController;
 use App\Http\Controllers\Admin\Relatorio\FinancialReportController;
 use App\Http\Controllers\Admin\Relatorio\PaymentReportController;
-use App\Http\Controllers\Admin\Relatorio\BillReportController;
-use App\Http\Controllers\Admin\Relatorio\ClientReportController;
 use App\Http\Controllers\Admin\Relatorio\UsinaReportController;
-use App\Http\Controllers\Admin\Relatorio\ExportBillReportController;
-use App\Http\Controllers\Admin\Relatorio\ExportChargeReportController;
-use App\Http\Controllers\Admin\Relatorio\ExportPaymentReportController;
-use App\Http\Controllers\Admin\Relatorio\ExportBillReportPdfController;
-use App\Http\Controllers\Admin\Relatorio\ExportChargeReportPdfController;
-use App\Http\Controllers\Admin\Relatorio\ExportPaymentReportPdfController;
-use App\Http\Controllers\Admin\Relatorio\ExecutiveReportController;
 use Illuminate\Support\Facades\Route;
 
 Route::name('relatorios.')

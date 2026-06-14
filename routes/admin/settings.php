@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\Admin\Configuracao\SystemSettingController;
 use Illuminate\Support\Facades\Route;
 

@@ -8,6 +8,6 @@ class Config extends Model
 {
     protected $fillable = [
         'name',
-        'value'
+        'value',
     ];
 }

@@ -9,16 +9,15 @@ class ReportDateRange
     public function __construct(
         public readonly Carbon $startDate,
         public readonly Carbon $endDate,
-    ) {
-    }
+    ) {}
 
     public static function fromFilters(array $filters): self
     {
-        $start = !empty($filters['start_date'])
+        $start = ! empty($filters['start_date'])
             ? Carbon::parse($filters['start_date'])->startOfDay()
             : now()->startOfMonth();
 
-        $end = !empty($filters['end_date'])
+        $end = ! empty($filters['end_date'])
             ? Carbon::parse($filters['end_date'])->endOfDay()
             : now()->endOfMonth();
 
@@ -27,7 +26,7 @@ class ReportDateRange
 
     public function label(): string
     {
-        return $this->startDate->format('d/m/Y') . ' até ' . $this->endDate->format('d/m/Y');
+        return $this->startDate->format('d/m/Y').' até '.$this->endDate->format('d/m/Y');
     }
 
     public function toArray(): array

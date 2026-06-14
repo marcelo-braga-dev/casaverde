@@ -133,7 +133,7 @@ export default function Page({ report, filters = {} }) {
 
                     <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                         <ReportMetricCard
-                            title="Faturas"
+                            title="Faturas de Concessionárias"
                             value={summary.bills_total || 0}
                             helper="Importadas ou criadas no período"
                             icon={IconFileInvoice}
@@ -252,8 +252,8 @@ export default function Page({ report, filters = {} }) {
 
                     <Grid size={{ xs: 12, md: 6 }}>
                         <ReportChartCard
-                            title="Faturas por revisão"
-                            subtitle="Status operacional das faturas."
+                            title="Faturas de Concessionárias por revisão"
+                            subtitle="Status operacional das faturas de concessionárias."
                         >
                             <StatusDonutChart
                                 data={report?.billsByReviewStatus || []}

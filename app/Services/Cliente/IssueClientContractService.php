@@ -34,12 +34,12 @@ class IssueClientContractService
 
             $user = $clientProfile->platformUser;
 
-            if (!$user) {
+            if (! $user) {
                 $temporaryPassword = Str::password(10);
 
                 $user = User::create([
                     'name' => $clientProfile->display_name,
-                    'email' => $clientProfile->email ?: 'cliente-' . $clientProfile->id . '@casaverde.local',
+                    'email' => $clientProfile->email ?: 'cliente-'.$clientProfile->id.'@casaverde.local',
                     'password' => Hash::make($temporaryPassword),
                     'role_id' => RoleUser::$CLIENTE,
                     'consultor_id' => $clientProfile->consultor_user_id ?? auth()->id(),
@@ -129,7 +129,7 @@ class IssueClientContractService
             ->filter(fn ($value) => filled($value))
             ->isNotEmpty();
 
-        if (!$hasAddress) {
+        if (! $hasAddress) {
             return $proposal->address;
         }
 

@@ -59,10 +59,10 @@ class ProdutorPropostasEnderecos extends Model
         $cep = $this->attributes['cep'] ?? null;
 
         return implode(', ', array_filter([
-            trim($rua . ($numero !== '' ? ', ' . $numero : '')),
+            trim($rua.($numero !== '' ? ', '.$numero : '')),
             $complemento,
             $bairro,
-            trim($cidade . ($estado !== '' ? ' - ' . $estado : '')),
+            trim($cidade.($estado !== '' ? ' - '.$estado : '')),
             $cep ? FormatValues::formatCep($cep) : null,
         ]));
     }

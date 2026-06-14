@@ -7,27 +7,42 @@ use Illuminate\Http\Request;
 class CreateUsuarioDTO
 {
     public ?string $nome;
-    public string $email;
-    public ?string $tipoPessoa;
-    public ?string $razaoSocial;
-    public ?string $nomeFantasia;
-    public ?string $cnpj;
-    public ?string $cpf;
-    public ?string $rg;
-    public ?string $ie;
-    public ?string $im;
-    public ?string $dataNascimento;
-    public ?string $dataFundacao;
-    public ?string $genero;
-    public ?string $estadoCivil;
-    public ?string $profissao;
-    public ?string $tipoEmpresa;
-    public ?string $ramoAtividade;
 
+    public string $email;
+
+    public ?string $tipoPessoa;
+
+    public ?string $razaoSocial;
+
+    public ?string $nomeFantasia;
+
+    public ?string $cnpj;
+
+    public ?string $cpf;
+
+    public ?string $rg;
+
+    public ?string $ie;
+
+    public ?string $im;
+
+    public ?string $dataNascimento;
+
+    public ?string $dataFundacao;
+
+    public ?string $genero;
+
+    public ?string $estadoCivil;
+
+    public ?string $profissao;
+
+    public ?string $tipoEmpresa;
+
+    public ?string $ramoAtividade;
 
     public static function fromArray(Request $data): CreateUsuarioDTO
     {
-        $dto = new self();
+        $dto = new self;
 
         $dto->nome = $data['nome'] ?? null;
         $dto->email = $data['email'];

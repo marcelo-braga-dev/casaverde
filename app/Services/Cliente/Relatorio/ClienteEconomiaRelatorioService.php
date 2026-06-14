@@ -15,26 +15,26 @@ class ClienteEconomiaRelatorioService
             ->where('platform_user_id', $platformUserId)
             ->first();
 
-        if (!$profile) {
+        if (! $profile) {
             return $this->emptyReport();
         }
 
-        $year  = (int) ($filters['year']  ?? now()->year);
+        $year = (int) ($filters['year'] ?? now()->year);
         $month = isset($filters['month']) && $filters['month'] ? (int) $filters['month'] : null;
 
         $monthlyData = $this->getMonthlyData($profile->id, $year);
-        $summary     = $this->buildSummary($monthlyData, $profile);
-        $selected    = $month ? $this->getMonthDetail($profile->id, $year, $month) : null;
-        $allTime     = $this->getAllTimeSummary($profile->id);
+        $summary = $this->buildSummary($monthlyData, $profile);
+        $selected = $month ? $this->getMonthDetail($profile->id, $year, $month) : null;
+        $allTime = $this->getAllTimeSummary($profile->id);
 
         return [
-            'profile'     => $this->profilePayload($profile),
-            'filters'     => ['year' => $year, 'month' => $month],
-            'summary'     => $summary,
-            'monthly'     => $monthlyData,
-            'selected'    => $selected,
-            'allTime'     => $allTime,
-            'years'       => $this->getAvailableYears($profile->id),
+            'profile' => $this->profilePayload($profile),
+            'filters' => ['year' => $year, 'month' => $month],
+            'summary' => $summary,
+            'monthly' => $monthlyData,
+            'selected' => $selected,
+            'allTime' => $allTime,
+            'years' => $this->getAvailableYears($profile->id),
         ];
     }
 
@@ -62,32 +62,32 @@ class ClienteEconomiaRelatorioService
 
         for ($m = 1; $m <= 12; $m++) {
             $charge = $charges->get($m);
-            $bill   = $bills->get($m);
+            $bill = $bills->get($m);
 
             $originalAmount = (float) ($charge?->original_amount ?? $bill?->valor_total ?? 0);
-            $finalAmount    = (float) ($charge?->final_amount    ?? $originalAmount);
+            $finalAmount = (float) ($charge?->final_amount ?? $originalAmount);
             $discountAmount = (float) ($charge?->discount_amount ?? 0);
-            $discountPct    = (float) ($charge?->discount_percent ?? 0);
-            $consumoKwh     = (float) ($bill?->consumo_kwh ?? 0);
-            $netSavings     = $originalAmount - $finalAmount;
+            $discountPct = (float) ($charge?->discount_percent ?? 0);
+            $consumoKwh = (float) ($bill?->consumo_kwh ?? 0);
+            $netSavings = $originalAmount - $finalAmount;
 
             $months[] = [
-                'month'           => $m,
-                'label'           => $this->monthLabel($m, $year),
-                'month_name'      => $this->monthName($m),
-                'has_data'        => $charge !== null || $bill !== null,
+                'month' => $m,
+                'label' => $this->monthLabel($m, $year),
+                'month_name' => $this->monthName($m),
+                'has_data' => $charge !== null || $bill !== null,
                 'original_amount' => $originalAmount,
-                'final_amount'    => $finalAmount,
+                'final_amount' => $finalAmount,
                 'discount_amount' => $discountAmount,
-                'discount_percent'=> $discountPct,
-                'consumo_kwh'     => $consumoKwh,
-                'net_savings'     => max(0, $netSavings),
+                'discount_percent' => $discountPct,
+                'consumo_kwh' => $consumoKwh,
+                'net_savings' => max(0, $netSavings),
                 'savings_percent' => $originalAmount > 0 ? round(($netSavings / $originalAmount) * 100, 1) : 0,
-                'status'          => $charge?->status,
-                'due_date'        => $charge?->due_date?->format('d/m/Y'),
-                'paid_at'         => $charge?->paid_at?->format('d/m/Y'),
-                'charge_id'       => $charge?->id,
-                'bill_id'         => $bill?->id,
+                'status' => $charge?->status,
+                'due_date' => $charge?->due_date?->format('d/m/Y'),
+                'paid_at' => $charge?->paid_at?->format('d/m/Y'),
+                'charge_id' => $charge?->id,
+                'bill_id' => $bill?->id,
             ];
         }
 
@@ -111,39 +111,39 @@ class ClienteEconomiaRelatorioService
             ->with('concessionaria')
             ->first();
 
-        if (!$charge && !$bill) {
+        if (! $charge && ! $bill) {
             return [];
         }
 
         $originalAmount = (float) ($charge?->original_amount ?? $bill?->valor_total ?? 0);
-        $finalAmount    = (float) ($charge?->final_amount    ?? $originalAmount);
+        $finalAmount = (float) ($charge?->final_amount ?? $originalAmount);
         $discountAmount = (float) ($charge?->discount_amount ?? 0);
-        $discountPct    = (float) ($charge?->discount_percent ?? 0);
-        $consumoKwh     = (float) ($bill?->consumo_kwh ?? 0);
-        $netSavings     = max(0, $originalAmount - $finalAmount);
+        $discountPct = (float) ($charge?->discount_percent ?? 0);
+        $consumoKwh = (float) ($bill?->consumo_kwh ?? 0);
+        $netSavings = max(0, $originalAmount - $finalAmount);
 
         return [
-            'month'             => $month,
-            'year'              => $year,
-            'label'             => $this->monthLabel($month, $year),
-            'concessionaria'    => $bill?->concessionaria?->nome ?? $charge?->bill?->concessionaria?->nome,
+            'month' => $month,
+            'year' => $year,
+            'label' => $this->monthLabel($month, $year),
+            'concessionaria' => $bill?->concessionaria?->nome ?? $charge?->bill?->concessionaria?->nome,
             'unidade_consumidora' => $bill?->unidade_consumidora,
-            'consumo_kwh'       => $consumoKwh,
-            'vencimento'        => $bill?->vencimento?->format('d/m/Y'),
-            'original_amount'   => $originalAmount,
-            'discount_percent'  => $discountPct,
-            'discount_amount'   => $discountAmount,
-            'manual_discount'   => (float) ($charge?->manual_discount_amount ?? 0),
-            'manual_addition'   => (float) ($charge?->manual_addition_amount ?? 0),
-            'final_amount'      => $finalAmount,
-            'net_savings'       => $netSavings,
-            'savings_percent'   => $originalAmount > 0 ? round(($netSavings / $originalAmount) * 100, 1) : 0,
-            'status'            => $charge?->status,
-            'due_date'          => $charge?->due_date?->format('d/m/Y'),
-            'paid_at'           => $charge?->paid_at?->format('d/m/Y'),
-            'pdf_url'           => $bill?->pdf_url,
-            'charge_id'         => $charge?->id,
-            'bill_id'           => $bill?->id,
+            'consumo_kwh' => $consumoKwh,
+            'vencimento' => $bill?->vencimento?->format('d/m/Y'),
+            'original_amount' => $originalAmount,
+            'discount_percent' => $discountPct,
+            'discount_amount' => $discountAmount,
+            'manual_discount' => (float) ($charge?->manual_discount_amount ?? 0),
+            'manual_addition' => (float) ($charge?->manual_addition_amount ?? 0),
+            'final_amount' => $finalAmount,
+            'net_savings' => $netSavings,
+            'savings_percent' => $originalAmount > 0 ? round(($netSavings / $originalAmount) * 100, 1) : 0,
+            'status' => $charge?->status,
+            'due_date' => $charge?->due_date?->format('d/m/Y'),
+            'paid_at' => $charge?->paid_at?->format('d/m/Y'),
+            'pdf_url' => $bill?->pdf_url,
+            'charge_id' => $charge?->id,
+            'bill_id' => $bill?->id,
         ];
     }
 
@@ -154,26 +154,26 @@ class ClienteEconomiaRelatorioService
         $withData = array_filter($monthlyData, fn ($m) => $m['has_data']);
 
         $totalOriginal = array_sum(array_column($withData, 'original_amount'));
-        $totalFinal    = array_sum(array_column($withData, 'final_amount'));
-        $totalSavings  = array_sum(array_column($withData, 'net_savings'));
-        $totalKwh      = array_sum(array_column($withData, 'consumo_kwh'));
-        $avgDiscount   = (float) ($profile->activeDiscountRule?->discount_percent ?? 0);
+        $totalFinal = array_sum(array_column($withData, 'final_amount'));
+        $totalSavings = array_sum(array_column($withData, 'net_savings'));
+        $totalKwh = array_sum(array_column($withData, 'consumo_kwh'));
+        $avgDiscount = (float) ($profile->activeDiscountRule?->discount_percent ?? 0);
         $monthsWithData = count($withData);
 
-        $bestMonth = !empty($withData)
+        $bestMonth = ! empty($withData)
             ? collect($withData)->sortByDesc('net_savings')->first()
             : null;
 
         return [
             'total_original_amount' => $totalOriginal,
-            'total_final_amount'    => $totalFinal,
-            'total_savings'         => $totalSavings,
-            'total_kwh'             => $totalKwh,
-            'avg_discount_percent'  => $avgDiscount,
-            'months_with_data'      => $monthsWithData,
-            'avg_savings_month'     => $monthsWithData > 0 ? round($totalSavings / $monthsWithData, 2) : 0,
-            'savings_percent_year'  => $totalOriginal > 0 ? round(($totalSavings / $totalOriginal) * 100, 1) : 0,
-            'best_month'            => $bestMonth,
+            'total_final_amount' => $totalFinal,
+            'total_savings' => $totalSavings,
+            'total_kwh' => $totalKwh,
+            'avg_discount_percent' => $avgDiscount,
+            'months_with_data' => $monthsWithData,
+            'avg_savings_month' => $monthsWithData > 0 ? round($totalSavings / $monthsWithData, 2) : 0,
+            'savings_percent_year' => $totalOriginal > 0 ? round(($totalSavings / $totalOriginal) * 100, 1) : 0,
+            'best_month' => $bestMonth,
         ];
     }
 
@@ -199,17 +199,17 @@ class ClienteEconomiaRelatorioService
             ->first();
 
         $totalOriginal = (float) ($totals?->total_original ?? 0);
-        $totalFinal    = (float) ($totals?->total_final ?? 0);
-        $totalSavings  = (float) ($totals?->total_savings ?? 0);
+        $totalFinal = (float) ($totals?->total_final ?? 0);
+        $totalSavings = (float) ($totals?->total_savings ?? 0);
 
         return [
-            'total_original'         => $totalOriginal,
-            'total_final'            => $totalFinal,
-            'total_savings'          => $totalSavings,
-            'total_paid'             => (float) ($paidTotals?->total_paid ?? 0),
-            'total_saved_paid'       => (float) ($paidTotals?->total_saved_paid ?? 0),
-            'total_charges'          => (int) ($totals?->total_charges ?? 0),
-            'overall_savings_pct'    => $totalOriginal > 0 ? round(($totalSavings / $totalOriginal) * 100, 1) : 0,
+            'total_original' => $totalOriginal,
+            'total_final' => $totalFinal,
+            'total_savings' => $totalSavings,
+            'total_paid' => (float) ($paidTotals?->total_paid ?? 0),
+            'total_saved_paid' => (float) ($paidTotals?->total_saved_paid ?? 0),
+            'total_charges' => (int) ($totals?->total_charges ?? 0),
+            'overall_savings_pct' => $totalOriginal > 0 ? round(($totalSavings / $totalOriginal) * 100, 1) : 0,
         ];
     }
 
@@ -233,12 +233,12 @@ class ClienteEconomiaRelatorioService
             : ($profile->razao_social ?? $profile->nome_fantasia);
 
         return [
-            'id'           => $profile->id,
-            'client_code'  => $profile->client_code,
+            'id' => $profile->id,
+            'client_code' => $profile->client_code,
             'display_name' => $name ?? '—',
-            'tipo_pessoa'  => $profile->tipo_pessoa,
-            'status'       => $profile->status,
-            'discount'     => (float) ($profile->activeDiscountRule?->discount_percent ?? 0),
+            'tipo_pessoa' => $profile->tipo_pessoa,
+            'status' => $profile->status,
+            'discount' => (float) ($profile->activeDiscountRule?->discount_percent ?? 0),
         ];
     }
 
@@ -250,19 +250,19 @@ class ClienteEconomiaRelatorioService
     private function monthName(int $month): string
     {
         return ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-                'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'][$month];
+            'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'][$month];
     }
 
     private function emptyReport(): array
     {
         return [
-            'profile'  => null,
-            'filters'  => [],
-            'summary'  => [],
-            'monthly'  => [],
+            'profile' => null,
+            'filters' => [],
+            'summary' => [],
+            'monthly' => [],
             'selected' => null,
-            'allTime'  => [],
-            'years'    => [],
+            'allTime' => [],
+            'years' => [],
         ];
     }
 }

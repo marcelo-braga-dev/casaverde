@@ -19,10 +19,10 @@ class ClientUsinaLinkController extends Controller
         $validated = $request->validated();
 
         $service->handle(
-            clientProfile:  $clientProfile,
-            usinaId:        (int) $validated['usina_id'],
-            startedAt:      $validated['started_at'],
-            notes:          $validated['notes'] ?? null,
+            clientProfile: $clientProfile,
+            usinaId: (int) $validated['usina_id'],
+            startedAt: $validated['started_at'],
+            notes: $validated['notes'] ?? null,
             consumerUnitId: isset($validated['consumer_unit_id']) ? (int) $validated['consumer_unit_id'] : null,
         );
 

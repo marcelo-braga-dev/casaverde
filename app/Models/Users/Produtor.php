@@ -3,7 +3,6 @@
 namespace App\Models\Users;
 
 use App\src\Roles\RoleUser;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,7 +15,7 @@ class Produtor extends Model
         static::addGlobalScope('produtor_filter', function ($query) {
             $user = Auth::user();
 
-//            if ($user && $user->role_id == RoleUser::$ADMIN) return;
+            //            if ($user && $user->role_id == RoleUser::$ADMIN) return;
 
             $query->whereHas('produtor', function ($q) use ($user) {
                 $q->where('consultor_id', $user->id);
@@ -26,7 +25,7 @@ class Produtor extends Model
 
     public function produtores()
     {
-        return (new User())->where('role_id', RoleUser::$PRODUTOR)
+        return (new User)->where('role_id', RoleUser::$PRODUTOR)
             ->somenteMeusClientes()
             ->orderBy('id', 'desc')
             ->get();

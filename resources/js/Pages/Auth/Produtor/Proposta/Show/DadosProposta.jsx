@@ -1,14 +1,5 @@
 import React from 'react';
 
-const STATUS_LABELS = {
-    rascunho: 'Rascunho',
-    emitida: 'Emitida',
-    aprovada: 'Aprovada',
-    recusada: 'Recusada',
-    expirada: 'Expirada',
-    convertida: 'Convertida',
-};
-
 const fmtMoney = (v, opts = {}) => v != null
     ? `R$ ${Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2, ...opts })}`
     : '—';
@@ -62,7 +53,6 @@ const DadosProposta = ({proposal, investmentSummary}) => {
                         <div>
                             <div style={styles.sectionTitle}>PROPOSTA DE INVESTIMENTO</div>
                             {proposal?.proposal_code && <p style={styles.sectionText}><strong>Código da Proposta:</strong> {proposal.proposal_code}</p>}
-                            {proposal?.status && <p style={styles.sectionText}><strong>Status:</strong> {STATUS_LABELS[proposal.status] ?? proposal.status}</p>}
                             {proposal?.valor_investimento && <p style={styles.sectionText}><strong>Valor do Investimento:</strong> {fmtMoney(proposal.valor_investimento)}</p>}
                             {proposal?.prazo_contrato && <p style={styles.sectionText}><strong>Prazo do Contrato:</strong> {proposal.prazo_contrato} meses</p>}
                             {proposal?.issued_at && <p style={styles.sectionText}><strong>Emitida em:</strong> {fmtDate(proposal.issued_at)}</p>}
@@ -92,12 +82,8 @@ const DadosProposta = ({proposal, investmentSummary}) => {
                                 <td style={styles.tableCellValue}>{fmtNumber(proposal?.media_geracao)} kWh/mês</td>
                             </tr>
                             <tr>
-                                <td style={styles.tableCellLabel}>Pagamento Anual Bruto</td>
-                                <td style={styles.tableCellValue}>{fmtMoney(investmentSummary?.pagamento_anual_bruto)} /ano</td>
-                            </tr>
-                            <tr>
-                                <td style={styles.tableCellLabel}>Pagamento Anual Líquido</td>
-                                <td style={styles.tableCellValue}>{fmtMoney(investmentSummary?.pagamento_anual_liquido)} /ano</td>
+                                <td style={styles.tableCellLabel}>Pagamento Mensal Previsto</td>
+                                <td style={styles.tableCellValue}>{fmtMoney(investmentSummary?.pagamento_mensal_previsto)} /mês</td>
                             </tr>
                             </tbody>
                         </table>
@@ -135,8 +121,7 @@ const styles = {
         height: '100%',
         boxSizing: 'border-box',
         color: '#000',
-        padding: 100,
-        paddingBlockStart: 300,
+        padding: 40,
         display: 'flex',
         flexDirection: 'column',
     },
@@ -168,10 +153,10 @@ const styles = {
     },
     sectionText: {
         fontSize: '18px',
-        marginBottom: '5px',
+        marginBottom: '0px',
     },
     disclaimer: {
-        fontSize: '12px',
+        fontSize: '14px',
         fontStyle: 'italic',
         fontWeight: 'normal',
         color: '#555',

@@ -49,7 +49,7 @@ class ClientDiscountRule extends Model
 
     public function isCurrentlyActive(): bool
     {
-        if (!$this->starts_on) {
+        if (! $this->starts_on) {
             return false;
         }
 

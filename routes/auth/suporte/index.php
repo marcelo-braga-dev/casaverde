@@ -1,4 +1,3 @@
 <?php
 
-require __DIR__ . '/suporte.php';
-
+require __DIR__.'/suporte.php';

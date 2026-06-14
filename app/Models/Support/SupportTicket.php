@@ -36,17 +36,17 @@ class SupportTicket extends Model
     ];
 
     protected $casts = [
-        'status'            => SupportTicketStatus::class,
-        'priority'          => SupportTicketPriority::class,
+        'status' => SupportTicketStatus::class,
+        'priority' => SupportTicketPriority::class,
         'first_response_at' => 'datetime',
-        'resolved_at'       => 'datetime',
-        'closed_at'         => 'datetime',
+        'resolved_at' => 'datetime',
+        'closed_at' => 'datetime',
     ];
 
     protected static function booted(): void
     {
         static::creating(function (SupportTicket $ticket) {
-            if (!$ticket->ticket_code) {
+            if (! $ticket->ticket_code) {
                 $ticket->ticket_code = static::generateCode();
             }
         });
@@ -55,7 +55,7 @@ class SupportTicket extends Model
     public static function generateCode(): string
     {
         do {
-            $code = 'CHM-' . strtoupper(substr(md5(uniqid()), 0, 6));
+            $code = 'CHM-'.strtoupper(substr(md5(uniqid()), 0, 6));
         } while (static::query()->where('ticket_code', $code)->exists());
 
         return $code;

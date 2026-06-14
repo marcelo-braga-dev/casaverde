@@ -8,4 +8,3 @@ Route::prefix('concessionarias')
     ->group(function () {
         Route::get('get-all', GetAllConcessionariasController::class)->name('get-all');
     });
-

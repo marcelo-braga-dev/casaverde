@@ -31,7 +31,7 @@ class ClientContract extends Model
     protected static function booted(): void
     {
         static::creating(function (ClientContract $contract) {
-            if (!$contract->contract_code) {
+            if (! $contract->contract_code) {
                 $contract->contract_code = static::generateContractCode();
             }
         });
@@ -40,7 +40,7 @@ class ClientContract extends Model
     public static function generateContractCode(): string
     {
         do {
-            $code = 'CTR-' . now()->format('Ymd') . '-' . str_pad((string) random_int(1, 9999), 4, '0', STR_PAD_LEFT);
+            $code = 'CTR-'.now()->format('Ymd').'-'.str_pad((string) random_int(1, 9999), 4, '0', STR_PAD_LEFT);
         } while (static::query()->where('contract_code', $code)->exists());
 
         return $code;

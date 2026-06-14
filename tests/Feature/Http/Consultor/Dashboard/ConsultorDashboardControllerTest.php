@@ -11,13 +11,12 @@ describe('Consultor Dashboard Controller', function () {
         $this->actingAs($consultor)
             ->get(route('consultor.dashboard'))
             ->assertOk()
-            ->assertInertia(fn ($page) =>
-                $page->component('Consultor/Dashboard/Page')
-                    ->has('dashboard')
-                    ->has('dashboard.summary')
-                    ->has('dashboard.recentClients')
-                    ->has('dashboard.recentProposals')
-                    ->has('dashboard.quickActions')
+            ->assertInertia(fn ($page) => $page->component('Consultor/Dashboard/Page')
+                ->has('dashboard')
+                ->has('dashboard.summary')
+                ->has('dashboard.recentClients')
+                ->has('dashboard.recentProposals')
+                ->has('dashboard.quickActions')
             );
     });
 
@@ -55,32 +54,30 @@ describe('Consultor Dashboard Controller', function () {
 
         $this->actingAs($consultor)
             ->get(route('consultor.dashboard'))
-            ->assertInertia(fn ($page) =>
-                $page->has('dashboard.summary.clients_total')
-                    ->has('dashboard.summary.clients_active')
-                    ->has('dashboard.summary.clients_this_month')
-                    ->has('dashboard.summary.producers_total')
-                    ->has('dashboard.summary.producers_active')
-                    ->has('dashboard.summary.usinas_total')
-                    ->has('dashboard.summary.client_proposals_open')
-                    ->has('dashboard.summary.producer_proposals_open')
-                    ->has('dashboard.summary.bills_pending_review')
-                    ->has('dashboard.summary.leads_total')
-                    ->has('dashboard.summary.leads_this_month')
+            ->assertInertia(fn ($page) => $page->has('dashboard.summary.clients_total')
+                ->has('dashboard.summary.clients_active')
+                ->has('dashboard.summary.clients_this_month')
+                ->has('dashboard.summary.producers_total')
+                ->has('dashboard.summary.producers_active')
+                ->has('dashboard.summary.usinas_total')
+                ->has('dashboard.summary.client_proposals_open')
+                ->has('dashboard.summary.producer_proposals_open')
+                ->has('dashboard.summary.bills_pending_review')
+                ->has('dashboard.summary.leads_total')
+                ->has('dashboard.summary.leads_this_month')
             );
     });
 
     it('dashboard metrics reflect only the consultor own data', function () {
         $consultor = User::factory()->consultor()->create();
-        $other     = User::factory()->consultor()->create();
+        $other = User::factory()->consultor()->create();
 
         ClientProfile::factory()->count(3)->create(['consultor_user_id' => $consultor->id]);
         ClientProfile::factory()->count(5)->create(['consultor_user_id' => $other->id]);
 
         $this->actingAs($consultor)
             ->get(route('consultor.dashboard'))
-            ->assertInertia(fn ($page) =>
-                $page->where('dashboard.summary.clients_total', 3)
+            ->assertInertia(fn ($page) => $page->where('dashboard.summary.clients_total', 3)
             );
     });
 });

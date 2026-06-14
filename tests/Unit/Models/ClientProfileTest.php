@@ -2,8 +2,9 @@
 
 use App\Models\Cliente\ClientProfile;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\TestCase;
 
-uses(Tests\TestCase::class, RefreshDatabase::class);
+uses(TestCase::class, RefreshDatabase::class);
 
 describe('ClientProfile model', function () {
 
@@ -47,9 +48,9 @@ describe('ClientProfile model', function () {
 
     it('display_name uses nome for pessoa fisica', function () {
         $client = new ClientProfile([
-            'tipo_pessoa'   => 'pf',
-            'nome'          => 'João da Silva',
-            'razao_social'  => null,
+            'tipo_pessoa' => 'pf',
+            'nome' => 'João da Silva',
+            'razao_social' => null,
             'nome_fantasia' => null,
         ]);
         expect($client->display_name)->toBe('João da Silva');
@@ -57,9 +58,9 @@ describe('ClientProfile model', function () {
 
     it('display_name uses razao_social for pessoa juridica', function () {
         $client = new ClientProfile([
-            'tipo_pessoa'   => 'pj',
-            'nome'          => null,
-            'razao_social'  => 'Empresa Teste LTDA',
+            'tipo_pessoa' => 'pj',
+            'nome' => null,
+            'razao_social' => 'Empresa Teste LTDA',
             'nome_fantasia' => 'Empresa Fantasia',
         ]);
         expect($client->display_name)->toBe('Empresa Teste LTDA');
@@ -67,9 +68,9 @@ describe('ClientProfile model', function () {
 
     it('display_name falls back to nome_fantasia when razao_social is empty for pj', function () {
         $client = new ClientProfile([
-            'tipo_pessoa'   => 'pj',
-            'nome'          => null,
-            'razao_social'  => null,
+            'tipo_pessoa' => 'pj',
+            'nome' => null,
+            'razao_social' => null,
             'nome_fantasia' => 'Fantasia SA',
         ]);
         expect($client->display_name)->toBe('Fantasia SA');
@@ -77,9 +78,9 @@ describe('ClientProfile model', function () {
 
     it('display_name returns dash when all name fields are empty', function () {
         $client = new ClientProfile([
-            'tipo_pessoa'   => 'pf',
-            'nome'          => null,
-            'razao_social'  => null,
+            'tipo_pessoa' => 'pf',
+            'nome' => null,
+            'razao_social' => null,
             'nome_fantasia' => null,
         ]);
         expect($client->display_name)->toBe('-');

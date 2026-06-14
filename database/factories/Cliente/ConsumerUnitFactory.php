@@ -16,6 +16,7 @@ class ConsumerUnitFactory extends Factory
             'client_profile_id' => ClientProfile::factory(),
             'uc_code' => fake()->unique()->numerify('##########'),
             'label' => null,
+            'consumo_previsto_kwh_mes' => fake()->randomFloat(2, 50, 1000),
             'concessionaria_id' => null,
             'address_id' => null,
             'status' => 'active',

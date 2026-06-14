@@ -4,6 +4,7 @@ namespace App\Models\Proposta;
 
 use App\Models\BaseModel;
 use App\Models\Cliente\ClientContract;
+use App\Models\Endereco\Address;
 use App\Models\Produtor\ProducerProfile;
 use App\Models\Users\User;
 use App\Models\Usina\Concessionaria;
@@ -42,6 +43,7 @@ class ProducerProposal extends BaseModel
     public function getProposalCodeAttribute($value)
     {
         $id = $this->id;
+
         return "PC$id";
     }
 
@@ -62,7 +64,7 @@ class ProducerProposal extends BaseModel
 
     public function address()
     {
-        return $this->belongsTo(\App\Models\Endereco\Address::class, 'address_id');
+        return $this->belongsTo(Address::class, 'address_id');
     }
 
     public function contract()

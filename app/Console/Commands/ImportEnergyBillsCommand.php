@@ -9,6 +9,7 @@ use Illuminate\Console\Command;
 class ImportEnergyBillsCommand extends Command
 {
     protected $signature = 'energy-bills:import {--user_id=}';
+
     protected $description = 'Importa contas de energia a partir de caixas IMAP dos clientes.';
 
     public function handle(ImportEnergyBillService $service): int
@@ -25,6 +26,7 @@ class ImportEnergyBillsCommand extends Command
 
         if ($settings->isEmpty()) {
             $this->warn('Nenhuma configuração ativa de importação foi encontrada.');
+
             return self::SUCCESS;
         }
 

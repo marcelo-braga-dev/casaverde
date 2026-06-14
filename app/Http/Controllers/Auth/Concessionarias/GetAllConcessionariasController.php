@@ -9,7 +9,7 @@ class GetAllConcessionariasController extends Controller
 {
     public function __invoke()
     {
-        $get = (new Concessionarias())
+        $get = (new Concessionarias)
             ->orderBy('nome')
             ->get();
 

@@ -21,27 +21,27 @@ abstract class AbstractImapFetcherService
             ['DISABLE_AUTHENTICATOR' => 'GSSAPI']
         );
 
-        if (!$imap) {
-            throw new RuntimeException('Falha ao conectar no IMAP: ' . (imap_last_error() ?: 'erro desconhecido'));
+        if (! $imap) {
+            throw new RuntimeException('Falha ao conectar no IMAP: '.(imap_last_error() ?: 'erro desconhecido'));
         }
 
         try {
             $criteria = 'UNSEEN';
 
-            $senderFilter  = $setting->effective_sender_filter;
+            $senderFilter = $setting->effective_sender_filter;
             $subjectFilter = $setting->effective_subject_filter;
 
             if ($senderFilter) {
-                $criteria .= ' FROM "' . addslashes($senderFilter) . '"';
+                $criteria .= ' FROM "'.addslashes($senderFilter).'"';
             }
 
             if ($subjectFilter) {
-                $criteria .= ' SUBJECT "' . addslashes($subjectFilter) . '"';
+                $criteria .= ' SUBJECT "'.addslashes($subjectFilter).'"';
             }
 
             $uids = imap_search($imap, $criteria, SE_UID);
 
-            if (!$uids) {
+            if (! $uids) {
                 return [];
             }
 
@@ -54,13 +54,13 @@ abstract class AbstractImapFetcherService
                 $overviewList = imap_fetch_overview($imap, (string) $messageNumber, 0);
                 $overview = $overviewList[0] ?? null;
 
-                if (!$overview) {
+                if (! $overview) {
                     continue;
                 }
 
                 $structure = imap_fetchstructure($imap, $messageNumber);
 
-                if (!$structure) {
+                if (! $structure) {
                     continue;
                 }
 
@@ -88,7 +88,7 @@ abstract class AbstractImapFetcherService
 
     private function buildMailboxString(ClientEmailImportSetting $setting): string
     {
-        $flags      = '/imap';
+        $flags = '/imap';
         $encryption = $setting->effective_imap_encryption;
 
         if ($encryption === 'ssl') {
@@ -115,7 +115,7 @@ abstract class AbstractImapFetcherService
             foreach ($part->parts as $index => $childPart) {
                 $childPartNumber = $partNumber === ''
                     ? (string) ($index + 1)
-                    : $partNumber . '.' . ($index + 1);
+                    : $partNumber.'.'.($index + 1);
 
                 $attachments = array_merge(
                     $attachments,
@@ -134,7 +134,7 @@ abstract class AbstractImapFetcherService
             $body = imap_fetchbody($imap, $messageNumber, $partNumber ?: '1', FT_PEEK);
 
             $attachments[] = [
-                'filename' => $filename ?: ('fatura-' . uniqid() . '.pdf'),
+                'filename' => $filename ?: ('fatura-'.uniqid().'.pdf'),
                 'content' => $this->decodePartBody($body, (int) ($part->encoding ?? 0)),
                 'content_type' => 'application/pdf',
             ];
@@ -147,13 +147,13 @@ abstract class AbstractImapFetcherService
     {
         $attributes = [];
 
-        if (!empty($part->dparameters)) {
+        if (! empty($part->dparameters)) {
             foreach ($part->dparameters as $parameter) {
                 $attributes[strtolower($parameter->attribute)] = $parameter->value;
             }
         }
 
-        if (!empty($part->parameters)) {
+        if (! empty($part->parameters)) {
             foreach ($part->parameters as $parameter) {
                 $attributes[strtolower($parameter->attribute)] = $parameter->value;
             }

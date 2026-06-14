@@ -5,7 +5,6 @@ namespace App\Http\Requests\Proposta;
 use App\Models\Cliente\ClientProfile;
 use App\src\Roles\RoleUser;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class StoreCommercialProposalRequest extends FormRequest
 {

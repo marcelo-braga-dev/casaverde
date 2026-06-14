@@ -16,7 +16,7 @@ class ClientAccessInviteController extends Controller
     ) {
         $this->authorize('update', $clientProfile);
 
-        $service->handle(
+        $invite = $service->handle(
             $clientProfile,
             $request->validated()['email'],
             (int) $request->validated()['expires_in_hours']
@@ -24,6 +24,8 @@ class ClientAccessInviteController extends Controller
 
         return redirect()
             ->back()
-            ->with('success', 'Convite de ativação enviado com sucesso.');
+            ->with('success', 'Convite de ativação enviado com sucesso.')
+            ->with('invite_link', route('cliente.activation.form', ['token' => $invite->token]))
+            ->with('invite_email', $invite->email);
     }
 }

@@ -1,0 +1,200 @@
+import Layout from "@/Layouts/UserLayout/Layout.jsx";
+import Endereco from "@/Components/UserData/Endereco.jsx";
+import { Head, useForm } from "@inertiajs/react";
+import {
+    Button,
+    Card,
+    CardContent,
+    CardHeader,
+    InputAdornment,
+    MenuItem,
+    TextField,
+} from "@mui/material";
+import Grid from "@mui/material/Grid2";
+import { IconBolt, IconDeviceFloppy } from "@tabler/icons-react";
+
+function clientLabel(client) {
+    const name = client.tipo_pessoa === "pj"
+        ? (client.razao_social || client.nome_fantasia || client.nome)
+        : client.nome;
+
+    const document = client.cnpj || client.cpf;
+
+    return document ? `${name} — ${document}` : name;
+}
+
+export default function Page({ clients = [], concessionarias = [] }) {
+    const { data, setData, post, processing, errors } = useForm({
+        client_profile_id: "",
+        uc_code: "",
+        label: "",
+        consumo_previsto_kwh_mes: "",
+        concessionaria_id: "",
+        status: "active",
+        notes: "",
+        address: {
+            cep: "",
+            rua: "",
+            numero: "",
+            complemento: "",
+            bairro: "",
+            cidade: "",
+            estado: "",
+            referencia: "",
+        },
+    });
+
+    const submit = (e) => {
+        e.preventDefault();
+
+        post(route("consultor.cliente.consumer-units.store"));
+    };
+
+    return (
+        <Layout titlePage="Nova Unidade Consumidora" menu="clientes" subMenu="consumer-units-index" backPage>
+            <Head title="Nova Unidade Consumidora" />
+
+            <form onSubmit={submit}>
+                <Card sx={{ mb: 3 }}>
+                    <CardHeader title="Cadastrar Unidade Consumidora" avatar={<IconBolt />} />
+
+                    <CardContent>
+                        <Grid container spacing={2}>
+                            <Grid size={{ xs: 12, md: 6 }}>
+                                <TextField
+                                    label="Cliente"
+                                    value={data.client_profile_id}
+                                    onChange={(e) => setData("client_profile_id", e.target.value)}
+                                    error={!!errors.client_profile_id}
+                                    helperText={errors.client_profile_id}
+                                    select
+                                    required
+                                    fullWidth
+                                >
+                                    <MenuItem value="">Selecione o cliente...</MenuItem>
+                                    {clients.map((client) => (
+                                        <MenuItem key={client.id} value={client.id}>
+                                            {clientLabel(client)}
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
+                            </Grid>
+
+                            <Grid size={{ xs: 12, md: 3 }}>
+                                <TextField
+                                    label="Código UC"
+                                    value={data.uc_code}
+                                    onChange={(e) => setData("uc_code", e.target.value)}
+                                    error={!!errors.uc_code}
+                                    helperText={errors.uc_code}
+                                    required
+                                    fullWidth
+                                />
+                            </Grid>
+
+                            <Grid size={{ xs: 12, md: 3 }}>
+                                <TextField
+                                    label="Rótulo"
+                                    value={data.label}
+                                    onChange={(e) => setData("label", e.target.value)}
+                                    error={!!errors.label}
+                                    helperText={errors.label ?? "Ex: Casa Principal"}
+                                    fullWidth
+                                />
+                            </Grid>
+
+                            <Grid size={{ xs: 12, md: 4 }}>
+                                <TextField
+                                    label="Consumo Previsto kWh/mês"
+                                    value={data.consumo_previsto_kwh_mes}
+                                    onChange={(e) => setData("consumo_previsto_kwh_mes", e.target.value)}
+                                    error={!!errors.consumo_previsto_kwh_mes}
+                                    helperText={errors.consumo_previsto_kwh_mes ?? "Usado para calcular a alocação na usina"}
+                                    type="number"
+                                    inputProps={{ min: 0, step: "0.01" }}
+                                    slotProps={{
+                                        input: {
+                                            endAdornment: <InputAdornment position="end">kWh/mês</InputAdornment>,
+                                        },
+                                    }}
+                                    required
+                                    fullWidth
+                                />
+                            </Grid>
+
+                            <Grid size={{ xs: 12, md: 4 }}>
+                                <TextField
+                                    label="Concessionária"
+                                    value={data.concessionaria_id}
+                                    onChange={(e) => setData("concessionaria_id", e.target.value)}
+                                    error={!!errors.concessionaria_id}
+                                    helperText={errors.concessionaria_id}
+                                    select
+                                    fullWidth
+                                >
+                                    <MenuItem value="">Selecione...</MenuItem>
+                                    {concessionarias.map((c) => (
+                                        <MenuItem key={c.id} value={c.id}>
+                                            {c.nome}{c.estado ? ` (${c.estado})` : ""}
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
+                            </Grid>
+
+                            <Grid size={{ xs: 12, md: 4 }}>
+                                <TextField
+                                    label="Status"
+                                    value={data.status}
+                                    onChange={(e) => setData("status", e.target.value)}
+                                    error={!!errors.status}
+                                    helperText={errors.status}
+                                    select
+                                    required
+                                    fullWidth
+                                >
+                                    <MenuItem value="active">Ativa</MenuItem>
+                                    <MenuItem value="inactive">Inativa</MenuItem>
+                                    <MenuItem value="cancelled">Cancelada</MenuItem>
+                                </TextField>
+                            </Grid>
+
+                            <Grid size={12}>
+                                <TextField
+                                    label="Observações"
+                                    value={data.notes}
+                                    onChange={(e) => setData("notes", e.target.value)}
+                                    error={!!errors.notes}
+                                    helperText={errors.notes}
+                                    multiline
+                                    rows={2}
+                                    fullWidth
+                                />
+                            </Grid>
+                        </Grid>
+                    </CardContent>
+                </Card>
+
+                <Endereco
+                    title="Endereço da UC"
+                    endereco={data.address}
+                    setEndereco={(value) => setData("address", value)}
+                    required
+                />
+
+                <Card sx={{ mt: 3 }}>
+                    <CardContent>
+                        <Button
+                            type="submit"
+                            color="success"
+                            variant="contained"
+                            startIcon={<IconDeviceFloppy />}
+                            disabled={processing}
+                        >
+                            Cadastrar
+                        </Button>
+                    </CardContent>
+                </Card>
+            </form>
+        </Layout>
+    );
+}

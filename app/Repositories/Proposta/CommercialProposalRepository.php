@@ -21,26 +21,25 @@ class CommercialProposalRepository
         }
 
         // Busca textual (código, nome do cliente, UC)
-        if (!empty($filters['search'])) {
-            $search = '%' . $filters['search'] . '%';
+        if (! empty($filters['search'])) {
+            $search = '%'.$filters['search'].'%';
             $query->where(function ($q) use ($search) {
-                $q->whereHas('clientProfile', fn ($c) =>
-                    $c->where('nome', 'like', $search)
-                      ->orWhere('razao_social', 'like', $search)
-                      ->orWhere('cpf', 'like', $search)
-                      ->orWhere('cnpj', 'like', $search)
+                $q->whereHas('clientProfile', fn ($c) => $c->where('nome', 'like', $search)
+                    ->orWhere('razao_social', 'like', $search)
+                    ->orWhere('cpf', 'like', $search)
+                    ->orWhere('cnpj', 'like', $search)
                 )
-                ->orWhere('unidade_consumidora', 'like', $search);
+                    ->orWhere('unidade_consumidora', 'like', $search);
             });
         }
 
         // Status
-        if (!empty($filters['status'])) {
+        if (! empty($filters['status'])) {
             $query->where('status', $filters['status']);
         }
 
         // Concessionária
-        if (!empty($filters['concessionaria_id'])) {
+        if (! empty($filters['concessionaria_id'])) {
             $query->where('concessionaria_id', $filters['concessionaria_id']);
         }
 

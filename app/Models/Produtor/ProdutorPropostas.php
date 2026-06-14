@@ -41,7 +41,7 @@ class ProdutorPropostas extends Model
         static::addGlobalScope('consultor_filter', function (Builder $query) {
             $user = Auth::user();
 
-            if (!$user) {
+            if (! $user) {
                 return;
             }
 
@@ -51,6 +51,7 @@ class ProdutorPropostas extends Model
 
             if ((int) $user->role_id === RoleUser::$CONSULTOR) {
                 $query->where('consultor_id', $user->id);
+
                 return;
             }
 

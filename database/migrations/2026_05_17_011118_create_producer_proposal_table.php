@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('producer_profile_id')->constrained('producer_profiles')->cascadeOnDelete();
             $table->foreignId('consultor_user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('concessionaria_id')->nullable()->constrained('concessionarias')->nullOnDelete();
-            $table->foreignId('address_id') ->nullable()->constrained('addresses')->nullOnDelete();
+            $table->foreignId('address_id')->nullable()->constrained('addresses')->nullOnDelete();
 
             $table->string('status')->default('emitida');
             $table->decimal('media_geracao', 12, 2)->nullable();

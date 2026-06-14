@@ -18,11 +18,11 @@ class ActivateClientAccountService
             ->where('token', $token)
             ->first();
 
-        if (!$invite) {
+        if (! $invite) {
             throw new InvalidArgumentException('Convite inválido.');
         }
 
-        if (!$invite->canBeUsed()) {
+        if (! $invite->canBeUsed()) {
             throw new InvalidArgumentException('Este convite expirou ou já foi utilizado.');
         }
 

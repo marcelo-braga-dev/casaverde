@@ -36,7 +36,7 @@ class EnergyBillPdfParserService
             '/([\d\.\,]+)\s*KWH/iu',
         ]);
 
-        if (!$unidadeConsumidora || !$referencia || !$vencimentoRaw || !$totalPagarRaw) {
+        if (! $unidadeConsumidora || ! $referencia || ! $vencimentoRaw || ! $totalPagarRaw) {
             throw new DomainException('Não foi possível localizar todos os campos obrigatórios no PDF.');
         }
 
@@ -92,7 +92,7 @@ class EnergyBillPdfParserService
     private function normalizeReference(string $value): string
     {
         if (preg_match('/(0[1-9]|1[0-2])\/(\d{4})/', $value, $matches)) {
-            return $matches[1] . '/' . $matches[2];
+            return $matches[1].'/'.$matches[2];
         }
 
         throw new DomainException('Referência inválida encontrada no PDF.');

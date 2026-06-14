@@ -15,7 +15,7 @@ class GerarContratoProdutorController extends Controller
             'title2' => 'SOLMAR COOPERATIVA',
         ];
 
-        $pdf = Pdf::loadView('pdf.contratos.usina', $data);
+        $pdf = PDF::loadView('pdf.contratos.usina', $data);
 
         return $pdf->download('contrato.pdf');
     }

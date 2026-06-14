@@ -22,7 +22,7 @@ class ProdutorPropostasController extends Controller
 
     public function store(StoreProdutorPropostaRequest $request)
     {
-        (new ProdutorPropostaRepository())->store($request->validated());
+        (new ProdutorPropostaRepository)->store($request->validated());
 
         AlertMessage::success('Proposta gerada com sucesso!');
 
@@ -31,7 +31,7 @@ class ProdutorPropostasController extends Controller
 
     public function show($id)
     {
-        $proposta = (new ProdutorPropostaRepository())->find((int) $id);
+        $proposta = (new ProdutorPropostaRepository)->find((int) $id);
 
         abort_unless($proposta, 404);
 

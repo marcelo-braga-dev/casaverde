@@ -1,6 +1,7 @@
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
-import { Head } from "@inertiajs/react";
+import { Head, usePage } from "@inertiajs/react";
 import {
+    Alert,
     Box,
     Button,
     Card,
@@ -12,6 +13,7 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import {
+    IconBrandWhatsapp,
     IconCalendar,
     IconClockHour4,
     IconCurrencyReal,
@@ -22,6 +24,7 @@ import {
     IconBolt,
 } from "@tabler/icons-react";
 import PropostaBaixar from "@/Pages/Auth/Cliente/Proposta/Show/Propostas.jsx";
+import WhatsAppButton from "@/Components/WhatsApp/WhatsAppButton";
 import formatCurrency from "@/Utils/formatCurrency.js";
 
 const cardSx = {
@@ -88,6 +91,7 @@ const statusConfig = {
 };
 
 const Page = ({ proposal }) => {
+    const { flash } = usePage().props;
     const client = proposal?.client_profile;
 
     const getClientName = () =>
@@ -149,14 +153,52 @@ const Page = ({ proposal }) => {
                                     </Typography>
                                 </Box>
                             </Stack>
-                            <Chip
-                                label={statusCfg.label}
-                                color={statusCfg.color}
-                                sx={{ fontWeight: 800, fontSize: "0.8rem", px: 1 }}
-                            />
+                            <Stack direction="row" alignItems="center" gap={1.5}>
+                                <Chip
+                                    label={statusCfg.label}
+                                    color={statusCfg.color}
+                                    sx={{ fontWeight: 800, fontSize: "0.8rem", px: 1 }}
+                                />
+
+                                <WhatsAppButton
+                                    templateKey="compartilhar_proposta"
+                                    phone={client?.contacts?.celular}
+                                    variables={{
+                                        cliente_nome: getClientName(),
+                                        link_proposta: route("consultor.propostas.cliente.pdf", proposal.id),
+                                    }}
+                                    label="Enviar Proposta"
+                                    variant="contained"
+                                    startIcon={<IconBrandWhatsapp size={17} />}
+                                    sx={{ bgcolor: "#25D366", color: "#fff", "&:hover": { bgcolor: "#1ebe5b" } }}
+                                />
+                            </Stack>
                         </Stack>
                     </CardContent>
                 </Card>
+
+                {flash?.success && (
+                    <Alert
+                        severity="success"
+                        action={
+                            <WhatsAppButton
+                                templateKey="proposta_enviada"
+                                phone={client?.contacts?.celular}
+                                variables={{
+                                    cliente_nome: getClientName(),
+                                    link_proposta: route("consultor.propostas.cliente.pdf", proposal.id),
+                                }}
+                                label="Avisar Cliente por WhatsApp"
+                                variant="outlined"
+                                color="success"
+                                size="small"
+                                startIcon={<IconBrandWhatsapp size={16} />}
+                            />
+                        }
+                    >
+                        {flash.success}
+                    </Alert>
+                )}
 
                 <Grid container spacing={3}>
                     {/* Dados principais */}

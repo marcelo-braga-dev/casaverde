@@ -6,7 +6,7 @@ use App\src\Roles\RoleUser;
 describe('User model', function () {
 
     it('isAdmin returns true only for admin role', function () {
-        $admin     = new User(['role_id' => RoleUser::$ADMIN]);
+        $admin = new User(['role_id' => RoleUser::$ADMIN]);
         $consultor = new User(['role_id' => RoleUser::$CONSULTOR]);
 
         expect($admin->isAdmin())->toBeTrue()
@@ -15,7 +15,7 @@ describe('User model', function () {
 
     it('isConsultor returns true only for consultor role', function () {
         $consultor = new User(['role_id' => RoleUser::$CONSULTOR]);
-        $admin     = new User(['role_id' => RoleUser::$ADMIN]);
+        $admin = new User(['role_id' => RoleUser::$ADMIN]);
 
         expect($consultor->isConsultor())->toBeTrue()
             ->and($admin->isConsultor())->toBeFalse();
@@ -23,14 +23,14 @@ describe('User model', function () {
 
     it('isProdutor returns true only for produtor role', function () {
         $produtor = new User(['role_id' => RoleUser::$PRODUTOR]);
-        $cliente  = new User(['role_id' => RoleUser::$CLIENTE]);
+        $cliente = new User(['role_id' => RoleUser::$CLIENTE]);
 
         expect($produtor->isProdutor())->toBeTrue()
             ->and($cliente->isProdutor())->toBeFalse();
     });
 
     it('isCliente returns true only for cliente role', function () {
-        $cliente  = new User(['role_id' => RoleUser::$CLIENTE]);
+        $cliente = new User(['role_id' => RoleUser::$CLIENTE]);
         $produtor = new User(['role_id' => RoleUser::$PRODUTOR]);
 
         expect($cliente->isCliente())->toBeTrue()

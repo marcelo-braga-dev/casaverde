@@ -7,10 +7,10 @@ use App\Repositories\Admin\AdminRepository;
 
 class GetAdminController extends Controller
 {
-   public function __invoke()
-   {
-       $users = (new AdminRepository())->getAll();
+    public function __invoke()
+    {
+        $users = (new AdminRepository)->getAll();
 
         return response()->json($users);
-   }
+    }
 }

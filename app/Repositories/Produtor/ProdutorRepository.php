@@ -21,8 +21,8 @@ class ProdutorRepository
     {
         try {
             return DB::transaction(function () use ($data) {
-                $role = (new RoleUser())->produtor();
-                $service = new CreateUserService();
+                $role = (new RoleUser)->produtor();
+                $service = new CreateUserService;
 
                 $dto = CreateUsuarioDTO::fromArray($data);
                 $userData = $dto->toArray();
@@ -57,12 +57,12 @@ class ProdutorRepository
 
     public function getAll()
     {
-        return (new Produtor())->produtores();
+        return (new Produtor)->produtores();
     }
 
     public function getGroupByStatus()
     {
-        return (new Produtor())
+        return (new Produtor)
             ->produtores()
             ->groupBy('status');
     }

@@ -37,8 +37,8 @@ class DashboardController extends Controller
 
         return Inertia::render('Produtor/Dashboard/Page', [
             'producerProfile' => $producerProfile,
-            'usinas'          => $usinas,
-            'leads'           => $leads,
+            'usinas' => $usinas,
+            'leads' => $leads,
         ]);
     }
 }

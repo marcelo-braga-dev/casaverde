@@ -16,12 +16,12 @@ class Enderecos extends Model
         'estado',
         'referencia',
         'latitude',
-        'longitude'
+        'longitude',
     ];
 
-    //--------------
+    // --------------
     // setters
-    //--------------
+    // --------------
     public function setCepAttribute($value)
     {
         $this->attributes['cep'] = $value ? preg_replace('/\D/', '', $value) : null;

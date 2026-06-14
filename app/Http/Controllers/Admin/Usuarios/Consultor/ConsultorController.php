@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin\Usuarios\Consultor;
 
 use App\Http\Controllers\Controller;
-use App\Models\Acesso\UserAccessLog;
 use App\Models\Cliente\ClientProfile;
 use App\Models\Proposta\CommercialProposal;
 use App\Models\Users\User;
@@ -26,21 +25,20 @@ class ConsultorController extends Controller
             ->where('role_id', RoleUser::$CONSULTOR)
             ->latest();
 
-        if (!empty($filters['search'])) {
-            $s = '%' . $filters['search'] . '%';
-            $query->where(fn ($q) =>
-                $q->where('name', 'like', $s)
-                  ->orWhere('email', 'like', $s)
+        if (! empty($filters['search'])) {
+            $s = '%'.$filters['search'].'%';
+            $query->where(fn ($q) => $q->where('name', 'like', $s)
+                ->orWhere('email', 'like', $s)
             );
         }
 
-        if (!empty($filters['status'])) {
+        if (! empty($filters['status'])) {
             $query->where('status', $filters['status']);
         }
 
         return Inertia::render('Admin/User/Consultor/Index/Page', [
             'consultores' => $query->paginate(20)->withQueryString(),
-            'filters'     => $filters,
+            'filters' => $filters,
         ]);
     }
 
@@ -54,7 +52,7 @@ class ConsultorController extends Controller
     public function store(Request $request)
     {
         $consultor = (
-        new ConsultorRepository()
+        new ConsultorRepository
         )->create($request);
 
         return redirect()->route(
@@ -128,27 +126,23 @@ class ConsultorController extends Controller
                 'consultor' => $consultor,
 
                 'stats' => [
-                    'clients_count' =>
-                        $consultor->clientes()->count(),
+                    'clients_count' => $consultor->clientes()->count(),
 
-                    'proposals_count' =>
-                        CommercialProposal::query()
-                            ->where(
-                                'consultor_user_id',
-                                $consultor->id
-                            )
-                            ->count(),
+                    'proposals_count' => CommercialProposal::query()
+                        ->where(
+                            'consultor_user_id',
+                            $consultor->id
+                        )
+                        ->count(),
 
-                    'usinas_count' =>
-                        UsinaSolar::query()
-                            ->where(
-                                'consultor_user_id',
-                                $consultor->id
-                            )
-                            ->count(),
+                    'usinas_count' => UsinaSolar::query()
+                        ->where(
+                            'consultor_user_id',
+                            $consultor->id
+                        )
+                        ->count(),
 
-                    'producers_count' =>
-                        $consultor->produtores()->count(),
+                    'producers_count' => $consultor->produtores()->count(),
                 ],
 
                 'clients' => $clients,

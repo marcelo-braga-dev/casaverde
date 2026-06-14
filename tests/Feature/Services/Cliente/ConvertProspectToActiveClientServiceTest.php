@@ -7,7 +7,7 @@ use App\Services\Cliente\ConvertProspectToActiveClientService;
 describe('ConvertProspectToActiveClientService', function () {
 
     beforeEach(function () {
-        $this->service   = app(ConvertProspectToActiveClientService::class);
+        $this->service = app(ConvertProspectToActiveClientService::class);
         $this->consultor = User::factory()->consultor()->create();
     });
 
@@ -22,8 +22,8 @@ describe('ConvertProspectToActiveClientService', function () {
             ->and($updated->is_active_client)->toBeTrue();
 
         $this->assertDatabaseHas('client_profiles', [
-            'id'               => $client->id,
-            'status'           => 'contrato_assinado',
+            'id' => $client->id,
+            'status' => 'contrato_assinado',
             'is_active_client' => true,
         ]);
     });
@@ -33,7 +33,7 @@ describe('ConvertProspectToActiveClientService', function () {
             'consultor_user_id' => null,
         ]);
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('consultor responsável');
 
         $this->service->handle($client);

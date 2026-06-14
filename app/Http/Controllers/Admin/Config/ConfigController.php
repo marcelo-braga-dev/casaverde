@@ -12,19 +12,19 @@ class ConfigController extends Controller
 {
     public function index()
     {
-        $taxaReducaoConta = (new ConfigService())->getTaxaReducao();
+        $taxaReducaoConta = (new ConfigService)->getTaxaReducao();
 
         return Inertia::render('Admin/Config/Index', compact('taxaReducaoConta'));
     }
 
     public function getTaxaReducaoConta()
     {
-        return (new ConfigService())->getTaxaReducao();
+        return (new ConfigService)->getTaxaReducao();
     }
 
     public function updateTaxaReducaoConta(Request $request)
     {
-        (new ConfigService())->setTaxaReducao($request->get('taxaReducao'));
+        (new ConfigService)->setTaxaReducao($request->get('taxaReducao'));
 
         AlertMessage::success('Ação realizada com sucesso');
     }

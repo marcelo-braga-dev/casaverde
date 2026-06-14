@@ -29,6 +29,18 @@ const STATUS_MAP = {
         bgColor: '#FFF4D8',
         borderColor: '#F6D98A',
     },
+    reviewed: {
+        label: 'Revisada',
+        color: '#1E40AF',
+        bgColor: '#DBEAFE',
+        borderColor: '#BFDBFE',
+    },
+    corrected: {
+        label: 'Corrigida',
+        color: '#0F766E',
+        bgColor: '#CCFBF1',
+        borderColor: '#99F6E4',
+    },
     approved: {
         label: 'Aprovado',
         color: '#1F5F10',
@@ -37,6 +49,24 @@ const STATUS_MAP = {
     },
     rejected: {
         label: 'Rejeitado',
+        color: '#8E1D1D',
+        bgColor: '#FDE2E2',
+        borderColor: '#F8B4B4',
+    },
+    pending: {
+        label: 'Pendente',
+        color: '#334155',
+        bgColor: '#F1F5F9',
+        borderColor: '#E2E8F0',
+    },
+    success: {
+        label: 'Sucesso',
+        color: '#1F5F10',
+        bgColor: '#DFF3D8',
+        borderColor: '#BFE8B6',
+    },
+    error: {
+        label: 'Erro',
         color: '#8E1D1D',
         bgColor: '#FDE2E2',
         borderColor: '#F8B4B4',

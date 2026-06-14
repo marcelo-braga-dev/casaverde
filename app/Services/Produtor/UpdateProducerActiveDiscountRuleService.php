@@ -2,8 +2,6 @@
 
 namespace App\Services\Produtor;
 
-use App\Models\Cliente\ClientDiscountRule;
-use App\Models\Cliente\ClientProfile;
 use App\Models\Produtor\ProducerAdministrationFeeRules;
 use App\Models\Produtor\ProducerProfile;
 use Carbon\Carbon;

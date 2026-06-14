@@ -2,7 +2,6 @@
 
 namespace App\Models\Produtor;
 
-use App\Models\Cliente\ClientProfile;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -50,7 +49,7 @@ class ProducerAdministrationFeeRules extends Model
 
     public function isCurrentlyActive(): bool
     {
-        if (!$this->starts_on) {
+        if (! $this->starts_on) {
             return false;
         }
 

@@ -3,6 +3,7 @@
 namespace App\Services\Admin\Reports;
 
 use App\Models\Fatura\ConcessionaireBill;
+use App\src\Roles\RoleUser;
 use App\Support\Reports\ReportDateRange;
 
 class BillReportService
@@ -16,19 +17,27 @@ class BillReportService
             ->whereBetween('created_at', [$range->startDate, $range->endDate])
             ->orderByDesc('id');
 
-        if (!empty($filters['review_status'])) {
+        $user = auth()->user();
+
+        if ($user && $user->role_id === RoleUser::$CONSULTOR) {
+            $query->whereHas('clientProfile', function ($q) use ($user) {
+                $q->where('consultor_user_id', $user->id);
+            });
+        }
+
+        if (! empty($filters['review_status'])) {
             $query->where('review_status', $filters['review_status']);
         }
 
-        if (!empty($filters['parser_status'])) {
+        if (! empty($filters['parser_status'])) {
             $query->where('parser_status', $filters['parser_status']);
         }
 
-        if (!empty($filters['reference_month'])) {
+        if (! empty($filters['reference_month'])) {
             $query->where('reference_month', $filters['reference_month']);
         }
 
-        if (!empty($filters['reference_year'])) {
+        if (! empty($filters['reference_year'])) {
             $query->where('reference_year', $filters['reference_year']);
         }
 
@@ -49,7 +58,7 @@ class BillReportService
                 'client_name' => $bill->clientProfile?->display_name
                     ?? $bill->clientProfile?->nome
                         ?? $bill->clientProfile?->razao_social
-                        ?? 'Cliente #' . $bill->client_profile_id,
+                        ?? 'Cliente #'.$bill->client_profile_id,
                 'usina' => $bill->usina?->uc,
                 'concessionaria' => $bill->concessionaria?->nome,
                 'unidade_consumidora' => $bill->unidade_consumidora,

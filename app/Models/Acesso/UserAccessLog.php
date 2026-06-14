@@ -44,42 +44,42 @@ class UserAccessLog extends Model
     public function getEventLabelAttribute(): string
     {
         return match ($this->event) {
-            'login'            => 'Login',
-            'logout'           => 'Logout',
-            'blocked'          => 'Acesso Bloqueado',
-            'unblocked'        => 'Acesso Liberado',
+            'login' => 'Login',
+            'logout' => 'Logout',
+            'blocked' => 'Acesso Bloqueado',
+            'unblocked' => 'Acesso Liberado',
             'password_changed' => 'Senha Alterada',
-            'access_created'   => 'Acesso Criado',
-            'access_updated'   => 'Acesso Atualizado',
-            default            => $this->event,
+            'access_created' => 'Acesso Criado',
+            'access_updated' => 'Acesso Atualizado',
+            default => $this->event,
         };
     }
 
     public function getEventColorAttribute(): string
     {
         return match ($this->event) {
-            'login'            => 'success',
-            'logout'           => 'info',
-            'blocked'          => 'error',
-            'unblocked'        => 'success',
+            'login' => 'success',
+            'logout' => 'info',
+            'blocked' => 'error',
+            'unblocked' => 'success',
             'password_changed' => 'warning',
-            'access_created'   => 'primary',
-            'access_updated'   => 'secondary',
-            default            => 'default',
+            'access_created' => 'primary',
+            'access_updated' => 'secondary',
+            default => 'default',
         };
     }
 
     public function getEventIconAttribute(): string
     {
         return match ($this->event) {
-            'login'            => 'login',
-            'logout'           => 'logout',
-            'blocked'          => 'block',
-            'unblocked'        => 'check',
+            'login' => 'login',
+            'logout' => 'logout',
+            'blocked' => 'block',
+            'unblocked' => 'check',
             'password_changed' => 'key',
-            'access_created'   => 'user-plus',
-            'access_updated'   => 'edit',
-            default            => 'info',
+            'access_created' => 'user-plus',
+            'access_updated' => 'edit',
+            default => 'info',
         };
     }
 
@@ -91,8 +91,8 @@ class UserAccessLog extends Model
         array $extra = [],
     ): self {
         return static::create(array_merge([
-            'user_id'    => $userId,
-            'event'      => $event,
+            'user_id' => $userId,
+            'event' => $event,
             'created_at' => now(),
         ], $extra));
     }

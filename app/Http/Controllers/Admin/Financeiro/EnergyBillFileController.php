@@ -42,7 +42,7 @@ class EnergyBillFileController extends Controller
 
         return response()->file($absolutePath, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="' . ($energyBill->pdf_original_name ?: 'fatura.pdf') . '"',
+            'Content-Disposition' => 'inline; filename="'.($energyBill->pdf_original_name ?: 'fatura.pdf').'"',
         ]);
     }
 }

@@ -10,13 +10,12 @@ use Maatwebsite\Excel\Concerns\WithStyles;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class ClienteEconomiaExport implements FromArray, WithHeadings, ShouldAutoSize, WithStyles, WithTitle
+class ClienteEconomiaExport implements FromArray, ShouldAutoSize, WithHeadings, WithStyles, WithTitle
 {
     public function __construct(
-        private readonly int   $platformUserId,
+        private readonly int $platformUserId,
         private readonly array $filters = [],
-    ) {
-    }
+    ) {}
 
     public function title(): string
     {
@@ -49,22 +48,24 @@ class ClienteEconomiaExport implements FromArray, WithHeadings, ShouldAutoSize, 
         // Cabeçalho do cliente
         $rows[] = ['Cliente:', $report['profile']['display_name'] ?? '—', '', '', '', '', '', '', '', ''];
         $rows[] = ['Código:', $report['profile']['client_code'] ?? '—', '', '', '', '', '', '', '', ''];
-        $rows[] = ['Desconto ativo:', ($report['profile']['discount'] ?? 0) . '%', '', '', '', '', '', '', '', ''];
+        $rows[] = ['Desconto ativo:', ($report['profile']['discount'] ?? 0).'%', '', '', '', '', '', '', '', ''];
         $rows[] = ['Ano:', $report['filters']['year'] ?? date('Y'), '', '', '', '', '', '', '', ''];
         $rows[] = ['', '', '', '', '', '', '', '', '', ''];
 
         foreach ($report['monthly'] as $m) {
-            if (!$m['has_data']) continue;
+            if (! $m['has_data']) {
+                continue;
+            }
 
             $rows[] = [
                 $m['label'],
                 $m['consumo_kwh'] ?: '—',
                 number_format($m['original_amount'], 2, ',', '.'),
-                $m['discount_percent'] . '%',
+                $m['discount_percent'].'%',
                 number_format($m['discount_amount'], 2, ',', '.'),
                 number_format($m['final_amount'], 2, ',', '.'),
                 number_format($m['net_savings'], 2, ',', '.'),
-                $m['savings_percent'] . '%',
+                $m['savings_percent'].'%',
                 $this->translateStatus($m['status']),
                 $m['paid_at'] ?? '—',
             ];
@@ -73,7 +74,7 @@ class ClienteEconomiaExport implements FromArray, WithHeadings, ShouldAutoSize, 
         // Totais
         $s = $report['summary'];
         $rows[] = ['', '', '', '', '', '', '', '', '', ''];
-        $rows[] = ['TOTAL', '', number_format($s['total_original_amount'] ?? 0, 2, ',', '.'), '', '', number_format($s['total_final_amount'] ?? 0, 2, ',', '.'), number_format($s['total_savings'] ?? 0, 2, ',', '.'), ($s['savings_percent_year'] ?? 0) . '%', '', ''];
+        $rows[] = ['TOTAL', '', number_format($s['total_original_amount'] ?? 0, 2, ',', '.'), '', '', number_format($s['total_final_amount'] ?? 0, 2, ',', '.'), number_format($s['total_savings'] ?? 0, 2, ',', '.'), ($s['savings_percent_year'] ?? 0).'%', '', ''];
 
         return $rows;
     }
@@ -88,12 +89,12 @@ class ClienteEconomiaExport implements FromArray, WithHeadings, ShouldAutoSize, 
     private function translateStatus(?string $status): string
     {
         return match ($status) {
-            'paid'            => 'Pago',
-            'open'            => 'Em Aberto',
+            'paid' => 'Pago',
+            'open' => 'Em Aberto',
             'waiting_payment' => 'Ag. Pagamento',
-            'overdue'         => 'Vencido',
-            'cancelled'       => 'Cancelado',
-            default           => $status ?? '—',
+            'overdue' => 'Vencido',
+            'cancelled' => 'Cancelado',
+            default => $status ?? '—',
         };
     }
 }

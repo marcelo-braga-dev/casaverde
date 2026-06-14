@@ -11,16 +11,15 @@ class SyncPaymentSlipService
     public function __construct(
         private readonly PaymentProviderManager $providerManager,
         private readonly MarkPaymentAsPaidService $markPaymentAsPaidService,
-    ) {
-    }
+    ) {}
 
     public function handle(PaymentSlip $slip): PaymentSlip
     {
-        if (!$slip->provider_payment_id) {
+        if (! $slip->provider_payment_id) {
             throw new InvalidArgumentException('Pagamento sem ID no provider.');
         }
 
-        if (!$slip->providerAccount) {
+        if (! $slip->providerAccount) {
             throw new InvalidArgumentException('Pagamento sem conta de provider vinculada.');
         }
 

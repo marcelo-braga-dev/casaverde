@@ -14,11 +14,11 @@ class ClientDiscountRuleFactory extends Factory
     {
         return [
             'client_profile_id' => ClientProfile::factory(),
-            'discount_percent'  => 15.00,
-            'starts_on'         => now()->subDay(),
-            'ends_on'           => null,
-            'is_active'         => true,
-            'notes'             => null,
+            'discount_percent' => 15.00,
+            'starts_on' => now()->subDay(),
+            'ends_on' => null,
+            'is_active' => true,
+            'notes' => null,
         ];
     }
 
@@ -31,7 +31,7 @@ class ClientDiscountRuleFactory extends Factory
     {
         return $this->state(fn () => [
             'starts_on' => now()->subMonth(),
-            'ends_on'   => now()->subDay(),
+            'ends_on' => now()->subDay(),
             'is_active' => false,
         ]);
     }
@@ -40,7 +40,7 @@ class ClientDiscountRuleFactory extends Factory
     {
         return $this->state(fn () => [
             'starts_on' => now()->addDay(),
-            'ends_on'   => null,
+            'ends_on' => null,
             'is_active' => false,
         ]);
     }

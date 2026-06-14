@@ -12,8 +12,7 @@ class SyncClientUsinaLinkService
 {
     public function __construct(
         private readonly RecalculateUsinaEnergyService $recalculateUsinaEnergyService
-    ) {
-    }
+    ) {}
 
     public function create(array $data): ClientUsinaLink
     {

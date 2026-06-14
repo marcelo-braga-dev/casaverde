@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\Users\User;
-use App\src\Roles\RoleUser;
 use Illuminate\Support\Facades\Route;
 
 describe('EnsureUserHasRole middleware', function () {

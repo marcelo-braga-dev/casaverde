@@ -23,7 +23,7 @@ class ClienteContratoController extends Controller
 
         return Inertia::render('Cliente/Contrato/Index/Page', [
             'contratos' => $contratos,
-            'profile'   => $profile,
+            'profile' => $profile,
         ]);
     }
 
@@ -43,7 +43,7 @@ class ClienteContratoController extends Controller
 
         return Inertia::render('Cliente/Contrato/Show/Page', [
             'contrato' => $contrato,
-            'profile'  => $profile,
+            'profile' => $profile,
         ]);
     }
 }

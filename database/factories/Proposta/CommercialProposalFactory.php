@@ -4,7 +4,6 @@ namespace Database\Factories\Proposta;
 
 use App\Models\Cliente\ClientProfile;
 use App\Models\Proposta\CommercialProposal;
-use App\Models\Users\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class CommercialProposalFactory extends Factory
@@ -17,16 +16,16 @@ class CommercialProposalFactory extends Factory
             'client_profile_id' => ClientProfile::factory(),
             'consultor_user_id' => null,
             'concessionaria_id' => null,
-            'address_id'        => null,
-            'status'            => 'emitida',
-            'issued_at'         => now()->toDateString(),
-            'valid_until'       => now()->addDays(30)->toDateString(),
-            'media_consumo'     => 350.00,
-            'discount_percent'  => 15.00,
-            'prazo_locacao'     => 12,
-            'valor_medio'       => 350.00,
+            'address_id' => null,
+            'status' => 'emitida',
+            'issued_at' => now()->toDateString(),
+            'valid_until' => now()->addDays(30)->toDateString(),
+            'media_consumo' => 350.00,
+            'discount_percent' => 15.00,
+            'prazo_locacao' => 12,
+            'valor_medio' => 350.00,
             'unidade_consumidora' => fake()->numerify('##########'),
-            'notes'             => null,
+            'notes' => null,
         ];
     }
 

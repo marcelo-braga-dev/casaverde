@@ -9,8 +9,7 @@ class ReviewConcessionaireBillService
 {
     public function __construct(
         private readonly ValidateConcessionaireBillService $validateConcessionaireBillService
-    ) {
-    }
+    ) {}
 
     public function handle(ConcessionaireBill $bill, array $data): ConcessionaireBill
     {
@@ -118,7 +117,7 @@ class ReviewConcessionaireBillService
             }
         }
 
-        if (!is_numeric($value)) {
+        if (! is_numeric($value)) {
             return null;
         }
 

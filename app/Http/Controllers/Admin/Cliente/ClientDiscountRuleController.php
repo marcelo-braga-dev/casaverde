@@ -10,9 +10,9 @@ use App\Services\Cliente\StoreDiscountRuleService;
 class ClientDiscountRuleController extends Controller
 {
     public function store(
-       ClientProfile $clientProfile,
-       StoreClientDiscountRuleRequest $request,
-       StoreDiscountRuleService $service
+        ClientProfile $clientProfile,
+        StoreClientDiscountRuleRequest $request,
+        StoreDiscountRuleService $service
     ) {
         $this->authorize('update', $clientProfile);
 

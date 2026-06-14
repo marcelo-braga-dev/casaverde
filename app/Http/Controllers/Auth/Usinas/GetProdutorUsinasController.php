@@ -7,10 +7,10 @@ use App\Models\Usina\UsinaSolar;
 
 class GetProdutorUsinasController extends Controller
 {
-   public function __invoke($id)
-   {
-       $usinas = (new UsinaSolar())->where('user_id', $id)->get();
+    public function __invoke($id)
+    {
+        $usinas = (new UsinaSolar)->where('user_id', $id)->get();
 
-       return response()->json($usinas);
-   }
+        return response()->json($usinas);
+    }
 }

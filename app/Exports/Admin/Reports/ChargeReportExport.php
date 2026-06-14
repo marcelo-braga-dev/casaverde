@@ -7,12 +7,11 @@ use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class ChargeReportExport implements FromArray, WithHeadings, ShouldAutoSize
+class ChargeReportExport implements FromArray, ShouldAutoSize, WithHeadings
 {
     public function __construct(
         private readonly array $filters = [],
-    ) {
-    }
+    ) {}
 
     public function headings(): array
     {

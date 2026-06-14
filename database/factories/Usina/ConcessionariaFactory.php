@@ -12,10 +12,10 @@ class ConcessionariaFactory extends Factory
     public function definition(): array
     {
         return [
-            'nome'       => 'Concessionária ' . fake()->company(),
-            'estado'     => fake()->randomElement(['SP', 'RJ', 'MG', 'PR', 'RS', 'SC']),
+            'nome' => 'Concessionária '.fake()->company(),
+            'estado' => fake()->randomElement(['SP', 'RJ', 'MG', 'PR', 'RS', 'SC']),
             'tarifa_gd2' => fake()->randomFloat(6, 0.5, 1.2),
-            'status'     => 'ativo',
+            'status' => 'ativo',
         ];
     }
 }

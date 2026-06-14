@@ -1,17 +1,17 @@
 <?php
 
 use App\Http\Controllers\Admin\Cliente\ClientAccessInviteController;
+use App\Http\Controllers\Admin\Cliente\ClientContactController;
+use App\Http\Controllers\Admin\Cliente\ClientContractDataController;
 use App\Http\Controllers\Admin\Cliente\ClientDiscountHistoryController;
 use App\Http\Controllers\Admin\Cliente\ClientDiscountRuleController;
 use App\Http\Controllers\Admin\Cliente\ClienteIdentidadeController;
 use App\Http\Controllers\Admin\Cliente\ClientUsinaHistoryController;
 use App\Http\Controllers\Admin\Cliente\ClientUsinaLinkController;
-use App\Http\Controllers\Admin\Cliente\ConvertClientProfileController;
-use App\Http\Controllers\Admin\Cliente\ClientContractDataController;
 use App\Http\Controllers\Admin\Cliente\ConsumerUnitController;
+use App\Http\Controllers\Admin\Cliente\ConvertClientProfileController;
 use App\Http\Controllers\Admin\Fatura\ClientEmailImportSettingController;
 use App\Http\Controllers\Admin\Usuarios\Cliente\ClienteController;
-use App\Http\Controllers\Admin\Cliente\ClientContactController;
 use Illuminate\Support\Facades\Route;
 
 Route::name('user.')

@@ -16,7 +16,7 @@ class ResolveConsumerUnitService
     {
         $normalized = ConsumerUnit::normalizeCode($ucCode);
 
-        if (!$normalized) {
+        if (! $normalized) {
             return null;
         }
 

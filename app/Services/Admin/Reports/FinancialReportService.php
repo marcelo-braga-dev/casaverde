@@ -123,7 +123,7 @@ class FinancialReportService
 
         return $charges
             ->map(fn ($item) => [
-                'label' => str_pad((string) $item->month, 2, '0', STR_PAD_LEFT) . '/' . $item->year,
+                'label' => str_pad((string) $item->month, 2, '0', STR_PAD_LEFT).'/'.$item->year,
                 'year' => (int) $item->year,
                 'month' => (int) $item->month,
                 'total' => (int) $item->total,

@@ -30,12 +30,12 @@ class ProdutorContratos extends Model
         'descricao',
         'parcela_fixa',
         'taxa_administracao',
-        'contrato_data'
+        'contrato_data',
     ];
 
-    //--------------
+    // --------------
     // setters
-    //--------------
+    // --------------
     public function setUsinaCnpjAttribute($value)
     {
         $this->attributes['usina_cnpj'] = $value ? preg_replace('/\D/', '', $value) : null;

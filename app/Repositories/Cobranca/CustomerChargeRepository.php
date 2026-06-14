@@ -17,19 +17,19 @@ class CustomerChargeRepository
             ])
             ->orderByDesc('id');
 
-        if (!empty($filters['status'])) {
+        if (! empty($filters['status'])) {
             $query->where('status', $filters['status']);
         }
 
-        if (!empty($filters['client_profile_id'])) {
+        if (! empty($filters['client_profile_id'])) {
             $query->where('client_profile_id', $filters['client_profile_id']);
         }
 
-        if (!empty($filters['reference_year'])) {
+        if (! empty($filters['reference_year'])) {
             $query->where('reference_year', $filters['reference_year']);
         }
 
-        if (!empty($filters['reference_month'])) {
+        if (! empty($filters['reference_month'])) {
             $query->where('reference_month', $filters['reference_month']);
         }
 

@@ -19,7 +19,7 @@ class MarkCustomerChargeAsPaidService
         }
 
         return DB::transaction(function () use ($charge, $note) {
-            $notes = trim(($charge->notes ? $charge->notes . "\n" : '') . ($note ? 'Pagamento manual: ' . $note : 'Cobrança marcada como paga manualmente.'));
+            $notes = trim(($charge->notes ? $charge->notes."\n" : '').($note ? 'Pagamento manual: '.$note : 'Cobrança marcada como paga manualmente.'));
 
             $charge->update([
                 'status' => 'paid',

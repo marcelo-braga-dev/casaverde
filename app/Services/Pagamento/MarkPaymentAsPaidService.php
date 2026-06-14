@@ -4,6 +4,7 @@ namespace App\Services\Pagamento;
 
 use App\Models\Pagamento\PaymentSlip;
 use App\Models\Pagamento\PaymentTransaction;
+use Carbon\CarbonInterface;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 
@@ -55,11 +56,11 @@ class MarkPaymentAsPaidService
         });
     }
 
-    private function resolvePaidAt(array $payload): \Carbon\CarbonInterface
+    private function resolvePaidAt(array $payload): CarbonInterface
     {
         $paidAt = $payload['paid_at'] ?? $payload['paidAt'] ?? null;
 
-        if (!$paidAt) {
+        if (! $paidAt) {
             return now();
         }
 

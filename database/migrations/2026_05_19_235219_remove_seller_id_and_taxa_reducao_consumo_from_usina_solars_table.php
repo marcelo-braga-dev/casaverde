@@ -5,7 +5,8 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     public function up(): void
     {
         $isMySql = DB::connection()->getDriverName() === 'mysql';
@@ -36,17 +37,17 @@ return new class extends Migration {
                     $columnsToDrop[] = $col;
                 }
             }
-            if (!empty($columnsToDrop)) {
+            if (! empty($columnsToDrop)) {
                 $table->dropColumn($columnsToDrop);
             }
         });
 
         Schema::table('usina_solars', function (Blueprint $table) {
-            if (!Schema::hasColumn('usina_solars', 'usina_nome')) {
+            if (! Schema::hasColumn('usina_solars', 'usina_nome')) {
                 $table->string('usina_nome')->nullable()->after('id');
             }
 
-            if (!Schema::hasColumn('usina_solars', 'producer_profile_id')) {
+            if (! Schema::hasColumn('usina_solars', 'producer_profile_id')) {
                 $table->foreignId('producer_profile_id')->nullable()->after('id')
                     ->constrained('producer_profiles')->nullOnDelete();
             }
@@ -56,10 +57,10 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table('usina_solars', function (Blueprint $table) {
-            if (!Schema::hasColumn('usina_solars', 'seller_id')) {
+            if (! Schema::hasColumn('usina_solars', 'seller_id')) {
                 $table->unsignedBigInteger('seller_id')->nullable();
             }
-            if (!Schema::hasColumn('usina_solars', 'taxa_reducao_consumo')) {
+            if (! Schema::hasColumn('usina_solars', 'taxa_reducao_consumo')) {
                 $table->decimal('taxa_reducao_consumo', 10, 2)->nullable();
             }
         });

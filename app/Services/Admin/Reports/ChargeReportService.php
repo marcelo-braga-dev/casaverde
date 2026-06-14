@@ -16,15 +16,15 @@ class ChargeReportService
             ->whereBetween('created_at', [$range->startDate, $range->endDate])
             ->orderByDesc('id');
 
-        if (!empty($filters['status'])) {
+        if (! empty($filters['status'])) {
             $query->where('status', $filters['status']);
         }
 
-        if (!empty($filters['reference_month'])) {
+        if (! empty($filters['reference_month'])) {
             $query->where('reference_month', $filters['reference_month']);
         }
 
-        if (!empty($filters['reference_year'])) {
+        if (! empty($filters['reference_year'])) {
             $query->where('reference_year', $filters['reference_year']);
         }
 
@@ -45,7 +45,7 @@ class ChargeReportService
                 'client_name' => $charge->clientProfile?->display_name
                     ?? $charge->clientProfile?->nome
                         ?? $charge->clientProfile?->razao_social
-                        ?? 'Cliente #' . $charge->client_profile_id,
+                        ?? 'Cliente #'.$charge->client_profile_id,
                 'usina' => $charge->usina?->uc,
                 'concessionaria' => $charge->concessionaria?->nome,
                 'reference_label' => $charge->reference_label,

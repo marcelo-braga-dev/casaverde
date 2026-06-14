@@ -11,15 +11,15 @@ describe('GenerateCustomerChargeFromBillService', function () {
 
     beforeEach(function () {
         $this->service = app(GenerateCustomerChargeFromBillService::class);
-        $this->admin   = User::factory()->admin()->create();
+        $this->admin = User::factory()->admin()->create();
         $this->actingAs($this->admin);
     });
 
     it('generates a draft charge from an approved bill', function () {
         $client = ClientProfile::factory()->create();
-        $bill   = ConcessionaireBill::factory()->approved()->create([
+        $bill = ConcessionaireBill::factory()->approved()->create([
             'client_profile_id' => $client->id,
-            'valor_total'       => 200.00,
+            'valor_total' => 200.00,
         ]);
 
         $charge = $this->service->handle($bill);
@@ -35,15 +35,15 @@ describe('GenerateCustomerChargeFromBillService', function () {
 
         ClientDiscountRule::factory()->create([
             'client_profile_id' => $client->id,
-            'discount_percent'  => 20.0,
-            'starts_on'         => now()->subDay(),
-            'ends_on'           => null,
-            'is_active'         => true,
+            'discount_percent' => 20.0,
+            'starts_on' => now()->subDay(),
+            'ends_on' => null,
+            'is_active' => true,
         ]);
 
         $bill = ConcessionaireBill::factory()->approved()->create([
             'client_profile_id' => $client->id,
-            'valor_total'       => 100.00,
+            'valor_total' => 100.00,
         ]);
 
         $charge = $this->service->handle($bill);
@@ -55,9 +55,9 @@ describe('GenerateCustomerChargeFromBillService', function () {
 
     it('creates charge with zero discount when client has no active rule', function () {
         $client = ClientProfile::factory()->create();
-        $bill   = ConcessionaireBill::factory()->approved()->create([
+        $bill = ConcessionaireBill::factory()->approved()->create([
             'client_profile_id' => $client->id,
-            'valor_total'       => 150.00,
+            'valor_total' => 150.00,
         ]);
 
         $charge = $this->service->handle($bill);
@@ -68,12 +68,12 @@ describe('GenerateCustomerChargeFromBillService', function () {
 
     it('throws InvalidArgumentException when bill is not approved', function () {
         $client = ClientProfile::factory()->create();
-        $bill   = ConcessionaireBill::factory()->create([
+        $bill = ConcessionaireBill::factory()->create([
             'client_profile_id' => $client->id,
-            'review_status'     => 'pending_review',
+            'review_status' => 'pending_review',
         ]);
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('fatura aprovada');
 
         $this->service->handle($bill);
@@ -81,14 +81,14 @@ describe('GenerateCustomerChargeFromBillService', function () {
 
     it('throws InvalidArgumentException when charge already exists for the bill', function () {
         $client = ClientProfile::factory()->create();
-        $bill   = ConcessionaireBill::factory()->approved()->create([
+        $bill = ConcessionaireBill::factory()->approved()->create([
             'client_profile_id' => $client->id,
-            'valor_total'       => 100.00,
+            'valor_total' => 100.00,
         ]);
 
         $this->service->handle($bill);
 
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Já existe cobrança');
 
         $this->service->handle($bill);
@@ -96,9 +96,9 @@ describe('GenerateCustomerChargeFromBillService', function () {
 
     it('sets manual_discount_amount and manual_addition_amount to zero', function () {
         $client = ClientProfile::factory()->create();
-        $bill   = ConcessionaireBill::factory()->approved()->create([
+        $bill = ConcessionaireBill::factory()->approved()->create([
             'client_profile_id' => $client->id,
-            'valor_total'       => 80.00,
+            'valor_total' => 80.00,
         ]);
 
         $charge = $this->service->handle($bill);
@@ -109,12 +109,12 @@ describe('GenerateCustomerChargeFromBillService', function () {
 
     it('links charge to the correct bill, client, and reference period', function () {
         $client = ClientProfile::factory()->create();
-        $bill   = ConcessionaireBill::factory()->approved()->create([
+        $bill = ConcessionaireBill::factory()->approved()->create([
             'client_profile_id' => $client->id,
-            'valor_total'       => 100.00,
-            'reference_month'   => 5,
-            'reference_year'    => 2026,
-            'reference_label'   => '05/2026',
+            'valor_total' => 100.00,
+            'reference_month' => 5,
+            'reference_year' => 2026,
+            'reference_label' => '05/2026',
         ]);
 
         $charge = $this->service->handle($bill);
@@ -127,9 +127,9 @@ describe('GenerateCustomerChargeFromBillService', function () {
 
     it('sets generated_by_user_id to the authenticated user', function () {
         $client = ClientProfile::factory()->create();
-        $bill   = ConcessionaireBill::factory()->approved()->create([
+        $bill = ConcessionaireBill::factory()->approved()->create([
             'client_profile_id' => $client->id,
-            'valor_total'       => 50.00,
+            'valor_total' => 50.00,
         ]);
 
         $charge = $this->service->handle($bill);

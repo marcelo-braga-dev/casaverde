@@ -10,10 +10,10 @@ Route::middleware('role:admin')
     ->group(function () {
 
         // Criar/atualizar credenciais
-        Route::post('/cliente/{cliente}',   [AcessoController::class, 'storeCliente'])->name('cliente.store');
+        Route::post('/cliente/{cliente}', [AcessoController::class, 'storeCliente'])->name('cliente.store');
         Route::post('/produtor/{produtor}', [AcessoController::class, 'storeProdutor'])->name('produtor.store');
 
         // Bloquear / liberar qualquer usuário
-        Route::post('/bloquear/{user}',  [AcessoController::class, 'bloquear'])->name('bloquear');
-        Route::post('/liberar/{user}',   [AcessoController::class, 'liberar'])->name('liberar');
+        Route::post('/bloquear/{user}', [AcessoController::class, 'bloquear'])->name('bloquear');
+        Route::post('/liberar/{user}', [AcessoController::class, 'liberar'])->name('liberar');
     });

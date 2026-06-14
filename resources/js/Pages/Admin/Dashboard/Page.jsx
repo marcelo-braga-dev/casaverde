@@ -138,7 +138,7 @@ export default function Page({ dashboard }) {
 
                     <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                         <ReportMetricCard
-                            title="Faturas pendentes"
+                            title="Faturas de Concessionárias pendentes"
                             value={summary.bills_pending_review || 0}
                             helper="Aguardando revisão"
                             icon={IconFileInvoice}

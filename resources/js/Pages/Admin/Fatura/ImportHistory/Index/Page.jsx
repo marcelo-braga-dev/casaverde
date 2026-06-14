@@ -111,7 +111,7 @@ export default function Page({ runs, filters = {}, stats = {} }) {
     return (
         <Layout
             titlePage="Histórico de Importação"
-            menu="config"
+            menu="integracoes"
             subMenu="config-import-history"
             subtitle="Monitore todas as execuções de importação automática de faturas."
             breadcrumbs={[{ label: 'Configurações' }, { label: 'Histórico de Importação' }]}
@@ -127,7 +127,7 @@ export default function Page({ runs, filters = {}, stats = {} }) {
                     <CardContent>
                         <Stack direction={{ xs: 'column', md: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', md: 'center' }} gap={2}>
                             <Box>
-                                <Typography variant="h6" sx={{ fontWeight: 950 }}>Importação Automática de Faturas</Typography>
+                                <Typography variant="h6" sx={{ fontWeight: 950 }}>Importação Automática de Faturas de Concessionárias</Typography>
                                 <Typography sx={{ color: 'rgba(255,255,255,0.72)', fontSize: 13, mt: 0.3 }}>
                                     Última execução: {lastRunAt}
                                     {lastStatus && (

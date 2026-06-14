@@ -27,16 +27,16 @@ class ClienteFaturaController extends Controller
             ->orderByDesc('reference_year')
             ->orderByDesc('reference_month');
 
-        if (!empty($filters['status'])) {
+        if (! empty($filters['status'])) {
             $query->where('review_status', $filters['status']);
         }
 
-        if (!empty($filters['year'])) {
+        if (! empty($filters['year'])) {
             $query->where('reference_year', $filters['year']);
         }
 
-        if (!empty($filters['search'])) {
-            $query->where('reference_label', 'like', '%' . $filters['search'] . '%');
+        if (! empty($filters['search'])) {
+            $query->where('reference_label', 'like', '%'.$filters['search'].'%');
         }
 
         return Inertia::render('Cliente/Faturas/Index/Page', [
@@ -61,9 +61,9 @@ class ClienteFaturaController extends Controller
         $charge = $fatura->charges()->with('paymentSlips')->first();
 
         return Inertia::render('Cliente/Faturas/Show/Page', [
-            'fatura'  => $fatura,
+            'fatura' => $fatura,
             'profile' => $profile,
-            'charge'  => $charge,
+            'charge' => $charge,
         ]);
     }
 }

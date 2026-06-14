@@ -29,25 +29,25 @@ class AcessoController extends Controller
         $existingUserId = $cliente->platform_user_id;
 
         $rules = [
-            'name'     => ['required', 'string', 'min:2', 'max:120'],
-            'email'    => ['required', 'email', "unique:users,email,{$existingUserId}"],
+            'name' => ['required', 'string', 'min:2', 'max:120'],
+            'email' => ['required', 'email', "unique:users,email,{$existingUserId}"],
             'password' => $existingUserId
                 ? ['nullable', Password::min(6)->letters()->numbers()]
                 : ['required', Password::min(6)->letters()->numbers()],
         ];
 
         $data = $request->validate($rules, [
-            'email.unique'     => 'Este e-mail já está em uso por outro usuário.',
-            'password.required'=> 'A senha é obrigatória ao criar o acesso.',
+            'email.unique' => 'Este e-mail já está em uso por outro usuário.',
+            'password.required' => 'A senha é obrigatória ao criar o acesso.',
         ]);
 
         $user = $this->service->criarOuAtualizar(
-            name:            $data['name'],
-            email:           $data['email'],
-            password:        $data['password'] ?? '',
-            roleId:          RoleUser::$CLIENTE,
+            name: $data['name'],
+            email: $data['email'],
+            password: $data['password'] ?? '',
+            roleId: RoleUser::$CLIENTE,
             vincularAoPerfil: fn ($uid) => $cliente->update(['platform_user_id' => $uid]),
-            existingUserId:  $existingUserId,
+            existingUserId: $existingUserId,
         );
 
         return back()->with('success', $existingUserId
@@ -65,20 +65,20 @@ class AcessoController extends Controller
         $existingUserId = $produtor->platform_user_id;
 
         $data = $request->validate([
-            'name'     => ['required', 'string', 'min:2', 'max:120'],
-            'email'    => ['required', 'email', "unique:users,email,{$existingUserId}"],
+            'name' => ['required', 'string', 'min:2', 'max:120'],
+            'email' => ['required', 'email', "unique:users,email,{$existingUserId}"],
             'password' => $existingUserId
                 ? ['nullable', Password::min(6)->letters()->numbers()]
                 : ['required', Password::min(6)->letters()->numbers()],
         ]);
 
         $user = $this->service->criarOuAtualizar(
-            name:            $data['name'],
-            email:           $data['email'],
-            password:        $data['password'] ?? '',
-            roleId:          RoleUser::$PRODUTOR,
+            name: $data['name'],
+            email: $data['email'],
+            password: $data['password'] ?? '',
+            roleId: RoleUser::$PRODUTOR,
             vincularAoPerfil: fn ($uid) => $produtor->update(['platform_user_id' => $uid]),
-            existingUserId:  $existingUserId,
+            existingUserId: $existingUserId,
         );
 
         return back()->with('success', $existingUserId

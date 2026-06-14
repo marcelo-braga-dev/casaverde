@@ -8,16 +8,16 @@ class ProtectedPdfTextExtractorService
 {
     public function extractTextFromPdf(string $pdfAbsolutePath, ?string $password = null): string
     {
-        if (!is_file($pdfAbsolutePath)) {
+        if (! is_file($pdfAbsolutePath)) {
             throw new RuntimeException('PDF não encontrado para extração.');
         }
 
         $tempDir = storage_path('app/tmp/energy-bill-import');
-        if (!is_dir($tempDir)) {
+        if (! is_dir($tempDir)) {
             mkdir($tempDir, 0775, true);
         }
 
-        $decryptedPath = $tempDir . '/' . uniqid('decrypted_', true) . '.pdf';
+        $decryptedPath = $tempDir.'/'.uniqid('decrypted_', true).'.pdf';
 
         try {
             if ($password) {
@@ -53,9 +53,9 @@ class ProtectedPdfTextExtractorService
 
         exec($command, $output, $exitCode);
 
-        if ($exitCode !== 0 || !is_file($outputPath)) {
+        if ($exitCode !== 0 || ! is_file($outputPath)) {
             throw new RuntimeException(
-                'Falha ao desbloquear PDF com qpdf: ' . implode("\n", $output)
+                'Falha ao desbloquear PDF com qpdf: '.implode("\n", $output)
             );
         }
     }
@@ -71,7 +71,7 @@ class ProtectedPdfTextExtractorService
 
         if ($exitCode !== 0) {
             throw new RuntimeException(
-                'Falha ao extrair texto com pdftotext: ' . implode("\n", $output)
+                'Falha ao extrair texto com pdftotext: '.implode("\n", $output)
             );
         }
 

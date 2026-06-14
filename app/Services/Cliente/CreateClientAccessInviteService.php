@@ -13,7 +13,7 @@ class CreateClientAccessInviteService
 {
     public function handle(ClientProfile $clientProfile, string $email, int $expiresInHours = 48): ClientAccessInvite
     {
-        if (!$clientProfile->is_active_client) {
+        if (! $clientProfile->is_active_client) {
             throw new InvalidArgumentException('Somente clientes ativos podem receber convite de acesso.');
         }
 

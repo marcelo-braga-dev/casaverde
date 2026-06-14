@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin\Alert;
 
-use App\Enums\Alert\OperationalAlertStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Alert\OperationalAlert;
 use Illuminate\Http\Request;

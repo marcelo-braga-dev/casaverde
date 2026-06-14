@@ -19,7 +19,7 @@ class ProtectedPdfResolverService
             File::makeDirectory($tmpDir, 0775, true);
         }
 
-        $tempOutput = $tmpDir . '/fatura-unlocked-' . uniqid('', true) . '.pdf';
+        $tempOutput = $tmpDir.'/fatura-unlocked-'.uniqid('', true).'.pdf';
 
         if (! $password) {
             copy($absolutePdfPath, $tempOutput);

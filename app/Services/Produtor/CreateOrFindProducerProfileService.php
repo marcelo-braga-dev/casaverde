@@ -15,14 +15,14 @@ class CreateOrFindProducerProfileService
     public function handle(array $data): array
     {
         $tipoPessoa = $data['tipo_pessoa'] ?? null;
-        $cpf  = ClientProfile::normalizeDocument($data['cpf']  ?? null);
+        $cpf = ClientProfile::normalizeDocument($data['cpf'] ?? null);
         $cnpj = ClientProfile::normalizeDocument($data['cnpj'] ?? null);
 
-        if ($tipoPessoa === 'pf' && !$cpf) {
+        if ($tipoPessoa === 'pf' && ! $cpf) {
             throw new InvalidArgumentException('CPF é obrigatório para pessoa física.');
         }
 
-        if ($tipoPessoa === 'pj' && !$cnpj) {
+        if ($tipoPessoa === 'pj' && ! $cnpj) {
             throw new InvalidArgumentException('CNPJ é obrigatório para pessoa jurídica.');
         }
 
@@ -38,35 +38,35 @@ class CreateOrFindProducerProfileService
             if ($existing) {
                 return [
                     'producer_profile' => $existing,
-                    'created'          => false,
-                    'already_exists'   => true,
-                    'message'          => 'Produtor já existente, cadastro reutilizado.',
+                    'created' => false,
+                    'already_exists' => true,
+                    'message' => 'Produtor já existente, cadastro reutilizado.',
                 ];
             }
 
-            $authUser   = auth()->user();
+            $authUser = auth()->user();
             $consultorId = $data['consultor_user_id'] ?? null;
 
-            if (!$consultorId && $authUser && $authUser->role_id === RoleUser::$CONSULTOR) {
+            if (! $consultorId && $authUser && $authUser->role_id === RoleUser::$CONSULTOR) {
                 $consultorId = $authUser->id;
             }
 
             $contacts = UserContact::create([
-                'celular'  => $data['celular']  ?? null,
+                'celular' => $data['celular'] ?? null,
                 'telefone' => $data['telefone'] ?? null,
-                'email'    => $data['email']    ?? null,
+                'email' => $data['email'] ?? null,
             ]);
 
             $producerProfile = ProducerProfile::create([
-                'tipo_pessoa'      => $tipoPessoa,
-                'cpf'              => $cpf,
-                'cnpj'             => $cnpj,
-                'nome'             => $data['nome']          ?? null,
-                'razao_social'     => $data['razao_social']  ?? null,
-                'nome_fantasia'    => $data['nome_fantasia'] ?? null,
-                'contacts_id'      => $contacts->id,
-                'consultor_user_id'=> $consultorId,
-                'status'           => $data['status'] ?? 'prospect',
+                'tipo_pessoa' => $tipoPessoa,
+                'cpf' => $cpf,
+                'cnpj' => $cnpj,
+                'nome' => $data['nome'] ?? null,
+                'razao_social' => $data['razao_social'] ?? null,
+                'nome_fantasia' => $data['nome_fantasia'] ?? null,
+                'contacts_id' => $contacts->id,
+                'consultor_user_id' => $consultorId,
+                'status' => $data['status'] ?? 'prospect',
                 'is_active_producer' => false,
             ]);
 
@@ -76,8 +76,8 @@ class CreateOrFindProducerProfileService
 
             app(StoreProducerFeeRuleService::class)->handle(
                 producerProfile: $producerProfile,
-                feePercent:      $defaultFee,
-                startsOn:        now()->toDateTimeString(),
+                feePercent: $defaultFee,
+                startsOn: now()->toDateTimeString(),
             );
 
             // Carrega a relação correta (taxa de administração, não desconto do cliente)
@@ -85,9 +85,9 @@ class CreateOrFindProducerProfileService
 
             return [
                 'producer_profile' => $producerProfile,
-                'created'          => true,
-                'already_exists'   => false,
-                'message'          => 'Produtor criado com sucesso.',
+                'created' => true,
+                'already_exists' => false,
+                'message' => 'Produtor criado com sucesso.',
             ];
         });
     }

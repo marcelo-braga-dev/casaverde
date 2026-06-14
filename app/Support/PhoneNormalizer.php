@@ -6,7 +6,7 @@ class PhoneNormalizer
 {
     public static function clean(?string $value): ?string
     {
-        if (!$value) {
+        if (! $value) {
             return null;
         }
 

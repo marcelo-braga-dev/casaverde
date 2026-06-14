@@ -85,7 +85,7 @@ export default function Page({ run, emails }) {
     return (
         <Layout
             titlePage={`Run: ${run?.run_code}`}
-            menu="config"
+            menu="integracoes"
             subMenu="config-import-history"
             breadcrumbs={[
                 { label: 'Configurações' },
@@ -268,7 +268,7 @@ export default function Page({ run, emails }) {
                                                     <TableCell align="right">
                                                         {email.bill ? (
                                                             <Stack direction="row" gap={0.5} justifyContent="flex-end">
-                                                                <Tooltip title="Ver fatura">
+                                                                <Tooltip title="Ver fatura de concessionária">
                                                                     <Button component={Link}
                                                                         href={safeRoute('consultor.cliente.faturas.show', email.bill.id)}
                                                                         size="small" variant="text" sx={{ minWidth: 0, px: 1 }}>

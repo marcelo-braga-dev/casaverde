@@ -69,6 +69,7 @@ describe('CalculateProducerProposalInvestmentService', function () {
         expect($summary['pagamento_anual_bruto'])->toEqual(round($bruto, 2));
         expect($summary['admin_fee_value'])->toEqual(round($bruto * 0.12, 2));
         expect($summary['pagamento_anual_liquido'])->toEqual(round($bruto * 0.88, 2));
+        expect($summary['pagamento_mensal_previsto'])->toEqual(round(1000 * $summary['valor_pago_produtor_kwh'], 2));
     });
 
     it('falls back to the default producer fee percentage when there is no active fee rule', function () {

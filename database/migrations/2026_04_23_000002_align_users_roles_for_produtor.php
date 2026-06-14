@@ -1,6 +1,6 @@
 <?php
 
-use App\src\Roles\RoleUser;
+use App\src\User\StatusUser;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -10,17 +10,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            if (!Schema::hasColumn('users', 'role_id')) {
+            if (! Schema::hasColumn('users', 'role_id')) {
                 $table->unsignedBigInteger('role_id')->after('password');
             }
 
-            if (!Schema::hasColumn('users', 'consultor_id')) {
+            if (! Schema::hasColumn('users', 'consultor_id')) {
                 $table->unsignedBigInteger('consultor_id')->nullable()->after('role_id');
             }
 
-            if (!Schema::hasColumn('users', 'status')) {
+            if (! Schema::hasColumn('users', 'status')) {
                 $table->string('status')
-                    ->default(\App\src\User\StatusUser::$ATIVO)
+                    ->default(StatusUser::$ATIVO)
                     ->after('consultor_id');
             }
         });

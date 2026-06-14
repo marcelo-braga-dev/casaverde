@@ -11,11 +11,11 @@ use Illuminate\Support\Facades\Route;
 Route::name('fatura-import-settings.')
     ->prefix('fatura-import-settings')
     ->group(function () {
-        Route::get('/',                           [ClientEmailImportSettingController::class, 'index'])->name('index');
-        Route::get('/create',                     [ClientEmailImportSettingController::class, 'create'])->name('create');
-        Route::get('/{faturaImportSetting}',      [ClientEmailImportSettingController::class, 'show'])->name('show');
+        Route::get('/', [ClientEmailImportSettingController::class, 'index'])->name('index');
+        Route::get('/create', [ClientEmailImportSettingController::class, 'create'])->name('create');
+        Route::get('/{faturaImportSetting}', [ClientEmailImportSettingController::class, 'show'])->name('show');
         Route::get('/{faturaImportSetting}/edit', [ClientEmailImportSettingController::class, 'edit'])->name('edit');
-        Route::put('/{faturaImportSetting}',      [ClientEmailImportSettingController::class, 'update'])->name('update');
+        Route::put('/{faturaImportSetting}', [ClientEmailImportSettingController::class, 'update'])->name('update');
     });
 
 // ── Histórico de importações ─────────────────────────────────────────────
@@ -23,8 +23,8 @@ Route::name('fatura-import-settings.')
 Route::name('import-history.')
     ->prefix('import-history')
     ->group(function () {
-        Route::get('/',                  [ImportHistoryController::class, 'index'])->name('index');
-        Route::post('/trigger',          [ImportHistoryController::class, 'trigger'])->name('trigger');
-        Route::get('/{run}',             [ImportHistoryController::class, 'show'])->name('show');
+        Route::get('/', [ImportHistoryController::class, 'index'])->name('index');
+        Route::post('/trigger', [ImportHistoryController::class, 'trigger'])->name('trigger');
+        Route::get('/{run}', [ImportHistoryController::class, 'show'])->name('show');
         Route::get('/email/{email}/pdf', [ImportHistoryController::class, 'pdf'])->name('email.pdf');
     });

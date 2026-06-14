@@ -25,7 +25,7 @@ class ClientProposalController extends Controller
 
         return Inertia::render('Consultor/Propostas/Cliente/Index/Page', [
             'proposals' => $repository->paginate(15, $filters),
-            'filters'   => $filters,
+            'filters' => $filters,
         ]);
     }
 
@@ -64,10 +64,9 @@ class ClientProposalController extends Controller
     }
 
     public function store(
-        StoreCommercialProposalRequest  $request,
+        StoreCommercialProposalRequest $request,
         CreateCommercialProposalService $service
-    )
-    {
+    ) {
         $this->authorize('create', CommercialProposal::class);
 
         $result = $service->handle($request->validated());
@@ -88,19 +87,19 @@ class ClientProposalController extends Controller
             // CLIENTE
             'clientProfile',
             'clientProfile.platformUser',
-//            'clientProfile.user',
+            //            'clientProfile.user',
             'clientProfile.consultor',
 
             // ENDEREÇO
             'address',
 
             // USINA
-//            'usina',
-//            'usina.produtor',
-//            'usina.concessionaria',
+            //            'usina',
+            //            'usina.produtor',
+            //            'usina.concessionaria',
 
             // CONTRATO
-//            'contract',
+            //            'contract',
 
             // CONCESSIONÁRIA
             'concessionaria',
@@ -116,7 +115,7 @@ class ClientProposalController extends Controller
 
             'codigo' => (
                 $proposal->proposal_code
-                ?? ('PROP-' . $proposal->id)
+                ?? ('PROP-'.$proposal->id)
             ),
 
             'status' => $proposal->status,
@@ -124,86 +123,86 @@ class ClientProposalController extends Controller
             'criado_em' => optional($proposal->created_at)->format('d/m/Y'),
 
             // VALORES
-            'valor_medio' => (float)(
+            'valor_medio' => (float) (
                 $proposal->average_monthly_value
                 ?? $proposal->valor_medio
                 ?? 0
             ),
 
-            'media_consumo' => (float)(
+            'media_consumo' => (float) (
                 $proposal->average_consumption_kwh
                 ?? $proposal->media_consumo
                 ?? 0
             ),
 
-            'prazo_locacao' => (int)(
+            'prazo_locacao' => (int) (
                 $proposal->contract_term_months
                 ?? $proposal->prazo_locacao
                 ?? 0
             ),
 
-            'taxa_reducao' => (float)(
+            'taxa_reducao' => (float) (
                 $proposal->discount_percentage
                 ?? $proposal->taxa_reducao
                 ?? 0
             ),
 
             'desconto_anual' => (
-                    (
-                    (float)(
+                (
+                    (float) (
                         $proposal->average_monthly_value
                         ?? $proposal->valor_medio
                         ?? 0
                     )
-                    ) * (
-                        (
-                        (float)(
+                ) * (
+                    (
+                        (float) (
                             $proposal->discount_percentage
                             ?? $proposal->taxa_reducao
                             ?? 0
                         )
-                        ) / 100
-                    )
-                ) * 12,
+                    ) / 100
+                )
+            ) * 12,
 
             // CLIENTE
             'cliente' => [
-                'id' => $cliente?->id,
+            'id' => $cliente?->id,
+            'email' => (
+                $cliente?->email
+                ?? $cliente?->platformUser?->email
+            ),
+            'user_data' => [
+                'nome' => ($cliente?->nome),
+                'razao_social' => ($cliente?->razao_social),
+                'nome_fantasia' => ($cliente?->nome_fantasia),
+                'cpf' => ($cliente?->cpf),
+                'cnpj' => ($cliente?->cnpj),
+            ],
+            'contatos' => [
+                'celular' => (
+                    $cliente?->telefone
+                    ?? $cliente?->celular
+                ),
                 'email' => (
                     $cliente?->email
                     ?? $cliente?->platformUser?->email
                 ),
-                'user_data' => [
-                    'nome' => ($cliente?->nome),
-                    'razao_social' => ($cliente?->razao_social),
-                    'nome_fantasia' => ($cliente?->nome_fantasia),
-                    'cpf' => ($cliente?->cpf),
-                    'cnpj' => ($cliente?->cnpj),
-                ],
-                'contatos' => [
-                    'celular' => (
-                        $cliente?->telefone
-                        ?? $cliente?->celular
-                    ),
-                    'email' => (
-                        $cliente?->email
-                        ?? $cliente?->platformUser?->email
-                    ),
-                ],
+            ],
             ],
 
             // ENDEREÇO
             'endereco' => [
                 'endereco_completo' => collect([
-                    $proposal?->address?->rua,
-                    $proposal?->address?->numero,
-                    $proposal?->address?->bairro,
-                    $proposal?->address?->cidade,
-                    $proposal?->address?->estado,
-                    $proposal?->address?->cep,
+                $proposal?->address?->rua,
+                $proposal?->address?->numero,
+                $proposal?->address?->bairro,
+                $proposal?->address?->cidade,
+                $proposal?->address?->estado,
+                $proposal?->address?->cep,
                 ])
-                    ->filter()
-                    ->implode(', '),
+                ->filter()
+                ->implode(', '),
 
             ],
 
@@ -250,12 +249,10 @@ class ClientProposalController extends Controller
         ]);
     }
 
-    public
-    function update(
+    public function update(
         StoreCommercialProposalRequest $request,
-        CommercialProposal             $proposal
-    )
-    {
+        CommercialProposal $proposal
+    ) {
         $this->authorize('update', $proposal);
 
         $data = $request->validated();
@@ -294,16 +291,14 @@ class ClientProposalController extends Controller
             ->with('success', 'Proposta atualizada com sucesso.');
     }
 
-    public
-    function pdf(CommercialProposal $proposal, GenerateCommercialProposalPdfService $service)
+    public function pdf(CommercialProposal $proposal, GenerateCommercialProposalPdfService $service)
     {
         $this->authorize('view', $proposal);
 
         return $service->stream($proposal);
     }
 
-    private
-    function createOrUpdateProposalAddress(CommercialProposal $proposal, array $addressData): ?Address
+    private function createOrUpdateProposalAddress(CommercialProposal $proposal, array $addressData): ?Address
     {
         $addressData = collect($addressData)
             ->only([
@@ -318,14 +313,14 @@ class ClientProposalController extends Controller
                 'latitude',
                 'longitude',
             ])
-            ->map(fn($value) => $value === '' ? null : $value)
+            ->map(fn ($value) => $value === '' ? null : $value)
             ->toArray();
 
         $hasAddress = collect($addressData)
-            ->filter(fn($value) => filled($value))
+            ->filter(fn ($value) => filled($value))
             ->isNotEmpty();
 
-        if (!$hasAddress) {
+        if (! $hasAddress) {
             return null;
         }
 

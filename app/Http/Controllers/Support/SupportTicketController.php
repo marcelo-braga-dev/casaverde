@@ -22,31 +22,30 @@ class SupportTicketController extends Controller
 
         $query = $this->service->queryForCurrentUser();
 
-        if (!empty($filters['search'])) {
-            $query->where(fn ($q) =>
-                $q->where('title', 'like', "%{$filters['search']}%")
-                  ->orWhere('ticket_code', 'like', "%{$filters['search']}%")
+        if (! empty($filters['search'])) {
+            $query->where(fn ($q) => $q->where('title', 'like', "%{$filters['search']}%")
+                ->orWhere('ticket_code', 'like', "%{$filters['search']}%")
             );
         }
 
-        if (!empty($filters['status'])) {
+        if (! empty($filters['status'])) {
             $query->where('status', $filters['status']);
         }
 
-        if (!empty($filters['priority'])) {
+        if (! empty($filters['priority'])) {
             $query->where('priority', $filters['priority']);
         }
 
-        if (!empty($filters['category'])) {
+        if (! empty($filters['category'])) {
             $query->where('category', $filters['category']);
         }
 
         return Inertia::render('Support/Index/Page', [
-            'tickets'    => $query->paginate(15)->withQueryString(),
-            'filters'    => $filters,
-            'summary'    => $this->service->getSummary(),
+            'tickets' => $query->paginate(15)->withQueryString(),
+            'filters' => $filters,
+            'summary' => $this->service->getSummary(),
             'statusOpts' => SupportTicketStatus::options(),
-            'roleId'     => auth()->user()->role_id,
+            'roleId' => auth()->user()->role_id,
         ]);
     }
 
@@ -61,16 +60,16 @@ class SupportTicketController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'title'       => ['required', 'string', 'min:5', 'max:200'],
+            'title' => ['required', 'string', 'min:5', 'max:200'],
             'description' => ['required', 'string', 'min:10'],
-            'category'    => ['required', 'string'],
-            'priority'    => ['nullable', 'string'],
+            'category' => ['required', 'string'],
+            'priority' => ['nullable', 'string'],
         ], [
-            'title.required'       => 'O título é obrigatório.',
-            'title.min'            => 'O título deve ter pelo menos 5 caracteres.',
+            'title.required' => 'O título é obrigatório.',
+            'title.min' => 'O título deve ter pelo menos 5 caracteres.',
             'description.required' => 'A descrição é obrigatória.',
-            'description.min'      => 'Descreva melhor o problema (mínimo 10 caracteres).',
-            'category.required'    => 'Selecione uma categoria.',
+            'description.min' => 'Descreva melhor o problema (mínimo 10 caracteres).',
+            'category.required' => 'Selecione uma categoria.',
         ]);
 
         $ticket = $this->service->open($data);
@@ -96,7 +95,7 @@ class SupportTicketController extends Controller
         ]);
 
         // Filtra notas internas para não-staff
-        if (!$isStaff) {
+        if (! $isStaff) {
             $ticket->setRelation(
                 'messages',
                 $ticket->messages->where('is_internal', false)->values()
@@ -104,10 +103,10 @@ class SupportTicketController extends Controller
         }
 
         return Inertia::render('Support/Show/Page', [
-            'ticket'     => $ticket,
+            'ticket' => $ticket,
             'statusOpts' => SupportTicketStatus::options(),
-            'isStaff'    => $isStaff,
-            'roleId'     => auth()->user()->role_id,
+            'isStaff' => $isStaff,
+            'roleId' => auth()->user()->role_id,
             'allowedTransitions' => array_map(
                 fn ($s) => $s->value,
                 $ticket->status->allowedTransitions()
@@ -121,7 +120,7 @@ class SupportTicketController extends Controller
 
         $data = $request->validate([
             'status' => ['required', 'string'],
-            'note'   => ['nullable', 'string', 'max:1000'],
+            'note' => ['nullable', 'string', 'max:1000'],
         ]);
 
         $newStatus = SupportTicketStatus::from($data['status']);
@@ -146,7 +145,7 @@ class SupportTicketController extends Controller
         $isStaff = in_array(auth()->user()->role_id, [RoleUser::$ADMIN, RoleUser::$CONSULTOR]);
 
         $data = $request->validate([
-            'message'     => ['required', 'string', 'min:2'],
+            'message' => ['required', 'string', 'min:2'],
             'is_internal' => ['boolean'],
         ], [
             'message.required' => 'A mensagem não pode estar vazia.',
@@ -164,7 +163,7 @@ class SupportTicketController extends Controller
     public function cancel(SupportTicket $ticket)
     {
         abort_if(
-            $ticket->opened_by_user_id !== auth()->id() && !in_array(auth()->user()->role_id, [1, 2]),
+            $ticket->opened_by_user_id !== auth()->id() && ! in_array(auth()->user()->role_id, [1, 2]),
             403
         );
 
@@ -194,7 +193,7 @@ class SupportTicketController extends Controller
             $ticket->consultor_user_id === $user->id ||
             $ticket->assigned_to_user_id === $user->id;
 
-        abort_if(!$allowed, 403, 'Sem permissão para acessar este chamado.');
+        abort_if(! $allowed, 403, 'Sem permissão para acessar este chamado.');
     }
 
     private function authorizeStaff(SupportTicket $ticket): void
@@ -206,6 +205,6 @@ class SupportTicketController extends Controller
             $ticket->consultor_user_id === $user->id ||
             $ticket->assigned_to_user_id === $user->id;
 
-        abort_if(!$allowed, 403, 'Apenas staff pode alterar o status do chamado.');
+        abort_if(! $allowed, 403, 'Apenas staff pode alterar o status do chamado.');
     }
 }

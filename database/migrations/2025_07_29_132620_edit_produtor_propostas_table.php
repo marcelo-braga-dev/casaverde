@@ -2,8 +2,8 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -22,7 +22,7 @@ return new class extends Migration
                 AND REFERENCED_TABLE_NAME IS NOT NULL
             ");
 
-            if (!empty($foreignKey)) {
+            if (! empty($foreignKey)) {
 
                 $constraintName = $foreignKey[0]->CONSTRAINT_NAME;
 
@@ -37,14 +37,14 @@ return new class extends Migration
 
             if (
                 Schema::hasColumn('produtor_propostas', 'geracao') &&
-                !Schema::hasColumn('produtor_propostas', 'geracao_media')
+                ! Schema::hasColumn('produtor_propostas', 'geracao_media')
             ) {
                 $table->renameColumn('geracao', 'geracao_media');
             }
 
             if (
                 Schema::hasColumn('produtor_propostas', 'valor') &&
-                !Schema::hasColumn('produtor_propostas', 'valor_investimento')
+                ! Schema::hasColumn('produtor_propostas', 'valor_investimento')
             ) {
                 $table->renameColumn('valor', 'valor_investimento');
             }
@@ -62,18 +62,18 @@ return new class extends Migration
 
         Schema::table('produtor_propostas', function (Blueprint $table) {
 
-//            $table->foreignId('consultor_id')
-//                ->after('produtor_id')
-//                ->constrained('users')
-//                ->cascadeOnDelete();
+            //            $table->foreignId('consultor_id')
+            //                ->after('produtor_id')
+            //                ->constrained('users')
+            //                ->cascadeOnDelete();
 
-//            $table->decimal('taxa_reducao', 8, 2)
-//                ->nullable()
-//                ->after('potencia');
+            //            $table->decimal('taxa_reducao', 8, 2)
+            //                ->nullable()
+            //                ->after('potencia');
 
-//            $table->integer('prazo_locacao')
-//                ->nullable()
-//                ->after('taxa_reducao');
+            //            $table->integer('prazo_locacao')
+            //                ->nullable()
+            //                ->after('taxa_reducao');
         });
     }
 

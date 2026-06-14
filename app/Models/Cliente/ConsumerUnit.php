@@ -18,10 +18,15 @@ class ConsumerUnit extends Model
         'client_profile_id',
         'uc_code',
         'label',
+        'consumo_previsto_kwh_mes',
         'concessionaria_id',
         'address_id',
         'status',
         'notes',
+    ];
+
+    protected $casts = [
+        'consumo_previsto_kwh_mes' => 'decimal:2',
     ];
 
     protected $appends = ['display_label'];
@@ -35,7 +40,7 @@ class ConsumerUnit extends Model
 
     public static function normalizeCode(?string $value): ?string
     {
-        if (!$value) {
+        if (! $value) {
             return $value;
         }
 
@@ -64,6 +69,11 @@ class ConsumerUnit extends Model
     public function usinaLink()
     {
         return $this->hasOne(ClientUsinaLink::class, 'consumer_unit_id');
+    }
+
+    public function usinaLinks()
+    {
+        return $this->hasMany(ClientUsinaLink::class, 'consumer_unit_id');
     }
 
     public function activeUsinaLink()

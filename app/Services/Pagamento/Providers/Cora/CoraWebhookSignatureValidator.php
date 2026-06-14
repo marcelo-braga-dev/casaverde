@@ -9,7 +9,7 @@ class CoraWebhookSignatureValidator
 {
     public function isValid(Request $request, ?PaymentProviderAccount $account = null): bool
     {
-        if (!$account?->webhook_secret) {
+        if (! $account?->webhook_secret) {
             return true;
         }
 
@@ -17,7 +17,7 @@ class CoraWebhookSignatureValidator
             ?? $request->header('X-Signature')
             ?? null;
 
-        if (!$signature) {
+        if (! $signature) {
             return false;
         }
 

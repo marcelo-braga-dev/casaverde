@@ -22,9 +22,10 @@ class PropostaController extends Controller
 
     public function store(Request $request)
     {
-        (new ClientePropostaRepository())->create($request);
+        (new ClientePropostaRepository)->create($request);
 
         AlertMessage::success('Proposta cadastrado com sucesso.');
+
         return redirect()->route('auth.cliente.proposta.index');
     }
 

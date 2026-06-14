@@ -10,11 +10,10 @@ describe('Admin Dashboard Controller', function () {
         $this->actingAs($admin)
             ->get(route('admin.dashboard'))
             ->assertOk()
-            ->assertInertia(fn ($page) =>
-                $page->component('Admin/Dashboard/Page')
-                    ->has('dashboard')
-                    ->has('dashboard.summary')
-                    ->has('dashboard.quickReports')
+            ->assertInertia(fn ($page) => $page->component('Admin/Dashboard/Page')
+                ->has('dashboard')
+                ->has('dashboard.summary')
+                ->has('dashboard.quickReports')
             );
     });
 
@@ -24,8 +23,7 @@ describe('Admin Dashboard Controller', function () {
         $this->actingAs($consultor)
             ->get(route('admin.dashboard'))
             ->assertOk()
-            ->assertInertia(fn ($page) =>
-                $page->component('Admin/Dashboard/Page')
+            ->assertInertia(fn ($page) => $page->component('Admin/Dashboard/Page')
             );
     });
 
@@ -55,15 +53,14 @@ describe('Admin Dashboard Controller', function () {
 
         $this->actingAs($admin)
             ->get(route('admin.dashboard'))
-            ->assertInertia(fn ($page) =>
-                $page->has('dashboard.summary.clients_total')
-                    ->has('dashboard.summary.clients_active')
-                    ->has('dashboard.summary.plants_total')
-                    ->has('dashboard.summary.bills_pending_review')
-                    ->has('dashboard.summary.charges_open_amount')
-                    ->has('dashboard.summary.charges_overdue_amount')
-                    ->has('dashboard.summary.charges_paid_amount_month')
-                    ->has('dashboard.summary.failed_payments')
+            ->assertInertia(fn ($page) => $page->has('dashboard.summary.clients_total')
+                ->has('dashboard.summary.clients_active')
+                ->has('dashboard.summary.plants_total')
+                ->has('dashboard.summary.bills_pending_review')
+                ->has('dashboard.summary.charges_open_amount')
+                ->has('dashboard.summary.charges_overdue_amount')
+                ->has('dashboard.summary.charges_paid_amount_month')
+                ->has('dashboard.summary.failed_payments')
             );
     });
 
@@ -72,10 +69,9 @@ describe('Admin Dashboard Controller', function () {
 
         $this->actingAs($admin)
             ->get(route('admin.dashboard'))
-            ->assertInertia(fn ($page) =>
-                $page->has('operationalAlertsSummary')
-                    ->has('operationalAlertsSummary.open')
-                    ->has('operationalAlertsSummary.critical')
+            ->assertInertia(fn ($page) => $page->has('operationalAlertsSummary')
+                ->has('operationalAlertsSummary.open')
+                ->has('operationalAlertsSummary.critical')
             );
     });
 });

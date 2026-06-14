@@ -26,7 +26,7 @@ class ClientEmailImportSettingController extends Controller
     public function create()
     {
         return Inertia::render('Admin/Fatura/ImportSetting/Create/Page', [
-            'clients'         => ClientProfile::query()->orderByDesc('id')
+            'clients' => ClientProfile::query()->orderByDesc('id')
                 ->get(['id', 'client_code', 'nome', 'razao_social', 'cpf', 'cnpj']),
             'concessionarias' => Concessionaria::query()->where('status', 'ativo')
                 ->orderBy('nome')->get(['id', 'nome']),
@@ -39,17 +39,17 @@ class ClientEmailImportSettingController extends Controller
     public function store(Request $request)
     {
         $data = $request->validate([
-            'client_profile_id'       => ['required', 'integer', 'exists:client_profiles,id'],
+            'client_profile_id' => ['required', 'integer', 'exists:client_profiles,id'],
             'import_email_account_id' => ['nullable', 'integer', 'exists:import_email_accounts,id'],
-            'concessionaria_id'       => ['nullable', 'integer', 'exists:concessionarias,id'],
-            'pdf_password'            => ['nullable', 'string', 'max:255'],
-            'sender_filter'           => ['nullable', 'string', 'max:255'],
-            'subject_filter'          => ['nullable', 'string', 'max:255'],
-            'is_active'               => ['required', 'boolean'],
+            'concessionaria_id' => ['nullable', 'integer', 'exists:concessionarias,id'],
+            'pdf_password' => ['nullable', 'string', 'max:255'],
+            'sender_filter' => ['nullable', 'string', 'max:255'],
+            'subject_filter' => ['nullable', 'string', 'max:255'],
+            'is_active' => ['required', 'boolean'],
         ]);
 
-        $svc       = app(SystemSettingService::class);
-        $clientId  = $data['client_profile_id'];
+        $svc = app(SystemSettingService::class);
+        $clientId = $data['client_profile_id'];
         $accountId = $data['import_email_account_id'] ?? null;
 
         // Busca a conta de email do pool (para obter o email e preencher imap_email)
@@ -64,21 +64,21 @@ class ClientEmailImportSettingController extends Controller
 
         $upsert = [
             'import_email_account_id' => $accountId,
-            'concessionaria_id'       => $data['concessionaria_id'] ?? null,
-            'is_active'               => (bool) $data['is_active'],
-            'user_id'                 => auth()->id(),
-            'imap_host'               => $svc->get('imap_default_host',       'mail.casaverde.com.br'),
-            'imap_port'               => $svc->get('imap_default_port',       993),
-            'imap_encryption'         => $svc->get('imap_default_encryption', 'ssl'),
+            'concessionaria_id' => $data['concessionaria_id'] ?? null,
+            'is_active' => (bool) $data['is_active'],
+            'user_id' => auth()->id(),
+            'imap_host' => $svc->get('imap_default_host', 'mail.casaverde.com.br'),
+            'imap_port' => $svc->get('imap_default_port', 993),
+            'imap_encryption' => $svc->get('imap_default_encryption', 'ssl'),
             // imap_email e imap_password: preenchidos com os dados do pool (NOT NULL no banco legado)
             // O valor real em tempo de uso vem dos atributos effective_* do model
-            'imap_email'              => $emailAccount?->email    ?? '',
-            'imap_password'           => $emailAccount?->imap_password ?? '',
-            'sender_filter'           => $data['sender_filter']  ?? null,
-            'subject_filter'          => $data['subject_filter'] ?? null,
+            'imap_email' => $emailAccount?->email ?? '',
+            'imap_password' => $emailAccount?->imap_password ?? '',
+            'sender_filter' => $data['sender_filter'] ?? null,
+            'subject_filter' => $data['subject_filter'] ?? null,
         ];
 
-        if (!empty($data['pdf_password'])) {
+        if (! empty($data['pdf_password'])) {
             $upsert['pdf_password'] = $data['pdf_password'];
         }
 
@@ -100,8 +100,8 @@ class ClientEmailImportSettingController extends Controller
     public function edit(ClientEmailImportSetting $faturaImportSetting)
     {
         return Inertia::render('Admin/Fatura/ImportSetting/Edit/Page', [
-            'setting'         => $faturaImportSetting->load(['clientProfile', 'concessionaria', 'emailAccount']),
-            'clients'         => ClientProfile::query()->orderByDesc('id')
+            'setting' => $faturaImportSetting->load(['clientProfile', 'concessionaria', 'emailAccount']),
+            'clients' => ClientProfile::query()->orderByDesc('id')
                 ->get(['id', 'client_code', 'nome', 'razao_social', 'cpf', 'cnpj']),
             'concessionarias' => Concessionaria::query()->where('status', 'ativo')
                 ->orderBy('nome')->get(['id', 'nome']),
@@ -112,11 +112,11 @@ class ClientEmailImportSettingController extends Controller
     {
         $data = $request->validate([
             'import_email_account_id' => ['nullable', 'integer', 'exists:import_email_accounts,id'],
-            'concessionaria_id'       => ['nullable', 'integer', 'exists:concessionarias,id'],
-            'pdf_password'            => ['nullable', 'string', 'max:255'],
-            'sender_filter'           => ['nullable', 'string', 'max:255'],
-            'subject_filter'          => ['nullable', 'string', 'max:255'],
-            'is_active'               => ['boolean'],
+            'concessionaria_id' => ['nullable', 'integer', 'exists:concessionarias,id'],
+            'pdf_password' => ['nullable', 'string', 'max:255'],
+            'sender_filter' => ['nullable', 'string', 'max:255'],
+            'subject_filter' => ['nullable', 'string', 'max:255'],
+            'is_active' => ['boolean'],
         ]);
 
         $newAccountId = $data['import_email_account_id'] ?? null;
@@ -133,14 +133,14 @@ class ClientEmailImportSettingController extends Controller
             if ($newEmailAccount) {
                 $newEmailAccount->update([
                     'client_profile_id' => $faturaImportSetting->client_profile_id,
-                    'assigned_at'       => now(),
+                    'assigned_at' => now(),
                 ]);
             }
         }
 
         // Sincroniza imap_email e imap_password com os dados do pool (campos NOT NULL legados)
         if ($newEmailAccount) {
-            $data['imap_email']    = $newEmailAccount->email;
+            $data['imap_email'] = $newEmailAccount->email;
             $data['imap_password'] = $newEmailAccount->imap_password ?? '';
         }
 

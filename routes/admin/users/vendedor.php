@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\Admin\Usuarios\Consultor\GetAllVendedoresController;
 use App\Http\Controllers\Admin\Usuarios\Consultor\ConsultorController;
+use App\Http\Controllers\Admin\Usuarios\Consultor\GetAllVendedoresController;
 use Illuminate\Support\Facades\Route;
 
 Route::name('user.')
@@ -9,9 +9,9 @@ Route::name('user.')
     ->group(function () {
         Route::resource('consultor', ConsultorController::class);
 
-//        Route::name('vendedor.api.')
-//            ->prefix('vendedor-api')
-//            ->group(function () {
-//                Route::get('get-vendedores', GetAllVendedoresController::class)->name('get');
-//            });
+        //        Route::name('vendedor.api.')
+        //            ->prefix('vendedor-api')
+        //            ->group(function () {
+        //                Route::get('get-vendedores', GetAllVendedoresController::class)->name('get');
+        //            });
     });

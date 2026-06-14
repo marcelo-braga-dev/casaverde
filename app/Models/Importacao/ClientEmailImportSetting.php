@@ -30,9 +30,9 @@ class ClientEmailImportSetting extends Model
     ];
 
     protected $casts = [
-        'imap_password'   => 'encrypted',
-        'pdf_password'    => 'encrypted',
-        'is_active'       => 'boolean',
+        'imap_password' => 'encrypted',
+        'pdf_password' => 'encrypted',
+        'is_active' => 'boolean',
         'last_checked_at' => 'datetime',
     ];
 

@@ -60,11 +60,11 @@ class StoreClientContractRequest extends FormRequest
         $address = $this->input('address', []);
 
         if (is_array($address)) {
-            $address['cep'] = !empty($address['cep'])
+            $address['cep'] = ! empty($address['cep'])
                 ? preg_replace('/\D+/', '', $address['cep'])
                 : null;
 
-            $address['estado'] = !empty($address['estado'])
+            $address['estado'] = ! empty($address['estado'])
                 ? strtoupper(trim($address['estado']))
                 : null;
         }

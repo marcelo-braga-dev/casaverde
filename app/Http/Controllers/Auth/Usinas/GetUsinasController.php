@@ -9,7 +9,7 @@ class GetUsinasController extends Controller
 {
     public function __invoke()
     {
-        $usinas = (new UsinaSolar())
+        $usinas = (new UsinaSolar)
             ->orderByDesc('id')
             ->get();
 

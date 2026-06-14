@@ -12,11 +12,11 @@ class EnsureUserHasRole
     {
         $user = $request->user();
 
-        if (!$user) {
+        if (! $user) {
             abort(403, 'Usuário não autenticado.');
         }
 
-        if (!in_array($user->role_name, $roles, true)) {
+        if (! in_array($user->role_name, $roles, true)) {
             abort(403, 'Você não possui permissão para acessar este recurso.');
         }
 

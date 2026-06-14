@@ -26,19 +26,19 @@ class ClienteCobrancaController extends Controller
             ->where('client_profile_id', $profile?->id ?? 0)
             ->orderByDesc('created_at');
 
-        if (!empty($filters['status'])) {
+        if (! empty($filters['status'])) {
             $query->where('status', $filters['status']);
         }
 
-        if (!empty($filters['year'])) {
+        if (! empty($filters['year'])) {
             $query->where('reference_year', $filters['year']);
         }
 
         return Inertia::render('Cliente/Cobrancas/Index/Page', [
             'cobrancas' => $query->paginate(12)->withQueryString(),
-            'filters'   => $filters,
-            'profile'   => $profile,
-            'totais'    => $this->getTotais($profile?->id ?? 0),
+            'filters' => $filters,
+            'profile' => $profile,
+            'totais' => $this->getTotais($profile?->id ?? 0),
         ]);
     }
 
@@ -56,7 +56,7 @@ class ClienteCobrancaController extends Controller
 
         return Inertia::render('Cliente/Cobrancas/Show/Page', [
             'cobranca' => $cobranca,
-            'profile'  => $profile,
+            'profile' => $profile,
         ]);
     }
 

@@ -28,6 +28,8 @@ function safeRoute(n, p) { try { return route(n, p); } catch { return '#'; } }
 const STATUS_MAP = {
     approved:       { label: 'Aprovada',   color: 'success', gradient: 'linear-gradient(135deg,#10b981,#059669)' },
     pending_review: { label: 'Em Revisão', color: 'warning', gradient: 'linear-gradient(135deg,#f59e0b,#d97706)' },
+    reviewed:       { label: 'Revisada',   color: 'info',    gradient: 'linear-gradient(135deg,#3b82f6,#2563eb)' },
+    corrected:      { label: 'Corrigida',  color: 'info',    gradient: 'linear-gradient(135deg,#14b8a6,#0d9488)' },
     rejected:       { label: 'Rejeitada',  color: 'error',   gradient: 'linear-gradient(135deg,#ef4444,#dc2626)' },
 };
 

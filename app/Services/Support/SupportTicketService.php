@@ -19,32 +19,32 @@ class SupportTicketService
         return DB::transaction(function () use ($data) {
             $user = auth()->user();
 
-            $clientProfileId   = null;
+            $clientProfileId = null;
             $producerProfileId = null;
-            $consultorId       = null;
+            $consultorId = null;
 
             if ($user->role_id === RoleUser::$CLIENTE) {
                 $profile = ClientProfile::where('platform_user_id', $user->id)->first();
                 $clientProfileId = $profile?->id;
-                $consultorId     = $profile?->consultor_user_id;
+                $consultorId = $profile?->consultor_user_id;
             }
 
             if ($user->role_id === RoleUser::$PRODUTOR) {
                 $profile = ProducerProfile::where('platform_user_id', $user->id)->first();
                 $producerProfileId = $profile?->id;
-                $consultorId       = $profile?->consultor_user_id;
+                $consultorId = $profile?->consultor_user_id;
             }
 
             return SupportTicket::create([
-                'title'               => $data['title'],
-                'description'         => $data['description'],
-                'category'            => $data['category']  ?? 'outros',
-                'priority'            => $data['priority']  ?? 'normal',
-                'status'              => SupportTicketStatus::Novo->value,
-                'opened_by_user_id'   => $user->id,
-                'client_profile_id'   => $clientProfileId,
+                'title' => $data['title'],
+                'description' => $data['description'],
+                'category' => $data['category'] ?? 'outros',
+                'priority' => $data['priority'] ?? 'normal',
+                'status' => SupportTicketStatus::Novo->value,
+                'opened_by_user_id' => $user->id,
+                'client_profile_id' => $clientProfileId,
                 'producer_profile_id' => $producerProfileId,
-                'consultor_user_id'   => $consultorId,
+                'consultor_user_id' => $consultorId,
             ]);
         });
     }
@@ -57,14 +57,14 @@ class SupportTicketService
             $isStaff = in_array($user->role_id, [RoleUser::$ADMIN, RoleUser::$CONSULTOR]);
 
             $msg = SupportTicketMessage::create([
-                'ticket_id'   => $ticket->id,
-                'user_id'     => $user->id,
-                'message'     => $message,
+                'ticket_id' => $ticket->id,
+                'user_id' => $user->id,
+                'message' => $message,
                 'is_internal' => $isInternal && $isStaff,
             ]);
 
             // Marca primeira resposta do staff
-            if ($isStaff && !$ticket->first_response_at) {
+            if ($isStaff && ! $ticket->first_response_at) {
                 $ticket->update(['first_response_at' => now()]);
             }
 
@@ -73,7 +73,7 @@ class SupportTicketService
                 $ticket->update(['status' => SupportTicketStatus::EmAtendimento->value]);
             }
 
-            if (!$isStaff && $ticket->status === SupportTicketStatus::AguardandoCliente) {
+            if (! $isStaff && $ticket->status === SupportTicketStatus::AguardandoCliente) {
                 $ticket->update(['status' => SupportTicketStatus::EmAtendimento->value]);
             }
 
@@ -84,7 +84,7 @@ class SupportTicketService
     /** Muda o status do chamado */
     public function changeStatus(SupportTicket $ticket, SupportTicketStatus $newStatus, ?string $note = null): SupportTicket
     {
-        if (!$ticket->canTransitionTo($newStatus)) {
+        if (! $ticket->canTransitionTo($newStatus)) {
             throw new InvalidArgumentException(
                 "Transição de '{$ticket->status->label()}' para '{$newStatus->label()}' não é permitida."
             );
@@ -104,9 +104,9 @@ class SupportTicketService
 
             if ($note) {
                 SupportTicketMessage::create([
-                    'ticket_id'   => $ticket->id,
-                    'user_id'     => auth()->id(),
-                    'message'     => $note,
+                    'ticket_id' => $ticket->id,
+                    'user_id' => auth()->id(),
+                    'message' => $note,
                     'is_internal' => true,
                 ]);
             }
@@ -129,7 +129,7 @@ class SupportTicketService
 
             RoleUser::$CONSULTOR => $query->where(function ($q) use ($user) {
                 $q->where('consultor_user_id', $user->id)
-                  ->orWhere('assigned_to_user_id', $user->id);
+                    ->orWhere('assigned_to_user_id', $user->id);
             }),
 
             RoleUser::$CLIENTE => $query->where('opened_by_user_id', $user->id),
@@ -139,19 +139,27 @@ class SupportTicketService
         };
     }
 
+    /** Quantidade de chamados com status "Novo" visíveis para o usuário atual */
+    public function countNew(): int
+    {
+        return $this->queryForCurrentUser()
+            ->where('status', SupportTicketStatus::Novo->value)
+            ->count();
+    }
+
     /** Estatísticas de resumo */
     public function getSummary(): array
     {
         $q = $this->queryForCurrentUser();
 
         return [
-            'total'           => (clone $q)->count(),
-            'novos'           => (clone $q)->where('status', SupportTicketStatus::Novo->value)->count(),
-            'em_atendimento'  => (clone $q)->where('status', SupportTicketStatus::EmAtendimento->value)->count(),
-            'aguardando'      => (clone $q)->where('status', SupportTicketStatus::AguardandoCliente->value)->count(),
-            'resolvidos'      => (clone $q)->where('status', SupportTicketStatus::Resolvido->value)->count(),
-            'fechados'        => (clone $q)->where('status', SupportTicketStatus::Fechado->value)->count(),
-            'abertos'         => (clone $q)->whereIn('status', [
+            'total' => (clone $q)->count(),
+            'novos' => (clone $q)->where('status', SupportTicketStatus::Novo->value)->count(),
+            'em_atendimento' => (clone $q)->where('status', SupportTicketStatus::EmAtendimento->value)->count(),
+            'aguardando' => (clone $q)->where('status', SupportTicketStatus::AguardandoCliente->value)->count(),
+            'resolvidos' => (clone $q)->where('status', SupportTicketStatus::Resolvido->value)->count(),
+            'fechados' => (clone $q)->where('status', SupportTicketStatus::Fechado->value)->count(),
+            'abertos' => (clone $q)->whereIn('status', [
                 SupportTicketStatus::Novo->value,
                 SupportTicketStatus::EmAtendimento->value,
                 SupportTicketStatus::AguardandoCliente->value,

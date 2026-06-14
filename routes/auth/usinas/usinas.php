@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\Auth\Usinas\GetAllUsinasController;
 use App\Http\Controllers\Auth\Usinas\FindUsinaController;
+use App\Http\Controllers\Auth\Usinas\GetAllUsinasController;
 use App\Http\Controllers\Auth\Usinas\GetProdutorUsinasController;
 use App\Http\Controllers\Auth\Usinas\GetUsinasController;
 use App\Http\Controllers\Auth\Usinas\UpdateStatusUsinaController;

@@ -9,6 +9,5 @@ class PaymentCustomerDTO
         public readonly ?string $email,
         public readonly ?string $document,
         public readonly ?string $phone = null,
-    ) {
-    }
+    ) {}
 }

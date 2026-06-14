@@ -2,7 +2,8 @@ import Layout from "@/Layouts/UserLayout/Layout.jsx";
 import MoneyText from "@/Components/Admin/MoneyText.jsx";
 import StatusChip from "@/Components/Admin/StatusChip.jsx";
 import EmptyState from "@/Components/Admin/EmptyState.jsx";
-import { Head, router, useForm } from "@inertiajs/react";
+import { getStatusLabel } from "@/Utils/statusLabels.js";
+import { Head, Link, router, useForm } from "@inertiajs/react";
 import {
     Button,
     Card,
@@ -18,7 +19,7 @@ import {
     Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
-import {IconFileExcel, IconFileTypePdf} from "@tabler/icons-react";
+import { IconEye, IconFileExcel, IconFileTypePdf, IconPlus } from "@tabler/icons-react";
 
 function MetricCard({ title, value, money = false }) {
     return (
@@ -65,8 +66,8 @@ export default function Page({
     const summary = report?.summary || {};
 
     return (
-        <Layout titlePage="Relatório de Faturas" menu="relatorios" subMenu="relatorios-faturas">
-            <Head title="Relatório de Faturas" />
+        <Layout titlePage="Faturas de Concessionárias" menu="financeiro" subMenu="financeiro-faturas">
+            <Head title="Faturas de Concessionárias" />
 
             <Stack spacing={3}>
                 <Card>
@@ -79,7 +80,7 @@ export default function Page({
                         >
                             <Grid size="grow">
                                 <Typography variant="h5" fontWeight={700}>
-                                    Relatório de Faturas
+                                    Faturas de Concessionárias
                                 </Typography>
 
                                 <Typography color="text.secondary">
@@ -88,6 +89,15 @@ export default function Page({
                             </Grid>
                             <Grid size="auto">
                                 <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5}>
+                                    <Button
+                                        color="success"
+                                        component={Link}
+                                        startIcon={<IconPlus />}
+                                        href={route("consultor.cliente.faturas.create")}
+                                    >
+                                        Cadastrar Fatura de Concessionária
+                                    </Button>
+
                                     <Button
                                         color="error"
                                         component="a"
@@ -147,7 +157,7 @@ export default function Page({
                                     >
                                         <MenuItem value="">Todos</MenuItem>
                                         {reviewStatuses.map((status) => (
-                                            <MenuItem key={status} value={status}>{status}</MenuItem>
+                                            <MenuItem key={status} value={status}>{getStatusLabel(status)}</MenuItem>
                                         ))}
                                     </TextField>
                                 </Grid>
@@ -162,7 +172,7 @@ export default function Page({
                                     >
                                         <MenuItem value="">Todos</MenuItem>
                                         {parserStatuses.map((status) => (
-                                            <MenuItem key={status} value={status}>{status}</MenuItem>
+                                            <MenuItem key={status} value={status}>{getStatusLabel(status)}</MenuItem>
                                         ))}
                                     </TextField>
                                 </Grid>
@@ -202,7 +212,7 @@ export default function Page({
 
                 <Grid container spacing={2}>
                     <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-                        <MetricCard title="Faturas" value={summary.total} />
+                        <MetricCard title="Faturas de Concessionárias" value={summary.total} />
                     </Grid>
                     <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                         <MetricCard title="Aprovadas" value={summary.approved} />
@@ -228,6 +238,7 @@ export default function Page({
                                         <TableCell>Parser</TableCell>
                                         <TableCell>Consumo</TableCell>
                                         <TableCell align="right">Valor</TableCell>
+                                        <TableCell align="right">Ações</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
@@ -240,12 +251,23 @@ export default function Page({
                                             <TableCell><StatusChip status={bill.parser_status} /></TableCell>
                                             <TableCell>{bill.consumo_kwh || 0} kWh</TableCell>
                                             <TableCell align="right"><MoneyText value={bill.valor_total} /></TableCell>
+                                            <TableCell align="right">
+                                                <Button
+                                                    component={Link}
+                                                    href={route("consultor.cliente.faturas.show", bill.id)}
+                                                    size="small"
+                                                    variant="outlined"
+                                                    startIcon={<IconEye size={15} />}
+                                                >
+                                                    Ver
+                                                </Button>
+                                            </TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
                             </Table>
                         ) : (
-                            <EmptyState title="Nenhuma fatura encontrada." />
+                            <EmptyState title="Nenhuma fatura de concessionária encontrada." />
                         )}
                     </CardContent>
                 </Card>

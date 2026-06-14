@@ -7,8 +7,8 @@ use Inertia\Inertia;
 
 class ClienteSuporteController extends Controller
 {
-   public function index()
-   {
+    public function index()
+    {
         return Inertia::render('Auth/Suporte/Clientes/Index/Page');
-   }
+    }
 }

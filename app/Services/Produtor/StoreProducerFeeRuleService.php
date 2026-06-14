@@ -2,22 +2,18 @@
 
 namespace App\Services\Produtor;
 
-use App\Models\Cliente\ClientDiscountRule;
-use App\Models\Cliente\ClientProfile;
 use App\Models\Produtor\ProducerAdministrationFeeRules;
 use App\Models\Produtor\ProducerProfile;
-use App\Services\Cliente\UpdateClientActiveDiscountRuleService;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class StoreProducerFeeRuleService
 {
     public function handle(
         ProducerProfile $producerProfile,
-        float           $feePercent,
-        string          $startsOn,
-        ?string         $endsOn = null,
-        ?string         $notes = null,
+        float $feePercent,
+        string $startsOn,
+        ?string $endsOn = null,
+        ?string $notes = null,
     ): ProducerAdministrationFeeRules {
         return DB::transaction(function () use (
             $producerProfile,

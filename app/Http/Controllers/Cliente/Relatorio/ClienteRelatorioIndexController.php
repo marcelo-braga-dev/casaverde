@@ -32,12 +32,12 @@ class ClienteRelatorioIndexController extends Controller
             : 0;
 
         return Inertia::render('Cliente/Relatorios/Index/Page', [
-            'profile'    => $profile ? ['client_code' => $profile->client_code, 'display_name' => $profile->display_name] : null,
+            'profile' => $profile ? ['client_code' => $profile->client_code, 'display_name' => $profile->display_name] : null,
             'quickStats' => [
-                'total_charges'  => (int) ($totals?->total ?? 0),
-                'total_savings'  => (float) ($totals?->total_savings ?? 0),
-                'total_final'    => (float) ($totals?->total_final ?? 0),
-                'total_bills'    => $billCount,
+                'total_charges' => (int) ($totals?->total ?? 0),
+                'total_savings' => (float) ($totals?->total_savings ?? 0),
+                'total_final' => (float) ($totals?->total_final ?? 0),
+                'total_bills' => $billCount,
             ],
         ]);
     }

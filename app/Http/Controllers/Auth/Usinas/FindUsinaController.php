@@ -7,10 +7,10 @@ use App\Models\Usina\UsinaSolar;
 
 class FindUsinaController extends Controller
 {
-   public function __invoke($id)
-   {
-       $date = UsinaSolar::find($id);
+    public function __invoke($id)
+    {
+        $date = UsinaSolar::find($id);
 
-       return response()->json($date);
-   }
+        return response()->json($date);
+    }
 }

@@ -13,12 +13,11 @@ class GeneratePaymentSlipService
 {
     public function __construct(
         private readonly PaymentProviderManager $providerManager,
-    ) {
-    }
+    ) {}
 
     public function handle(CustomerCharge $charge, string $provider = 'cora', string $paymentMethod = 'boleto_pix'): PaymentSlip
     {
-        if (!in_array($charge->status, ['open', 'waiting_payment'], true)) {
+        if (! in_array($charge->status, ['open', 'waiting_payment'], true)) {
             throw new InvalidArgumentException('A cobrança precisa estar aberta para gerar pagamento.');
         }
 
@@ -51,10 +50,10 @@ class GeneratePaymentSlipService
             );
 
             $dto = new CreatePaymentDTO(
-                externalId: 'charge-' . $charge->id,
+                externalId: 'charge-'.$charge->id,
                 amount: (float) $charge->final_amount,
                 dueDate: $charge->due_date?->format('Y-m-d'),
-                description: 'Cobrança Casa Verde ' . ($charge->reference_label ?? '#' . $charge->id),
+                description: 'Cobrança Casa Verde '.($charge->reference_label ?? '#'.$charge->id),
                 paymentMethod: $paymentMethod,
                 customer: $customer,
                 metadata: [
