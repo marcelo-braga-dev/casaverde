@@ -5,10 +5,6 @@ import {
     Button,
     Card,
     CardContent,
-    FormControl,
-    InputLabel,
-    MenuItem,
-    Select,
     Stack,
     Table,
     TableBody,
@@ -18,6 +14,7 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
+import SearchableSelect from '@/Components/Form/SearchableSelect.jsx';
 
 import Grid from '@mui/material/Grid2';
 
@@ -110,37 +107,19 @@ export default function Page({ report, filters }) {
                         <form onSubmit={submit}>
                             <Grid container spacing={2}>
                                 <Grid size={{ xs: 12, md: 5 }}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>
-                                            Cliente
-                                        </InputLabel>
-
-                                        <Select
-                                            label="Cliente"
-                                            value={data.client_id}
-                                            onChange={(e) =>
-                                                setData(
-                                                    'client_id',
-                                                    e.target.value
-                                                )
-                                            }
-                                        >
-                                            <MenuItem value="">
-                                                Todos os clientes
-                                            </MenuItem>
-
-                                            {report.clients.map(
-                                                (client) => (
-                                                    <MenuItem
-                                                        key={client.id}
-                                                        value={client.id}
-                                                    >
-                                                        {client.name}
-                                                    </MenuItem>
-                                                )
-                                            )}
-                                        </Select>
-                                    </FormControl>
+                                    <SearchableSelect
+                                        fullWidth
+                                        label="Cliente"
+                                        value={data.client_id}
+                                        onChange={(value) => setData('client_id', value)}
+                                        options={[
+                                            { value: '', label: 'Todos os clientes' },
+                                            ...report.clients.map((client) => ({
+                                                value: client.id,
+                                                label: client.name,
+                                            })),
+                                        ]}
+                                    />
                                 </Grid>
 
                                 <Grid size={{ xs: 12, md: 2 }}>

@@ -5,13 +5,10 @@ import {
     Card,
     CardContent,
     CardHeader,
-    FormControl,
     Grid,
-    InputLabel,
-    MenuItem,
-    Select,
     TextField,
 } from "@mui/material";
+import SearchableSelect from "@/Components/Form/SearchableSelect.jsx";
 import { IconDeviceFloppy, IconFileInvoice, IconX } from "@tabler/icons-react";
 import { useMemo } from "react";
 
@@ -60,94 +57,80 @@ const Page = ({ concessionarias = [], usinas = [], clients = [], consumerUnits =
                     <form onSubmit={submit}>
                         <Grid container spacing={2}>
                             <Grid item xs={12} md={6}>
-                                <FormControl fullWidth error={Boolean(errors.concessionaria_id)}>
-                                    <InputLabel>Concessionária</InputLabel>
-                                    <Select
-                                        label="Concessionária"
-                                        value={data.concessionaria_id}
-                                        onChange={(e) => setData("concessionaria_id", e.target.value)}
-                                    >
-                                        <MenuItem value="">Selecione</MenuItem>
-                                        {concessionarias.map((item) => (
-                                            <MenuItem key={item.id} value={item.id}>
-                                                {item.nome}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
+                                <SearchableSelect
+                                    fullWidth
+                                    label="Concessionária"
+                                    value={data.concessionaria_id}
+                                    onChange={(value) => setData("concessionaria_id", value)}
+                                    options={concessionarias.map((item) => ({ value: item.id, label: item.nome }))}
+                                    error={Boolean(errors.concessionaria_id)}
+                                    helperText={errors.concessionaria_id}
+                                />
                             </Grid>
 
                             <Grid item xs={12} md={6}>
-                                <FormControl fullWidth error={Boolean(errors.usina_id)}>
-                                    <InputLabel>Usina</InputLabel>
-                                    <Select
-                                        label="Usina"
-                                        value={data.usina_id}
-                                        onChange={(e) => setData("usina_id", e.target.value)}
-                                    >
-                                        <MenuItem value="">Selecione</MenuItem>
-                                        {usinas.map((usina) => (
-                                            <MenuItem key={usina.id} value={usina.id}>
-                                                UC {usina.uc || usina.id}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
+                                <SearchableSelect
+                                    fullWidth
+                                    label="Usina"
+                                    value={data.usina_id}
+                                    onChange={(value) => setData("usina_id", value)}
+                                    options={usinas.map((usina) => ({ value: usina.id, label: `UC ${usina.uc || usina.id}` }))}
+                                    error={Boolean(errors.usina_id)}
+                                    helperText={errors.usina_id}
+                                />
                             </Grid>
 
                             <Grid item xs={12} md={8}>
-                                <FormControl fullWidth error={Boolean(errors.client_profile_id)}>
-                                    <InputLabel>Cliente</InputLabel>
-                                    <Select
-                                        label="Cliente"
-                                        value={data.client_profile_id}
-                                        onChange={(e) => handleClientChange(e.target.value)}
-                                    >
-                                        <MenuItem value="">Selecione</MenuItem>
-                                        {clients.map((client) => (
-                                            <MenuItem key={client.id} value={client.id}>
-                                                {client.client_code ? `${client.client_code} - ` : ""}
-                                                {client.nome ||
-                                                    client.razao_social ||
-                                                    client.cpf ||
-                                                    client.cnpj ||
-                                                    `Cliente #${client.id}`}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
+                                <SearchableSelect
+                                    fullWidth
+                                    label="Cliente"
+                                    value={data.client_profile_id}
+                                    onChange={handleClientChange}
+                                    options={clients.map((client) => ({
+                                        value: client.id,
+                                        label: `${client.client_code ? `${client.client_code} - ` : ""}${
+                                            client.nome ||
+                                            client.razao_social ||
+                                            client.cpf ||
+                                            client.cnpj ||
+                                            `Cliente #${client.id}`
+                                        }`,
+                                    }))}
+                                    error={Boolean(errors.client_profile_id)}
+                                    helperText={errors.client_profile_id}
+                                />
                             </Grid>
 
                             <Grid item xs={12} md={4}>
-                                <FormControl fullWidth error={Boolean(errors.consumer_unit_id)} disabled={!data.client_profile_id}>
-                                    <InputLabel>Unidade Consumidora</InputLabel>
-                                    <Select
-                                        label="Unidade Consumidora"
-                                        value={data.consumer_unit_id}
-                                        onChange={(e) => setData("consumer_unit_id", e.target.value)}
-                                    >
-                                        <MenuItem value="">A identificar pelo PDF</MenuItem>
-                                        {clientConsumerUnits.map((uc) => (
-                                            <MenuItem key={uc.id} value={uc.id}>
-                                                {uc.display_label || uc.uc_code}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
+                                <SearchableSelect
+                                    fullWidth
+                                    disabled={!data.client_profile_id}
+                                    label="Unidade Consumidora"
+                                    value={data.consumer_unit_id}
+                                    onChange={(value) => setData("consumer_unit_id", value)}
+                                    options={[
+                                        { value: "", label: "A identificar pelo PDF" },
+                                        ...clientConsumerUnits.map((uc) => ({ value: uc.id, label: uc.display_label || uc.uc_code })),
+                                    ]}
+                                    error={Boolean(errors.consumer_unit_id)}
+                                    helperText={errors.consumer_unit_id}
+                                />
                             </Grid>
 
                             <Grid item xs={12} md={4}>
-                                <FormControl fullWidth error={Boolean(errors.import_source)}>
-                                    <InputLabel>Origem</InputLabel>
-                                    <Select
-                                        label="Origem"
-                                        value={data.import_source}
-                                        onChange={(e) => setData("import_source", e.target.value)}
-                                    >
-                                        <MenuItem value="manual">Manual</MenuItem>
-                                        <MenuItem value="email">E-mail</MenuItem>
-                                    </Select>
-                                </FormControl>
+                                <SearchableSelect
+                                    fullWidth
+                                    disableClearable
+                                    label="Origem"
+                                    value={data.import_source}
+                                    onChange={(value) => setData("import_source", value)}
+                                    options={[
+                                        { value: "manual", label: "Manual" },
+                                        { value: "email", label: "E-mail" },
+                                    ]}
+                                    error={Boolean(errors.import_source)}
+                                    helperText={errors.import_source}
+                                />
                             </Grid>
 
                             <Grid item xs={12}>

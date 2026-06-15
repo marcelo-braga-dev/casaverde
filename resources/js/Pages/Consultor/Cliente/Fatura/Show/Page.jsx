@@ -14,11 +14,7 @@ import {
     DialogContent,
     DialogTitle,
     Divider,
-    FormControl,
-    InputLabel,
-    MenuItem,
     Paper,
-    Select,
     Stack,
     TextField,
     Typography,
@@ -26,6 +22,7 @@ import {
     LinearProgress,
     Tooltip,
 } from "@mui/material";
+import SearchableSelect from "@/Components/Form/SearchableSelect.jsx";
 import Grid from "@mui/material/Grid2";
 import TabContext from "@mui/lab/TabContext";
 import TabList from "@mui/lab/TabList";
@@ -371,28 +368,48 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [], consum
 
                                             <Divider />
 
-                                            <FormControl fullWidth size="small" error={Boolean(errors.review_status)}>
-                                                <InputLabel>Status da revisão</InputLabel>
-                                                <Select label="Status da revisão" value={data.review_status} onChange={(e) => setData("review_status", e.target.value)}>
-                                                    {reviewStatuses.map((s) => <MenuItem key={s} value={s}>{getStatusLabel(s)}</MenuItem>)}
-                                                </Select>
-                                            </FormControl>
+                                            <SearchableSelect
+                                                fullWidth
+                                                size="small"
+                                                disableClearable
+                                                label="Status da revisão"
+                                                value={data.review_status}
+                                                onChange={(value) => setData("review_status", value)}
+                                                options={reviewStatuses.map((s) => ({ value: s, label: getStatusLabel(s) }))}
+                                                error={Boolean(errors.review_status)}
+                                                helperText={errors.review_status}
+                                            />
 
-                                            <FormControl fullWidth size="small" error={Boolean(errors.consumer_unit_id)}>
-                                                <InputLabel>Unidade Consumidora</InputLabel>
-                                                <Select label="Unidade Consumidora" value={data.consumer_unit_id} onChange={(e) => setData("consumer_unit_id", e.target.value)}>
-                                                    <MenuItem value="">Nenhuma</MenuItem>
-                                                    {consumerUnits.map((uc) => <MenuItem key={uc.id} value={uc.id}>{uc.display_label || uc.uc_code}</MenuItem>)}
-                                                </Select>
-                                            </FormControl>
+                                            <SearchableSelect
+                                                fullWidth
+                                                size="small"
+                                                label="Unidade Consumidora"
+                                                value={data.consumer_unit_id}
+                                                onChange={(value) => setData("consumer_unit_id", value)}
+                                                options={[
+                                                    { value: "", label: "Nenhuma" },
+                                                    ...consumerUnits.map((uc) => ({ value: uc.id, label: uc.display_label || uc.uc_code })),
+                                                ]}
+                                                error={Boolean(errors.consumer_unit_id)}
+                                                helperText={errors.consumer_unit_id}
+                                            />
 
-                                            <FormControl fullWidth size="small" error={Boolean(errors.usina_id)}>
-                                                <InputLabel>Usina vinculada</InputLabel>
-                                                <Select label="Usina vinculada" value={data.usina_id} onChange={(e) => setData("usina_id", e.target.value)}>
-                                                    <MenuItem value="">Nenhuma</MenuItem>
-                                                    {usinas.map((u) => <MenuItem key={u.id} value={u.id}>UC {u.uc || u.id}{suggestedUsinaId === u.id ? " — sugerida" : ""}</MenuItem>)}
-                                                </Select>
-                                            </FormControl>
+                                            <SearchableSelect
+                                                fullWidth
+                                                size="small"
+                                                label="Usina vinculada"
+                                                value={data.usina_id}
+                                                onChange={(value) => setData("usina_id", value)}
+                                                options={[
+                                                    { value: "", label: "Nenhuma" },
+                                                    ...usinas.map((u) => ({
+                                                        value: u.id,
+                                                        label: `UC ${u.uc || u.id}${suggestedUsinaId === u.id ? " — sugerida" : ""}`,
+                                                    })),
+                                                ]}
+                                                error={Boolean(errors.usina_id)}
+                                                helperText={errors.usina_id}
+                                            />
 
                                             <TextField fullWidth multiline rows={4} label="Observações da revisão" value={data.review_notes} error={Boolean(errors.review_notes)} helperText={errors.review_notes} onChange={(e) => setData("review_notes", e.target.value)} size="small" />
 
