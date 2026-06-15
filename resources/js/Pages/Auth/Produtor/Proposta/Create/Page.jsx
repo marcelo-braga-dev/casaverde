@@ -1,6 +1,7 @@
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
 import Grid from "@mui/material/Grid2";
-import { Button, Card, CardContent, CardHeader, MenuItem, TextField } from "@mui/material";
+import { Button, Card, CardContent, CardHeader } from "@mui/material";
+import SearchableSelect from "@/Components/Form/SearchableSelect.jsx";
 import { useEffect, useState } from "react";
 import Endereco from "@/Components/UserData/Endereco.jsx";
 import ConsumoDados from "./ConsumoDados.jsx";
@@ -146,20 +147,17 @@ const Page = () => {
                         <CardContent>
                             <Grid container spacing={3}>
                                 <Grid size={{ xs: 12, md: 6 }}>
-                                    <TextField
+                                    <SearchableSelect
                                         label="Selecione o Produtor..."
                                         value={data.produtor_id}
-                                        select
                                         required={!cadastrarUsuario}
-                                        onChange={(e) => setData("produtor_id", e.target.value)}
+                                        onChange={(value) => setData("produtor_id", value)}
+                                        options={produtores.map((item) => ({
+                                            value: item.id,
+                                            label: `${item.nome} (${item?.user_data?.cpf ?? ""}${item?.user_data?.cnpj ?? ""})`,
+                                        }))}
                                         fullWidth
-                                    >
-                                        {produtores.map((item) => (
-                                            <MenuItem value={item.id} key={item.id}>
-                                                {item.nome} ({item?.user_data?.cpf}{item?.user_data?.cnpj})
-                                            </MenuItem>
-                                        ))}
-                                    </TextField>
+                                    />
                                 </Grid>
 
                                 <Grid size={{ xs: 12, md: 4 }}>

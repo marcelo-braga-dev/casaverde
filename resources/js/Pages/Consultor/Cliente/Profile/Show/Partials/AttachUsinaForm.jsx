@@ -6,13 +6,13 @@ import {
     Card,
     CardContent,
     Divider,
-    MenuItem,
     Stack,
     TextField,
     Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { IconLink, IconPlugConnected } from "@tabler/icons-react";
+import SearchableSelect from "@/Components/Form/SearchableSelect.jsx";
 
 const AttachUsinaForm = ({ profile, usinas = [] }) => {
     const consumerUnits = profile?.consumer_units ?? profile?.consumerUnits ?? [];
@@ -63,48 +63,47 @@ const AttachUsinaForm = ({ profile, usinas = [] }) => {
                 <form onSubmit={submit}>
                     <Grid container spacing={3}>
                         <Grid size={{ xs: 12, md: 4 }}>
-                            <TextField
+                            <SearchableSelect
                                 label="Unidade Consumidora (UC)"
                                 value={form.data.consumer_unit_id}
-                                onChange={(e) => form.setData("consumer_unit_id", e.target.value)}
+                                onChange={(value) => form.setData("consumer_unit_id", value)}
+                                options={[
+                                    { value: "", label: "Selecione a UC..." },
+                                    ...activeUnits.map((uc) => ({
+                                        value: uc.id,
+                                        label: `${uc.uc_code}${uc.label ? ` — ${uc.label}` : ''}`,
+                                    })),
+                                ]}
                                 error={!!form.errors.consumer_unit_id}
                                 helperText={form.errors.consumer_unit_id}
-                                select
                                 required
                                 fullWidth
-                            >
-                                <MenuItem value="">Selecione a UC...</MenuItem>
-                                {activeUnits.map((uc) => (
-                                    <MenuItem key={uc.id} value={uc.id}>
-                                        {uc.uc_code}{uc.label ? ` — ${uc.label}` : ''}
-                                    </MenuItem>
-                                ))}
-                            </TextField>
+                            />
                         </Grid>
 
                         <Grid size={{ xs: 12, md: 4 }}>
-                            <TextField
+                            <SearchableSelect
                                 label="Usina Solar"
                                 value={form.data.usina_id}
-                                onChange={(e) => form.setData("usina_id", e.target.value)}
+                                onChange={(value) => form.setData("usina_id", value)}
+                                options={[
+                                    { value: "", label: "Selecione a usina..." },
+                                    ...usinas.map((usina) => ({
+                                        value: usina.id,
+                                        label: `${usina.usina_nome}${
+                                            usina.produtor?.nome_fantasia
+                                                ? ` — ${usina.produtor.nome_fantasia}`
+                                                : usina.produtor?.nome
+                                                    ? ` — ${usina.produtor.nome}`
+                                                    : ''
+                                        }`,
+                                    })),
+                                ]}
                                 error={!!form.errors.usina_id}
                                 helperText={form.errors.usina_id}
-                                select
                                 required
                                 fullWidth
-                            >
-                                <MenuItem value="">Selecione a usina...</MenuItem>
-                                {usinas.map((usina) => (
-                                    <MenuItem key={usina.id} value={usina.id}>
-                                        {usina.usina_nome}
-                                        {usina.produtor?.nome_fantasia
-                                            ? ` — ${usina.produtor.nome_fantasia}`
-                                            : usina.produtor?.nome
-                                                ? ` — ${usina.produtor.nome}`
-                                                : ''}
-                                    </MenuItem>
-                                ))}
-                            </TextField>
+                            />
                         </Grid>
 
                         <Grid size={{ xs: 12, md: 4 }}>

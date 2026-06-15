@@ -9,6 +9,7 @@ import {
     Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
+import SearchableSelect from "@/Components/Form/SearchableSelect.jsx";
 
 export default function Page({
     produtores = [],
@@ -51,82 +52,78 @@ export default function Page({
                     <form onSubmit={submit}>
                         <Grid container spacing={2}>
                             <Grid size={{ xs: 12, md: 4 }}>
-                                <TextField
-                                    select
+                                <SearchableSelect
                                     label="Produtor proprietário"
                                     value={data.user_id}
-                                    onChange={(e) => setData("user_id", e.target.value)}
+                                    onChange={(value) => setData("user_id", value)}
+                                    options={[
+                                        { value: "", label: "Selecione" },
+                                        ...produtores.map((item) => ({
+                                            value: item.id,
+                                            label: `${item.name} ${item.email ? `- ${item.email}` : ""}`,
+                                        })),
+                                    ]}
                                     error={!!errors.user_id}
                                     helperText={errors.user_id}
                                     fullWidth
                                     required
-                                >
-                                    <MenuItem value="">Selecione</MenuItem>
-                                    {produtores.map((item) => (
-                                        <MenuItem key={item.id} value={item.id}>
-                                            {item.name} {item.email ? `- ${item.email}` : ""}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
+                                />
                             </Grid>
 
                             <Grid size={{ xs: 12, md: 4 }}>
-                                <TextField
-                                    select
+                                <SearchableSelect
                                     label="Consultor"
                                     value={data.consultor_user_id}
-                                    onChange={(e) => setData("consultor_user_id", e.target.value)}
+                                    onChange={(value) => setData("consultor_user_id", value)}
+                                    options={[
+                                        { value: "", label: "Selecione" },
+                                        ...consultores.map((item) => ({
+                                            value: item.id,
+                                            label: item.name,
+                                        })),
+                                    ]}
                                     error={!!errors.consultor_user_id}
                                     helperText={errors.consultor_user_id}
                                     fullWidth
                                     required
-                                >
-                                    <MenuItem value="">Selecione</MenuItem>
-                                    {consultores.map((item) => (
-                                        <MenuItem key={item.id} value={item.id}>
-                                            {item.name}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
+                                />
                             </Grid>
 
                             <Grid size={{ xs: 12, md: 4 }}>
-                                <TextField
-                                    select
+                                <SearchableSelect
                                     label="Concessionária"
                                     value={data.concessionaria_id}
-                                    onChange={(e) => setData("concessionaria_id", e.target.value)}
+                                    onChange={(value) => setData("concessionaria_id", value)}
+                                    options={[
+                                        { value: "", label: "Selecione" },
+                                        ...concessionarias.map((item) => ({
+                                            value: item.id,
+                                            label: item.nome,
+                                        })),
+                                    ]}
                                     error={!!errors.concessionaria_id}
                                     helperText={errors.concessionaria_id}
                                     fullWidth
                                     required
-                                >
-                                    <MenuItem value="">Selecione</MenuItem>
-                                    {concessionarias.map((item) => (
-                                        <MenuItem key={item.id} value={item.id}>
-                                            {item.nome}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
+                                />
                             </Grid>
 
                             <Grid size={{ xs: 12, md: 4 }}>
-                                <TextField
-                                    select
+                                <SearchableSelect
                                     label="Bloco"
                                     value={data.usina_block_id}
-                                    onChange={(e) => setData("usina_block_id", e.target.value)}
+                                    onChange={(value) => setData("usina_block_id", value)}
+                                    options={[
+                                        { value: "", label: "Nenhum" },
+                                        ...blocks.map((item) => ({
+                                            value: item.id,
+                                            label: item.nome,
+                                        })),
+                                    ]}
                                     error={!!errors.usina_block_id}
                                     helperText={errors.usina_block_id}
                                     fullWidth
-                                >
-                                    <MenuItem value="">Nenhum</MenuItem>
-                                    {blocks.map((item) => (
-                                        <MenuItem key={item.id} value={item.id}>
-                                            {item.nome}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
+                                />
                             </Grid>
 
                             <Grid size={{ xs: 12, md: 4 }}>

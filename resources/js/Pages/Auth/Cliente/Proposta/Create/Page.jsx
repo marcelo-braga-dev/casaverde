@@ -6,9 +6,10 @@ import {router, useForm} from "@inertiajs/react";
 import PropostaCard from "@/Pages/Auth/Cliente/Proposta/Create/PropostaCard.jsx";
 import DadosPessoais from "@/Components/UserData/DadosPessoais.jsx";
 import Contato from "@/Components/UserData/Contato.jsx";
-import {Button, Card, CardContent, CardHeader, MenuItem, TextField} from "@mui/material";
+import {Button, Card, CardContent, CardHeader} from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import {IconClipboardText, IconUserPlus} from "@tabler/icons-react";
+import SearchableSelect from "@/Components/Form/SearchableSelect.jsx";
 
 const Page = () => {
     const [endereco, setEndereco] = useState({})
@@ -70,19 +71,17 @@ const Page = () => {
                     <CardContent>
                         <Grid container spacing={3}>
                             <Grid size={{xs: 12, md: 6}}>
-                                <TextField
+                                <SearchableSelect
                                     label="Selecione o Cliente Consumidor..."
                                     value={data.cliente_id}
-                                    select
                                     required
-                                    onChange={e => setData('cliente_id', e.target.value)}
-                                    fullWidth
-                                >
-                                    {clientes.map(item => {
+                                    onChange={value => setData('cliente_id', value)}
+                                    options={clientes.map(item => {
                                         const doc = item?.user_data?.cnpj ?? item?.user_data?.cpf;
-                                        return <MenuItem value={item.id} key={item.id}>{item.nome} ({doc})</MenuItem>
+                                        return {value: item.id, label: `${item.nome} (${doc})`};
                                     })}
-                                </TextField>
+                                    fullWidth
+                                />
                             </Grid>
                             <Grid size={{xs: 12, md: 4}}>
                                 <Button

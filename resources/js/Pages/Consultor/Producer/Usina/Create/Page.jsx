@@ -4,6 +4,7 @@ import { Button, Card, CardContent, CardHeader, InputAdornment, MenuItem, TextFi
 import Grid from "@mui/material/Grid2";
 import { IconDeviceFloppy, IconSolarElectricity } from "@tabler/icons-react";
 import AddressCard from "@/Components/Partials/AddressCard.jsx";
+import SearchableSelect from "@/Components/Form/SearchableSelect.jsx";
 
 const Page = ({ produtores = [], consultores = [], concessionarias = [], blocks = [], addresses = [] }) => {
     const { data, setData, post, processing, errors } = useForm({
@@ -19,7 +20,7 @@ const Page = ({ produtores = [], consultores = [], concessionarias = [], blocks 
         'modulos' : "",
         'address' : "",
     });
-console.log(data)
+
     const setAddressData = (field, value) => {
         if (typeof field === "object") {
             setData("address", {
@@ -67,22 +68,19 @@ console.log(data)
                                 />
                             </Grid>
                             <Grid size={{ xs: 12, md: 6 }}>
-                                <TextField
+                                <SearchableSelect
                                     label="Produtor Proprietário"
                                     value={data.producer_profile_id}
-                                    onChange={(e) => setData("producer_profile_id", e.target.value)}
+                                    onChange={(value) => setData("producer_profile_id", value)}
+                                    options={produtores.map((produtor) => ({
+                                        value: produtor.id,
+                                        label: produtor.nome,
+                                    }))}
                                     error={!!errors.producer_profile_id}
                                     helperText={errors.producer_profile_id}
-                                    select
                                     required
                                     fullWidth
-                                >
-                                    {produtores.map((produtor) => (
-                                        <MenuItem key={produtor.id} value={produtor.id}>
-                                            {produtor.nome}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
+                                />
                             </Grid>
 
                             {/*<Grid size={{ xs: 12, md: 6 }}>*/}
@@ -105,41 +103,37 @@ console.log(data)
                             {/*</Grid>*/}
 
                             <Grid size={{ xs: 12, md: 6 }}>
-                                <TextField
+                                <SearchableSelect
                                     label="Concessionária"
                                     value={data.concessionaria_id}
-                                    onChange={(e) => setData("concessionaria_id", e.target.value)}
+                                    onChange={(value) => setData("concessionaria_id", value)}
+                                    options={concessionarias.map((item) => ({
+                                        value: item.id,
+                                        label: item.nome,
+                                    }))}
                                     error={!!errors.concessionaria_id}
                                     helperText={errors.concessionaria_id}
-                                    select
                                     required
                                     fullWidth
-                                >
-                                    {concessionarias.map((item) => (
-                                        <MenuItem key={item.id} value={item.id}>
-                                            {item.nome}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
+                                />
                             </Grid>
 
                             <Grid size={{ xs: 12, md: 6 }}>
-                                <TextField
+                                <SearchableSelect
                                     label="Grupo de Usina"
                                     value={data.usina_block_id}
-                                    onChange={(e) => setData("usina_block_id", e.target.value)}
+                                    onChange={(value) => setData("usina_block_id", value)}
+                                    options={[
+                                        { value: "", label: "Sem grupo" },
+                                        ...blocks.map((block) => ({
+                                            value: block.id,
+                                            label: block.nome,
+                                        })),
+                                    ]}
                                     error={!!errors.usina_block_id}
                                     helperText={errors.usina_block_id}
-                                    select
                                     fullWidth
-                                >
-                                    <MenuItem value="">Sem grupo</MenuItem>
-                                    {blocks.map((block) => (
-                                        <MenuItem key={block.id} value={block.id}>
-                                            {block.nome}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
+                                />
                             </Grid>
 
                             <Grid size={{ xs: 12, md: 4 }}>

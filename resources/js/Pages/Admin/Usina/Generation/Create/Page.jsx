@@ -5,7 +5,6 @@ import {
     Card,
     CardContent,
     Grid,
-    MenuItem,
     Stack,
     TextField,
     Typography,
@@ -13,6 +12,7 @@ import {
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
+import SearchableSelect from "@/Components/Form/SearchableSelect.jsx";
 
 export default function CreateUsinaGenerationRecordPage() {
     const { props } = usePage();
@@ -68,21 +68,18 @@ export default function CreateUsinaGenerationRecordPage() {
                         <form onSubmit={handleSubmit}>
                             <Grid container spacing={2}>
                                 <Grid item xs={12}>
-                                    <TextField
+                                    <SearchableSelect
                                         label="Usina"
                                         value={data.usina_id}
-                                        onChange={(event) => setData('usina_id', event.target.value)}
+                                        onChange={(value) => setData('usina_id', value)}
+                                        options={usinas.map((usina) => ({
+                                            value: usina.id,
+                                            label: `UC ${usina.uc || usina.id} - ${usina.produtor?.name || 'Produtor não informado'}`,
+                                        }))}
                                         error={Boolean(errors.usina_id)}
                                         helperText={errors.usina_id}
-                                        select
                                         fullWidth
-                                    >
-                                        {usinas.map((usina) => (
-                                            <MenuItem key={usina.id} value={usina.id}>
-                                                UC {usina.uc || usina.id} - {usina.produtor?.name || 'Produtor não informado'}
-                                            </MenuItem>
-                                        ))}
-                                    </TextField>
+                                    />
                                 </Grid>
 
                                 <Grid item xs={12} md={6}>

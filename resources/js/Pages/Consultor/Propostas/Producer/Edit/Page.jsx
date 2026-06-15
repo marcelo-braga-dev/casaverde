@@ -21,6 +21,7 @@ import {
     IconUser,
 } from "@tabler/icons-react";
 import AddressCard from "@/Components/Partials/AddressCard.jsx";
+import SearchableSelect from "@/Components/Form/SearchableSelect.jsx";
 
 const emptyAddress = {
     cep: "",
@@ -220,23 +221,19 @@ const Page = ({ proposal, concessionarias = [] }) => {
                     <CardContent>
                         <Grid container spacing={3}>
                             <Grid size={{ xs: 12, md: 6 }}>
-                                <TextField
+                                <SearchableSelect
                                     label="Concessionária"
                                     value={data.concessionaria_id}
-                                    onChange={(e) => setData("concessionaria_id", e.target.value)}
+                                    onChange={(value) => setData("concessionaria_id", value)}
+                                    options={concessionarias.map((concessionaria) => ({
+                                        value: concessionaria.id,
+                                        label: `${concessionaria.nome}${concessionaria.estado ? ` - ${concessionaria.estado}` : ""}`,
+                                    }))}
                                     error={!!errors.concessionaria_id}
                                     helperText={errors.concessionaria_id}
-                                    select
                                     required
                                     fullWidth
-                                >
-                                    {concessionarias.map((concessionaria) => (
-                                        <MenuItem key={concessionaria.id} value={concessionaria.id}>
-                                            {concessionaria.nome}
-                                            {concessionaria.estado ? ` - ${concessionaria.estado}` : ""}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
+                                />
                             </Grid>
 
                             <Grid size={{ xs: 12, md: 3 }}>

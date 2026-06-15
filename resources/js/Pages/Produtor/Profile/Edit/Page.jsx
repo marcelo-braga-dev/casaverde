@@ -9,6 +9,7 @@ import {
     Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
+import SearchableSelect from "@/Components/Form/SearchableSelect.jsx";
 
 export default function Page({ producer, users = [], addresses = [] }) {
     const { data, setData, put, processing, errors } = useForm({
@@ -56,22 +57,21 @@ export default function Page({ producer, users = [], addresses = [] }) {
                     <form onSubmit={submit}>
                         <Grid container spacing={2}>
                             <Grid size={{ xs: 12, md: 4 }}>
-                                <TextField
-                                    select
+                                <SearchableSelect
                                     label="Usuário vinculado"
                                     value={data.user_id}
-                                    onChange={(e) => setData("user_id", e.target.value)}
+                                    onChange={(value) => setData("user_id", value)}
+                                    options={[
+                                        { value: "", label: "Nenhum" },
+                                        ...users.map((item) => ({
+                                            value: item.id,
+                                            label: `${item.name} - ${item.email}`,
+                                        })),
+                                    ]}
                                     error={!!errors.user_id}
                                     helperText={errors.user_id}
                                     fullWidth
-                                >
-                                    <MenuItem value="">Nenhum</MenuItem>
-                                    {users.map((item) => (
-                                        <MenuItem key={item.id} value={item.id}>
-                                            {item.name} - {item.email}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
+                                />
                             </Grid>
 
                             <Grid size={{ xs: 12, md: 4 }}>

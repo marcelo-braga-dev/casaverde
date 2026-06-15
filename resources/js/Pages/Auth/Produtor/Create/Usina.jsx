@@ -2,6 +2,7 @@ import {Card, CardContent, CardHeader, InputAdornment, MenuItem, TextField} from
 import {IconFileInvoice} from "@tabler/icons-react";
 import Grid from "@mui/material/Grid2";
 import {useEffect, useState} from "react";
+import SearchableSelect from "@/Components/Form/SearchableSelect.jsx";
 
 const Usina = ({data, setData}) => {
     const [concessionarias, setConcessionarias] = useState([])
@@ -20,16 +21,14 @@ const Usina = ({data, setData}) => {
             <CardContent>
                 <Grid container spacing={3} marginBottom={4}>
                     <Grid size={{xs: 12, md: 6}}>
-                        <TextField
+                        <SearchableSelect
                             label="Concessionária de Energia"
-                            select
                             value={data?.usina?.concessionaria_id}
-                            onChange={e => setData({...data, usina: {...data.usina, concessionaria_id: e.target.value}})}
+                            onChange={value => setData({...data, usina: {...data.usina, concessionaria_id: value}})}
+                            options={concessionarias.map(item => ({value: item.id, label: `${item.nome} / ${item.estado}`}))}
                             fullWidth
                             required
-                        >
-                            {concessionarias.map(item => <MenuItem key={item.id} value={item.id}>{item.nome} / {item.estado}</MenuItem>)}
-                        </TextField>
+                        />
                     </Grid>
                 </Grid>
                 <Grid container spacing={3} marginBottom={4}>

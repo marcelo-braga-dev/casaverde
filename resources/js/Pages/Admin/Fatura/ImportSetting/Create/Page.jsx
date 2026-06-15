@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { IconDeviceFloppy, IconMailCog } from "@tabler/icons-react";
+import SearchableSelect from "@/Components/Form/SearchableSelect.jsx";
 
 const Page = ({ clients = [], concessionarias = [] }) => {
     const { data, setData, post, processing, errors } = useForm({
@@ -58,42 +59,37 @@ const Page = ({ clients = [], concessionarias = [] }) => {
                     <CardContent>
                         <Grid container spacing={3}>
                             <Grid size={{ xs: 12, md: 6 }}>
-                                <TextField
+                                <SearchableSelect
                                     label="Cliente"
                                     value={data.client_profile_id}
-                                    onChange={(e) => setData("client_profile_id", e.target.value)}
+                                    onChange={(value) => setData("client_profile_id", value)}
+                                    options={clients.map((client) => ({
+                                        value: client.id,
+                                        label: getClientLabel(client),
+                                    }))}
                                     error={!!errors.client_profile_id}
                                     helperText={errors.client_profile_id}
-                                    select
                                     required
                                     fullWidth
-                                >
-                                    {clients.map((client) => (
-                                        <MenuItem value={client.id} key={client.id}>
-                                            {getClientLabel(client)}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
+                                />
                             </Grid>
 
                             <Grid size={{ xs: 12, md: 6 }}>
-                                <TextField
+                                <SearchableSelect
                                     label="Concessionária"
                                     value={data.concessionaria_id}
-                                    onChange={(e) => setData("concessionaria_id", e.target.value)}
+                                    onChange={(value) => setData("concessionaria_id", value)}
+                                    options={[
+                                        { value: "", label: "Não informar" },
+                                        ...concessionarias.map((concessionaria) => ({
+                                            value: concessionaria.id,
+                                            label: concessionaria.nome,
+                                        })),
+                                    ]}
                                     error={!!errors.concessionaria_id}
                                     helperText={errors.concessionaria_id}
-                                    select
                                     fullWidth
-                                >
-                                    <MenuItem value="">Não informar</MenuItem>
-
-                                    {concessionarias.map((concessionaria) => (
-                                        <MenuItem value={concessionaria.id} key={concessionaria.id}>
-                                            {concessionaria.nome}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
+                                />
                             </Grid>
 
                             <Grid size={{ xs: 12, md: 6 }}>
