@@ -23,6 +23,7 @@ import {
     IconUserPlus,
 } from "@tabler/icons-react";
 import AddressCard from "@/Components/Partials/AddressCard.jsx";
+import SearchableSelect from "@/Components/Form/SearchableSelect.jsx";
 
 const emptyAddress = {
     cep: "",
@@ -164,23 +165,21 @@ const Page = ({concessionarias = [], producers = [], selectedProducer = null}) =
                         <Grid container spacing={3}>
                             {!hasInitialSelectedProducers && !showProducersForm && (
                                 <Grid size={12}>
-                                    <TextField
+                                    <SearchableSelect
                                         label="Selecionar Produtor"
                                         value={data.producer_profile_id}
-                                        onChange={(e) => fillProducersData(e.target.value)}
+                                        onChange={(value) => fillProducersData(value)}
+                                        options={[
+                                            { value: "", label: "Nenhum produtor selecionado" },
+                                            ...producers.map((producer) => ({
+                                                value: producer.id,
+                                                label: getProducersLabel(producer),
+                                            })),
+                                        ]}
                                         error={!!errors.producer_profile_id}
                                         helperText={errors.producer_profile_id}
-                                        select
                                         fullWidth
-                                    >
-                                        <MenuItem value="">Nenhum produtor selecionado</MenuItem>
-
-                                        {producers.map((producer) => (
-                                            <MenuItem key={producer.id} value={producer.id}>
-                                                {getProducersLabel(producer)}
-                                            </MenuItem>
-                                        ))}
-                                    </TextField>
+                                    />
                                 </Grid>
                             )}
 
@@ -341,23 +340,19 @@ const Page = ({concessionarias = [], producers = [], selectedProducer = null}) =
                     <CardContent>
                         <Grid container spacing={3}>
                             <Grid size={{xs: 12, md: 6}}>
-                                <TextField
+                                <SearchableSelect
                                     label="Concessionária"
                                     value={data.concessionaria_id}
-                                    onChange={(e) => setData("concessionaria_id", e.target.value)}
+                                    onChange={(value) => setData("concessionaria_id", value)}
+                                    options={concessionarias.map((concessionaria) => ({
+                                        value: concessionaria.id,
+                                        label: `${concessionaria.nome}${concessionaria.estado ? ` - ${concessionaria.estado}` : ""}`,
+                                    }))}
                                     error={!!errors.concessionaria_id}
                                     helperText={errors.concessionaria_id}
-                                    select
                                     required
                                     fullWidth
-                                >
-                                    {concessionarias.map((concessionaria) => (
-                                        <MenuItem key={concessionaria.id} value={concessionaria.id}>
-                                            {concessionaria.nome}
-                                            {concessionaria.estado ? ` - ${concessionaria.estado}` : ""}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
+                                />
                             </Grid>
 
                             <Grid size={{xs: 12, md: 3}}>

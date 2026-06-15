@@ -10,6 +10,7 @@ import {
     Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
+import SearchableSelect from "@/Components/Form/SearchableSelect.jsx";
 
 export default function Page({ concessionarias = [] }) {
     const { data, setData, post, processing, errors } = useForm({
@@ -157,21 +158,18 @@ export default function Page({ concessionarias = [] }) {
                             </Grid>
 
                             <Grid size={{ xs: 12, md: 4 }}>
-                                <TextField
-                                    select
+                                <SearchableSelect
                                     label="Concessionária"
                                     value={data.concessionaria_id}
-                                    onChange={(e) => setData("concessionaria_id", e.target.value)}
+                                    onChange={(value) => setData("concessionaria_id", value)}
+                                    options={concessionarias.map((item) => ({
+                                        value: item.id,
+                                        label: `${item.nome} - ${item.estado}`,
+                                    }))}
                                     error={!!errors.concessionaria_id}
                                     helperText={errors.concessionaria_id}
                                     fullWidth
-                                >
-                                    {concessionarias.map((item) => (
-                                        <MenuItem key={item.id} value={item.id}>
-                                            {item.nome} - {item.estado}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
+                                />
                             </Grid>
 
                             <Grid size={{ xs: 12, md: 4 }}>

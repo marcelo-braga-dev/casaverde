@@ -10,6 +10,7 @@ export default function SearchableSelect({
     placeholder,
     noOptionsText = 'Nenhuma opção encontrada',
     name,
+    required,
     ...rest
 }) {
     const selectedOption =
@@ -23,6 +24,7 @@ export default function SearchableSelect({
             getOptionLabel={(option) => option?.label ?? ''}
             isOptionEqualToValue={(option, current) => String(option.value) === String(current?.value)}
             noOptionsText={noOptionsText}
+            getOptionDisabled={(option) => Boolean(option?.disabled)}
             renderInput={(params) => (
                 <TextField
                     {...params}
@@ -31,6 +33,7 @@ export default function SearchableSelect({
                     placeholder={placeholder}
                     error={error}
                     helperText={helperText}
+                    required={required}
                 />
             )}
             {...rest}

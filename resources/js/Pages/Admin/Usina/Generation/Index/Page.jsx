@@ -4,19 +4,18 @@ import {
     Button,
     Card,
     CardContent,
-    MenuItem,
     Stack,
     Table,
     TableBody,
     TableCell,
     TableHead,
     TableRow,
-    TextField,
     Typography,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
+import SearchableSelect from "@/Components/Form/SearchableSelect.jsx";
 
 export default function UsinaGenerationIndexPage() {
     const { props } = usePage();
@@ -68,20 +67,19 @@ export default function UsinaGenerationIndexPage() {
 
                 <Card sx={{ borderRadius: 3, mb: 3 }}>
                     <CardContent>
-                        <TextField
+                        <SearchableSelect
                             label="Filtrar por usina"
                             value={filters.usina_id || ''}
-                            onChange={(event) => handleFilterChange('usina_id', event.target.value)}
-                            select
+                            onChange={(value) => handleFilterChange('usina_id', value)}
+                            options={[
+                                { value: '', label: 'Todas' },
+                                ...usinas.map((usina) => ({
+                                    value: usina.id,
+                                    label: `UC ${usina.uc || usina.id} - ${usina.produtor?.name || 'Produtor não informado'}`,
+                                })),
+                            ]}
                             sx={{ minWidth: 420 }}
-                        >
-                            <MenuItem value="">Todas</MenuItem>
-                            {usinas.map((usina) => (
-                                <MenuItem key={usina.id} value={usina.id}>
-                                    UC {usina.uc || usina.id} - {usina.produtor?.name || 'Produtor não informado'}
-                                </MenuItem>
-                            ))}
-                        </TextField>
+                        />
                     </CardContent>
                 </Card>
 

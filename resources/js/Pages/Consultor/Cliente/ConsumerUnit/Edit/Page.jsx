@@ -12,6 +12,7 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { IconBolt, IconDeviceFloppy } from "@tabler/icons-react";
+import SearchableSelect from "@/Components/Form/SearchableSelect.jsx";
 
 function clientLabel(client) {
     const name = client.tipo_pessoa === "pj"
@@ -64,23 +65,22 @@ export default function Page({ consumerUnit, clients = [], concessionarias = [] 
                     <CardContent>
                         <Grid container spacing={2}>
                             <Grid size={{ xs: 12, md: 6 }}>
-                                <TextField
+                                <SearchableSelect
                                     label="Cliente"
                                     value={data.client_profile_id}
-                                    onChange={(e) => setData("client_profile_id", e.target.value)}
+                                    onChange={(value) => setData("client_profile_id", value)}
+                                    options={[
+                                        { value: "", label: "Selecione o cliente..." },
+                                        ...clients.map((client) => ({
+                                            value: client.id,
+                                            label: clientLabel(client),
+                                        })),
+                                    ]}
                                     error={!!errors.client_profile_id}
                                     helperText={errors.client_profile_id}
-                                    select
                                     required
                                     fullWidth
-                                >
-                                    <MenuItem value="">Selecione o cliente...</MenuItem>
-                                    {clients.map((client) => (
-                                        <MenuItem key={client.id} value={client.id}>
-                                            {clientLabel(client)}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
+                                />
                             </Grid>
 
                             <Grid size={{ xs: 12, md: 3 }}>
@@ -126,22 +126,21 @@ export default function Page({ consumerUnit, clients = [], concessionarias = [] 
                             </Grid>
 
                             <Grid size={{ xs: 12, md: 4 }}>
-                                <TextField
+                                <SearchableSelect
                                     label="Concessionária"
                                     value={data.concessionaria_id}
-                                    onChange={(e) => setData("concessionaria_id", e.target.value)}
+                                    onChange={(value) => setData("concessionaria_id", value)}
+                                    options={[
+                                        { value: "", label: "Selecione..." },
+                                        ...concessionarias.map((c) => ({
+                                            value: c.id,
+                                            label: `${c.nome}${c.estado ? ` (${c.estado})` : ""}`,
+                                        })),
+                                    ]}
                                     error={!!errors.concessionaria_id}
                                     helperText={errors.concessionaria_id}
-                                    select
                                     fullWidth
-                                >
-                                    <MenuItem value="">Selecione...</MenuItem>
-                                    {concessionarias.map((c) => (
-                                        <MenuItem key={c.id} value={c.id}>
-                                            {c.nome}{c.estado ? ` (${c.estado})` : ""}
-                                        </MenuItem>
-                                    ))}
-                                </TextField>
+                                />
                             </Grid>
 
                             <Grid size={{ xs: 12, md: 4 }}>

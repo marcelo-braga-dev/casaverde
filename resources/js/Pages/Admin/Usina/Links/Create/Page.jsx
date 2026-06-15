@@ -16,6 +16,7 @@ import {
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
+import SearchableSelect from "@/Components/Form/SearchableSelect.jsx";
 
 function getClientName(client) {
     if (client.tipo_pessoa === 'pj') {
@@ -85,41 +86,33 @@ export default function CreateClientUsinaLinkPage() {
                         <form onSubmit={handleSubmit}>
                             <Grid container spacing={2}>
                                 <Grid item xs={12} md={6}>
-                                    <TextField
+                                    <SearchableSelect
                                         label="Cliente"
                                         value={data.client_profile_id}
-                                        onChange={(event) =>
-                                            setData('client_profile_id', event.target.value)
-                                        }
+                                        onChange={(value) => setData('client_profile_id', value)}
+                                        options={clients.map((client) => ({
+                                            value: client.id,
+                                            label: `${client.client_code} - ${getClientName(client)}`,
+                                        }))}
                                         error={Boolean(errors.client_profile_id)}
                                         helperText={errors.client_profile_id}
-                                        select
                                         fullWidth
-                                    >
-                                        {clients.map((client) => (
-                                            <MenuItem key={client.id} value={client.id}>
-                                                {client.client_code} - {getClientName(client)}
-                                            </MenuItem>
-                                        ))}
-                                    </TextField>
+                                    />
                                 </Grid>
 
                                 <Grid item xs={12} md={6}>
-                                    <TextField
+                                    <SearchableSelect
                                         label="Usina"
                                         value={data.usina_id}
-                                        onChange={(event) => setData('usina_id', event.target.value)}
+                                        onChange={(value) => setData('usina_id', value)}
+                                        options={usinas.map((usina) => ({
+                                            value: usina.id,
+                                            label: usina?.usina_nome,
+                                        }))}
                                         error={Boolean(errors.usina_id)}
                                         helperText={errors.usina_id}
-                                        select
                                         fullWidth
-                                    >
-                                        {usinas.map((usina) => (
-                                            <MenuItem key={usina.id} value={usina.id}>
-                                                {usina?.usina_nome}
-                                            </MenuItem>
-                                        ))}
-                                    </TextField>
+                                    />
                                 </Grid>
 
                                 {selectedUsina && (
