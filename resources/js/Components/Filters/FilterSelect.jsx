@@ -1,9 +1,4 @@
-import {
-    FormControl,
-    InputLabel,
-    MenuItem,
-    Select,
-} from '@mui/material';
+import SearchableSelect from '@/Components/Form/SearchableSelect.jsx';
 
 export default function FilterSelect({
                                          label,
@@ -13,7 +8,12 @@ export default function FilterSelect({
                                          name,
                                      }) {
     return (
-        <FormControl
+        <SearchableSelect
+            name={name}
+            label={label}
+            value={value ?? ''}
+            onChange={onChange}
+            options={[{ value: '', label: 'Todos' }, ...options]}
             size="small"
             sx={{
                 minWidth: {
@@ -21,23 +21,6 @@ export default function FilterSelect({
                     md: 190,
                 },
             }}
-        >
-            <InputLabel>{label}</InputLabel>
-
-            <Select
-                name={name}
-                label={label}
-                value={value ?? ''}
-                onChange={(event) => onChange?.(event.target.value)}
-            >
-                <MenuItem value="">Todos</MenuItem>
-
-                {options.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                        {option.label}
-                    </MenuItem>
-                ))}
-            </Select>
-        </FormControl>
+        />
     );
 }

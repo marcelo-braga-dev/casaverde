@@ -13,10 +13,6 @@ import {
     Button,
     Card,
     CardContent,
-    FormControl,
-    InputLabel,
-    MenuItem,
-    Select,
     Stack,
     Table,
     TableBody,
@@ -26,6 +22,7 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
+import SearchableSelect from '@/Components/Form/SearchableSelect.jsx';
 import Grid from '@mui/material/Grid2';
 import {
     IconBolt,
@@ -98,21 +95,17 @@ export default function Page({ report, filters = {} }) {
                         <form onSubmit={submit}>
                             <Grid container spacing={2}>
                                 <Grid size={{ xs: 12, md: 5 }}>
-                                    <FormControl fullWidth>
-                                        <InputLabel>Cliente</InputLabel>
-
-                                        <Select
-                                            label="Cliente"
-                                            value={data.client_id}
-                                            onChange={(e) => setData('client_id', e.target.value)}
-                                        >
-                                            {clients.map((client) => (
-                                                <MenuItem key={client.id} value={client.id}>
-                                                    {client.name} {client.client_code ? `- ${client.client_code}` : ''}
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
+                                    <SearchableSelect
+                                        fullWidth
+                                        disableClearable
+                                        label="Cliente"
+                                        value={data.client_id}
+                                        onChange={(value) => setData('client_id', value)}
+                                        options={clients.map((client) => ({
+                                            value: client.id,
+                                            label: `${client.name}${client.client_code ? ` - ${client.client_code}` : ''}`,
+                                        }))}
+                                    />
                                 </Grid>
 
                                 <Grid size={{ xs: 12, md: 2 }}>
