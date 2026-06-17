@@ -35,6 +35,15 @@ class ProducerProfile extends Model
 
     protected $with = ['contacts'];
 
+    protected static function booted(): void
+    {
+        static::deleting(function (ProducerProfile $producerProfile) {
+            $producerProfile->newModelQuery()
+                ->where('id', $producerProfile->id)
+                ->update(['cpf' => null, 'cnpj' => null]);
+        });
+    }
+
     // ── Getters ───────────────────────────────────────────────────────────
 
     public function getProducerCodeAttribute(): string

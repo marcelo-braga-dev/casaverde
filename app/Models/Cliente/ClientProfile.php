@@ -61,6 +61,12 @@ class ClientProfile extends Model
             $clientProfile->cpf = static::normalizeDocument($clientProfile->cpf);
             $clientProfile->cnpj = static::normalizeDocument($clientProfile->cnpj);
         });
+
+        static::deleting(function (ClientProfile $clientProfile) {
+            $clientProfile->newModelQuery()
+                ->where('id', $clientProfile->id)
+                ->update(['cpf' => null, 'cnpj' => null]);
+        });
     }
 
     public static function normalizeDocument(?string $value): ?string

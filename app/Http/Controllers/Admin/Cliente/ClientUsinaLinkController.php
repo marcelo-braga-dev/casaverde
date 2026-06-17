@@ -24,6 +24,7 @@ class ClientUsinaLinkController extends Controller
             startedAt: $validated['started_at'],
             notes: $validated['notes'] ?? null,
             consumerUnitId: isset($validated['consumer_unit_id']) ? (int) $validated['consumer_unit_id'] : null,
+            consumptionPercentage: (float) $validated['consumption_percentage'],
         );
 
         return redirect()

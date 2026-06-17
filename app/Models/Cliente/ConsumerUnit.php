@@ -82,6 +82,12 @@ class ConsumerUnit extends Model
             ->where('is_active', true);
     }
 
+    public function activeUsinaLinks()
+    {
+        return $this->hasMany(ClientUsinaLink::class, 'consumer_unit_id')
+            ->active();
+    }
+
     public function contracts()
     {
         return $this->hasMany(ClientContract::class, 'consumer_unit_id');

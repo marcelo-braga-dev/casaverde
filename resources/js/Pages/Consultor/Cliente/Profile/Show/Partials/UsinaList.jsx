@@ -58,6 +58,7 @@ const UsinaList = ({ profile, usinaLinks = [] }) => {
                                     <TableCell sx={{ fontWeight: 800 }}>Unidade Consumidora</TableCell>
                                     <TableCell sx={{ fontWeight: 800 }}>Usina</TableCell>
                                     <TableCell sx={{ fontWeight: 800 }}>Produtor</TableCell>
+                                    <TableCell sx={{ fontWeight: 800 }}>% Consumo Previsto</TableCell>
                                     <TableCell sx={{ fontWeight: 800 }}>Início</TableCell>
                                     <TableCell sx={{ fontWeight: 800 }}>Fim</TableCell>
                                     <TableCell sx={{ fontWeight: 800 }}>Status</TableCell>
@@ -107,6 +108,7 @@ const UsinaList = ({ profile, usinaLinks = [] }) => {
                                                     <Typography variant="body2" color="text.secondary">—</Typography>
                                                 )}
                                             </TableCell>
+                                            <TableCell>{`${Number(item.consumption_percentage ?? 0)}%`}</TableCell>
                                             <TableCell>{formatDate(item.started_at)}</TableCell>
                                             <TableCell>{item.ended_at ? formatDate(item.ended_at) : "Em aberto"}</TableCell>
                                             <TableCell>
