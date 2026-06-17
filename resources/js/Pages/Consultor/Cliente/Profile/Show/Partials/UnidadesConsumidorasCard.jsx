@@ -275,9 +275,12 @@ export default function UnidadesConsumidorasCard({ profile, concessionarias = []
                             <TableBody>
                                 {consumerUnits.map(uc => {
                                     const statusInfo = STATUS_MAP[uc.status] ?? { label: uc.status, color: 'default' };
-                                    const activeLink = uc.active_usina_link ?? uc.activeUsinaLink ?? null;
-                                    const usina = activeLink?.usina ?? null;
-                                    const produtor = usina?.produtor ?? null;
+                                    const activeLinks = uc.active_usina_links ?? uc.activeUsinaLinks ?? [];
+                                    const allocatedPercentage = activeLinks.reduce(
+                                        (sum, link) => sum + Number(link.consumption_percentage ?? 0),
+                                        0
+                                    );
+                                    const remainingPercentage = Math.max(0, Math.round((100 - allocatedPercentage) * 100) / 100);
 
                                     return (
                                         <TableRow key={uc.id} hover>
@@ -296,14 +299,30 @@ export default function UnidadesConsumidorasCard({ profile, concessionarias = []
                                                     : <Typography variant="body2" color="text.secondary">—</Typography>}
                                             </TableCell>
                                             <TableCell>
-                                                {usina ? (
-                                                    <Stack>
-                                                        <Typography variant="body2" sx={{ fontWeight: 700 }}>
-                                                            {usina.usina_nome}
-                                                        </Typography>
-                                                        {produtor && (
+                                                {activeLinks.length > 0 ? (
+                                                    <Stack spacing={0.5}>
+                                                        {activeLinks.map(link => {
+                                                            const usina = link.usina ?? null;
+                                                            const produtor = usina?.produtor ?? null;
+
+                                                            return (
+                                                                <Box key={link.id}>
+                                                                    <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                                                                        {usina?.usina_nome ?? `Usina #${link.usina_id}`}
+                                                                        {' — '}
+                                                                        {Number(link.consumption_percentage ?? 0)}%
+                                                                    </Typography>
+                                                                    {produtor && (
+                                                                        <Typography variant="caption" color="text.secondary">
+                                                                            {produtor.nome_fantasia ?? produtor.nome ?? '—'}
+                                                                        </Typography>
+                                                                    )}
+                                                                </Box>
+                                                            );
+                                                        })}
+                                                        {remainingPercentage > 0 && (
                                                             <Typography variant="caption" color="text.secondary">
-                                                                {produtor.nome_fantasia ?? produtor.nome ?? '—'}
+                                                                {remainingPercentage}% não alocado
                                                             </Typography>
                                                         )}
                                                     </Stack>

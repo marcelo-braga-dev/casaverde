@@ -1,4 +1,6 @@
-# CLAUDE.md — Casa Verde CRM
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Comportamento padrão
 
@@ -40,7 +42,7 @@ CRM/ERP para operação de energia solar por compensação/assinatura. Ciclo com
 - `jquery-mask-plugin` — máscaras de entrada
 
 ### Banco e infraestrutura
-- MySQL 8.0 (77 migrations, 40+ tabelas)
+- MySQL 8.0 (91 migrations, 40+ tabelas)
 - Testes: Pest PHP + SQLite in-memory (nunca MySQL nos testes)
 - Pagamentos: Cora API (sandbox e produção), webhook de retorno
 - Email: IMAP para importação automática de faturas de concessionária
@@ -67,7 +69,8 @@ Redirecionamento pós-login (`app/Http/Middleware/RedirectUserByRole.php`):
 ## Arquitetura e convenções
 
 - Controllers finos — lógica de negócio nos Services.
-- Services injetados via construtor (DI) — **nunca `new Service()` direto** (ainda existem ~25 ocorrências legacy em `app/Http/Controllers/Auth/` — migrar para DI ao tocar esses arquivos).
+- Services injetados via construtor (DI) — **nunca `new Service()` direto**.
+- Repositories em `app/Repositories/` — consultas de listagem/paginação complexas ficam aqui, não nos controllers.
 - DTOs em `app/DTOs/` — único diretório válido. Subpastas: `Endereco/`, `Payments/`, `UsinaSolar/`, `Usuario/`.
 - Policies para autorização (`app/Policies/`). Atualmente: `ClientProfilePolicy`, `CommercialProposalPolicy`. Demais entidades usam verificação manual — expandir quando possível.
 - Scoping de consultor via Query Scopes — nunca filtros manuais repetidos. Exemplo: `scopeSomenteMeusClientes()` em `User`.
@@ -81,20 +84,33 @@ Redirecionamento pós-login (`app/Http/Middleware/RedirectUserByRole.php`):
 ### Usina Solar
 - `UsinaSolar.producer_profile_id` = referência ao `ProducerProfile` do produtor proprietário (**campo crítico**).
 - `UsinaSolar.consultor_user_id` = FK para `users` (role consultor).
-- **NÃO existe mais `UsinaSolar.user_id`** — foi removido na migration `2026_05_19`. O relacionamento `user()` no model é código legado sem coluna correspondente. Não usar.
+- **NÃO existe mais `UsinaSolar.user_id`** — foi removido na migration `2026_05_19`. O relacionamento `user()` no model (`UsinaSolar.php:59`) é código legado sem coluna correspondente — não usar e remover ao tocar o arquivo.
 - Toda usina DEVE ter `producer_profile_id` e `consultor_user_id`.
 - Campos de energia: `energia_disponivel_kwh`, `energia_alocada_kwh`, `energia_saldo_kwh`.
-- `StoreUsinaSolarRequest` valida que `producer_profile_id` existe em `producer_profiles` e que `consultor_user_id` é usuário com role consultor.
+
+### Unidade Consumidora (ConsumerUnit)
+- `ConsumerUnit` pertence a um `ClientProfile` e a uma `Concessionaria`.
+- Código da UC (`uc_code`) é normalizado para apenas dígitos no evento `saving`.
+- Combinação `uc_code + concessionaria_id` é única — não criar UCs duplicadas.
+- `ConcessionaireBill` referencia `consumer_unit_id` para associar faturas à UC correta.
+
+### ClientUsinaLink
+- Vincula `ClientProfile` ↔ `UsinaSolar`, opcionalmente via `ConsumerUnit`.
+- Campos: `allocated_energy_kwh`, `discount_percentage`, `consumption_percentage`.
+- Se `consumer_unit_id` informado: encerra apenas o vínculo ativo da mesma UC+usina (uma UC pode ter múltiplos vínculos ativos com usinas diferentes simultaneamente).
+- Sem `consumer_unit_id`: encerra todos os vínculos ativos do cliente (comportamento legado).
+- Status controlado pelo enum `ClientUsinaLinkStatus`; `scopeActive()` filtra por `is_active=true` e status `Active`.
 
 ### Produtor
 - Produtor é **role oficial** com dashboard próprio, rotas próprias e `ProducerProfile` obrigatório.
 - `ProducerProfile.platform_user_id` = FK para `users` do produtor (quando ativado na plataforma).
 - Fluxo de criação inline (via proposta): `User` → `UserData` → `UserContact` → `ProducerProfile`.
-- Identificação por CPF/CNPJ em `UserData` — reutilizar usuário existente se encontrado.
 - Não duplicar produtor por CPF/CNPJ: buscar primeiro em `UserData`.
+- Ao excluir `ProducerProfile` (soft delete), CPF e CNPJ são zerados no evento `deleting`.
 
 ### Cliente
-- `ClientUsinaLink` vincula cliente a usina com alocação de energia (kWh e percentual).
+- `ClientProfile` armazena CPF/CNPJ diretamente (não via `UserData`).
+- Ao excluir `ClientProfile` (soft delete), CPF e CNPJ são zerados no evento `deleting` — permite recadastro futuro com o mesmo documento.
 - Ativação via convite por email (`ClientActivationInviteMail`).
 
 ### Consultor
@@ -109,7 +125,8 @@ Redirecionamento pós-login (`app/Http/Middleware/RedirectUserByRole.php`):
 app/Models/
 ├── Users/       User, UserData, UserContact, Admin, Produtor, Vendedor, Roles
 ├── Cliente/     ClientProfile, ClienteProposta, ClientContract, ClientUsinaLink,
-│                ClientDiscountRule, ClientAccessInvite, ClientePropostaAddress
+│                ClientDiscountRule, ClientAccessInvite, ClientePropostaAddress,
+│                ConsumerUnit
 ├── Produtor/    ProducerProfile, ProducerLead, ProdutorPropostas,
 │                ProdutorContratos, ProducerAdministrationFeeRules, ProducerAccessInvite,
 │                ProdutorPropostasEnderecos
@@ -120,11 +137,14 @@ app/Models/
 ├── Cobranca/    CustomerCharge, CustomerChargeAdjustment
 ├── Pagamento/   PaymentSlip, PaymentTransaction, PaymentProviderAccount, PaymentWebhookEvent
 ├── Alert/       OperationalAlert
-├── Importacao/  ClientEmailImportSetting, ImportedEnergyBillEmail
+├── Importacao/  ClientEmailImportSetting, ImportEmailAccount, ImportedEnergyBillEmail
 ├── Config/      SystemSetting
 ├── Support/     SupportTicket, SupportTicketMessage
+├── WhatsApp/    WhatsAppMessageTemplate
 └── Endereco/    Address, UserAddress, UsinaAddress
 ```
+
+Models com SoftDeletes: `User`, `ClientProfile`, `ProducerProfile`, `UsinaSolar`, `UsinaBlock`, `Concessionaria`, `SupportTicket`.
 
 ---
 
@@ -152,8 +172,10 @@ app/Jobs/
 ├── MarkChargeAsOverdueJob.php
 ├── SendChargeReminderJob.php
 ├── SyncPaymentStatusJob.php
-└── Pagamento/ProcessPaymentWebhookJob.php
+└── ProcessPaymentWebhookJob.php
 ```
+
+Serviços de automação recorrente: `ChargeAutomationService`, `ChargeReminderService`, `PaymentAutomationService` em `app/Services/Automation/`.
 
 ---
 
@@ -164,12 +186,16 @@ routes/
 ├── web.php                    # carrega todos os módulos
 ├── admin/                     # auth + role:admin,consultor
 │   ├── index.php
-│   ├── users/
+│   ├── users/                 # admin.php, produtor.php, vendedor.php
 │   ├── financeiro/
-│   └── [usinas, fatura, relatorios, config, alerts...]
+│   └── [usinas, fatura, relatorios, config, alerts, whatsapp...]
 ├── auth/                      # rotas compartilhadas por roles
 ├── cliente/index.php          # auth + role:cliente
 ├── consultor/                 # auth + role:consultor
+│   ├── index.php
+│   ├── cliente/               # clientes, consumer units, vínculos usina
+│   ├── producer/
+│   └── propostas/
 ├── produtor/index.php         # auth + role:produtor
 └── user/                      # perfil, suporte
 ```
@@ -209,14 +235,23 @@ app/Services/Energia/Imap/ImapEnergyBillFetcherService.php
 app/Services/Fatura/Imap/ImapConcessionaireFetcherService.php
 ```
 
+Pool de contas IMAP gerenciado via `ImportEmailAccount`. Cada cliente pode ter uma conta dedicada referenciada por `ClientEmailImportSetting.import_email_account_id`.
+
+---
+
+## Integração WhatsApp
+
+`WhatsAppLinkService` (`app/Services/WhatsApp/`) gera links `wa.me` com templates configuráveis.  
+Templates com placeholders `{{variavel}}` armazenados em `WhatsAppMessageTemplate`.
+
 ---
 
 ## Frontend — estrutura principal
 
 ```
 resources/js/
-├── Pages/        (227 páginas JSX por domínio: Admin, Auth, Consultor, Cliente, Produtor...)
-├── Components/   (84 componentes: DataTable, Modal, Forms, Charts, PDF, Filters...)
+├── Pages/        (páginas JSX por domínio: Admin, Auth, Consultor, Cliente, Produtor...)
+├── Components/   (DataTable, Modal, Forms, Charts, PDF, Filters...)
 ├── Layouts/
 │   ├── AppShell/ (AppSidebar, AppHeader, AppBreadcrumbs, AppMobileDrawer...)
 │   └── DashboardLayout/
@@ -236,9 +271,9 @@ Menu construído com base em `auth.user.role_name` — segurança real sempre no
 
 - Framework: Pest PHP
 - Ambiente: SQLite in-memory (`phpunit.xml` define `DB_CONNECTION=sqlite`, `DB_DATABASE=:memory:`)
-- Cobertura atual: ~30 arquivos de teste (Feature + Unit)
-- Áreas cobertas: Auth, Middleware, Dashboard (Admin/Consultor), Services (Cliente, Cobrança, Usina)
-- **Áreas sem cobertura**: Cora/pagamentos, IMAP, proposta de produtor, PDF
+- Cobertura atual: 39 arquivos de teste (Feature + Unit)
+- Áreas cobertas: Auth, Middleware, Dashboard (Admin/Consultor), Services (Cliente, Cobrança, Usina, Fatura, Proposta), Controllers (ConsumerUnit, ClientUsinaLink, ConcessionariaController, ProducerFeeRule)
+- **Áreas sem cobertura**: Cora/pagamentos, IMAP, PDF, WhatsApp
 
 Preferir testes de integração com SQLite — sem mocks de DB.
 
@@ -248,12 +283,10 @@ Preferir testes de integração com SQLite — sem mocks de DB.
 
 | Problema | Local | Ação |
 |----------|-------|------|
-| `new Service()` sem DI (~25 ocorrências) | `app/Http/Controllers/Auth/` legado | Migrar para injeção via construtor |
-| `UsinaSolar::user()` referencia coluna removida | `app/Models/Usina/UsinaSolar.php:60` | Remover método legado |
-| `FormRequest::authorize()` retorna só `auth()->check()` | Vários Requests | Validar role explicitamente |
+| `UsinaSolar::user()` referencia coluna removida | `app/Models/Usina/UsinaSolar.php:59` | Remover método legado |
+| `FormRequest::authorize()` retorna só `auth()->check()` | Fatura, Cobranca, Cliente, Produtor, Pagamento Requests | Validar role explicitamente |
 | Controllers/Services acima de 200 linhas | `ClientReportService`, `StoreProdutorPropostaRequest` | Dividir em classes menores |
 | Policies faltando para UsinaSolar, CustomerCharge, ProducerProfile | `app/Policies/` | Criar e registrar |
-| Scoping de consultor manual por query | Queries espalhadas | Centralizar em Query Scopes |
 | N+1 potenciais | Services sem eager loading | Adicionar `.with()` onde necessário |
 
 ---

@@ -11,6 +11,7 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
+    Divider,
     Stack,
     Table,
     TableBody,
@@ -129,8 +130,12 @@ export default function Page({ consumerUnit, bills }) {
 
     const statusInfo = UC_STATUS_MAP[consumerUnit.status] ?? { label: consumerUnit.status, color: "default" };
     const client = consumerUnit.client_profile;
-    const activeLink = consumerUnit.active_usina_link;
-    const activeUsina = activeLink?.usina;
+    const activeLinks = consumerUnit.active_usina_links ?? consumerUnit.activeUsinaLinks ?? [];
+    const allocatedPercentage = activeLinks.reduce(
+        (sum, link) => sum + Number(link.consumption_percentage ?? 0),
+        0
+    );
+    const remainingPercentage = Math.max(0, Math.round((100 - allocatedPercentage) * 100) / 100);
     const linkHistory = consumerUnit.usina_links ?? [];
     const contracts = consumerUnit.contracts ?? [];
     const billItems = bills?.data ?? [];
@@ -190,25 +195,34 @@ export default function Page({ consumerUnit, bills }) {
                     <Card sx={{ height: "100%" }}>
                         <CardHeader title="Alocação em Usina" avatar={<IconBuildingFactory2 />} />
                         <CardContent>
-                            {activeUsina ? (
-                                <>
-                                    <InfoRow label="Usina">{activeUsina.usina_nome}</InfoRow>
-                                    <InfoRow label="Produtor">{producerLabel(activeUsina.produtor)}</InfoRow>
-                                    <InfoRow label="Status do Vínculo">
-                                        {(() => {
-                                            const linkStatus = LINK_STATUS_MAP[activeLink.status] ?? { label: activeLink.status, color: "default" };
-                                            return <Chip label={linkStatus.label} color={linkStatus.color} size="small" />;
-                                        })()}
+                            {activeLinks.length > 0 ? (
+                                <Stack spacing={1.5} divider={<Divider />}>
+                                    <InfoRow label="Alocado do Consumo Previsto">
+                                        {`${allocatedPercentage}%`}
                                     </InfoRow>
-                                    <InfoRow label="Energia Alocada">{formatKwh(activeLink.allocated_energy_kwh)}</InfoRow>
-                                    <InfoRow label="Desconto">
-                                        {activeLink.discount_percentage != null ? `${Number(activeLink.discount_percentage).toLocaleString("pt-BR")}%` : "—"}
-                                    </InfoRow>
-                                    <InfoRow label="Início do Vínculo">{formatDate(activeLink.started_at)}</InfoRow>
-                                    <InfoRow label="Energia Disponível da Usina">{formatKwh(activeUsina.energia_disponivel_kwh)}</InfoRow>
-                                    <InfoRow label="Energia Alocada da Usina">{formatKwh(activeUsina.energia_alocada_kwh)}</InfoRow>
-                                    <InfoRow label="Saldo da Usina">{formatKwh(activeUsina.energia_saldo_kwh)}</InfoRow>
-                                </>
+                                    {remainingPercentage > 0 && (
+                                        <InfoRow label="Disponível para nova alocação">
+                                            {`${remainingPercentage}%`}
+                                        </InfoRow>
+                                    )}
+                                    {activeLinks.map((link) => {
+                                        const usina = link.usina;
+                                        const linkStatus = LINK_STATUS_MAP[link.status] ?? { label: link.status, color: "default" };
+
+                                        return (
+                                            <Box key={link.id}>
+                                                <InfoRow label="Usina">{usina?.usina_nome ?? `Usina #${link.usina_id}`}</InfoRow>
+                                                <InfoRow label="% do Consumo Previsto">{`${Number(link.consumption_percentage ?? 0)}%`}</InfoRow>
+                                                <InfoRow label="Produtor">{producerLabel(usina?.produtor)}</InfoRow>
+                                                <InfoRow label="Status do Vínculo">
+                                                    <Chip label={linkStatus.label} color={linkStatus.color} size="small" />
+                                                </InfoRow>
+                                                <InfoRow label="Energia Alocada">{formatKwh(link.allocated_energy_kwh)}</InfoRow>
+                                                <InfoRow label="Início do Vínculo">{formatDate(link.started_at)}</InfoRow>
+                                            </Box>
+                                        );
+                                    })}
+                                </Stack>
                             ) : (
                                 <Box py={4} textAlign="center">
                                     <IconBuildingFactory2 size={40} style={{ opacity: 0.2, marginBottom: 8 }} />
@@ -232,6 +246,7 @@ export default function Page({ consumerUnit, bills }) {
                                     <TableCell>Usina</TableCell>
                                     <TableCell>Produtor</TableCell>
                                     <TableCell>Status</TableCell>
+                                    <TableCell>% Consumo Previsto</TableCell>
                                     <TableCell>Energia Alocada</TableCell>
                                     <TableCell>Início</TableCell>
                                     <TableCell>Fim</TableCell>
@@ -241,7 +256,7 @@ export default function Page({ consumerUnit, bills }) {
                             <TableBody>
                                 {linkHistory.length === 0 && (
                                     <TableRow>
-                                        <TableCell colSpan={7}>Nenhum vínculo registrado.</TableCell>
+                                        <TableCell colSpan={8}>Nenhum vínculo registrado.</TableCell>
                                     </TableRow>
                                 )}
 
@@ -255,6 +270,7 @@ export default function Page({ consumerUnit, bills }) {
                                             <TableCell>
                                                 <Chip label={linkStatus.label} color={linkStatus.color} size="small" />
                                             </TableCell>
+                                            <TableCell>{`${Number(link.consumption_percentage ?? 0)}%`}</TableCell>
                                             <TableCell>{formatKwh(link.allocated_energy_kwh)}</TableCell>
                                             <TableCell>{formatDate(link.started_at)}</TableCell>
                                             <TableCell>{formatDate(link.ended_at)}</TableCell>

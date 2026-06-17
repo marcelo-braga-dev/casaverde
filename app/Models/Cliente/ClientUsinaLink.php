@@ -22,6 +22,7 @@ class ClientUsinaLink extends Model
         'notes',
         'allocated_energy_kwh',
         'discount_percentage',
+        'consumption_percentage',
         'status',
         'created_by_user_id',
         'updated_by_user_id',
@@ -33,6 +34,7 @@ class ClientUsinaLink extends Model
         'is_active' => 'boolean',
         'allocated_energy_kwh' => 'decimal:3',
         'discount_percentage' => 'decimal:2',
+        'consumption_percentage' => 'decimal:2',
         'status' => ClientUsinaLinkStatus::class,
     ];
 

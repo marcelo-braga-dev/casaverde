@@ -13,18 +13,22 @@ class AttachClientToUsinaService
         int $usinaId,
         string $startedAt,
         ?string $notes = null,
-        ?int $consumerUnitId = null
+        ?int $consumerUnitId = null,
+        float $consumptionPercentage = 100.0
     ): ClientUsinaLink {
-        return DB::transaction(function () use ($clientProfile, $usinaId, $startedAt, $notes, $consumerUnitId) {
-            // Se uma UC foi especificada, encerra apenas o vínculo ativo daquela UC
-            // Caso contrário, encerra todos os vínculos ativos do cliente (comportamento legado)
+        return DB::transaction(function () use ($clientProfile, $usinaId, $startedAt, $notes, $consumerUnitId, $consumptionPercentage) {
             $query = ClientUsinaLink::query()
                 ->where('client_profile_id', $clientProfile->id)
                 ->where('is_active', true);
 
             if ($consumerUnitId) {
-                $query->where('consumer_unit_id', $consumerUnitId);
+                // UC informada: encerra apenas o vínculo ativo desta UC com a MESMA usina
+                // (re-vínculo/atualização). Vínculos ativos com outras usinas são preservados,
+                // permitindo que a UC tenha consumo alocado em múltiplas usinas simultaneamente.
+                $query->where('consumer_unit_id', $consumerUnitId)
+                    ->where('usina_id', $usinaId);
             }
+            // Sem UC informada: encerra todos os vínculos ativos do cliente (comportamento legado)
 
             $query->update([
                 'is_active' => false,
@@ -38,6 +42,7 @@ class AttachClientToUsinaService
                 'started_at' => $startedAt,
                 'notes' => $notes,
                 'is_active' => true,
+                'consumption_percentage' => $consumptionPercentage,
             ]);
         });
     }

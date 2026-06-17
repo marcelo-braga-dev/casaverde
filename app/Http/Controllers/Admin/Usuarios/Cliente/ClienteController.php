@@ -75,6 +75,7 @@ class ClienteController extends Controller
                 'consumerUnits.concessionaria',
                 'consumerUnits.address',
                 'consumerUnits.activeUsinaLink.usina.produtor',
+                'consumerUnits.activeUsinaLinks.usina.produtor',
             ]),
 
             'usinas' => UsinaSolar::query()

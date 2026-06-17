@@ -76,6 +76,7 @@ class ConsumerUnitManagementController extends Controller
             'concessionaria',
             'address',
             'activeUsinaLink.usina.produtor',
+            'activeUsinaLinks.usina.produtor',
             'usinaLinks.usina.produtor',
             'contracts',
         ]);

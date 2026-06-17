@@ -5,6 +5,7 @@ import {
     Button,
     Card,
     CardContent,
+    Chip,
     Divider,
     Stack,
     TextField,
@@ -13,6 +14,7 @@ import {
 import Grid from "@mui/material/Grid2";
 import { IconLink, IconPlugConnected } from "@tabler/icons-react";
 import SearchableSelect from "@/Components/Form/SearchableSelect.jsx";
+import { useMemo } from "react";
 
 const AttachUsinaForm = ({ profile, usinas = [] }) => {
     const consumerUnits = profile?.consumer_units ?? profile?.consumerUnits ?? [];
@@ -23,14 +25,42 @@ const AttachUsinaForm = ({ profile, usinas = [] }) => {
         usina_id: "",
         started_at: "",
         notes: "",
+        consumption_percentage: 100,
     });
+
+    const selectedUc = useMemo(
+        () => activeUnits.find(uc => String(uc.id) === String(form.data.consumer_unit_id)) ?? null,
+        [activeUnits, form.data.consumer_unit_id]
+    );
+
+    const activeLinks = selectedUc?.active_usina_links ?? selectedUc?.activeUsinaLinks ?? [];
+
+    // Alocações da UC em usinas diferentes da que está selecionada no formulário
+    // (o vínculo ativo com a MESMA usina, se existir, será substituído por este envio).
+    const otherLinks = activeLinks.filter(
+        link => String(link.usina_id) !== String(form.data.usina_id)
+    );
+
+    const allocatedElsewhere = otherLinks.reduce(
+        (sum, link) => sum + Number(link.consumption_percentage ?? 0),
+        0
+    );
+
+    const remainingPercentage = Math.max(0, Math.round((100 - allocatedElsewhere) * 100) / 100);
+
+    const exceedsAvailable = Number(form.data.consumption_percentage) > remainingPercentage + 0.001;
 
     const submit = (e) => {
         e.preventDefault();
+
+        if (exceedsAvailable) {
+            return;
+        }
+
         form.post(route("consultor.user.cliente.usina.store", profile.id), {
             preserveScroll: true,
             onSuccess: () => {
-                form.reset("consumer_unit_id", "usina_id", "started_at", "notes");
+                form.reset("consumer_unit_id", "usina_id", "started_at", "notes", "consumption_percentage");
             },
         });
     };
@@ -105,6 +135,57 @@ const AttachUsinaForm = ({ profile, usinas = [] }) => {
                                 fullWidth
                             />
                         </Grid>
+
+                        <Grid size={{ xs: 12, md: 4 }}>
+                            <TextField
+                                label="% do Consumo Previsto"
+                                value={form.data.consumption_percentage}
+                                onChange={(e) => form.setData("consumption_percentage", e.target.value)}
+                                error={!!form.errors.consumption_percentage || exceedsAvailable}
+                                helperText={
+                                    form.errors.consumption_percentage
+                                    ?? `Disponível para esta UC: ${remainingPercentage}%`
+                                }
+                                type="number"
+                                inputProps={{ min: 0.01, max: 100, step: '0.01' }}
+                                required
+                                fullWidth
+                            />
+                        </Grid>
+
+                        {selectedUc && activeLinks.length > 0 && (
+                            <Grid size={12}>
+                                <Alert severity="info" icon={<IconPlugConnected size={18} />}>
+                                    <Typography variant="body2" sx={{ fontWeight: 700, mb: 0.5 }}>
+                                        Alocação atual do Consumo Previsto desta UC:
+                                    </Typography>
+                                    <Stack direction="row" gap={1} flexWrap="wrap">
+                                        {activeLinks.map((link) => (
+                                            <Chip
+                                                key={link.id}
+                                                size="small"
+                                                label={`${link.usina?.usina_nome ?? `Usina #${link.usina_id}`}: ${Number(link.consumption_percentage ?? 0)}%`}
+                                                color={String(link.usina_id) === String(form.data.usina_id) ? 'warning' : 'default'}
+                                            />
+                                        ))}
+                                    </Stack>
+                                    <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
+                                        {otherLinks.length !== activeLinks.length
+                                            ? `O vínculo destacado será substituído por este novo envio. Restam ${remainingPercentage}% para esta e outra(s) usina(s).`
+                                            : `Restam ${remainingPercentage}% do Consumo Previsto para alocar em outra(s) usina(s).`}
+                                    </Typography>
+                                </Alert>
+                            </Grid>
+                        )}
+
+                        {exceedsAvailable && (
+                            <Grid size={12}>
+                                <Alert severity="error">
+                                    A soma das alocações desta UC não pode exceder 100% do Consumo Previsto.
+                                    Disponível: {remainingPercentage}%.
+                                </Alert>
+                            </Grid>
+                        )}
 
                         <Grid size={{ xs: 12, md: 4 }}>
                             <TextField
