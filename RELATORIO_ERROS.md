@@ -3,6 +3,7 @@
 > Gerado em: 2026-06-20
 > Fonte: `storage/logs/laravel.log` (período 2026-06-17 13:55 a 2026-06-20 10:47)
 > Destinado a: Claude Code (ou outro agente com acesso ao repositório) — corrigir os itens abaixo na ordem de prioridade indicada.
+> Atualizado em: 2026-06-20 — todos os itens resolvidos (ver "Status" em cada item).
 
 Este documento lista bugs de código confirmados (causa raiz já identificada e reproduzida), com a localização exata e a correção recomendada. Cada item é independente — pode ser corrigido isoladamente. Ao corrigir, seguir as convenções de `CLAUDE.md` (DI nos Services, scoping de consultor, sem comentários óbvios, testes com Pest + SQLite).
 
@@ -10,8 +11,9 @@ Este documento lista bugs de código confirmados (causa raiz já identificada e 
 
 ## Prioridade 1 — Bugs com correção simples e raiz 100% confirmada
 
-### 1.1. Cast `(float)` quebrado por quebra de linha — relatório de cliente quebrado
+### 1.1. Cast `(float)` quebrado por quebra de linha — relatório de cliente quebrado ✅ RESOLVIDO
 
+- **Status:** corrigido — cast reescrito em uma única linha em `app/Services/Admin/Reports/ClientReportService.php`. `php artisan test` (226 testes) passando.
 - **Arquivo:** `app/Services/Admin/Reports/ClientReportService.php`, linha ~108
 - **Erro no log:** `Undefined constant "App\Services\Admin\Reports\float"`
 - **Causa raiz confirmada:** o cast ficou separado em duas linhas:
@@ -41,8 +43,9 @@ Este documento lista bugs de código confirmados (causa raiz já identificada e 
 
 ---
 
-### 1.2. Coluna `email` inexistente em `client_profiles`
+### 1.2. Coluna `email` inexistente em `client_profiles` ✅ RESOLVIDO
 
+- **Status:** corrigido — busca (`index`) passou a usar `orWhereHas('contacts', ...)` sobre `UserContact.email`; listagem (`create`) passou a `with('contacts:id,email')` + `map()` para expor `email` no payload sem quebrar o contrato do frontend (`client.email`). Arquivo: `app/Http/Controllers/Admin/Usina/AdminClientUsinaLinkController.php`.
 - **Arquivo:** `app/Http/Controllers/Admin/Usina/AdminClientUsinaLinkController.php`
 - **Erros no log:**
   - `Column not found: 1054 Unknown column 'email' in 'field list'`
@@ -72,8 +75,9 @@ Este documento lista bugs de código confirmados (causa raiz já identificada e 
 
 ---
 
-### 1.3. `celular` rejeitando valor formatado (string) em coluna `bigint`
+### 1.3. `celular` rejeitando valor formatado (string) em coluna `bigint` ✅ RESOLVIDO
 
+- **Status:** corrigido. Causa raiz real: `app/Http/Controllers/Admin/Cliente/ClienteIdentidadeController.php:42` chamava `$cliente->contacts()->update(...)` (update via query builder na relação), que **não dispara os eventos do model** — por isso a normalização de `celular` já existente em `UserContact::booted()` nunca era executada. Corrigido para `$cliente->contacts->update(...)` (instância do model, passa por `save()` e dispara `saving`).
 - **Arquivo:** fluxo de atualização de `UserContact` (a partir do log: update em `user_contacts.celular` vindo de uma tela de perfil/dados de acesso — localizar o controller/request responsável por `ClientePerfilController`, `ClienteIdentidadeController` ou similar que atualiza contato)
 - **Erro no log:** `Incorrect integer value: '(44) 99741-5982' for column 'celular'`
 - **Causa raiz confirmada:** `user_contacts.celular` é `bigint` (confirmado via schema), mas o valor enviado pelo formulário não foi normalizado para apenas dígitos antes do `update()`.
@@ -84,14 +88,18 @@ Este documento lista bugs de código confirmados (causa raiz já identificada e 
 
 ## Prioridade 2 — Bugs que exigem decisão de negócio antes de corrigir
 
-### 2.1. `valor_total` nulo ao revisar fatura de concessionária
+### 2.1. `valor_total` nulo ao revisar fatura de concessionária ✅ RESOLVIDO
 
+- **Status:** corrigido com a opção (a) recomendada — nunca permitir salvar revisão sem `valor_total` numérico válido, coluna permanece `NOT NULL`.
+  - Backend: `UpdateConcessionaireBillReviewRequest.php` — regra `required` + closure de validação reaproveitando `ReviewConcessionaireBillService::nullableDecimal()` (tornado `public static`), rejeitando vazio/não-numérico/`<= 0` com erro 422 em vez de 500.
+  - Frontend: `resources/js/Pages/Consultor/Cliente/Fatura/Show/Page.jsx` — `submit()` agora bloqueia o envio quando `isInvalidNumber(data.valor_total)`, usando `setError`/`clearErrors` do Inertia `useForm`.
 - **Contexto:** 3 ocorrências (`concessionaire_bills` ids #18, #19, #5) de `Column 'valor_total' cannot be null` ao salvar a revisão de uma fatura.
 - **Investigar:** o controller/request de revisão de fatura (provável `app/Http/Controllers/Admin/Fatura/...`, action de "aprovar/revisar"). Confirmar se o campo `valor_total` no formulário do frontend pode ser submetido vazio, ou se o parser de PDF não conseguiu extrair o valor e o front não bloqueia o submit nesse caso.
 - **Decisão necessária antes de corrigir:** o sistema deve (a) bloquear o submit no frontend se `valor_total` estiver vazio/zerado, (b) usar `nullable` + um valor sentinela (ex: `0`) na coluna, mantendo a regra de negócio de que fatura sem valor extraído fica em status de erro até correção manual? Recomenda-se (a): nunca permitir salvar revisão sem valor numérico válido, mantendo a coluna `NOT NULL`.
 
-### 2.2. `exec()` desabilitado no servidor — quebra parser de PDF de fatura
+### 2.2. `exec()` desabilitado no servidor — quebra parser de PDF de fatura ✅ RESOLVIDO (infra)
 
+- **Status:** confirmado pelo usuário como já resolvido (ação de infraestrutura no servidor, fora do escopo de código).
 - **Arquivos:** `app/Services/Fatura/ProtectedPdfResolverService.php:37` (chama `qpdf` para desbloquear PDF com senha) e `app/Services/Fatura/PdfTextExtractorService.php:20` (chama `pdftotext` para extrair texto).
 - **Erro no log:** `Call to undefined function App\Services\Fatura\exec()` (3 ocorrências, incluindo etapa "unlock" do `ImportService`).
 - **Causa raiz confirmada:** `disable_functions` do PHP web (lsphp83) bloqueia `exec`, `shell_exec`, `system`, `passthru` (hardening do servidor/aaPanel) — **decisão de infraestrutura, não só de código**.
@@ -114,10 +122,12 @@ Este documento lista bugs de código confirmados (causa raiz já identificada e 
 
 ## Ordem de execução recomendada
 
-1. `1.1` (cast `float`) — 5 minutos, zero risco.
-2. `1.2` (coluna `email`) — exige checar o frontend antes de decidir a correção exata.
-3. `1.3` (normalização de `celular`) — seguir padrão já existente em `ConsumerUnit`.
-4. `2.1` e `2.2` — exigem decisão de negócio/infra antes de implementar; não corrigir sem alinhar a abordagem.
+1. `1.1` (cast `float`) — 5 minutos, zero risco. ✅
+2. `1.2` (coluna `email`) — exige checar o frontend antes de decidir a correção exata. ✅
+3. `1.3` (normalização de `celular`) — seguir padrão já existente em `ConsumerUnit`. ✅
+4. `2.1` e `2.2` — exigem decisão de negócio/infra antes de implementar; não corrigir sem alinhar a abordagem. ✅
+
+Todos os itens (1.1 a 2.2) foram corrigidos. Suíte completa (`php artisan test`, 226 testes / 641 assertions) passando após as correções.
 
 Ao final de cada correção, rodar `php artisan test` (ambiente local com SQLite — **não usar o MySQL de produção**, ver nota de ambiente abaixo) e `npm run build` quando houver mudança de frontend.
 

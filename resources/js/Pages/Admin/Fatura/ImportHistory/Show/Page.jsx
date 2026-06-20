@@ -252,7 +252,14 @@ export default function Page({ run, emails }) {
                                                         </Typography>
                                                     </TableCell>
                                                     <TableCell>
-                                                        <Chip label={est.label} color={est.color} size="small" />
+                                                        <Stack direction="row" gap={0.5} alignItems="center">
+                                                            <Chip label={est.label} color={est.color} size="small" />
+                                                            {email.retry_count > 0 && (
+                                                                <Tooltip title="Esta importação já foi tentada novamente automaticamente">
+                                                                    <Chip label={`${email.retry_count}ª tentativa`} size="small" variant="outlined" />
+                                                                </Tooltip>
+                                                            )}
+                                                        </Stack>
                                                     </TableCell>
                                                     <TableCell>
                                                         {email.step_failed ? (

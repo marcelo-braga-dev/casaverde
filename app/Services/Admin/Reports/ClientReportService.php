@@ -104,9 +104,7 @@ class ClientReportService
                     : 0,
 
                 'total_consumption_kwh' => round(
-                    $charges->sum(fn ($charge) => (
-                        float)($charge->bill?->consumo_kwh ?? 0)
-                    ),
+                    $charges->sum(fn ($charge) => (float) ($charge->bill?->consumo_kwh ?? 0)),
                     2
                 ),
 

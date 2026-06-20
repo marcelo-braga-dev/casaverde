@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Fatura;
 
+use App\Services\Fatura\ReviewConcessionaireBillService;
 use App\src\Roles\RoleUser;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -34,7 +35,14 @@ class UpdateConcessionaireBillReviewRequest extends FormRequest
             'reference_label' => ['nullable', 'string', 'max:50'],
 
             'vencimento' => ['nullable', 'date'],
-            'valor_total' => ['nullable'],
+            'valor_total' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    if (ReviewConcessionaireBillService::nullableDecimal($value) === null) {
+                        $fail('Informe um valor total válido maior que zero.');
+                    }
+                },
+            ],
             'consumo_kwh' => ['nullable'],
 
             'notes' => ['nullable', 'string'],

@@ -30,8 +30,10 @@ class AdminClientUsinaLinkController extends Controller
                     $clientQuery->where('nome', 'like', "%{$search}%")
                         ->orWhere('razao_social', 'like', "%{$search}%")
                         ->orWhere('nome_fantasia', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%")
-                        ->orWhere('client_code', 'like', "%{$search}%");
+                        ->orWhere('client_code', 'like', "%{$search}%")
+                        ->orWhereHas('contacts', function ($contactQuery) use ($search) {
+                            $contactQuery->where('email', 'like', "%{$search}%");
+                        });
                 })->orWhereHas('usina.produtor', function ($producerQuery) use ($search) {
                     $producerQuery->where('name', 'like', "%{$search}%");
                 });
@@ -55,6 +57,7 @@ class AdminClientUsinaLinkController extends Controller
         return Inertia::render('Admin/Usina/Links/Create/Page', [
             'statusOptions' => ClientUsinaLinkStatus::options(),
             'clients' => ClientProfile::query()
+                ->with('contacts:id,email')
                 ->orderByDesc('id')
                 ->limit(500)
                 ->get([
@@ -64,9 +67,15 @@ class AdminClientUsinaLinkController extends Controller
                     'nome',
                     'razao_social',
                     'nome_fantasia',
-                    'email',
+                    'contacts_id',
                     'status',
-                ]),
+                ])
+                ->map(function (ClientProfile $client) {
+                    $client->email = $client->contacts?->email;
+                    unset($client->contacts);
+
+                    return $client;
+                }),
             'usinas' => UsinaSolar::query()
                 ->with(['produtor'])
                 ->orderByDesc('id')

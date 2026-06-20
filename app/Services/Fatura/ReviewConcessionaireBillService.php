@@ -39,8 +39,8 @@ class ReviewConcessionaireBillService
                 'reference_label' => $referenceLabel,
 
                 'vencimento' => $data['vencimento'] ?? null,
-                'valor_total' => $this->nullableDecimal($data['valor_total'] ?? null),
-                'consumo_kwh' => $this->nullableDecimal($data['consumo_kwh'] ?? null),
+                'valor_total' => self::nullableDecimal($data['valor_total'] ?? null),
+                'consumo_kwh' => self::nullableDecimal($data['consumo_kwh'] ?? null),
 
                 'notes' => $data['notes'] ?? null,
                 'review_notes' => $data['review_notes'] ?? null,
@@ -96,7 +96,7 @@ class ReviewConcessionaireBillService
         return (int) $value;
     }
 
-    private function nullableDecimal(mixed $value): ?float
+    public static function nullableDecimal(mixed $value): ?float
     {
         if ($value === null || $value === '') {
             return null;

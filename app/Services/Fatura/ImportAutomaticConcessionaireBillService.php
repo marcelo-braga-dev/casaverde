@@ -128,8 +128,8 @@ class ImportAutomaticConcessionaireBillService
         $startMs = now()->getPreciseTimestamp(3);
         $attachmentHash = hash('sha256', $attachment['content']);
 
-        // ── Verifica duplicata ───────────────────────────────────────────
-        $alreadyImported = ImportedConcessionaireEmail::query()
+        // ── Verifica duplicata (ignora tentativas anteriores que falharam) ─
+        $existingLog = ImportedConcessionaireEmail::query()
             ->where('client_profile_id', $clientProfile->id)
             ->where(function ($q) use ($message, $attachmentHash) {
                 $q->where('attachment_hash', $attachmentHash);
@@ -140,16 +140,17 @@ class ImportAutomaticConcessionaireBillService
                     $q->orWhere('message_id', $message['message_id']);
                 }
             })
-            ->exists();
+            ->latest('id')
+            ->first();
 
-        if ($alreadyImported) {
+        if ($existingLog && $existingLog->status !== 'failed') {
             $result['skipped']++;
 
             return;
         }
 
-        // ── Cria log de rastreamento ─────────────────────────────────────
-        $log = ImportedConcessionaireEmail::create([
+        // ── Cria ou reaproveita o log de rastreamento ─────────────────────
+        $logData = [
             'client_profile_id' => $clientProfile->id,
             'client_email_import_setting_id' => $setting->id,
             'import_run_id' => $run?->id,
@@ -161,7 +162,16 @@ class ImportAutomaticConcessionaireBillService
             'attachment_name' => $attachment['filename'],
             'attachment_hash' => $attachmentHash,
             'status' => 'processing',
-        ]);
+            'error_message' => null,
+            'step_failed' => null,
+        ];
+
+        if ($existingLog) {
+            $existingLog->update($logData + ['retry_count' => $existingLog->retry_count + 1]);
+            $log = $existingLog;
+        } else {
+            $log = ImportedConcessionaireEmail::create($logData);
+        }
 
         $tempUnlocked = null;
         $stepFailed = null;

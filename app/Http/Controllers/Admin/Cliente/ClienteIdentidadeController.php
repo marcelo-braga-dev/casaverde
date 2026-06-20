@@ -39,7 +39,7 @@ class ClienteIdentidadeController extends Controller
         // Atualiza contato
         $contactFields = array_intersect_key($data, array_flip(['email', 'celular']));
         if ($contactFields && $cliente->contacts) {
-            $cliente->contacts()->update($contactFields);
+            $cliente->contacts->update($contactFields);
         }
 
         return back()->with('success', 'Dados do cliente atualizados com sucesso.');

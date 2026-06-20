@@ -133,7 +133,7 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [], consum
         consumo_kwh: inputDecimalValue(bill.consumo_kwh ?? bill.extracted_payload?.consumo_kwh),
     }), [bill, suggestedUsinaId]);
 
-    const { data, setData, put, processing, errors } = useForm(initialData);
+    const { data, setData, put, processing, errors, setError, clearErrors } = useForm(initialData);
     const [savedData, setSavedData] = useState(initialData);
 
     useEffect(() => { setSavedData(initialData); setData(initialData); }, [initialData]);
@@ -165,6 +165,11 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [], consum
 
     const submit = (e) => {
         e.preventDefault();
+        if (isInvalidNumber(data.valor_total)) {
+            setError("valor_total", "Informe um valor total válido maior que zero.");
+            return;
+        }
+        clearErrors("valor_total");
         put(route("consultor.cliente.faturas.update", bill.id), { preserveScroll: true, onSuccess: () => setSavedData({ ...data }) });
     };
 
