@@ -4,9 +4,18 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title inertia>{{ config('app.name', 'Laravel') }}</title>
+        @php
+            $brandSettings = app(\App\Services\Config\SystemSettingService::class);
+            $brandName = $brandSettings->get('brand_name', config('app.name', 'Laravel'));
+            $brandFaviconPath = $brandSettings->get('brand_favicon_path');
+            $brandFaviconUrl = $brandFaviconPath && \Illuminate\Support\Facades\Storage::disk('public')->exists($brandFaviconPath)
+                ? \Illuminate\Support\Facades\Storage::disk('public')->url($brandFaviconPath)
+                : '/storage/app/favicon.ico';
+        @endphp
+
+        <title inertia>{{ $brandName }}</title>
         <!--suppress HtmlUnknownTarget -->
-        <link rel="icon" href="/storage/app/favicon.ico" type="image/x-icon">
+        <link rel="icon" href="{{ $brandFaviconUrl }}" type="image/x-icon">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">

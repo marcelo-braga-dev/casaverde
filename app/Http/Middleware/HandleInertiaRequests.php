@@ -6,16 +6,21 @@ use App\Enums\Fatura\BillReviewStatus;
 use App\Models\Fatura\ConcessionaireBill;
 use App\Models\Users\User;
 use App\Models\WhatsApp\WhatsAppMessageTemplate;
+use App\Services\Config\SystemSettingService;
 use App\Services\Support\SupportTicketService;
 use App\src\Roles\RoleUser;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
 {
     protected $rootView = 'app';
 
-    public function __construct(private readonly SupportTicketService $supportTicketService) {}
+    public function __construct(
+        private readonly SupportTicketService $supportTicketService,
+        private readonly SystemSettingService $systemSettings,
+    ) {}
 
     public function version(Request $request): ?string
     {
@@ -62,6 +67,26 @@ class HandleInertiaRequests extends Middleware
             ],
             'navBadges' => fn () => $this->resolveNavBadges($user),
             'whatsappTemplates' => fn () => $user ? $this->resolveWhatsAppTemplates() : [],
+            'brand' => fn () => $this->resolveBrand(),
+        ];
+    }
+
+    /** Identidade visual da plataforma (nome, cores, logo, favicon) configurável em Configurações → Identidade Visual */
+    private function resolveBrand(): array
+    {
+        $logoPath = $this->systemSettings->get('brand_logo_path');
+        $faviconPath = $this->systemSettings->get('brand_favicon_path');
+
+        return [
+            'name' => $this->systemSettings->get('brand_name', config('app.name', 'Casa Verde')),
+            'color_primary' => $this->systemSettings->get('brand_color_primary'),
+            'color_secondary' => $this->systemSettings->get('brand_color_secondary'),
+            'logo_url' => $logoPath && Storage::disk('public')->exists($logoPath)
+                ? Storage::disk('public')->url($logoPath)
+                : null,
+            'favicon_url' => $faviconPath && Storage::disk('public')->exists($faviconPath)
+                ? Storage::disk('public')->url($faviconPath)
+                : null,
         ];
     }
 

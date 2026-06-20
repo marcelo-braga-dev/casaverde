@@ -21,8 +21,10 @@ import AppSidebarMenuGroup from './AppSidebarMenuGroup';
 
 export default function AppSidebar({ expandedWidth, collapsedWidth }) {
     const { collapsed, toggleCollapsed } = useMenuDrawer();
-    const { auth } = usePage().props;
+    const { auth, brand } = usePage().props;
     const roleId = auth?.user?.role_id;
+    const brandName = brand?.name || 'Casa Verde';
+    const brandLogoUrl = brand?.logo_url || '/storage/app/logotipo_casaverde.png';
     const menuItems =
         roleId === 2 ? consultorMenu :
         roleId === 3 ? produtorMenu  :
@@ -122,8 +124,8 @@ export default function AppSidebar({ expandedWidth, collapsedWidth }) {
                         >
                             <Box
                                 component="img"
-                                src="/storage/app/logotipo_casaverde.png"
-                                alt="Casa Verde"
+                                src={brandLogoUrl}
+                                alt={brandName}
                                 sx={{
                                     width: '100%',
                                     height: '100%',
@@ -144,7 +146,7 @@ export default function AppSidebar({ expandedWidth, collapsedWidth }) {
                                         letterSpacing: '-0.04em',
                                     }}
                                 >
-                                    Casa Verde
+                                    {brandName}
                                 </Typography>
                             </Box>
                         )}

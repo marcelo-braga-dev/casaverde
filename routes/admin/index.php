@@ -15,6 +15,7 @@ Route::middleware(['auth', 'role:admin,consultor'])
         require __DIR__.'/financeiro/management.php';
         require __DIR__.'/relatorios.php';
         require __DIR__.'/settings.php';
+        require __DIR__.'/brand-identity.php';
 
         require __DIR__.'/users/admin.php';
         require __DIR__.'/users/produtor.php';

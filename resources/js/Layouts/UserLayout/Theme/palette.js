@@ -1,6 +1,6 @@
-import { createTheme } from '@mui/material/styles';
+import { createTheme, darken, lighten } from '@mui/material/styles';
 
-const brand = {
+const defaultBrand = {
     primary: '#2F7D18',
     primaryDark: '#1F5F10',
     primaryDarker: '#123D0B',
@@ -37,8 +37,21 @@ const brand = {
     gradientHero: 'radial-gradient(circle at top right, rgba(79,154,42,0.32), transparent 34%), radial-gradient(circle at bottom left, rgba(47,125,24,0.28), transparent 36%), linear-gradient(135deg, #123D0B 0%, #050505 76%)',
 };
 
-const Palette = (mode = 'light') => {
+const Palette = (mode = 'light', overrides = {}) => {
     const isDark = mode === 'dark';
+
+    const customPrimary = overrides.primary || null;
+    const customSecondary = overrides.secondary || null;
+
+    const brand = {
+        ...defaultBrand,
+        primary: customPrimary || defaultBrand.primary,
+        primaryLight: customPrimary ? lighten(customPrimary, 0.82) : defaultBrand.primaryLight,
+        primaryDark: customPrimary ? darken(customPrimary, 0.3) : defaultBrand.primaryDark,
+        secondary: customSecondary || defaultBrand.secondary,
+        secondaryLight: customSecondary ? lighten(customSecondary, 0.82) : defaultBrand.secondaryLight,
+        secondaryDark: customSecondary ? darken(customSecondary, 0.3) : defaultBrand.secondaryDark,
+    };
 
     return createTheme({
         palette: {

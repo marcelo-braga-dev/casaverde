@@ -7,10 +7,13 @@ import Typography from './typography';
 import CustomShadows from './shadows';
 import componentsOverride from './overrides';
 
-export default function ThemeCustomization({ children }) {
+export default function ThemeCustomization({ children, brand = {} }) {
     const mode = 'light';
 
-    const paletteTheme = useMemo(() => Palette(mode), [mode]);
+    const paletteTheme = useMemo(
+        () => Palette(mode, { primary: brand.color_primary, secondary: brand.color_secondary }),
+        [mode, brand.color_primary, brand.color_secondary],
+    );
 
     const themeTypography = useMemo(
         () =>

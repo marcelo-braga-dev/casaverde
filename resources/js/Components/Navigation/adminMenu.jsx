@@ -271,6 +271,11 @@ export const adminMenu = [
                 title: 'Concessionárias',
                 link: safeRoute('admin.concessionaria.index'),
             },
+            {
+                id: 'config-brand-identity',
+                title: 'Identidade Visual',
+                link: safeRoute('admin.brand-identity.index'),
+            },
         ],
     },
     {
