@@ -250,7 +250,6 @@ export default function Page({ producerProfile, usinas = [], leads = [] }) {
                                             : <InfoRow label="CNPJ" value={producerProfile.cnpj} />
                                         }
                                         <InfoRow label="Status"       value={producerProfile.status} />
-                                        <InfoRow label="Consultor"    value={producerProfile.consultor?.name} />
                                     </Stack>
                                 </CardContent>
                             </Card>

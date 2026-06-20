@@ -29,6 +29,9 @@ Route::name('user.')
         Route::post('cliente/{clientProfile}/usina', [ClientUsinaLinkController::class, 'store'])
             ->name('cliente.usina.store');
 
+        Route::delete('cliente/{clientProfile}/usina/{link}', [ClientUsinaLinkController::class, 'destroy'])
+            ->name('cliente.usina.destroy');
+
         Route::get('cliente/{clientProfile}/usina-history', [ClientUsinaHistoryController::class, 'index'])
             ->name('cliente.usina.history');
 

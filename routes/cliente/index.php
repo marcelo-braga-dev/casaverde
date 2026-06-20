@@ -6,7 +6,6 @@ use App\Http\Controllers\Cliente\Dashboard\ClienteDashboardController;
 use App\Http\Controllers\Cliente\Fatura\ClienteFaturaController;
 use App\Http\Controllers\Cliente\Perfil\ClientePerfilController;
 use App\Http\Controllers\Cliente\Relatorio\ClienteEconomiaRelatorioController;
-use App\Http\Controllers\Cliente\Relatorio\ClienteRelatorioIndexController;
 use App\Http\Controllers\Cliente\Relatorio\ExportClienteEconomiaExcelController;
 use App\Http\Controllers\Cliente\Relatorio\ExportClienteEconomiaPdfController;
 use Illuminate\Support\Facades\Route;
@@ -35,7 +34,6 @@ Route::middleware(['auth', 'role:cliente'])
         Route::get('/meu-perfil', [ClientePerfilController::class, 'show'])->name('perfil.show');
 
         // Relatórios
-        Route::get('/relatorios', ClienteRelatorioIndexController::class)->name('relatorios.index');
         Route::get('/relatorios/economia', ClienteEconomiaRelatorioController::class)->name('relatorios.economia');
         Route::get('/relatorios/economia/exportar-excel', ExportClienteEconomiaExcelController::class)->name('relatorios.economia.excel');
         Route::get('/relatorios/economia/exportar-pdf', ExportClienteEconomiaPdfController::class)->name('relatorios.economia.pdf');

@@ -63,11 +63,6 @@ export const clienteMenu = [
         id: 'cliente-relatorios',
         subItems: [
             {
-                id: 'cliente-relatorios-index',
-                title: 'Central de Relatórios',
-                link: safeRoute('cliente.relatorios.index'),
-            },
-            {
                 id: 'cliente-relatorio-economia',
                 title: 'Relatório de Economia',
                 link: safeRoute('cliente.relatorios.economia'),

@@ -11,7 +11,6 @@ class ClienteEconomiaRelatorioService
     public function handle(int $platformUserId, array $filters = []): array
     {
         $profile = ClientProfile::query()
-            ->with(['activeDiscountRule'])
             ->where('platform_user_id', $platformUserId)
             ->first();
 
@@ -23,7 +22,7 @@ class ClienteEconomiaRelatorioService
         $month = isset($filters['month']) && $filters['month'] ? (int) $filters['month'] : null;
 
         $monthlyData = $this->getMonthlyData($profile->id, $year);
-        $summary = $this->buildSummary($monthlyData, $profile);
+        $summary = $this->buildSummary($monthlyData);
         $selected = $month ? $this->getMonthDetail($profile->id, $year, $month) : null;
         $allTime = $this->getAllTimeSummary($profile->id);
 
@@ -67,7 +66,6 @@ class ClienteEconomiaRelatorioService
             $originalAmount = (float) ($charge?->original_amount ?? $bill?->valor_total ?? 0);
             $finalAmount = (float) ($charge?->final_amount ?? $originalAmount);
             $discountAmount = (float) ($charge?->discount_amount ?? 0);
-            $discountPct = (float) ($charge?->discount_percent ?? 0);
             $consumoKwh = (float) ($bill?->consumo_kwh ?? 0);
             $netSavings = $originalAmount - $finalAmount;
 
@@ -79,10 +77,8 @@ class ClienteEconomiaRelatorioService
                 'original_amount' => $originalAmount,
                 'final_amount' => $finalAmount,
                 'discount_amount' => $discountAmount,
-                'discount_percent' => $discountPct,
                 'consumo_kwh' => $consumoKwh,
                 'net_savings' => max(0, $netSavings),
-                'savings_percent' => $originalAmount > 0 ? round(($netSavings / $originalAmount) * 100, 1) : 0,
                 'status' => $charge?->status,
                 'due_date' => $charge?->due_date?->format('d/m/Y'),
                 'paid_at' => $charge?->paid_at?->format('d/m/Y'),
@@ -118,7 +114,6 @@ class ClienteEconomiaRelatorioService
         $originalAmount = (float) ($charge?->original_amount ?? $bill?->valor_total ?? 0);
         $finalAmount = (float) ($charge?->final_amount ?? $originalAmount);
         $discountAmount = (float) ($charge?->discount_amount ?? 0);
-        $discountPct = (float) ($charge?->discount_percent ?? 0);
         $consumoKwh = (float) ($bill?->consumo_kwh ?? 0);
         $netSavings = max(0, $originalAmount - $finalAmount);
 
@@ -131,13 +126,11 @@ class ClienteEconomiaRelatorioService
             'consumo_kwh' => $consumoKwh,
             'vencimento' => $bill?->vencimento?->format('d/m/Y'),
             'original_amount' => $originalAmount,
-            'discount_percent' => $discountPct,
             'discount_amount' => $discountAmount,
             'manual_discount' => (float) ($charge?->manual_discount_amount ?? 0),
             'manual_addition' => (float) ($charge?->manual_addition_amount ?? 0),
             'final_amount' => $finalAmount,
             'net_savings' => $netSavings,
-            'savings_percent' => $originalAmount > 0 ? round(($netSavings / $originalAmount) * 100, 1) : 0,
             'status' => $charge?->status,
             'due_date' => $charge?->due_date?->format('d/m/Y'),
             'paid_at' => $charge?->paid_at?->format('d/m/Y'),
@@ -149,7 +142,7 @@ class ClienteEconomiaRelatorioService
 
     // ─── Sumarização ──────────────────────────────────────────────────────
 
-    private function buildSummary(array $monthlyData, ClientProfile $profile): array
+    private function buildSummary(array $monthlyData): array
     {
         $withData = array_filter($monthlyData, fn ($m) => $m['has_data']);
 
@@ -157,7 +150,6 @@ class ClienteEconomiaRelatorioService
         $totalFinal = array_sum(array_column($withData, 'final_amount'));
         $totalSavings = array_sum(array_column($withData, 'net_savings'));
         $totalKwh = array_sum(array_column($withData, 'consumo_kwh'));
-        $avgDiscount = (float) ($profile->activeDiscountRule?->discount_percent ?? 0);
         $monthsWithData = count($withData);
 
         $bestMonth = ! empty($withData)
@@ -169,10 +161,8 @@ class ClienteEconomiaRelatorioService
             'total_final_amount' => $totalFinal,
             'total_savings' => $totalSavings,
             'total_kwh' => $totalKwh,
-            'avg_discount_percent' => $avgDiscount,
             'months_with_data' => $monthsWithData,
             'avg_savings_month' => $monthsWithData > 0 ? round($totalSavings / $monthsWithData, 2) : 0,
-            'savings_percent_year' => $totalOriginal > 0 ? round(($totalSavings / $totalOriginal) * 100, 1) : 0,
             'best_month' => $bestMonth,
         ];
     }
@@ -209,7 +199,6 @@ class ClienteEconomiaRelatorioService
             'total_paid' => (float) ($paidTotals?->total_paid ?? 0),
             'total_saved_paid' => (float) ($paidTotals?->total_saved_paid ?? 0),
             'total_charges' => (int) ($totals?->total_charges ?? 0),
-            'overall_savings_pct' => $totalOriginal > 0 ? round(($totalSavings / $totalOriginal) * 100, 1) : 0,
         ];
     }
 
@@ -238,7 +227,6 @@ class ClienteEconomiaRelatorioService
             'display_name' => $name ?? '—',
             'tipo_pessoa' => $profile->tipo_pessoa,
             'status' => $profile->status,
-            'discount' => (float) ($profile->activeDiscountRule?->discount_percent ?? 0),
         ];
     }
 

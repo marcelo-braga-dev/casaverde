@@ -48,6 +48,10 @@ const ProducerFeeRuleCard = ({ profile, defaultFeePercentage }) => {
         notes: '',
     });
 
+    if (!admin) {
+        return null;
+    }
+
     function openEditModal() {
         form.reset();
         form.setData({

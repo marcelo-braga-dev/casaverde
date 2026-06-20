@@ -30,10 +30,12 @@ import {
 } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import {
+    IconBuildingBank,
     IconCheck,
     IconCloud,
     IconCopy,
     IconEdit,
+    IconExternalLink,
     IconEye,
     IconEyeOff,
     IconLink,
@@ -235,6 +237,85 @@ function EmailFormDialog({ open, onClose, editTarget }) {
     );
 }
 
+// ── Formulário de adicionar/editar email institucional ────────────────────
+function InstitutionalEmailFormDialog({ open, onClose, editTarget }) {
+    const isEdit = !!editTarget;
+    const form   = useForm({
+        email:    editTarget?.email    ?? '',
+        label:    editTarget?.label    ?? '',
+        password: '',
+        notes:    editTarget?.notes    ?? '',
+        is_active: editTarget?.is_active ?? true,
+    });
+
+    function submit(e) {
+        e.preventDefault();
+        const url = isEdit
+            ? safeRoute('admin.integracao.institutional-emails.update', editTarget.id)
+            : safeRoute('admin.integracao.institutional-emails.store');
+        const method = isEdit ? form.put : form.post;
+        method(url, { preserveScroll: true, onSuccess: onClose });
+    }
+
+    return (
+        <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+            <DialogTitle sx={{ fontWeight: 900 }}>
+                <Stack direction="row" alignItems="center" gap={1}>
+                    <IconBuildingBank size={20} />
+                    {isEdit ? 'Editar Email Institucional' : 'Adicionar Email Institucional'}
+                </Stack>
+            </DialogTitle>
+            <Divider />
+            <DialogContent sx={{ pt: 3 }}>
+                <Stack component="form" id="institutional-email-form" onSubmit={submit} spacing={2.5}>
+                    {Object.keys(form.errors).length > 0 && (
+                        <Alert severity="error">{Object.values(form.errors)[0]}</Alert>
+                    )}
+
+                    <Stack direction={{ xs: 'column', sm: 'row' }} gap={2}>
+                        <TextField
+                            fullWidth size="small" label="Endereço de email *"
+                            value={form.data.email} onChange={e => form.setData('email', e.target.value)}
+                            error={!!form.errors.email} helperText={form.errors.email}
+                            disabled={isEdit} type="email"
+                            InputProps={{ startAdornment: <InputAdornment position="start"><IconMail size={15} style={{ opacity: 0.45 }} /></InputAdornment> }}
+                        />
+                        <TextField
+                            fullWidth size="small" label="Nome amigável"
+                            value={form.data.label} onChange={e => form.setData('label', e.target.value)}
+                            helperText="Ex: Financeiro, Suporte, Comercial"
+                        />
+                    </Stack>
+
+                    <PasswordField
+                        label={isEdit ? 'Nova senha de acesso' : 'Senha de acesso *'}
+                        name="password"
+                        value={form.data.password}
+                        onChange={e => form.setData('password', e.target.value)}
+                        helperText={form.errors.password ?? (isEdit ? 'Deixe em branco para manter a senha atual.' : 'Senha de acesso a esta conta de email.')}
+                    />
+
+                    <TextField
+                        fullWidth size="small" label="Observações"
+                        value={form.data.notes} onChange={e => form.setData('notes', e.target.value)}
+                        multiline rows={2}
+                    />
+                </Stack>
+            </DialogContent>
+            <Divider />
+            <DialogActions sx={{ px: 3, py: 2 }}>
+                <Button variant="outlined" color="inherit" startIcon={<IconX size={16} />} onClick={onClose} disabled={form.processing}>
+                    Cancelar
+                </Button>
+                <Button type="submit" form="institutional-email-form" variant="contained" disabled={form.processing}
+                    startIcon={form.processing ? <CircularProgress size={14} color="inherit" /> : <IconCheck size={16} />}>
+                    {isEdit ? 'Salvar alterações' : 'Adicionar email'}
+                </Button>
+            </DialogActions>
+        </Dialog>
+    );
+}
+
 // ── Formulário de criação de conta de email via cPanel ────────────────────
 function CpanelEmailFormDialog({ open, onClose, cpanelConfigured, defaultDomain, defaultQuotaMb, defaultWebmailUrl }) {
     const form = useForm({
@@ -366,7 +447,7 @@ function CpanelEmailFormDialog({ open, onClose, cpanelConfigured, defaultDomain,
 }
 
 // ── Componente principal ──────────────────────────────────────────────────
-export default function Page({ settings, emails, stats }) {
+export default function Page({ settings, emails = [], institutionalEmails = [], stats = {} }) {
     const { flash } = usePage().props;
 
     // Form das configurações IMAP
@@ -406,7 +487,23 @@ export default function Page({ settings, emails, stats }) {
     const [deleteTarget, setDeleteTarget] = useState(null);
     const [unassignTarget, setUnassignTarget] = useState(null);
 
+    // Dialogs — emails institucionais
+    const [institutionalDialog, setInstitutionalDialog] = useState(null); // null | 'add' | account object
+    const [institutionalDeleteTarget, setInstitutionalDeleteTarget] = useState(null);
+
+    function doDeleteInstitutional() {
+        router.delete(safeRoute('admin.integracao.institutional-emails.destroy', institutionalDeleteTarget.id), {
+            preserveScroll: true,
+            onSuccess: () => setInstitutionalDeleteTarget(null),
+        });
+    }
+
     const cpanelConfigured = !!(settings?.cpanel_host && settings?.cpanel_username && settings?.cpanel_email_domain && settings?.cpanel_token_configured);
+
+    const webmailDomain = settings?.cpanel_webmail_domain || '';
+    const webmailUrl = webmailDomain
+        ? (webmailDomain.startsWith('http://') || webmailDomain.startsWith('https://') ? webmailDomain : `https://${webmailDomain}`)
+        : null;
 
     function doDelete() {
         router.delete(safeRoute('admin.integracao.emails.destroy', deleteTarget.id), {
@@ -433,16 +530,50 @@ export default function Page({ settings, emails, stats }) {
             <Head title="Configurações de Integração" />
 
             <Stack spacing={3}>
+                {/* ── Acesso rápido ao Webmail ─────────────────────────── */}
+                <Card sx={{ background: 'linear-gradient(135deg,#1e3a5f,#1e40af)', color: '#fff' }}>
+                    <CardContent sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
+                        <Stack direction="row" alignItems="center" gap={1.5}>
+                            <Box sx={{ width: 44, height: 44, borderRadius: 2, bgcolor: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <IconMailOpened size={22} />
+                            </Box>
+                            <Box>
+                                <Typography variant="h6" sx={{ fontWeight: 800 }}>Acesso ao Webmail</Typography>
+                                <Typography variant="body2" sx={{ opacity: 0.85 }}>
+                                    {webmailUrl
+                                        ? webmailDomain
+                                        : 'Configure o "Domínio do Webmail" no card "Acesso ao cPanel" para habilitar o acesso rápido.'}
+                                </Typography>
+                            </Box>
+                        </Stack>
+                        <Tooltip title={webmailUrl ? '' : 'Configure o domínio do webmail primeiro'}>
+                            <span>
+                                <Button
+                                    variant="contained" color="warning" size="large"
+                                    component="a"
+                                    href={webmailUrl ?? undefined}
+                                    target="_blank" rel="noopener"
+                                    disabled={!webmailUrl}
+                                    startIcon={<IconExternalLink size={20} />}
+                                    sx={{ fontWeight: 800, px: 3 }}
+                                >
+                                    Abrir Webmail
+                                </Button>
+                            </span>
+                        </Tooltip>
+                    </CardContent>
+                </Card>
+
                 {flash?.success && <Alert severity="success" icon={<IconCheck size={18} />}>{flash.success}</Alert>}
                 {flash?.error   && <Alert severity="error">{flash.error}</Alert>}
 
                 {/* ── KPIs ───────────────────────────────────────────── */}
                 <Grid container spacing={2}>
                     {[
-                        { label: 'Total de emails',   value: stats.total,     color: 'text.primary' },
-                        { label: 'Disponíveis',       value: stats.available, color: 'success.main' },
-                        { label: 'Vinculados',        value: stats.assigned,  color: 'warning.main' },
-                        { label: 'Inativos',          value: stats.inactive,  color: 'text.disabled' },
+                        { label: 'Total de emails',   value: stats.total     ?? 0, color: 'text.primary' },
+                        { label: 'Disponíveis',       value: stats.available ?? 0, color: 'success.main' },
+                        { label: 'Vinculados',        value: stats.assigned  ?? 0, color: 'warning.main' },
+                        { label: 'Inativos',          value: stats.inactive  ?? 0, color: 'text.disabled' },
                     ].map(s => (
                         <Grid key={s.label} size={{ xs: 6, sm: 3 }}>
                             <Card>
@@ -622,8 +753,9 @@ export default function Page({ settings, emails, stats }) {
                         </Stack>
                     </Grid>
 
-                    {/* ── Pool de Emails ──────────────────────────────── */}
+                    {/* ── E-mails para Receber Faturas + Institucionais ── */}
                     <Grid size={{ xs: 12, lg: 8 }}>
+                        <Stack spacing={3}>
                         <Card>
                             <Box sx={{ px: 2.5, py: 2, borderBottom: '1px solid', borderColor: 'grey.100', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                                 <Stack direction="row" alignItems="center" gap={1.5}>
@@ -631,7 +763,7 @@ export default function Page({ settings, emails, stats }) {
                                         <IconMailCog size={18} />
                                     </Box>
                                     <Box>
-                                        <Typography variant="h6" sx={{ fontWeight: 800, fontSize: '0.9375rem' }}>Pool de Emails</Typography>
+                                        <Typography variant="h6" sx={{ fontWeight: 800, fontSize: '0.9375rem' }}>E-mails para Receber Faturas</Typography>
                                         <Typography variant="caption" color="text.secondary">Emails cadastrados no servidor de email da plataforma</Typography>
                                     </Box>
                                 </Stack>
@@ -775,6 +907,79 @@ export default function Page({ settings, emails, stats }) {
                                 )}
                             </CardContent>
                         </Card>
+
+                        {/* ── E-mails Institucionais ────────────────── */}
+                        <Card>
+                            <Box sx={{ px: 2.5, py: 2, borderBottom: '1px solid', borderColor: 'grey.100', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <Stack direction="row" alignItems="center" gap={1.5}>
+                                    <Box sx={{ width: 36, height: 36, borderRadius: 2, background: 'linear-gradient(135deg,#0f766e,#14b8a6)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+                                        <IconBuildingBank size={18} />
+                                    </Box>
+                                    <Box>
+                                        <Typography variant="h6" sx={{ fontWeight: 800, fontSize: '0.9375rem' }}>E-mails Institucionais</Typography>
+                                        <Typography variant="caption" color="text.secondary">Contas de email oficiais da empresa</Typography>
+                                    </Box>
+                                </Stack>
+                                <Button
+                                    variant="contained" size="small"
+                                    startIcon={<IconPlus size={16} />}
+                                    onClick={() => setInstitutionalDialog('add')}
+                                >
+                                    Adicionar
+                                </Button>
+                            </Box>
+
+                            <CardContent sx={{ p: 0 }}>
+                                {institutionalEmails.length === 0 ? (
+                                    <Box sx={{ py: 4, textAlign: 'center' }}>
+                                        <IconMail size={36} style={{ opacity: 0.2 }} />
+                                        <Typography color="text.secondary" sx={{ mt: 1 }} variant="body2">
+                                            Nenhum email institucional cadastrado.
+                                        </Typography>
+                                    </Box>
+                                ) : (
+                                    <Stack divider={<Divider />}>
+                                        {institutionalEmails.map(account => (
+                                            <Box key={account.id} sx={{ px: 2.5, py: 1.5 }}>
+                                                <Stack direction="row" alignItems="center" justifyContent="space-between" gap={1}>
+                                                    <Stack direction="row" alignItems="center" gap={1}>
+                                                        <Avatar sx={{ width: 30, height: 30, fontSize: 11, bgcolor: account.is_active ? 'success.main' : 'grey.400' }}>
+                                                            <IconMail size={14} />
+                                                        </Avatar>
+                                                        <Box>
+                                                            <Typography variant="body2" sx={{ fontWeight: 700, fontSize: '0.75rem' }}>
+                                                                {account.email}
+                                                            </Typography>
+                                                            {account.label && (
+                                                                <Typography variant="caption" color="text.secondary">{account.label}</Typography>
+                                                            )}
+                                                        </Box>
+                                                    </Stack>
+                                                    <Stack direction="row" gap={0.5}>
+                                                        <Tooltip title="Editar">
+                                                            <IconButton size="small" onClick={() => setInstitutionalDialog(account)}
+                                                                sx={{ borderRadius: 1.5, border: '1.5px solid', borderColor: 'grey.200' }}>
+                                                                <IconEdit size={14} />
+                                                            </IconButton>
+                                                        </Tooltip>
+                                                        <Tooltip title="Excluir">
+                                                            <IconButton size="small" color="error" onClick={() => setInstitutionalDeleteTarget(account)}
+                                                                sx={{ borderRadius: 1.5, border: '1.5px solid', borderColor: 'error.main' }}>
+                                                                <IconTrash size={14} />
+                                                            </IconButton>
+                                                        </Tooltip>
+                                                    </Stack>
+                                                </Stack>
+                                                <Box sx={{ mt: 1, pl: 4.75 }}>
+                                                    <PasswordCell value={account.password} />
+                                                </Box>
+                                            </Box>
+                                        ))}
+                                    </Stack>
+                                )}
+                            </CardContent>
+                        </Card>
+                        </Stack>
                     </Grid>
                 </Grid>
             </Stack>
@@ -785,6 +990,28 @@ export default function Page({ settings, emails, stats }) {
                 onClose={() => setEmailDialog(null)}
                 editTarget={emailDialog !== 'add' ? emailDialog : null}
             />
+
+            {/* ── Dialog: Adicionar/Editar email institucional ───────── */}
+            <InstitutionalEmailFormDialog
+                open={!!institutionalDialog}
+                onClose={() => setInstitutionalDialog(null)}
+                editTarget={institutionalDialog !== 'add' ? institutionalDialog : null}
+            />
+
+            {/* ── Dialog: Excluir email institucional ─────────────────── */}
+            <Dialog open={!!institutionalDeleteTarget} onClose={() => setInstitutionalDeleteTarget(null)} maxWidth="xs" fullWidth>
+                <DialogTitle sx={{ fontWeight: 900 }}>Excluir Email Institucional</DialogTitle>
+                <Divider />
+                <DialogContent>
+                    <Typography sx={{ mt: 1 }}>
+                        Deseja excluir o email <strong>{institutionalDeleteTarget?.email}</strong>?
+                    </Typography>
+                </DialogContent>
+                <DialogActions sx={{ p: 2.5 }}>
+                    <Button variant="outlined" color="inherit" onClick={() => setInstitutionalDeleteTarget(null)}>Cancelar</Button>
+                    <Button variant="contained" color="error" onClick={doDeleteInstitutional}>Excluir</Button>
+                </DialogActions>
+            </Dialog>
 
             {/* ── Dialog: Criar conta de email via cPanel ────────────── */}
             <CpanelEmailFormDialog

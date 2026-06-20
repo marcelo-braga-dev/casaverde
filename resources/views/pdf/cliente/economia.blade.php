@@ -278,7 +278,6 @@
         <div class="header-client-name">{{ $report['profile']['display_name'] }}</div>
         <div class="header-client-meta">
             Código: {{ $report['profile']['client_code'] ?? '—' }}
-            &nbsp;·&nbsp; Desconto ativo: {{ $report['profile']['discount'] ?? 0 }}%
             @if($report['profile']['usina_nome'])
                 &nbsp;·&nbsp; Usina: {{ $report['profile']['usina_nome'] }}
             @endif
@@ -304,12 +303,12 @@
         <div class="hero-card casaverde">
             <div class="hero-card-label">Com Casa Verde você paga</div>
             <div class="hero-card-value">R$ {{ number_format($s['total_final_amount'] ?? 0, 2, ',', '.') }}</div>
-            <div class="hero-card-sub">{{ $s['avg_discount_percent'] ?? 0 }}% de desconto garantido</div>
+            <div class="hero-card-sub">Valor com desconto Casa Verde</div>
         </div>
         <div class="hero-card savings">
             <div class="hero-card-label">Economizou no período</div>
             <div class="hero-card-value">R$ {{ number_format($s['total_savings'] ?? 0, 2, ',', '.') }}</div>
-            <div class="hero-card-sub">{{ $s['savings_percent_year'] ?? 0 }}% sobre o valor total</div>
+            <div class="hero-card-sub">Sobre o valor total das faturas</div>
         </div>
     </div>
 </div>
@@ -318,8 +317,8 @@
 <div class="message-box">
     <p>
         <strong>Você economizou R$ {{ number_format($s['total_savings'] ?? 0, 2, ',', '.') }}</strong>
-        em {{ $report['filters']['year'] ?? date('Y') }} sendo cliente da Casa Verde.
-        Isso equivale a {{ $s['savings_percent_year'] ?? 0 }}% de desconto sobre o valor total que você pagaria à concessionária.
+        em {{ $report['filters']['year'] ?? date('Y') }} sendo cliente da Casa Verde,
+        comparado ao valor que pagaria à concessionária.
         @if(($s['avg_savings_month'] ?? 0) > 0)
             Em média, você economiza <strong>R$ {{ number_format($s['avg_savings_month'], 2, ',', '.') }} por mês</strong>.
         @endif
@@ -347,8 +346,8 @@
         </div>
     </div>
     <div class="stat-item">
-        <div class="stat-label">Desconto ativo</div>
-        <div class="stat-value">{{ $s['avg_discount_percent'] ?? 0 }}%</div>
+        <div class="stat-label">Economia média/mês</div>
+        <div class="stat-value">R$ {{ number_format($s['avg_savings_month'] ?? 0, 2, ',', '.') }}</div>
     </div>
 </div>
 @endif
@@ -368,11 +367,9 @@
                 <th>Mês</th>
                 <th>kWh</th>
                 <th>Fatura Concessionária</th>
-                <th>Desc. %</th>
                 <th>Desconto R$</th>
                 <th>Valor Casa Verde</th>
                 <th>Economia</th>
-                <th>% Economizado</th>
                 <th>Status</th>
             </tr>
         </thead>
@@ -399,11 +396,9 @@
                 <td>{{ $m['month_name'] }}</td>
                 <td>{{ $m['consumo_kwh'] > 0 ? number_format($m['consumo_kwh'], 0, ',', '.') : '—' }}</td>
                 <td class="td-original">R$ {{ number_format($m['original_amount'], 2, ',', '.') }}</td>
-                <td>{{ $m['discount_percent'] }}%</td>
                 <td class="td-savings">R$ {{ number_format($m['discount_amount'], 2, ',', '.') }}</td>
                 <td class="td-final">R$ {{ number_format($m['final_amount'], 2, ',', '.') }}</td>
                 <td class="td-savings">R$ {{ number_format($m['net_savings'], 2, ',', '.') }}</td>
-                <td class="td-pct">{{ $m['savings_percent'] }}%</td>
                 <td class="{{ $statusClass }}">{{ $statusLabel }}</td>
             </tr>
         @endforeach
@@ -414,11 +409,9 @@
                 <td>TOTAL DO ANO</td>
                 <td>{{ number_format($s['total_kwh'] ?? 0, 0, ',', '.') }}</td>
                 <td>R$ {{ number_format($s['total_original_amount'] ?? 0, 2, ',', '.') }}</td>
-                <td></td>
                 <td>R$ {{ number_format($s['total_savings'] ?? 0, 2, ',', '.') }}</td>
                 <td>R$ {{ number_format($s['total_final_amount'] ?? 0, 2, ',', '.') }}</td>
                 <td>R$ {{ number_format($s['total_savings'] ?? 0, 2, ',', '.') }}</td>
-                <td>{{ $s['savings_percent_year'] ?? 0 }}%</td>
                 <td></td>
             </tr>
         </tfoot>
@@ -446,7 +439,7 @@
         <div class="hero-card savings">
             <div class="hero-card-label">Total economizado</div>
             <div class="hero-card-value">R$ {{ number_format($a['total_savings'] ?? 0, 2, ',', '.') }}</div>
-            <div class="hero-card-sub">{{ $a['overall_savings_pct'] ?? 0 }}% do valor total</div>
+            <div class="hero-card-sub">Acumulado desde o início</div>
         </div>
     </div>
 </div>

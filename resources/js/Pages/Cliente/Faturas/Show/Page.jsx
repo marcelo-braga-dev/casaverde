@@ -323,7 +323,7 @@ export default function Page({ fatura, charge }) {
                                                 />
                                             </Box>
                                             <InfoRow label="Valor original" value={formatMoney(charge.original_amount ?? 0)} />
-                                            <InfoRow label="Desconto"       value={`-${formatMoney(charge.discount_amount ?? 0)} (${charge.discount_percent ?? 0}%)`} />
+                                            <InfoRow label="Desconto"       value={`-${formatMoney(charge.discount_amount ?? 0)}`} />
                                             <InfoRow label="Valor final"    value={formatMoney(charge.final_amount ?? 0)} highlight />
                                             <InfoRow label="Vencimento"     value={charge.due_date ? new Date(charge.due_date).toLocaleDateString('pt-BR') : null} />
                                             {charge.paid_at && (

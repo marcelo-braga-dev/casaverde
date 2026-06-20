@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\Integracao;
 
 use App\Http\Controllers\Controller;
 use App\Models\Importacao\ImportEmailAccount;
+use App\Models\Importacao\InstitutionalEmailAccount;
 use App\Services\Config\SystemSettingService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -14,6 +15,10 @@ class IntegracaoController extends Controller
     {
         $emails = ImportEmailAccount::query()
             ->with(['clientProfile', 'createdBy'])
+            ->orderBy('email')
+            ->get();
+
+        $institutionalEmails = InstitutionalEmailAccount::query()
             ->orderBy('email')
             ->get();
 
@@ -31,6 +36,7 @@ class IntegracaoController extends Controller
                 'cpanel_token_configured' => $settings->get('cpanel_api_token') !== null,
             ],
             'emails' => $emails,
+            'institutionalEmails' => $institutionalEmails,
             'stats' => [
                 'total' => $emails->count(),
                 'available' => $emails->whereNull('client_profile_id')->where('is_active', true)->count(),

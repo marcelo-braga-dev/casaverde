@@ -30,6 +30,8 @@ import {
     IconSolarPanel2,
     IconUsers,
 } from "@tabler/icons-react";
+import useAuthUser from "@/Hooks/useAuthUser.js";
+import { isAdmin } from "@/Utils/permissions.js";
 
 function safeRoute(n, p) { try { return route(n, p); } catch { return '#'; } }
 
@@ -64,6 +66,7 @@ const STATUS_MAP = {
 };
 
 const Page = ({ usina }) => {
+    const admin = isAdmin(useAuthUser());
     const st = STATUS_MAP[usina?.status] ?? { label: usina?.status ?? 'Sem status', color: 'default' };
 
     const disponivel = parseFloat(usina?.energia_disponivel_kwh ?? 0);
@@ -357,7 +360,7 @@ const Page = ({ usina }) => {
                                             <TableCell sx={{ fontWeight: 800 }}>Cliente</TableCell>
                                             <TableCell sx={{ fontWeight: 800 }}>Documento</TableCell>
                                             <TableCell sx={{ fontWeight: 800 }}>Energia Alocada</TableCell>
-                                            <TableCell sx={{ fontWeight: 800 }}>Desconto</TableCell>
+                                            {admin && <TableCell sx={{ fontWeight: 800 }}>Desconto</TableCell>}
                                             <TableCell sx={{ fontWeight: 800 }}>Status</TableCell>
                                             <TableCell align="right" sx={{ fontWeight: 800 }}>Ações</TableCell>
                                         </TableRow>
@@ -387,11 +390,13 @@ const Page = ({ usina }) => {
                                                             {link.allocated_energy_kwh ? `${link.allocated_energy_kwh} kWh` : '—'}
                                                         </Typography>
                                                     </TableCell>
-                                                    <TableCell>
-                                                        <Typography variant="body2" color="success.main" fontWeight={700}>
-                                                            {link.discount_percentage ? `${link.discount_percentage}%` : '—'}
-                                                        </Typography>
-                                                    </TableCell>
+                                                    {admin && (
+                                                        <TableCell>
+                                                            <Typography variant="body2" color="success.main" fontWeight={700}>
+                                                                {link.discount_percentage ? `${link.discount_percentage}%` : '—'}
+                                                            </Typography>
+                                                        </TableCell>
+                                                    )}
                                                     <TableCell>
                                                         <Chip label={link.is_active ? 'Ativo' : 'Inativo'}
                                                             color={link.is_active ? 'success' : 'default'}

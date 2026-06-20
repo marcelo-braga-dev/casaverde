@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\Cliente;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Cliente\AttachClientToUsinaRequest;
 use App\Models\Cliente\ClientProfile;
+use App\Models\Cliente\ClientUsinaLink;
 use App\Services\Cliente\AttachClientToUsinaService;
 
 class ClientUsinaLinkController extends Controller
@@ -30,5 +31,21 @@ class ClientUsinaLinkController extends Controller
         return redirect()
             ->back()
             ->with('success', 'Cliente vinculado à usina com sucesso.');
+    }
+
+    public function destroy(
+        ClientProfile $clientProfile,
+        ClientUsinaLink $link,
+        AttachClientToUsinaService $service
+    ) {
+        $this->authorize('update', $clientProfile);
+
+        abort_unless($link->client_profile_id === $clientProfile->id, 404);
+
+        $service->endLink($link);
+
+        return redirect()
+            ->back()
+            ->with('success', 'Vínculo com a usina desfeito com sucesso.');
     }
 }

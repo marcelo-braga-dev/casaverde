@@ -11,6 +11,7 @@ use App\Models\Usina\UsinaSolar;
 use App\Repositories\Cliente\ClientProfileRepository;
 use App\Services\Acesso\GerenciarAcessoService;
 use App\Services\Cliente\CreateOrFindClientProfileService;
+use App\src\Roles\RoleUser;
 use Inertia\Inertia;
 
 class ClienteController extends Controller
@@ -55,28 +56,36 @@ class ClienteController extends Controller
     {
         $this->authorize('view', $cliente);
 
+        $cliente->load([
+            'contacts',
+            'consultor',
+            'platformUser',
+            'activeUsinaLink.usina',
+            'activeDiscountRule',
+            'usinaLinks.usina.produtor',
+            'usinaLinks.consumerUnit',
+            'discountRules',
+            'emailImportSetting.concessionaria',
+            'emailImportSetting.emailAccount',
+            'proposals.concessionaria',
+            'proposals.contract',
+            'accessInvites',
+            'proposals.address',
+            'consumerUnits.concessionaria',
+            'consumerUnits.address',
+            'consumerUnits.activeUsinaLink.usina.produtor',
+            'consumerUnits.activeUsinaLinks.usina.produtor',
+        ]);
+
+        // Margens (desconto) só ficam visíveis para admin
+        if (auth()->user()?->role_id !== RoleUser::$ADMIN) {
+            $cliente->unsetRelation('activeDiscountRule');
+            $cliente->unsetRelation('discountRules');
+        }
+
         return Inertia::render('Consultor/Cliente/Profile/Show/Page', [
 
-            'client' => $cliente->load([
-                'contacts',
-                'consultor',
-                'platformUser',
-                'activeUsinaLink.usina',
-                'activeDiscountRule',
-                'usinaLinks.usina',
-                'usinaLinks.consumerUnit',
-                'discountRules',
-                'emailImportSetting.concessionaria',
-                'emailImportSetting.emailAccount',
-                'proposals.concessionaria',
-                'proposals.contract',
-                'accessInvites',
-                'proposals.address',
-                'consumerUnits.concessionaria',
-                'consumerUnits.address',
-                'consumerUnits.activeUsinaLink.usina.produtor',
-                'consumerUnits.activeUsinaLinks.usina.produtor',
-            ]),
+            'client' => $cliente,
 
             'usinas' => UsinaSolar::query()
                 ->with(['produtor'])

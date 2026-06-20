@@ -11,12 +11,7 @@ class ClientePerfilController extends Controller
     public function show()
     {
         $profile = ClientProfile::query()
-            ->with([
-                'contacts',
-                'consultor',
-                'activeDiscountRule',
-                'discountRules' => fn ($q) => $q->latest()->limit(5),
-            ])
+            ->with(['contacts'])
             ->where('platform_user_id', auth()->id())
             ->first();
 

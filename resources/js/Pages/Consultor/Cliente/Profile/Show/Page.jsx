@@ -24,6 +24,8 @@ import Tab from '@mui/material/Tab';
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
+import useAuthUser from '@/Hooks/useAuthUser.js';
+import { isAdmin } from '@/Utils/permissions.js';
 
 function safeRoute(n, p) { try { return route(n, p); } catch { return '#'; } }
 
@@ -37,6 +39,7 @@ const Page = ({
 }) => {
     const { flash } = usePage().props;
     const profile = clientProfile ?? client;
+    const admin = isAdmin(useAuthUser());
 
     const usinaLinks         = profile?.usina_links ?? profile?.usinaLinks ?? [];
     const discountRules      = profile?.discount_rules ?? profile?.discountRules ?? [];
@@ -64,7 +67,7 @@ const Page = ({
                                     <Tab icon={<IconFileText />}    label="Propostas"   value="1" />
                                     <Tab icon={<IconBolt />}        label="UCs"         value="2" />
                                     <Tab icon={<IconSolarPanel2 />} label="Usinas"      value="3" />
-                                    <Tab icon={<IconDiscount2 />}   label="Margens"     value="4" />
+                                    {admin && <Tab icon={<IconDiscount2 />}   label="Margens"     value="4" />}
                                     <Tab icon={<IconMailCog />}     label="Integração"  value="5" />
                                     <Tab icon={<IconShield />}      label="Acesso"      value="6" />
                                 </TabList>
@@ -86,10 +89,12 @@ const Page = ({
                                 <UsinaList profile={profile} usinaLinks={usinaLinks} />
                             </TabPanel>
 
-                            <TabPanel value="4">
-                                <DiscountRuleForm profile={profile} />
-                                <DiscountRulesList discountRules={discountRules} />
-                            </TabPanel>
+                            {admin && (
+                                <TabPanel value="4">
+                                    <DiscountRuleForm profile={profile} />
+                                    <DiscountRulesList discountRules={discountRules} />
+                                </TabPanel>
+                            )}
 
                             <TabPanel value="5">
                                 <ClientEmailImportSettingForm

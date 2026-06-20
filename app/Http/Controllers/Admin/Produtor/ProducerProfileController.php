@@ -68,9 +68,18 @@ class ProducerProfileController extends Controller
     {
         $producerProfile->load(['proposals', 'consultor', 'usinas', 'usinas.activeClientLinks', 'platformUser', 'activeFeeRule']);
 
+        $isAdmin = auth()->user()?->role_id === RoleUser::$ADMIN;
+
+        // Taxa de administração (margem) só fica visível para admin
+        if (! $isAdmin) {
+            $producerProfile->unsetRelation('activeFeeRule');
+        }
+
         return Inertia::render('Consultor/Producer/Profile/Show/Page', [
             'producer' => $producerProfile,
-            'defaultFeePercentage' => (float) $this->settingService->get('default_producer_fee_percentage', 15),
+            'defaultFeePercentage' => $isAdmin
+                ? (float) $this->settingService->get('default_producer_fee_percentage', 15)
+                : null,
             'accessHistory' => $producerProfile->platform_user_id
                 ? app(GerenciarAcessoService::class)->historico($producerProfile->platform_user_id)
                 : [],

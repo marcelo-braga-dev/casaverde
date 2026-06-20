@@ -15,13 +15,13 @@ class DashboardController extends Controller
         $user = auth()->user();
 
         $producerProfile = ProducerProfile::query()
-            ->with(['consultor', 'contacts', 'usinas.concessionaria'])
+            ->with(['contacts', 'usinas.concessionaria'])
             ->where('platform_user_id', $user->id)
             ->first();
 
         $usinas = $producerProfile
             ? UsinaSolar::query()
-                ->with(['consultor', 'concessionaria', 'block'])
+                ->with(['concessionaria', 'block'])
                 ->where('producer_profile_id', $producerProfile->id)
                 ->orderByDesc('id')
                 ->get()
@@ -29,7 +29,7 @@ class DashboardController extends Controller
 
         $leads = $producerProfile
             ? ProducerLead::query()
-                ->with(['consultor', 'concessionaria'])
+                ->with(['concessionaria'])
                 ->where('producer_profile_id', $producerProfile->id)
                 ->orderByDesc('id')
                 ->get()

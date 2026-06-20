@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\Integracao\ImportEmailAccountController;
+use App\Http\Controllers\Admin\Integracao\InstitutionalEmailAccountController;
 use App\Http\Controllers\Admin\Integracao\IntegracaoController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,4 +23,9 @@ Route::middleware('role:admin')
         Route::delete('/emails/{account}', [ImportEmailAccountController::class, 'destroy'])->name('emails.destroy');
         Route::post('/emails/{account}/unassign', [ImportEmailAccountController::class, 'unassign'])->name('emails.unassign');
         Route::get('/emails/{account}/roundcube', [ImportEmailAccountController::class, 'roundcube'])->name('emails.roundcube');
+
+        // CRUD dos e-mails institucionais da empresa
+        Route::post('/institutional-emails', [InstitutionalEmailAccountController::class, 'store'])->name('institutional-emails.store');
+        Route::put('/institutional-emails/{institutionalEmail}', [InstitutionalEmailAccountController::class, 'update'])->name('institutional-emails.update');
+        Route::delete('/institutional-emails/{institutionalEmail}', [InstitutionalEmailAccountController::class, 'destroy'])->name('institutional-emails.destroy');
     });

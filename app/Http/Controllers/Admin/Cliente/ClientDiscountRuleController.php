@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Cliente\StoreClientDiscountRuleRequest;
 use App\Models\Cliente\ClientProfile;
 use App\Services\Cliente\StoreDiscountRuleService;
+use App\src\Roles\RoleUser;
 
 class ClientDiscountRuleController extends Controller
 {
@@ -15,6 +16,8 @@ class ClientDiscountRuleController extends Controller
         StoreDiscountRuleService $service
     ) {
         $this->authorize('update', $clientProfile);
+
+        abort_unless(auth()->user()?->role_id === RoleUser::$ADMIN, 403);
 
         $service->handle(
             $clientProfile,

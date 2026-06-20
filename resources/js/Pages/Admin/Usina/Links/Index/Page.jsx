@@ -18,6 +18,8 @@ import AddIcon from '@mui/icons-material/Add';
 
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
 import ClientUsinaLinkStatusChip from '../../Components/ClientUsinaLinkStatusChip';
+import useAuthUser from '@/Hooks/useAuthUser.js';
+import { isAdmin } from '@/Utils/permissions.js';
 
 function getClientName(client) {
     if (!client) {
@@ -34,6 +36,7 @@ function getClientName(client) {
 export default function ClientUsinaLinksIndexPage() {
     const { props } = usePage();
     const { links, filters, statusOptions } = props;
+    const admin = isAdmin(useAuthUser());
 
     const handleFilterChange = (field, value) => {
         router.get(
@@ -125,7 +128,7 @@ export default function ClientUsinaLinksIndexPage() {
                                     <TableCell>Cliente</TableCell>
                                     <TableCell>Usina</TableCell>
                                     <TableCell>Energia</TableCell>
-                                    <TableCell>Desconto</TableCell>
+                                    {admin && <TableCell>Desconto</TableCell>}
                                     <TableCell>Status</TableCell>
                                     <TableCell>Período</TableCell>
                                     <TableCell align="right">Ações</TableCell>
@@ -159,9 +162,11 @@ export default function ClientUsinaLinksIndexPage() {
                                             {Number(link.allocated_energy_kwh || 0).toLocaleString('pt-BR')} kWh
                                         </TableCell>
 
-                                        <TableCell>
-                                            {Number(link.discount_percentage || 0).toLocaleString('pt-BR')}%
-                                        </TableCell>
+                                        {admin && (
+                                            <TableCell>
+                                                {Number(link.discount_percentage || 0).toLocaleString('pt-BR')}%
+                                            </TableCell>
+                                        )}
 
                                         <TableCell>
                                             <ClientUsinaLinkStatusChip status={link.status} />
@@ -193,7 +198,7 @@ export default function ClientUsinaLinksIndexPage() {
 
                                 {links.data.length === 0 && (
                                     <TableRow>
-                                        <TableCell colSpan={7}>
+                                        <TableCell colSpan={admin ? 7 : 6}>
                                             <Typography color="text.secondary" align="center" sx={{ py: 4 }}>
                                                 Nenhuma alocação encontrada.
                                             </Typography>

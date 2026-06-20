@@ -12,10 +12,7 @@ class ClienteUsinaController extends Controller
     public function show()
     {
         $profile = ClientProfile::query()
-            ->with([
-                'activeUsinaLink.usina.concessionaria',
-                'activeDiscountRule',
-            ])
+            ->with(['activeUsinaLink.usina.concessionaria'])
             ->where('platform_user_id', auth()->id())
             ->first();
 

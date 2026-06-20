@@ -17,6 +17,8 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
 import SearchableSelect from "@/Components/Form/SearchableSelect.jsx";
+import useAuthUser from "@/Hooks/useAuthUser.js";
+import { isAdmin } from "@/Utils/permissions.js";
 
 function getClientName(client) {
     if (client.tipo_pessoa === 'pj') {
@@ -29,6 +31,7 @@ function getClientName(client) {
 export default function CreateClientUsinaLinkPage() {
     const { props } = usePage();
     const { clients, usinas, statusOptions } = props;
+    const admin = isAdmin(useAuthUser());
 
     const { data, setData, post, processing, errors } = useForm({
         client_profile_id: '',
@@ -160,24 +163,26 @@ export default function CreateClientUsinaLinkPage() {
                                     />
                                 </Grid>
 
-                                <Grid item xs={12} md={4}>
-                                    <TextField
-                                        label="Desconto"
-                                        value={data.discount_percentage}
-                                        onChange={(event) =>
-                                            setData('discount_percentage', event.target.value)
-                                        }
-                                        error={Boolean(errors.discount_percentage)}
-                                        helperText={errors.discount_percentage}
-                                        type="number"
-                                        fullWidth
-                                        slotProps={{
-                                            input: {
-                                                endAdornment: <InputAdornment position="end">%</InputAdornment>,
-                                            },
-                                        }}
-                                    />
-                                </Grid>
+                                {admin && (
+                                    <Grid item xs={12} md={4}>
+                                        <TextField
+                                            label="Desconto"
+                                            value={data.discount_percentage}
+                                            onChange={(event) =>
+                                                setData('discount_percentage', event.target.value)
+                                            }
+                                            error={Boolean(errors.discount_percentage)}
+                                            helperText={errors.discount_percentage}
+                                            type="number"
+                                            fullWidth
+                                            slotProps={{
+                                                input: {
+                                                    endAdornment: <InputAdornment position="end">%</InputAdornment>,
+                                                },
+                                            }}
+                                        />
+                                    </Grid>
+                                )}
 
                                 <Grid item xs={12} md={4}>
                                     <TextField

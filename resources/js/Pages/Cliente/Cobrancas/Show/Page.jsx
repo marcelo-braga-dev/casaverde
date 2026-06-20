@@ -260,7 +260,7 @@ export default function Page({ cobranca }) {
                                         <Stack direction="row" justifyContent="space-between" alignItems="center" py={1}>
                                             <Stack direction="row" alignItems="center" gap={0.5}>
                                                 <Typography variant="body2" color="success.dark">
-                                                    Desconto solar ({cobranca?.discount_percent ?? 0}%)
+                                                    Desconto solar
                                                 </Typography>
                                             </Stack>
                                             <Typography variant="body2" color="success.dark" sx={{ fontWeight: 700 }}>

@@ -3,7 +3,6 @@ import ReportMetricCard from '@/Components/Reports/ReportMetricCard';
 import ReportChartCard from '@/Components/Reports/ReportChartCard';
 import ClientBillEconomyChart from '@/Components/Reports/charts/ClientBillEconomyChart';
 import ClientConsumptionChart from '@/Components/Reports/charts/ClientConsumptionChart';
-import GaugeProgressChart from '@/Components/Reports/charts/GaugeProgressChart';
 import { formatMoney } from '@/Components/Reports/utils/chartFormatters';
 import { Head, Link, router, useForm } from '@inertiajs/react';
 import {
@@ -110,7 +109,6 @@ export default function Page({ report }) {
             consumo_kwh:     m.consumo_kwh,
         }));
 
-    const savingsPct = summary.savings_percent_year ?? 0;
     const hasData    = (summary.months_with_data ?? 0) > 0;
 
     return (
@@ -121,7 +119,7 @@ export default function Page({ report }) {
             subtitle="Compare o que pagaria à concessionária com o que paga com a Casa Verde."
             breadcrumbs={[
                 { label: 'Cliente' },
-                { label: 'Relatórios', href: safeRoute('cliente.relatorios.index') },
+                { label: 'Relatórios' },
                 { label: 'Economia' },
             ]}
         >
@@ -209,7 +207,7 @@ export default function Page({ report }) {
                                             {profile.display_name}
                                         </Typography>
                                         <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: 13 }}>
-                                            Código: {profile.client_code} · Desconto: {profile.discount}%
+                                            Código: {profile.client_code}
                                         </Typography>
                                     </Box>
                                 </Stack>
@@ -252,7 +250,7 @@ export default function Page({ report }) {
                                 <ReportMetricCard
                                     title="Com Casa Verde você paga"
                                     value={formatMoney(summary.total_final_amount ?? 0)}
-                                    helper={`Desconto de ${summary.avg_discount_percent ?? 0}%`}
+                                    helper="Valor com desconto Casa Verde"
                                     icon={IconLeaf}
                                     color="primary.main"
                                 />
@@ -261,7 +259,7 @@ export default function Page({ report }) {
                                 <ReportMetricCard
                                     title="Total economizado"
                                     value={formatMoney(summary.total_savings ?? 0)}
-                                    helper={`${summary.savings_percent_year ?? 0}% do valor total`}
+                                    helper="Sobre o valor total das faturas"
                                     icon={IconLeaf}
                                     color="success.main"
                                 />
@@ -279,27 +277,13 @@ export default function Page({ report }) {
 
                         {/* ── Gráficos ──────────────────────────────────── */}
                         <Grid container spacing={3}>
-                            <Grid size={{ xs: 12, lg: 8 }}>
+                            <Grid size={{ xs: 12 }}>
                                 <ReportChartCard
                                     title="Comparativo Mensal: Concessionária × Casa Verde"
                                     subtitle="Barras: valor original e valor com desconto. Linha: sua economia."
                                     height={320}
                                 >
                                     <ClientBillEconomyChart data={chartData} />
-                                </ReportChartCard>
-                            </Grid>
-
-                            <Grid size={{ xs: 12, lg: 4 }}>
-                                <ReportChartCard
-                                    title="Taxa de Economia"
-                                    subtitle="Percentual economizado sobre o valor total das faturas."
-                                    height={320}
-                                >
-                                    <GaugeProgressChart
-                                        value={savingsPct}
-                                        label="Economizou"
-                                        helper={`${formatMoney(summary.total_savings ?? 0)} de ${formatMoney(summary.total_original_amount ?? 0)}`}
-                                    />
                                 </ReportChartCard>
                             </Grid>
 
@@ -357,7 +341,7 @@ export default function Page({ report }) {
                                                     <Stack direction="row" justifyContent="space-between" alignItems="center">
                                                         <Stack>
                                                             <Typography variant="body2" sx={{ fontWeight: 700, color: 'success.main' }}>
-                                                                Desconto Casa Verde ({selected.discount_percent ?? 0}%)
+                                                                Desconto Casa Verde
                                                             </Typography>
                                                             <Typography variant="caption" color="text.secondary">Desconto contratual</Typography>
                                                         </Stack>
@@ -395,7 +379,7 @@ export default function Page({ report }) {
                                                             </Typography>
                                                         </Stack>
                                                         <Typography variant="caption" color="success.dark">
-                                                            {selected.savings_percent ?? 0}% do valor original
+                                                            Em relação ao valor original da fatura
                                                         </Typography>
                                                     </Box>
                                                 </Stack>
@@ -505,7 +489,6 @@ export default function Page({ report }) {
                                                 <TableCell align="right">Desconto</TableCell>
                                                 <TableCell align="right" sx={{ color: 'primary.main', fontWeight: 700 }}>Valor Casa Verde</TableCell>
                                                 <TableCell align="right" sx={{ color: 'success.main', fontWeight: 700 }}>Economia</TableCell>
-                                                <TableCell align="right">%</TableCell>
                                                 <TableCell>Status</TableCell>
                                                 <TableCell align="right" />
                                             </TableRow>
@@ -540,7 +523,7 @@ export default function Page({ report }) {
                                                             }
                                                         </TableCell>
                                                         <TableCell align="right">
-                                                            {m.has_data && <Typography variant="body2" color="success.main">-{m.discount_percent}%</Typography>}
+                                                            {m.has_data && <Typography variant="body2" color="success.main">-{formatMoney(m.discount_amount ?? 0)}</Typography>}
                                                         </TableCell>
                                                         <TableCell align="right">
                                                             {m.has_data
@@ -553,9 +536,6 @@ export default function Page({ report }) {
                                                                 ? <Typography variant="body2" sx={{ color: 'success.main', fontWeight: 700 }}>{formatMoney(m.net_savings)}</Typography>
                                                                 : <Typography variant="body2" color="text.disabled">—</Typography>
                                                             }
-                                                        </TableCell>
-                                                        <TableCell align="right">
-                                                            {m.has_data && <Chip label={`${m.savings_percent}%`} color="success" size="small" variant="outlined" />}
                                                         </TableCell>
                                                         <TableCell>
                                                             {st && <Chip label={st.label} color={st.color} size="small" />}
@@ -587,7 +567,7 @@ export default function Page({ report }) {
                                                 { label: 'Total concessionária', value: formatMoney(summary.total_original_amount ?? 0), highlight: false },
                                                 { label: 'Total Casa Verde', value: formatMoney(summary.total_final_amount ?? 0), highlight: true },
                                                 { label: 'Total economizado', value: formatMoney(summary.total_savings ?? 0), highlight: true },
-                                                { label: 'Desconto médio', value: `${summary.savings_percent_year ?? 0}%`, highlight: false },
+                                                { label: 'Economia média/mês', value: formatMoney(summary.avg_savings_month ?? 0), highlight: false },
                                             ].map(item => (
                                                 <Grid key={item.label} size={{ xs: 6, md: 3 }}>
                                                     <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.65)', display: 'block' }}>{item.label}</Typography>
@@ -613,7 +593,7 @@ export default function Page({ report }) {
                                                 Economizados no total desde que você é cliente Casa Verde
                                             </Typography>
                                             <Typography sx={{ color: '#6ee7b7', fontWeight: 700, mt: 1, fontSize: 14 }}>
-                                                Isso é {allTime.overall_savings_pct ?? 0}% de economia sobre {formatMoney(allTime.total_original ?? 0)} que você pagaria à concessionária.
+                                                Comparado aos {formatMoney(allTime.total_original ?? 0)} que você pagaria à concessionária.
                                             </Typography>
                                         </Box>
 

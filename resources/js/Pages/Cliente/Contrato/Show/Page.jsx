@@ -103,7 +103,6 @@ export default function Page({ contrato, profile }) {
                                         <InfoRow label="Código"          value={contrato.proposal.proposal_code} />
                                         <InfoRow label="Concessionária"  value={contrato.proposal.concessionaria?.nome} />
                                         <InfoRow label="Consumo médio"   value={contrato.proposal.media_consumo ? `${contrato.proposal.media_consumo} kWh` : null} />
-                                        <InfoRow label="Desconto"        value={`${contrato.proposal.discount_percent ?? 0}%`} highlight />
                                         <InfoRow label="Prazo"           value={contrato.proposal.prazo_locacao ? `${contrato.proposal.prazo_locacao} meses` : null} />
                                     </Stack>
                                 </CardContent>

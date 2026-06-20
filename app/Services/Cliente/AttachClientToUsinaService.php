@@ -2,6 +2,7 @@
 
 namespace App\Services\Cliente;
 
+use App\Enums\Cliente\ClientUsinaLinkStatus;
 use App\Models\Cliente\ClientProfile;
 use App\Models\Cliente\ClientUsinaLink;
 use Illuminate\Support\Facades\DB;
@@ -45,5 +46,14 @@ class AttachClientToUsinaService
                 'consumption_percentage' => $consumptionPercentage,
             ]);
         });
+    }
+
+    public function endLink(ClientUsinaLink $link): void
+    {
+        $link->update([
+            'is_active' => false,
+            'status' => ClientUsinaLinkStatus::Finished,
+            'ended_at' => now(),
+        ]);
     }
 }

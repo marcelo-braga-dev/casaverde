@@ -1,8 +1,14 @@
 import {
     Box,
+    Button,
     Card,
     CardContent,
     Chip,
+    CircularProgress,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
     Divider,
     Stack,
     Table,
@@ -13,7 +19,9 @@ import {
     TableRow,
     Typography,
 } from "@mui/material";
-import { IconSolarPanel2 } from "@tabler/icons-react";
+import { router } from "@inertiajs/react";
+import { IconLinkOff, IconSolarPanel2 } from "@tabler/icons-react";
+import { useState } from "react";
 
 const formatDate = (value) => {
     if (!value) return "—";
@@ -28,6 +36,20 @@ const UsinaList = ({ profile, usinaLinks = [] }) => {
     const sortedLinks = [...usinaLinks].sort((a, b) =>
         new Date(b.started_at ?? b.created_at ?? 0) - new Date(a.started_at ?? a.created_at ?? 0)
     );
+
+    const [unlinkTarget, setUnlinkTarget] = useState(null);
+    const [processing, setProcessing] = useState(false);
+
+    function confirmUnlink() {
+        setProcessing(true);
+        router.delete(route("consultor.user.cliente.usina.destroy", [profile.id, unlinkTarget.id]), {
+            preserveScroll: true,
+            onFinish: () => {
+                setProcessing(false);
+                setUnlinkTarget(null);
+            },
+        });
+    }
 
     return (
         <Card sx={{ mb: 3 }}>
@@ -62,6 +84,7 @@ const UsinaList = ({ profile, usinaLinks = [] }) => {
                                     <TableCell sx={{ fontWeight: 800 }}>Início</TableCell>
                                     <TableCell sx={{ fontWeight: 800 }}>Fim</TableCell>
                                     <TableCell sx={{ fontWeight: 800 }}>Status</TableCell>
+                                    <TableCell sx={{ fontWeight: 800 }} align="right">Ações</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -118,6 +141,19 @@ const UsinaList = ({ profile, usinaLinks = [] }) => {
                                                     size="small"
                                                 />
                                             </TableCell>
+                                            <TableCell align="right">
+                                                {item.is_active && (
+                                                    <Button
+                                                        size="small"
+                                                        color="error"
+                                                        variant="outlined"
+                                                        startIcon={<IconLinkOff size={14} />}
+                                                        onClick={() => setUnlinkTarget(item)}
+                                                    >
+                                                        Desvincular
+                                                    </Button>
+                                                )}
+                                            </TableCell>
                                         </TableRow>
                                     );
                                 })}
@@ -126,6 +162,31 @@ const UsinaList = ({ profile, usinaLinks = [] }) => {
                     </TableContainer>
                 )}
             </CardContent>
+
+            <Dialog open={!!unlinkTarget} onClose={() => setUnlinkTarget(null)} maxWidth="xs" fullWidth>
+                <DialogTitle sx={{ fontWeight: 900 }}>Desvincular Usina</DialogTitle>
+                <Divider />
+                <DialogContent sx={{ pt: 2 }}>
+                    <Typography>
+                        Deseja desvincular o cliente da usina{" "}
+                        <strong>{unlinkTarget?.usina?.usina_nome ?? `#${unlinkTarget?.usina_id}`}</strong>?
+                    </Typography>
+                </DialogContent>
+                <DialogActions sx={{ p: 2.5 }}>
+                    <Button variant="outlined" color="inherit" onClick={() => setUnlinkTarget(null)} disabled={processing}>
+                        Cancelar
+                    </Button>
+                    <Button
+                        variant="contained"
+                        color="error"
+                        onClick={confirmUnlink}
+                        disabled={processing}
+                        startIcon={processing ? <CircularProgress size={14} color="inherit" /> : null}
+                    >
+                        Desvincular
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Card>
     );
 };

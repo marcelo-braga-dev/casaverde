@@ -13,9 +13,7 @@ class ClienteDashboardService
         $profile = ClientProfile::query()
             ->with([
                 'contacts',
-                'activeDiscountRule',
                 'contracts' => fn ($q) => $q->latest()->limit(1),
-                'consultor.contatos',
                 'activeUsinaLink.usina',
             ])
             ->where('platform_user_id', $platformUserId)
@@ -79,8 +77,6 @@ class ClienteDashboardService
             ->where('status', 'paid')
             ->sum('discount_amount');
 
-        $discountPercent = (float) ($profile->activeDiscountRule?->discount_percent ?? 0);
-
         return [
             'bills_total' => $billsTotal,
             'consumption_kwh_month' => $consumptionMonth,
@@ -90,7 +86,6 @@ class ClienteDashboardService
             'charges_overdue_amount' => $chargesOverdueAmount,
             'charges_paid_year' => $chargesPaidYear,
             'total_saved' => $totalSaved,
-            'active_discount_percent' => $discountPercent,
         ];
     }
 
@@ -158,7 +153,6 @@ class ClienteDashboardService
                 'charges_overdue_amount' => 0,
                 'charges_paid_year' => 0,
                 'total_saved' => 0,
-                'active_discount_percent' => 0,
             ],
             'recentBills' => [],
             'recentCharges' => [],

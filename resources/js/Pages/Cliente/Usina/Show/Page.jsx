@@ -33,8 +33,6 @@ function InfoRow({ label, value, highlight = false }) {
 const MONTHS = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 
 export default function Page({ profile, usina, link, historico = [] }) {
-    const discount = profile?.active_discount_rule?.discount_percent ?? link?.discount_percentage ?? 0;
-
     return (
         <Layout
             titlePage="Minha Usina"
@@ -133,23 +131,10 @@ export default function Page({ profile, usina, link, historico = [] }) {
                                     <Divider sx={{ mb: 2 }} />
                                     <Stack spacing={0}>
                                         <InfoRow label="Energia alocada" value={link?.allocated_energy_kwh ? `${link.allocated_energy_kwh} kWh` : null} highlight />
-                                        <InfoRow label="Desconto ativo"  value={`${discount}%`} highlight />
                                         <InfoRow label="Status"          value={link?.status ?? '—'} />
                                         <InfoRow label="Início do vínculo" value={link?.started_at ? new Date(link.started_at).toLocaleDateString('pt-BR') : null} />
                                         {link?.ended_at && <InfoRow label="Fim do vínculo" value={new Date(link.ended_at).toLocaleDateString('pt-BR')} />}
                                     </Stack>
-
-                                    <Box sx={{ mt: 3, bgcolor: 'success.50', borderRadius: 2, p: 2, border: '1px solid', borderColor: 'success.200' }}>
-                                        <Typography variant="body2" color="success.dark" sx={{ fontWeight: 700, mb: 0.5 }}>
-                                            Estimativa de economia anual
-                                        </Typography>
-                                        <Typography variant="h6" color="success.main" sx={{ fontWeight: 950 }}>
-                                            {discount}% de desconto na fatura
-                                        </Typography>
-                                        <Typography variant="caption" color="text.secondary">
-                                            Baseado no seu desconto ativo sobre o valor total das faturas.
-                                        </Typography>
-                                    </Box>
                                 </CardContent>
                             </Card>
                         </Grid>

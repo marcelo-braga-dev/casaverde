@@ -117,7 +117,6 @@ export default function Page({ profile, user }) {
                                     <InfoRow label="Tipo"       value={profile?.tipo_pessoa === 'pf' ? 'Pessoa Física' : 'Pessoa Jurídica'} />
                                     <InfoRow label="Código"     value={profile?.client_code} />
                                     <InfoRow label="Status"     value={cs.label} />
-                                    <InfoRow label="Desconto"   value={`${profile?.active_discount_rule?.discount_percent ?? 0}%`} />
                                     {profile?.activated_at && (
                                         <InfoRow label="Cliente desde" value={new Date(profile.activated_at).toLocaleDateString('pt-BR')} />
                                     )}
@@ -163,23 +162,6 @@ export default function Page({ profile, user }) {
                                     </Stack>
                                 </CardContent>
                             </Card>
-
-                            {/* Consultor responsável */}
-                            {profile?.consultor && (
-                                <Card sx={{ borderRadius: 'var(--cv-radius-xl)', border: '1px solid var(--cv-border-soft)', boxShadow: 'var(--cv-shadow-md)' }}>
-                                    <CardContent>
-                                        <Stack direction="row" alignItems="center" gap={1.5} sx={{ mb: 2 }}>
-                                            <Box sx={{ width: 36, height: 36, borderRadius: 2, background: 'linear-gradient(135deg,#f59e0b,#d97706)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
-                                                <IconUser size={18} />
-                                            </Box>
-                                            <Typography variant="h6" sx={{ fontWeight: 950 }}>Consultor Responsável</Typography>
-                                        </Stack>
-                                        <Divider sx={{ mb: 2 }} />
-                                        <InfoRow label="Nome"  value={profile.consultor.name} />
-                                        <InfoRow label="Email" value={profile.consultor.email} />
-                                    </CardContent>
-                                </Card>
-                            )}
                         </Stack>
                     </Grid>
 

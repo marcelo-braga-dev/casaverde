@@ -28,11 +28,9 @@ class ClienteEconomiaExport implements FromArray, ShouldAutoSize, WithHeadings, 
             'Mês/Ano',
             'Consumo (kWh)',
             'Fatura Concessionária (R$)',
-            'Desconto (%)',
             'Desconto (R$)',
             'Valor Casa Verde (R$)',
             'Economia no Mês (R$)',
-            '% Economizado',
             'Status',
             'Pago em',
         ];
@@ -46,11 +44,10 @@ class ClienteEconomiaExport implements FromArray, ShouldAutoSize, WithHeadings, 
         $rows = [];
 
         // Cabeçalho do cliente
-        $rows[] = ['Cliente:', $report['profile']['display_name'] ?? '—', '', '', '', '', '', '', '', ''];
-        $rows[] = ['Código:', $report['profile']['client_code'] ?? '—', '', '', '', '', '', '', '', ''];
-        $rows[] = ['Desconto ativo:', ($report['profile']['discount'] ?? 0).'%', '', '', '', '', '', '', '', ''];
-        $rows[] = ['Ano:', $report['filters']['year'] ?? date('Y'), '', '', '', '', '', '', '', ''];
-        $rows[] = ['', '', '', '', '', '', '', '', '', ''];
+        $rows[] = ['Cliente:', $report['profile']['display_name'] ?? '—', '', '', '', '', '', ''];
+        $rows[] = ['Código:', $report['profile']['client_code'] ?? '—', '', '', '', '', '', ''];
+        $rows[] = ['Ano:', $report['filters']['year'] ?? date('Y'), '', '', '', '', '', ''];
+        $rows[] = ['', '', '', '', '', '', '', ''];
 
         foreach ($report['monthly'] as $m) {
             if (! $m['has_data']) {
@@ -61,11 +58,9 @@ class ClienteEconomiaExport implements FromArray, ShouldAutoSize, WithHeadings, 
                 $m['label'],
                 $m['consumo_kwh'] ?: '—',
                 number_format($m['original_amount'], 2, ',', '.'),
-                $m['discount_percent'].'%',
                 number_format($m['discount_amount'], 2, ',', '.'),
                 number_format($m['final_amount'], 2, ',', '.'),
                 number_format($m['net_savings'], 2, ',', '.'),
-                $m['savings_percent'].'%',
                 $this->translateStatus($m['status']),
                 $m['paid_at'] ?? '—',
             ];
@@ -73,8 +68,8 @@ class ClienteEconomiaExport implements FromArray, ShouldAutoSize, WithHeadings, 
 
         // Totais
         $s = $report['summary'];
-        $rows[] = ['', '', '', '', '', '', '', '', '', ''];
-        $rows[] = ['TOTAL', '', number_format($s['total_original_amount'] ?? 0, 2, ',', '.'), '', '', number_format($s['total_final_amount'] ?? 0, 2, ',', '.'), number_format($s['total_savings'] ?? 0, 2, ',', '.'), ($s['savings_percent_year'] ?? 0).'%', '', ''];
+        $rows[] = ['', '', '', '', '', '', '', ''];
+        $rows[] = ['TOTAL', '', number_format($s['total_original_amount'] ?? 0, 2, ',', '.'), '', number_format($s['total_final_amount'] ?? 0, 2, ',', '.'), number_format($s['total_savings'] ?? 0, 2, ',', '.'), '', ''];
 
         return $rows;
     }
