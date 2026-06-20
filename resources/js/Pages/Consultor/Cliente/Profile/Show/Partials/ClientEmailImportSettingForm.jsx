@@ -69,7 +69,7 @@ const ClientEmailImportSettingForm = ({
         client_profile_id:       profile?.id ?? '',
         import_email_account_id: currentAccountId,
         concessionaria_id:       setting?.concessionaria_id ?? '',
-        pdf_password:            '',
+        pdf_password:            setting?.pdf_password ?? '',
         sender_filter:           setting?.sender_filter  ?? '',
         subject_filter:          setting?.subject_filter ?? '',
         is_active:               setting?.is_active ?? true,

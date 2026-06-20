@@ -9,6 +9,8 @@ class ProtectedPdfResolverService
 {
     public function unlockToTempFile(string $absolutePdfPath, ?string $password = null): string
     {
+        $password = $password !== null ? trim($password) : null;
+
         if (! is_file($absolutePdfPath)) {
             throw new RuntimeException('Arquivo PDF não encontrado.');
         }
@@ -37,7 +39,13 @@ class ProtectedPdfResolverService
         exec($command, $output, $exitCode);
 
         if ($exitCode !== 0 || ! is_file($tempOutput)) {
-            throw new RuntimeException('Não foi possível desbloquear o PDF com a senha informada.');
+            $details = trim(implode("\n", $output));
+
+            if (str_contains(strtolower($details), 'invalid password')) {
+                throw new RuntimeException('Senha incorreta para desbloquear o PDF.');
+            }
+
+            throw new RuntimeException('Não foi possível desbloquear o PDF: '.($details !== '' ? $details : 'erro desconhecido do qpdf.'));
         }
 
         return $tempOutput;

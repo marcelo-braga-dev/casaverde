@@ -207,6 +207,8 @@ export default function Page({ run, emails }) {
                                     <TableHead>
                                         <TableRow>
                                             <TableCell>Arquivo / Assunto</TableCell>
+                                            <TableCell>Cliente</TableCell>
+                                            <TableCell>Email vinculado</TableCell>
                                             <TableCell>Remetente</TableCell>
                                             <TableCell>Recebido</TableCell>
                                             <TableCell>Duração</TableCell>
@@ -218,7 +220,7 @@ export default function Page({ run, emails }) {
                                     <TableBody>
                                         {items.length === 0 ? (
                                             <TableRow>
-                                                <TableCell colSpan={7} sx={{ textAlign: 'center', py: 3, color: 'text.secondary' }}>
+                                                <TableCell colSpan={9} sx={{ textAlign: 'center', py: 3, color: 'text.secondary' }}>
                                                     Nenhum email processado neste run.
                                                 </TableCell>
                                             </TableRow>
@@ -235,6 +237,16 @@ export default function Page({ run, emails }) {
                                                                 {email.subject}
                                                             </Typography>
                                                         )}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Typography variant="body2" sx={{ fontSize: '0.75rem' }}>
+                                                            {email.client_profile?.razao_social || email.client_profile?.nome_fantasia || email.client_profile?.nome || '—'}
+                                                        </Typography>
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        <Typography variant="caption" color="text.secondary">
+                                                            {email.setting?.email_account?.email ?? '—'}
+                                                        </Typography>
                                                     </TableCell>
                                                     <TableCell>
                                                         <Typography variant="caption" color="text.secondary">

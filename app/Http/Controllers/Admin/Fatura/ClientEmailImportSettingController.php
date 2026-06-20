@@ -78,8 +78,9 @@ class ClientEmailImportSettingController extends Controller
             'subject_filter' => $data['subject_filter'] ?? null,
         ];
 
-        if (! empty($data['pdf_password'])) {
-            $upsert['pdf_password'] = $data['pdf_password'];
+        $pdfPassword = trim((string) ($data['pdf_password'] ?? ''));
+        if ($pdfPassword !== '') {
+            $upsert['pdf_password'] = $pdfPassword;
         }
 
         ClientEmailImportSetting::updateOrCreate(
@@ -144,8 +145,11 @@ class ClientEmailImportSettingController extends Controller
             $data['imap_password'] = $newEmailAccount->imap_password ?? '';
         }
 
-        if (empty($data['pdf_password'])) {
+        $pdfPassword = trim((string) ($data['pdf_password'] ?? ''));
+        if ($pdfPassword === '') {
             unset($data['pdf_password']);
+        } else {
+            $data['pdf_password'] = $pdfPassword;
         }
 
         $faturaImportSetting->update($data);
