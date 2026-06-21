@@ -5,7 +5,7 @@ import {
     IconHeadset,
     IconPlug,
     IconReportMoney,
-    IconSettings, IconSolarPanel2,
+    IconSettings, IconSolarPanel2, IconUser,
     IconUserBolt,
     IconUserCog,
     IconUserDollar,
@@ -109,42 +109,6 @@ export const adminMenu = [
         ],
     },
     {
-        title: 'Consultores',
-        icon: <IconUserDollar />,
-        id: 'consultores',
-        cor: 'green',
-        subItems: [
-            {
-                id: 'consultores-cadastrados',
-                title: 'Consultores Cadastrados',
-                link: safeRoute('admin.user.consultor.index'),
-            },
-            {
-                id: 'vendedores-cadastrar',
-                title: 'Cadastrar Consultor',
-                link: safeRoute('admin.user.consultor.create'),
-            },
-        ],
-    },
-    {
-        title: 'Administradores',
-        icon: <IconUserCog />,
-        id: 'admin',
-        cor: 'brown',
-        subItems: [
-            {
-                id: 'admin-cadastrados',
-                title: 'Administradores',
-                link: safeRoute('admin.user.admin.index'),
-            },
-            {
-                id: 'admin-cadastrar',
-                title: 'Novo Administrador',
-                link: safeRoute('admin.user.admin.create'),
-            },
-        ],
-    },
-    {
         title: 'Financeiro',
         icon: <IconReportMoney />,
         id: 'financeiro',
@@ -222,6 +186,25 @@ export const adminMenu = [
             },
         ],
     },
+    {
+        title: 'Usuários',
+        icon: <IconUser />,
+        id: 'usuarios',
+        cor: 'green',
+        subItems: [
+            {
+                id: 'consultores-cadastrados',
+                title: 'Consultores Cadastrados',
+                link: safeRoute('admin.user.consultor.index'),
+            },
+            {
+                id: 'admin-cadastrados',
+                title: 'Administradores',
+                link: safeRoute('admin.user.admin.index'),
+            },
+        ],
+    },
+
     {
         title: 'Whatsapp',
         icon: <IconBrandWhatsapp />,

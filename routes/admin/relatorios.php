@@ -33,17 +33,11 @@ Route::name('relatorios.')
         Route::get('/clientes', ClientReportController::class)
             ->name('clientes');
 
-        Route::get('/faturas', BillReportController::class)
-            ->name('faturas');
-
         Route::get('/cobrancas/export', ExportChargeReportController::class)
             ->name('cobrancas.export');
 
         Route::get('/pagamentos/export', ExportPaymentReportController::class)
             ->name('pagamentos.export');
-
-        Route::get('/faturas/export', ExportBillReportController::class)
-            ->name('faturas.export');
 
         Route::get('/cobrancas/export-pdf', ExportChargeReportPdfController::class)
             ->name('cobrancas.export-pdf');
@@ -51,9 +45,17 @@ Route::name('relatorios.')
         Route::get('/pagamentos/export-pdf', ExportPaymentReportPdfController::class)
             ->name('pagamentos.export-pdf');
 
-        Route::get('/faturas/export-pdf', ExportBillReportPdfController::class)
-            ->name('faturas.export-pdf');
-
         Route::get('/executivo', ExecutiveReportController::class)
             ->name('executivo');
+
+        Route::middleware('role:admin')->group(function () {
+            Route::get('/faturas', BillReportController::class)
+                ->name('faturas');
+
+            Route::get('/faturas/export', ExportBillReportController::class)
+                ->name('faturas.export');
+
+            Route::get('/faturas/export-pdf', ExportBillReportPdfController::class)
+                ->name('faturas.export-pdf');
+        });
     });

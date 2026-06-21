@@ -8,12 +8,14 @@ import {
     Button,
     Card,
     CardContent,
+    Checkbox,
     Chip,
     Dialog,
     DialogActions,
     DialogContent,
     DialogTitle,
     Divider,
+    FormControlLabel,
     Paper,
     Stack,
     TextField,
@@ -29,6 +31,7 @@ import TabList from "@mui/lab/TabList";
 import TabPanel from "@mui/lab/TabPanel";
 import {
     IconAlertTriangle,
+    IconCalculator,
     IconCheck,
     IconCircleCheck,
     IconDeviceFloppy,
@@ -62,6 +65,7 @@ const normalizeDecimalTyping = (v) => String(v).replace(/[^\d.,]/g, "").replace(
 const inputDecimalValue = (v) => { const n = parseBrazilianNumber(v); return (Number.isNaN(n) || n <= 0) ? "" : String(v); };
 const formatMoney = (v) => { if (isInvalid(v)) return ""; const n = parseBrazilianNumber(v); if (Number.isNaN(n)) return v; return n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }); };
 const formatNumber = (v) => { if (isInvalid(v)) return ""; const n = parseBrazilianNumber(v); if (Number.isNaN(n)) return v; return n.toLocaleString("pt-BR"); };
+const abs = (v) => { if (isInvalid(v)) return v; const n = parseBrazilianNumber(v); return Number.isNaN(n) ? v : Math.abs(n); };
 const formatDate = (v) => {
     if (isInvalid(v)) return "";
     const s = String(v);
@@ -114,7 +118,10 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [], consum
     const { flash } = usePage().props;
     const [tab, setTab] = useState("dados");
     const [deleteOpen, setDeleteOpen] = useState(false);
+    const [injectedValuesConfirmed, setInjectedValuesConfirmed] = useState(false);
     const { delete: destroyBill, processing: deleting } = useForm({});
+
+    useEffect(() => { setInjectedValuesConfirmed(bill.review_status === "approved"); }, [bill.id]);
 
     const initialData = useMemo(() => ({
         review_status: bill.review_status ?? "pending_review",
@@ -161,7 +168,11 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [], consum
         return String(savedData[key] ?? "") !== String(data[key] ?? "");
     });
 
-    const canApprove = data.review_status === "pending_review" && invalidFields.length === 0 && !hasUnsavedChanges && !processing;
+    const hasInjectedData = [bill.injected_energy_kwh, bill.injected_energy_amount, bill.injected_consumption_kwh, bill.injected_consumption_amount]
+        .some((v) => v !== null && v !== undefined);
+    const injectedConfirmed = !hasInjectedData || injectedValuesConfirmed;
+
+    const canApprove = data.review_status === "pending_review" && invalidFields.length === 0 && !hasUnsavedChanges && injectedConfirmed && !processing;
 
     const submit = (e) => {
         e.preventDefault();
@@ -203,7 +214,7 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [], consum
                         </Stack>
                         <Stack direction="row" spacing={1} flexWrap="wrap">
                             <Chip label={getStatusLabel(bill.review_status)} color={reviewStatusColor} size="small" sx={{ fontWeight: 700 }} />
-                            <Chip label={`Parser: ${getStatusLabel(bill.parser_status)}`} color={parserStatusColor} size="small" variant="outlined" />
+                            <Chip label={`Extração de Dados: ${getStatusLabel(bill.parser_status)}`} color={parserStatusColor} size="small" variant="outlined" />
                         </Stack>
                     </Stack>
 
@@ -238,6 +249,11 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [], consum
                 )}
                 {hasUnsavedChanges && (
                     <Alert severity="info" sx={{ borderRadius: 2 }}>Você possui alterações não salvas. Salve antes de aprovar a fatura de concessionária.</Alert>
+                )}
+                {hasInjectedData && !injectedValuesConfirmed && (
+                    <Alert severity="warning" icon={<IconAlertTriangle size={18} />} sx={{ borderRadius: 2 }}>
+                        Confirme os valores de energia injetada (aba "Dados") antes de aprovar a fatura.
+                    </Alert>
                 )}
                 {pendingIssues.length > 0 && (
                     <Alert severity="error" sx={{ borderRadius: 2 }}>
@@ -294,6 +310,101 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [], consum
 
                                     <Divider sx={{ my: 3 }} />
 
+                                    <SectionHeader icon={<IconCalculator size={18} color="#fff" />} label="Cálculos de Energia Injetada" gradient="linear-gradient(135deg,#8b5cf6,#6d28d9)" />
+                                    <Grid container spacing={1.5} mb={2}>
+                                        <Grid size={{ xs: 12, sm: 6 }}>
+                                            <Paper variant="outlined" sx={{ p: 1.5, borderRadius: 2, height: "100%" }}>
+                                                <Typography variant="caption" color="text.secondary" fontWeight={600}>Energia Injetada</Typography>
+                                                <Typography fontWeight={800} sx={{ mt: 0.25, fontSize: "0.95rem" }}>
+                                                    {formatNumber(abs(bill.injected_energy_kwh)) ? `${formatNumber(abs(bill.injected_energy_kwh))} kWh` : "—"}
+                                                </Typography>
+                                                <Typography variant="body2" color="text.secondary">
+                                                    {formatMoney(abs(bill.injected_energy_amount)) || "—"}
+                                                </Typography>
+                                            </Paper>
+                                        </Grid>
+                                        <Grid size={{ xs: 12, sm: 6 }}>
+                                            <Paper variant="outlined" sx={{ p: 1.5, borderRadius: 2, height: "100%" }}>
+                                                <Typography variant="caption" color="text.secondary" fontWeight={600}>Consumo Injetado</Typography>
+                                                <Typography fontWeight={800} sx={{ mt: 0.25, fontSize: "0.95rem" }}>
+                                                    {formatNumber(abs(bill.injected_consumption_kwh)) ? `${formatNumber(abs(bill.injected_consumption_kwh))} kWh` : "—"}
+                                                </Typography>
+                                                <Typography variant="body2" color="text.secondary">
+                                                    {formatMoney(abs(bill.injected_consumption_amount)) || "—"}
+                                                </Typography>
+                                            </Paper>
+                                        </Grid>
+                                    </Grid>
+                                    <Stack spacing={0}>
+                                        <InfoRow label="Margem de desconto aplicada">
+                                            {bill.injected_consumption_discount_percent !== null && bill.injected_consumption_discount_percent !== undefined
+                                                ? `${formatNumber(bill.injected_consumption_discount_percent)}%`
+                                                : "—"}
+                                        </InfoRow>
+                                        <InfoRow label="Desconto sobre consumo injetado">
+                                            <Typography variant="body2" fontWeight={700} color="success.main">
+                                                {formatMoney(abs(bill.injected_consumption_discount_amount)) || "—"}
+                                            </Typography>
+                                        </InfoRow>
+                                    </Stack>
+                                    {hasInjectedData && (
+                                        <Paper
+                                            elevation={0}
+                                            onClick={() => setInjectedValuesConfirmed((prev) => !prev)}
+                                            sx={{
+                                                mt: 2,
+                                                p: 2,
+                                                borderRadius: 3,
+                                                cursor: "pointer",
+                                                userSelect: "none",
+                                                border: "2px solid",
+                                                borderColor: injectedValuesConfirmed ? "success.main" : "warning.main",
+                                                bgcolor: injectedValuesConfirmed ? "rgba(16,185,129,0.08)" : "rgba(245,158,11,0.10)",
+                                                boxShadow: injectedValuesConfirmed
+                                                    ? "0 0 0 4px rgba(16,185,129,0.12)"
+                                                    : "0 0 0 4px rgba(245,158,11,0.16)",
+                                                transition: "all .2s",
+                                                "&:hover": { boxShadow: injectedValuesConfirmed ? "0 0 0 6px rgba(16,185,129,0.16)" : "0 0 0 6px rgba(245,158,11,0.22)" },
+                                            }}
+                                        >
+                                            <Stack direction="row" alignItems="center" spacing={1.5}>
+                                                <Box sx={{
+                                                    width: 40, height: 40, borderRadius: "50%", flexShrink: 0,
+                                                    display: "flex", alignItems: "center", justifyContent: "center",
+                                                    bgcolor: injectedValuesConfirmed ? "success.main" : "warning.main",
+                                                    color: "#fff",
+                                                }}>
+                                                    {injectedValuesConfirmed ? <IconCircleCheck size={22} /> : <IconAlertTriangle size={22} />}
+                                                </Box>
+                                                <FormControlLabel
+                                                    sx={{ m: 0, flex: 1 }}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                    control={
+                                                        <Checkbox
+                                                            checked={injectedValuesConfirmed}
+                                                            onChange={(e) => setInjectedValuesConfirmed(e.target.checked)}
+                                                            color={injectedValuesConfirmed ? "success" : "warning"}
+                                                            size="medium"
+                                                            sx={{ p: 1 }}
+                                                        />
+                                                    }
+                                                    label={
+                                                        <Box>
+                                                            <Typography variant="body1" fontWeight={900} color={injectedValuesConfirmed ? "success.dark" : "warning.dark"}>
+                                                                {injectedValuesConfirmed ? "Valores confirmados" : "Confirmação obrigatória"}
+                                                            </Typography>
+                                                            <Typography variant="body2" color="text.secondary" fontWeight={600}>
+                                                                Confirmo que os valores de energia injetada acima estão corretos
+                                                            </Typography>
+                                                        </Box>
+                                                    }
+                                                />
+                                            </Stack>
+                                        </Paper>
+                                    )}
+
+                                    <Divider sx={{ my: 3 }} />
+
                                     <SectionHeader icon={<IconReceipt size={18} color="#fff" />} label="Vínculo e Metadados" gradient="linear-gradient(135deg,#64748b,#475569)" />
                                     <Stack spacing={0}>
                                         <InfoRow label="Cliente">{bill.client_profile?.nome || bill.client_profile?.razao_social || "—"}</InfoRow>
@@ -305,7 +416,7 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [], consum
                                         </InfoRow>
                                         <InfoRow label="Usina vinculada">{bill.usina?.uc || "—"}</InfoRow>
                                         <InfoRow label="Usina sugerida">{suggestedUsinaId || "—"}</InfoRow>
-                                        <InfoRow label="Parser">
+                                        <InfoRow label="Extração de Dados">
                                             <Chip label={getStatusLabel(bill.parser_status)} color={parserStatusColor} size="small" />
                                         </InfoRow>
                                         <InfoRow label="Criado por">{bill.created_by?.name || "—"}</InfoRow>
@@ -316,7 +427,7 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [], consum
                                     <Divider sx={{ my: 2.5 }} />
                                     <Stack direction="row" spacing={1.5} flexWrap="wrap">
                                         {bill.review_status !== "approved" && (
-                                            <Tooltip title={!canApprove ? "Corrija os campos inválidos e salve antes de aprovar" : ""}>
+                                            <Tooltip title={!canApprove ? (!injectedConfirmed ? "Confirme os valores de energia injetada antes de aprovar" : "Corrija os campos inválidos e salve antes de aprovar") : ""}>
                                                 <span>
                                                     <Button color="success" variant="contained" startIcon={<IconCircleCheck size={18} />} onClick={approve} disabled={!canApprove} sx={{ fontWeight: 700 }}>
                                                         Aprovar Fatura de Concessionária
@@ -483,7 +594,7 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [], consum
                                         {hasUnsavedChanges ? "Sim" : "Não"}
                                     </Typography>
                                 </InfoRow>
-                                <InfoRow label="Status do parser">{bill.parser_status ? getStatusLabel(bill.parser_status) : "Sem status"}</InfoRow>
+                                <InfoRow label="Status da Extração de Dados">{bill.parser_status ? getStatusLabel(bill.parser_status) : "Sem status"}</InfoRow>
                                 <InfoRow label="Arquivo PDF">
                                     <Typography variant="body2" fontWeight={700} color={!bill.pdf_original_name ? "error.main" : "text.primary"} noWrap sx={{ maxWidth: 180 }}>
                                         {bill.pdf_original_name || "Inválido"}

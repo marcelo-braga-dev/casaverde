@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 // admin. (pai) + fatura-import-settings. (filho) + index = admin.fatura-import-settings.index
 Route::name('fatura-import-settings.')
     ->prefix('fatura-import-settings')
+    ->middleware('role:admin')
     ->group(function () {
         Route::get('/', [ClientEmailImportSettingController::class, 'index'])->name('index');
         Route::get('/create', [ClientEmailImportSettingController::class, 'create'])->name('create');
@@ -22,6 +23,7 @@ Route::name('fatura-import-settings.')
 // admin. (pai) + import-history. (filho) + index = admin.import-history.index
 Route::name('import-history.')
     ->prefix('import-history')
+    ->middleware('role:admin')
     ->group(function () {
         Route::get('/', [ImportHistoryController::class, 'index'])->name('index');
         Route::post('/trigger', [ImportHistoryController::class, 'trigger'])->name('trigger');

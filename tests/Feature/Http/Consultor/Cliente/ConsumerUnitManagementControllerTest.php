@@ -146,7 +146,7 @@ describe('ConsumerUnitManagementController', function () {
             ->assertSessionHasErrors('uc_code');
     });
 
-    it('shows a consumer unit with its bills and active usina allocation', function () {
+    it('shows a consumer unit with its active usina allocation but no bills for a consultor', function () {
         $consultor = User::factory()->consultor()->create();
         $client = ClientProfile::factory()->create(['consultor_user_id' => $consultor->id]);
 
@@ -173,8 +173,25 @@ describe('ConsumerUnitManagementController', function () {
                 ->where('consumerUnit.id', $consumerUnit->id)
                 ->where('consumerUnit.consumo_previsto_kwh_mes', '450.00')
                 ->where('consumerUnit.active_usina_link.id', $link->id)
-                ->has('bills.data', 1)
+                ->where('bills', null)
             );
+    });
+
+    it('shows bills to an admin on the same consumer unit page', function () {
+        $admin = User::factory()->admin()->create();
+        $client = ClientProfile::factory()->create();
+
+        $consumerUnit = ConsumerUnit::factory()->create(['client_profile_id' => $client->id]);
+
+        ConcessionaireBill::factory()->create([
+            'client_profile_id' => $client->id,
+            'consumer_unit_id' => $consumerUnit->id,
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('consultor.cliente.consumer-units.show', $consumerUnit->id))
+            ->assertOk()
+            ->assertInertia(fn ($page) => $page->has('bills.data', 1));
     });
 
     it('denies a consultor from viewing another consultor client consumer unit', function () {

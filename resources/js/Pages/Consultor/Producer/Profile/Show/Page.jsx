@@ -29,6 +29,8 @@ import React, { useState } from 'react';
 import TabList from "@mui/lab/TabList";
 import Tab from "@mui/material/Tab";
 import {TabContext, TabPanel} from "@mui/lab";
+import useAuthUser from "@/Hooks/useAuthUser.js";
+import { isAdmin } from "@/Utils/permissions.js";
 
 function safeRoute(n, p) { try { return route(n, p); } catch { return '#'; } }
 
@@ -37,6 +39,7 @@ const Page = ({ producer, accessHistory = [], defaultFeePercentage = 15 }) => {
     const [openModal, setOpenModal] = useState(false);
     const [value, setValue] = React.useState('1');
     const platformUser = producer?.platform_user ?? null;
+    const admin = isAdmin(useAuthUser());
 
     return (
         <Layout titlePage="Detalhes do Produtor" menu="produtores" subMenu="produtores-profile" backPage>
@@ -55,7 +58,9 @@ const Page = ({ producer, accessHistory = [], defaultFeePercentage = 15 }) => {
                                 <TabList onChange={(_, v) => setValue(v)} aria-label="tabs do cliente">
                                     <Tab icon={<IconFileText />}    label="Propostas"   value="1" />
                                     <Tab icon={<IconSolarPanel2 />} label="Usinas"      value="2" />
-                                    <Tab icon={<IconDiscount2 />} label="Taxa de Administração"      value="3" />
+                                    {admin && (
+                                        <Tab icon={<IconDiscount2 />} label="Taxa de Administração"      value="3" />
+                                    )}
                                     <Tab icon={<IconShield />}   label="Acesso"     value="4" />
                                 </TabList>
                             </Box>
@@ -68,9 +73,11 @@ const Page = ({ producer, accessHistory = [], defaultFeePercentage = 15 }) => {
                                 <ProducerUsinaList usinaLinks={producer.usinas} profile={producer} />
                             </TabPanel>
 
-                            <TabPanel value="3">
-                                <ProducerFeeRuleCard profile={producer} defaultFeePercentage={defaultFeePercentage} />
-                            </TabPanel>
+                            {admin && (
+                                <TabPanel value="3">
+                                    <ProducerFeeRuleCard profile={producer} defaultFeePercentage={defaultFeePercentage} />
+                                </TabPanel>
+                            )}
 
                             <TabPanel value="4">
                                 {/* ── Acesso à plataforma ────────────────────── */}

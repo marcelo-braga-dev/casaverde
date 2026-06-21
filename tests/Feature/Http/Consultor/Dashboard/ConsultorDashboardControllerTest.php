@@ -62,7 +62,6 @@ describe('Consultor Dashboard Controller', function () {
                 ->has('dashboard.summary.usinas_total')
                 ->has('dashboard.summary.client_proposals_open')
                 ->has('dashboard.summary.producer_proposals_open')
-                ->has('dashboard.summary.bills_pending_review')
                 ->has('dashboard.summary.leads_total')
                 ->has('dashboard.summary.leads_this_month')
             );

@@ -2,6 +2,7 @@
 
 namespace App\Models\Fatura;
 
+use App\Models\Cliente\ClientDiscountRule;
 use App\Models\Cliente\ClientProfile;
 use App\Models\Cliente\ConsumerUnit;
 use App\Models\Cobranca\CustomerCharge;
@@ -31,6 +32,11 @@ class ConcessionaireBill extends Model
         'vencimento',
         'valor_total',
         'consumo_kwh',
+        'injected_energy_kwh',
+        'injected_energy_amount',
+        'injected_consumption_kwh',
+        'injected_consumption_amount',
+        'injected_consumption_discount_percent',
         'pdf_disk',
         'pdf_path',
         'pdf_original_name',
@@ -53,6 +59,11 @@ class ConcessionaireBill extends Model
         'vencimento' => 'date',
         'valor_total' => 'decimal:2',
         'consumo_kwh' => 'decimal:2',
+        'injected_energy_kwh' => 'decimal:2',
+        'injected_energy_amount' => 'decimal:2',
+        'injected_consumption_kwh' => 'decimal:2',
+        'injected_consumption_amount' => 'decimal:2',
+        'injected_consumption_discount_percent' => 'decimal:2',
         'extracted_payload' => 'array',
         'reviewed_at' => 'datetime',
     ];
@@ -60,6 +71,7 @@ class ConcessionaireBill extends Model
     protected $appends = [
         'pdf_link',
         'has_open_issues',
+        'injected_consumption_discount_amount',
     ];
 
     public function concessionaria()
@@ -113,6 +125,16 @@ class ConcessionaireBill extends Model
         return $this->hasOne(CustomerCharge::class, 'concessionaire_bill_id');
     }
 
+    /**
+     * Regra de desconto ativa do cliente, ligada pelo client_profile_id
+     * compartilhado entre concessionaire_bills e client_discount_rules.
+     */
+    public function activeClientDiscountRule()
+    {
+        return $this->belongsTo(ClientDiscountRule::class, 'client_profile_id', 'client_profile_id')
+            ->where('is_active', true);
+    }
+
     public function getPdfLinkAttribute(): ?string
     {
         return $this->pdf_url;
@@ -121,5 +143,21 @@ class ConcessionaireBill extends Model
     public function getHasOpenIssuesAttribute(): bool
     {
         return $this->openIssues()->exists();
+    }
+
+    /**
+     * "Consumo Injetada RS" x margem de desconto usada no cálculo (snapshot
+     * gravado em injected_consumption_discount_percent no momento do parse).
+     */
+    public function getInjectedConsumptionDiscountAmountAttribute(): ?float
+    {
+        if (is_null($this->injected_consumption_amount) || is_null($this->injected_consumption_discount_percent)) {
+            return null;
+        }
+
+        return round(
+            (float) $this->injected_consumption_amount * ((float) $this->injected_consumption_discount_percent / 100),
+            2
+        );
     }
 }

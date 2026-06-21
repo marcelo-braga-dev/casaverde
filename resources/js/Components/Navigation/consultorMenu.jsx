@@ -57,11 +57,6 @@ export const consultorMenu = [
                 link: safeRoute('consultor.cliente.contratos.index'),
             },
             {
-                id: 'clientes-faturas',
-                title: 'Faturas de Concessionária',
-                link: safeRoute('admin.relatorios.faturas'),
-            },
-            {
                 id: 'consumer-units-index',
                 title: 'Unidades Consumidoras',
                 link: safeRoute('consultor.cliente.consumer-units.index'),

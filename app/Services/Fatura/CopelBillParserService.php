@@ -58,6 +58,8 @@ class CopelBillParserService
 
         [$referenceMonth, $referenceYear] = explode('/', $referencia);
 
+        $items = $this->parseItemLines($text);
+
         return [
             'nome' => $nome ? trim($nome) : null,
             'reference_month' => (int) $referenceMonth,
@@ -68,8 +70,68 @@ class CopelBillParserService
             'vencimento' => $this->normalizeDate($vencimento),
             'valor_total' => $this->normalizeDecimal($valorTotal),
             'consumo_kwh' => $consumoKwh ? $this->normalizeDecimal($consumoKwh) : null,
+            'injected_energy_kwh' => $this->sumItemsByPrefixes($items, ['ENERGIA INJ. OUC MPT TE'], 'quantidade'),
+            'injected_energy_amount' => $this->sumItemsByPrefixes($items, ['ENERGIA INJ. OUC MPT TE'], 'valor'),
+            'injected_consumption_kwh' => $this->sumItemsByPrefixes($items, [
+                'ENERGIA INJ. OUC MPT TE', 'ENERGIA INJ. OUC MPT TUS', 'ENERGIA INJ. BAND.',
+            ], 'quantidade'),
+            'injected_consumption_amount' => $this->sumItemsByPrefixes($items, [
+                'ENERGIA INJ. OUC MPT TE', 'ENERGIA INJ. OUC MPT TUS', 'ENERGIA INJ. BAND.',
+            ], 'valor'),
             'raw_text' => $text,
         ];
+    }
+
+    /**
+     * Extrai as linhas da tabela "Itens da Fatura" (descrição, quantidade, valor).
+     * O pdftotext -layout mistura essa tabela com blocos vizinhos (resumo de
+     * impostos, histórico de consumo) na mesma linha; o regex ancora em "kWh"
+     * e captura só os 3 números imediatamente seguintes (quantidade, tarifa
+     * c/ tributos, valor), ignorando qualquer texto mesclado depois disso.
+     */
+    private function parseItemLines(string $text): array
+    {
+        $items = [];
+
+        foreach (explode("\n", $text) as $line) {
+            if (! preg_match(
+                '/^\s*([A-ZÀ-ÚÇ][A-ZÀ-ÚÇ0-9.\/\s\-]*?)\s+kWh\s+(-?[\d.,]+)\s+(-?[\d.,]+)\s+(-?[\d.,]+)/u',
+                $line,
+                $matches
+            )) {
+                continue;
+            }
+
+            $items[] = [
+                'descricao' => trim($matches[1]),
+                'quantidade' => $this->parseBrazilianNumber($matches[2]),
+                'valor' => $this->parseBrazilianNumber($matches[4]),
+            ];
+        }
+
+        return $items;
+    }
+
+    private function sumItemsByPrefixes(array $items, array $prefixes, string $field): float
+    {
+        $sum = 0.0;
+
+        foreach ($items as $item) {
+            foreach ($prefixes as $prefix) {
+                if (str_starts_with($item['descricao'], $prefix)) {
+                    $sum += $item[$field];
+
+                    break;
+                }
+            }
+        }
+
+        return round($sum, 2);
+    }
+
+    private function parseBrazilianNumber(string $value): float
+    {
+        return (float) str_replace(',', '.', str_replace('.', '', $value));
     }
 
     private function normalizeText(string $text): string

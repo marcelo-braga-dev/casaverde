@@ -22,7 +22,7 @@ class UsinaController extends Controller
 
         $usinas = $profile
             ? UsinaSolar::query()
-                ->with(['concessionaria', 'block', 'activeClientLinks.clientProfile'])
+                ->with(['concessionaria', 'block'])
                 ->where('producer_profile_id', $profile->id)
                 ->orderByDesc('id')
                 ->paginate(15)
@@ -48,7 +48,6 @@ class UsinaController extends Controller
             'concessionaria',
             'block',
             'address',
-            'activeClientLinks.clientProfile',
             'generationRecords' => fn ($q) => $q->orderByDesc('reference_year')
                 ->orderByDesc('reference_month')
                 ->limit(24),

@@ -68,7 +68,7 @@ const Page = ({
                                     <Tab icon={<IconBolt />}        label="UCs"         value="2" />
                                     <Tab icon={<IconSolarPanel2 />} label="Usinas"      value="3" />
                                     {admin && <Tab icon={<IconDiscount2 />}   label="Margens"     value="4" />}
-                                    <Tab icon={<IconMailCog />}     label="Integração"  value="5" />
+                                    {admin && <Tab icon={<IconMailCog />}     label="Integração"  value="5" />}
                                     <Tab icon={<IconShield />}      label="Acesso"      value="6" />
                                 </TabList>
                             </Box>
@@ -96,14 +96,16 @@ const Page = ({
                                 </TabPanel>
                             )}
 
-                            <TabPanel value="5">
-                                <ClientEmailImportSettingForm
-                                    profile={profile}
-                                    concessionarias={concessionarias}
-                                    setting={emailImportSetting}
-                                    availableEmails={availableEmails}
-                                />
-                            </TabPanel>
+                            {admin && (
+                                <TabPanel value="5">
+                                    <ClientEmailImportSettingForm
+                                        profile={profile}
+                                        concessionarias={concessionarias}
+                                        setting={emailImportSetting}
+                                        availableEmails={availableEmails}
+                                    />
+                                </TabPanel>
+                            )}
 
                             <TabPanel value="6">
                                 <Stack spacing={3}>

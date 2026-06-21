@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin\Fatura;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Fatura\StoreConcessionaireBillRequest;
+use App\Http\Requests\Fatura\StoreConcessionaireBillsBulkRequest;
 use App\Http\Requests\Fatura\UpdateConcessionaireBillReviewRequest;
 use App\Models\Cliente\ClientProfile;
 use App\Models\Cliente\ConsumerUnit;
@@ -23,37 +23,44 @@ class ConcessionaireBillController extends Controller
     public function create()
     {
         return Inertia::render('Consultor/Cliente/Fatura/Create/Page', [
-            'concessionarias' => Concessionaria::query()
-                ->where('status', 'ativo')
-                ->orderBy('nome')
-                ->get(['id', 'nome']),
-
-            'usinas' => UsinaSolar::query()
-                ->orderByDesc('id')
-                ->get(['id', 'uc']),
-
             'clients' => ClientProfile::query()
                 ->orderByDesc('id')
                 ->get(['id', 'client_code', 'nome', 'razao_social', 'cpf', 'cnpj']),
-
-            'consumerUnits' => ConsumerUnit::query()
-                ->orderBy('uc_code')
-                ->get(['id', 'client_profile_id', 'uc_code', 'label', 'status']),
         ]);
     }
 
     public function store(
-        StoreConcessionaireBillRequest $request,
+        StoreConcessionaireBillsBulkRequest $request,
         StoreParsedConcessionaireBillService $service,
         ValidateConcessionaireBillService $validateService
     ) {
-        $bill = $service->handle($request->validated());
+        $clientProfileId = $request->integer('client_profile_id');
+        $imported = 0;
+        $failures = [];
 
-        $validateService->handle($bill);
+        foreach ($request->file('pdfs') as $pdf) {
+            try {
+                $bill = $service->handle([
+                    'client_profile_id' => $clientProfileId,
+                    'pdf' => $pdf,
+                ]);
+
+                $validateService->handle($bill);
+                $imported++;
+            } catch (\Throwable $e) {
+                $failures[] = sprintf('%s: %s', $pdf->getClientOriginalName(), $e->getMessage());
+            }
+        }
+
+        $message = sprintf('%d fatura(s) importada(s) com sucesso.', $imported);
+
+        if ($failures) {
+            $message .= ' Falharam: '.implode(' | ', $failures);
+        }
 
         return redirect()
-            ->route('consultor.cliente.faturas.show', $bill->id)
-            ->with('success', 'Fatura de Concessionária cadastrada com sucesso.');
+            ->route('admin.relatorios.faturas')
+            ->with($failures ? 'warning' : 'success', $message);
     }
 
     public function show(

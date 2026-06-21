@@ -3,7 +3,6 @@
 namespace App\Services\Consultor\Dashboard;
 
 use App\Models\Cliente\ClientProfile;
-use App\Models\Fatura\ConcessionaireBill;
 use App\Models\Produtor\ProducerLead;
 use App\Models\Produtor\ProducerProfile;
 use App\Models\Proposta\CommercialProposal;
@@ -59,11 +58,6 @@ class ConsultorDashboardService
             ->whereIn('status', ['emitida', 'enviada', 'em_analise', 'pendente'])
             ->count();
 
-        $billsPendingReview = ConcessionaireBill::query()
-            ->whereHas('clientProfile', fn ($q) => $q->where('consultor_user_id', $consultorId))
-            ->where('review_status', 'pending_review')
-            ->count();
-
         $leadsTotal = ProducerLead::query()
             ->where('consultor_user_id', $consultorId)
             ->count();
@@ -89,7 +83,6 @@ class ConsultorDashboardService
             'usinas_total' => $usinasTotal,
             'client_proposals_open' => $clientProposalsOpen,
             'producer_proposals_open' => $producerProposalsOpen,
-            'bills_pending_review' => $billsPendingReview,
             'leads_total' => $leadsTotal,
             'leads_this_month' => $leadsOpenThisMonth,
         ];

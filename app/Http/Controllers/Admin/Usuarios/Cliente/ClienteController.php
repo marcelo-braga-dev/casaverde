@@ -77,10 +77,11 @@ class ClienteController extends Controller
             'consumerUnits.activeUsinaLinks.usina.produtor',
         ]);
 
-        // Margens (desconto) só ficam visíveis para admin
+        // Margens (desconto) e configuração de importação de fatura só ficam visíveis para admin
         if (auth()->user()?->role_id !== RoleUser::$ADMIN) {
             $cliente->unsetRelation('activeDiscountRule');
             $cliente->unsetRelation('discountRules');
+            $cliente->unsetRelation('emailImportSetting');
         }
 
         return Inertia::render('Consultor/Cliente/Profile/Show/Page', [
@@ -123,7 +124,10 @@ class ClienteController extends Controller
     public function update(StoreClientProfileRequest $request, ClientProfile $cliente)
     {
         $cliente->update($request->validated());
-        $cliente->contacts()->update($request->only(['celular', 'telefone', 'email']));
+
+        if ($cliente->contacts) {
+            $cliente->contacts->update($request->only(['celular', 'telefone', 'email']));
+        }
 
         return redirect()
             ->route('consultor.user.cliente.show', $cliente->id)

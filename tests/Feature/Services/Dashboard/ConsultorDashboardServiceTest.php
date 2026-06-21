@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\Cliente\ClientProfile;
-use App\Models\Fatura\ConcessionaireBill;
 use App\Models\Produtor\ProducerProfile;
 use App\Models\Proposta\CommercialProposal;
 use App\Models\Users\User;
@@ -75,24 +74,6 @@ describe('ConsultorDashboardService', function () {
         $data = $this->service->handle($this->consultor->id);
 
         expect($data['summary']['client_proposals_open'])->toBe(1);
-    });
-
-    it('counts pending bills from consultor clients', function () {
-        $client = ClientProfile::factory()->create(['consultor_user_id' => $this->consultor->id]);
-        $other = ClientProfile::factory()->create(['consultor_user_id' => $this->other->id]);
-
-        ConcessionaireBill::factory()->create([
-            'client_profile_id' => $client->id,
-            'review_status' => 'pending_review',
-        ]);
-        ConcessionaireBill::factory()->create([
-            'client_profile_id' => $other->id,
-            'review_status' => 'pending_review',
-        ]);
-
-        $data = $this->service->handle($this->consultor->id);
-
-        expect($data['summary']['bills_pending_review'])->toBe(1);
     });
 
     it('returns up to 6 recent clients', function () {

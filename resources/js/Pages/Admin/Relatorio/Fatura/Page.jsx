@@ -165,7 +165,7 @@ export default function Page({
                                 <Grid size={{ xs: 12, md: 3 }}>
                                     <TextField
                                         select
-                                        label="Parser"
+                                        label="Extração de Dados"
                                         value={data.parser_status}
                                         onChange={(e) => setData("parser_status", e.target.value)}
                                         fullWidth
@@ -235,7 +235,7 @@ export default function Page({
                                         <TableCell>UC</TableCell>
                                         <TableCell>Referência</TableCell>
                                         <TableCell>Revisão</TableCell>
-                                        <TableCell>Parser</TableCell>
+                                        <TableCell>Extração de Dados</TableCell>
                                         <TableCell>Consumo</TableCell>
                                         <TableCell align="right">Valor</TableCell>
                                         <TableCell align="right">Ações</TableCell>

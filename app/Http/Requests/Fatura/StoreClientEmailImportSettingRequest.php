@@ -10,7 +10,7 @@ class StoreClientEmailImportSettingRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return auth()->check() && in_array(auth()->user()?->role_id, [RoleUser::$ADMIN, RoleUser::$CONSULTOR], true);
+        return auth()->user()?->role_id === RoleUser::$ADMIN;
     }
 
     public function rules(): array

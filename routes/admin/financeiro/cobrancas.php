@@ -16,6 +16,7 @@ Route::name('financeiro.cobrancas.')
         Route::get('/{cobranca}', [CustomerChargeController::class, 'show'])->name('show');
 
         Route::post('/gerar-da-fatura/{fatura}', [GenerateCustomerChargeFromBillController::class, 'store'])
+            ->middleware('role:admin')
             ->name('generate-from-bill');
 
         Route::post('/{cobranca}/approve', [ApproveCustomerChargeController::class, 'store'])

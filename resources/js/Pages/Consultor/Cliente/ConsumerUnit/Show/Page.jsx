@@ -337,6 +337,7 @@ export default function Page({ consumerUnit, bills }) {
                 </CardContent>
             </Card>
 
+            {bills && (
             <Card>
                 <CardHeader title="Faturas da Concessionária" avatar={<IconFileInvoice />} />
                 <CardContent>
@@ -398,6 +399,7 @@ export default function Page({ consumerUnit, bills }) {
                     </div>
                 </CardContent>
             </Card>
+            )}
 
             <DeleteConsumerUnitDialog
                 consumerUnit={consumerUnit}

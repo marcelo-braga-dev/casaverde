@@ -54,6 +54,7 @@ Route::name('user.')
             ->name('cliente.contact.update');
 
         Route::post('/', [ClientEmailImportSettingController::class, 'store'])
+            ->middleware('role:admin')
             ->name('cliente.email-import-setting.store');
 
         Route::put('cliente/{cliente}/identidade', [ClienteIdentidadeController::class, 'update'])

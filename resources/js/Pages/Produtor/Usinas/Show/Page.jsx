@@ -18,7 +18,7 @@ import {
     Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Grid2';
-import { IconArrowLeft, IconBolt, IconSolarPanel, IconUsers } from '@tabler/icons-react';
+import { IconArrowLeft, IconBolt, IconSolarPanel } from '@tabler/icons-react';
 
 function safeRoute(n, p) { try { return route(n, p); } catch { return '#'; } }
 
@@ -174,35 +174,6 @@ export default function Page({ usina }) {
                                     </Grid>
                                 </CardContent>
                             </Card>
-
-                            {/* Clientes vinculados */}
-                            {usina?.active_client_links?.length > 0 && (
-                                <Card sx={{ borderRadius: 'var(--cv-radius-xl)', border: '1px solid var(--cv-border-soft)', boxShadow: 'var(--cv-shadow-md)' }}>
-                                    <CardContent>
-                                        <Stack direction="row" alignItems="center" gap={1.5} sx={{ mb: 2 }}>
-                                            <Box sx={{ width: 36, height: 36, borderRadius: 2, background: 'linear-gradient(135deg,#3b82f6,#1d4ed8)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
-                                                <IconUsers size={18} />
-                                            </Box>
-                                            <Typography variant="h6" sx={{ fontWeight: 950 }}>
-                                                Clientes vinculados ({usina.active_client_links.length})
-                                            </Typography>
-                                        </Stack>
-                                        <Divider sx={{ mb: 1.5 }} />
-                                        <Stack spacing={1}>
-                                            {usina.active_client_links.map(link => (
-                                                <Stack key={link.id} direction="row" justifyContent="space-between" alignItems="center" sx={{ py: 0.5 }}>
-                                                    <Typography variant="body2" sx={{ fontWeight: 700 }}>
-                                                        {link.client_profile?.display_name ?? link.client_profile?.nome ?? '—'}
-                                                    </Typography>
-                                                    <Typography variant="caption" color="text.secondary">
-                                                        {parseFloat(link.allocated_energy_kwh ?? 0).toFixed(0)} kWh
-                                                    </Typography>
-                                                </Stack>
-                                            ))}
-                                        </Stack>
-                                    </CardContent>
-                                </Card>
-                            )}
                         </Stack>
                     </Grid>
 

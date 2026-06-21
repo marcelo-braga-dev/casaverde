@@ -9,6 +9,7 @@ use App\Models\Cliente\ConsumerUnit;
 use App\Models\Endereco\Address;
 use App\Models\Usina\Concessionaria;
 use App\Repositories\Cliente\ConsumerUnitRepository;
+use App\src\Roles\RoleUser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -81,11 +82,15 @@ class ConsumerUnitManagementController extends Controller
             'contracts',
         ]);
 
-        $bills = $consumerUnit->bills()
-            ->with(['concessionaria', 'usina'])
-            ->orderByDesc('id')
-            ->paginate(10)
-            ->withQueryString();
+        $isAdmin = auth()->user()?->role_id === RoleUser::$ADMIN;
+
+        $bills = $isAdmin
+            ? $consumerUnit->bills()
+                ->with(['concessionaria', 'usina'])
+                ->orderByDesc('id')
+                ->paginate(10)
+                ->withQueryString()
+            : null;
 
         return Inertia::render('Consultor/Cliente/ConsumerUnit/Show/Page', [
             'consumerUnit' => $consumerUnit,

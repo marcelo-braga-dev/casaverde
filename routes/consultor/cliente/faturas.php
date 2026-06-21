@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::name('cliente.faturas.')
     ->prefix('cliente-faturas')
+    ->middleware('role:admin')
     ->group(function () {
         Route::get('/create', [ConcessionaireBillController::class, 'create'])->name('create');
         Route::post('/', [ConcessionaireBillController::class, 'store'])->name('store');

@@ -30,6 +30,8 @@ import ConfirmActionButton from "@/Components/Admin/ConfirmActionButton.jsx";
 import EmptyState from "@/Components/Admin/EmptyState.jsx";
 import WhatsAppButton from "@/Components/WhatsApp/WhatsAppButton";
 import formatCurrency from "@/Utils/formatCurrency.js";
+import useAuthUser from "@/Hooks/useAuthUser.js";
+import { isAdmin } from "@/Utils/permissions.js";
 import {
     IconAdjustments,
     IconBolt,
@@ -125,6 +127,7 @@ const STATUS_CONFIG = {
 };
 
 export default function Page({ charge }) {
+    const admin = isAdmin(useAuthUser());
     const hasActivePayment = charge.payment_slips?.some((payment) =>
         ["pending", "generated"].includes(payment.status)
     );
@@ -145,7 +148,7 @@ export default function Page({ charge }) {
 
     const submitAdjustment = (e) => {
         e.preventDefault();
-        adjustmentForm.post(route("admin.cobrancas.adjustments.store", charge.id), {
+        adjustmentForm.post(route("admin.financeiro.cobrancas.adjustments.store", charge.id), {
             preserveScroll: true,
             onSuccess: () => {
                 adjustmentForm.reset("amount", "description");
@@ -155,23 +158,23 @@ export default function Page({ charge }) {
     };
 
     const approveCharge = () => {
-        router.post(route("admin.cobrancas.approve", charge.id), {}, { preserveScroll: true });
+        router.post(route("admin.financeiro.cobrancas.approve", charge.id), {}, { preserveScroll: true });
     };
 
     const generatePayment = () => {
-        router.post(route("admin.pagamentos.generate-from-charge", charge.id), {}, { preserveScroll: true });
+        router.post(route("admin.financeiro.pagamentos.generate-from-charge", charge.id), {}, { preserveScroll: true });
     };
 
     const cancelCharge = () => {
-        cancelForm.post(route("admin.cobrancas.cancel", charge.id), { preserveScroll: true });
+        cancelForm.post(route("admin.financeiro.cobrancas.cancel", charge.id), { preserveScroll: true });
     };
 
     const markPaid = () => {
-        paidForm.post(route("admin.cobrancas.mark-paid", charge.id), { preserveScroll: true });
+        paidForm.post(route("admin.financeiro.cobrancas.mark-paid", charge.id), { preserveScroll: true });
     };
 
     const markOverdue = () => {
-        router.post(route("admin.cobrancas.mark-overdue", charge.id), {}, { preserveScroll: true });
+        router.post(route("admin.financeiro.cobrancas.mark-overdue", charge.id), {}, { preserveScroll: true });
     };
 
     const clientName = getClientName(charge);
@@ -574,8 +577,8 @@ export default function Page({ charge }) {
                                 </CardContent>
                             </Card>
 
-                            {charge.bill && (
-                                <Link href={route("admin.faturas.show", charge.bill.id)}>
+                            {admin && charge.bill && (
+                                <Link href={route("consultor.cliente.faturas.show", charge.bill.id)}>
                                     <Button
                                         variant="outlined"
                                         fullWidth
@@ -740,7 +743,7 @@ export default function Page({ charge }) {
                                                 <TableCell align="right">
                                                     <Tooltip title="Ver detalhes do pagamento">
                                                         <span>
-                                                            <Link href={route("admin.pagamentos.show", payment.id)}>
+                                                            <Link href={route("admin.financeiro.pagamentos.show", payment.id)}>
                                                                 <Button
                                                                     variant="outlined"
                                                                     size="small"

@@ -163,7 +163,7 @@ export default function Page({ bill, suggestedUsinaId, reviewStatuses = [] }) {
                                     <InfoRow label="Documento" value={bill.client_profile?.documento} />
                                     <InfoRow label="Referência" value={bill.reference_label} />
                                     <InfoRow label="Concessionária" value={bill.concessionaria?.nome} />
-                                    <InfoRow label="Parser" value={bill.parser_status} />
+                                    <InfoRow label="Extração de Dados" value={bill.parser_status} />
                                     <InfoRow label="Status revisão" value={st.label} />
                                     <InfoRow label="Criado por" value={bill.created_by?.name} />
                                     <InfoRow label="Revisado por" value={bill.reviewed_by?.name} />
