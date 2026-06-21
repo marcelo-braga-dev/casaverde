@@ -76,6 +76,7 @@ Redirecionamento pós-login (`app/Http/Middleware/RedirectUserByRole.php`):
 - Scoping de consultor via Query Scopes — nunca filtros manuais repetidos. Exemplo: `scopeSomenteMeusClientes()` em `User`.
 - Nomenclatura: inglês em models/classes; português aceitável em variáveis/comentários.
 - `FormRequest::authorize()` deve validar a role, não só `auth()->check()`.
+- Toda página de listagem (Index) que já possui filtros e cuja entidade se relaciona com `ClientProfile` (direta ou via `ConsumerUnit`) deve incluir um filtro `client_name` por nome, buscando em `nome`/`razao_social`/`nome_fantasia` via `whereHas('clientProfile', ...)` (ou relação aninhada equivalente). Padrão de referência: `CustomerChargeRepository`, `ClientContractRepository`, `PaymentSlipRepository`, `BillReportService`.
 
 ---
 

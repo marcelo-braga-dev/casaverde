@@ -1,14 +1,16 @@
 # Casa Verde CRM
 
-Sistema CRM/ERP desenvolvido em **Laravel + Inertia + React** para operação comercial, cadastro, propostas, usinas, produtores, clientes, importação de faturas de energia e preparação para cobrança em uma empresa de energia por assinatura/compensação.
+Sistema CRM/ERP desenvolvido em **Laravel + Inertia + React** para operação comercial, cadastro, propostas, usinas, produtores, clientes, importação de faturas de energia, geração de cobrança e pagamento em uma empresa de energia por assinatura/compensação.
 
-> Este README foi escrito para servir como **documentação técnica principal do projeto**, com nível profissional, orientado para **novas equipes**, **manutenção evolutiva** e também para **IAs de programação**.
+> Este README foi escrito para servir como **documentação técnica de visão geral e histórico de decisões** do projeto, orientado para **novas equipes**, **manutenção evolutiva** e também para **IAs de programação**.
 > O objetivo é que qualquer pessoa consiga entender:
 > - o propósito do sistema
 > - a arquitetura atual
 > - as regras de negócio
 > - a organização do código
 > - como atualizar o projeto sem quebrar fluxos existentes
+>
+> Para o **dia a dia de desenvolvimento** (lista completa e atualizada de models, enums, jobs, convenções de código, dívida técnica e comandos), a referência operacional é **`CLAUDE.md`** — mantenha os dois em sincronia ao introduzir mudanças estruturais.
 
 ---
 
@@ -16,7 +18,9 @@ Sistema CRM/ERP desenvolvido em **Laravel + Inertia + React** para operação co
 
 O **Casa Verde** é uma plataforma de operação comercial e administrativa para uma empresa que atua com geração/compensação de energia elétrica.
 
-O sistema foi desenhado para controlar:
+O sistema foi desenhado para controlar o ciclo completo:
+
+> Prospecção → Proposta comercial → Contrato → Vínculo cliente-usina → Importação de faturas (IMAP + upload) → Geração de cobranças → Pagamento via Cora → Relatórios
 
 - usuários internos da operação
 - clientes consumidores finais
@@ -25,11 +29,14 @@ O sistema foi desenhado para controlar:
 - propostas comerciais
 - leads e perfis de produtor
 - endereços
-- importação e leitura de faturas
-- vinculação entre clientes e usinas
-- preparação futura para cobrança, faturamento e financeiro
+- importação e leitura de faturas de concessionária (IMAP + upload manual)
+- vinculação entre clientes e usinas (`ClientUsinaLink`), com alocação de energia e desconto
+- contratos formais entre cliente e operação
+- geração automática de cobranças (`CustomerCharge`) a partir das faturas aprovadas
+- pagamento das cobranças via gateway Cora (boleto/Pix), com webhook de retorno
+- relatórios financeiros e operacionais
 
-A aplicação combina componentes de **CRM**, **ERP operacional** e **portal de acesso** para tipos diferentes de usuário.
+A aplicação combina componentes de **CRM**, **ERP operacional/financeiro** e **portal de acesso** para tipos diferentes de usuário.
 
 ---
 
@@ -37,12 +44,14 @@ A aplicação combina componentes de **CRM**, **ERP operacional** e **portal de 
 
 A regra macro de negócio do Casa Verde é:
 
-1. a empresa opera ou intermedeia energia proveniente de usinas
+1. a empresa opera ou intermedeia energia proveniente de usinas, por compensação/assinatura
 2. consultores realizam prospecção e operação comercial
-3. clientes podem aderir à energia compensada/assinada
+3. clientes aderem à energia compensada/assinada via proposta → contrato → vínculo com usina
 4. produtores são os proprietários das usinas ofertadas na operação
-5. o sistema gerencia propostas, vínculos, perfis, dados operacionais e faturas
-6. a plataforma prepara a base para cobrança, relatórios e acompanhamento operacional
+5. o sistema importa as faturas de concessionária do cliente (IMAP automático ou upload manual)
+6. a partir da fatura aprovada, o sistema gera a cobrança do cliente e o pagamento (boleto/Pix via Cora)
+7. o sistema gerencia propostas, vínculos, perfis, dados operacionais, faturas, cobranças e pagamentos
+8. a plataforma oferece relatórios financeiros e operacionais e acompanhamento por consultor
 
 A partir da evolução mais recente do projeto, o sistema passou a tratar formalmente quatro tipos principais de usuário:
 
@@ -58,25 +67,24 @@ Isso alterou a arquitetura do domínio e a documentação anterior foi atualizad
 # 3. Stack técnica
 
 ## Backend
-- PHP 8.2+
-- Laravel 12
-- Eloquent ORM
-- Inertia.js (backend adapter)
+- PHP 8.2+, Laravel 12, Eloquent ORM
+- Inertia.js (adapter)
+- `barryvdh/laravel-dompdf` e `barryvdh/laravel-snappy` (+ wkhtmltopdf) — geração de PDF
+- `maatwebsite/excel` — exportações Excel
+- `laravel/sanctum` — autenticação API
+- `tightenco/ziggy` — rotas Laravel no frontend
 
 ## Frontend
-- React
-- Inertia.js
-- MUI (Material UI)
+- React 18 + Inertia.js + MUI 6 + Tailwind 3.2 + Vite 5
+- `@react-pdf/renderer`, `@dnd-kit/core`/`sortable`, `chart.js`/`recharts`, `framer-motion`, `@tabler/icons-react`
 
-## Banco de dados
-- banco relacional
-- modelagem orientada a entidades de domínio
+## Banco de dados e testes
+- MySQL 8.0 em produção/dev
+- Testes com Pest PHP + SQLite in-memory (nunca MySQL nos testes)
+- Pagamentos: Cora API (sandbox e produção) + webhook de retorno
+- Email: IMAP para importação automática de faturas de concessionária
 
-## Bibliotecas importantes
-- barryvdh/laravel-dompdf
-- barryvdh/laravel-snappy
-- laravel/sanctum
-- tightenco/ziggy
+> Para a lista exaustiva de bibliotecas, ver `package.json` e `composer.json`; para convenções de uso, ver `CLAUDE.md`.
 
 ---
 
@@ -86,14 +94,19 @@ O projeto está organizado por **domínio de negócio**, e não apenas por camad
 
 Principais domínios atuais:
 
-- **Users**
-- **Cliente**
-- **Produtor**
-- **Usina**
-- **Endereco**
-- **Energia / Faturas / Importação**
-- **Propostas**
-- **Financeiro**
+- **Users** — `User`, `UserData`, `UserContact`, `Admin`, `Produtor`, `Vendedor`, `Roles`
+- **Cliente** — `ClientProfile`, `ClientContract`, `ClientUsinaLink`, `ClientDiscountRule`, `ConsumerUnit`, `ClientAccessInvite`
+- **Produtor** — `ProducerProfile`, `ProducerLead`, `ProdutorPropostas`, `ProdutorContratos`, `ProducerAdministrationFeeRules`
+- **Usina** — `UsinaSolar`, `UsinaBlock`, `UsinaGenerationRecord`, `Concessionaria`, `UsinaAddress`
+- **Endereco** — `Address`, `UserAddress`, `UsinaAddress`
+- **Fatura / Importação** — `ConcessionaireBill`, `ConcessionaireBillIssue`, `ImportedConcessionaireEmail`, `ImportEmailAccount`, `ClientEmailImportSetting` (IMAP)
+- **Propostas** — `CommercialProposal`, `ProducerProposal`
+- **Cobrança** — `CustomerCharge`, `CustomerChargeAdjustment`
+- **Pagamento** — `PaymentSlip`, `PaymentTransaction`, `PaymentProviderAccount`, `PaymentWebhookEvent` (gateway Cora)
+- **Relatórios** — services em `app/Services/Admin/Reports/`
+- **Suporte / WhatsApp / Config** — `SupportTicket`, `WhatsAppMessageTemplate`, `SystemSetting`
+
+> A lista completa e continuamente atualizada de models, enums, jobs e convenções de código está em **`CLAUDE.md`** — este README cobre a visão geral e o histórico de decisões; `CLAUDE.md` é a referência operacional do dia a dia.
 
 Essa organização melhora:
 
@@ -171,8 +184,10 @@ Na arquitetura atual, **produtor é role oficial do sistema**, com:
 **Toda usina precisa estar vinculada a um produtor.**
 
 Na arquitetura atual:
-- `UsinaSolar.user_id` representa o **produtor proprietário**
+- `UsinaSolar.producer_profile_id` representa o **produtor proprietário** (referência ao `ProducerProfile`)
 - `UsinaSolar.consultor_user_id` representa o **consultor responsável**
+
+> ⚠️ **`UsinaSolar.user_id` não existe mais** — a coluna foi removida na migration `2026_05_19`. O método `user()` ainda presente no model é código legado sem coluna correspondente; não usar, e remover ao tocar o arquivo.
 
 Essa é uma das regras mais importantes de manutenção do projeto.
 
@@ -227,8 +242,12 @@ O projeto já possui base funcional para:
 - blocos de usina
 - endereços
 - contatos
-- importação de faturas
-- estrutura de financeiro/configuração
+- importação de faturas de concessionária via IMAP e upload manual, com fila de revisão/aprovação
+- vínculo cliente-usina (`ClientUsinaLink`) e contratos (`ClientContract`)
+- geração automática de cobrança (`CustomerCharge`) a partir de fatura aprovada
+- pagamento de cobranças via Cora (boleto/Pix) com webhook de retorno e jobs de sincronização de status
+- relatórios financeiros e operacionais (faturas, com export em Excel/PDF)
+- filtros de busca (incluindo por nome de cliente) nas principais páginas de listagem financeira
 
 ## 7.2 Fluxos já alinhados recentemente
 A arquitetura foi atualizada para comportar corretamente:
@@ -245,10 +264,10 @@ A arquitetura foi atualizada para comportar corretamente:
 ## 7.3 Próximas evoluções naturais
 - refinar dashboards finais no frontend
 - refinar menus por role
-- consolidar faturamento/cobrança
-- relatórios financeiros e operacionais
 - trilha histórica por competência
 - automações operacionais mais profundas
+- expandir filtro por nome de cliente para demais páginas com filtros, à medida que forem criadas (ver convenção em `CLAUDE.md`)
+- aumentar cobertura de testes em Cora/pagamentos, IMAP, PDF e WhatsApp (atualmente sem cobertura)
 
 ---
 
@@ -324,7 +343,7 @@ Endereço do local da usina vinculado à proposta do produtor.
 
 ## 8.8 UsinaSolar
 Entidade formal da usina:
-- `user_id` = produtor proprietário
+- `producer_profile_id` = produtor proprietário (FK para `ProducerProfile`)
 - `consultor_user_id` = consultor responsável
 - `concessionaria_id`
 - `usina_block_id`
@@ -337,6 +356,7 @@ Entidade formal da usina:
 - `taxa_comissao`
 - `inversores`
 - `modulos`
+- `energia_disponivel_kwh`, `energia_alocada_kwh`, `energia_saldo_kwh`
 
 ---
 
@@ -346,9 +366,10 @@ Entidade formal da usina:
 Embora existam semelhanças de fluxo, **produtor é role própria**.
 Não criar lógica nova assumindo que produtor é apenas uma variação informal de cliente.
 
-## 9.2 `UsinaSolar.user_id` significa produtor
+## 9.2 `UsinaSolar.producer_profile_id` significa produtor
 Em toda evolução futura, lembrar:
-- `user_id` de usina = produtor proprietário
+- `producer_profile_id` de usina = produtor proprietário
+- `UsinaSolar.user_id` **não existe mais** (removido); ignorar o método legado `user()` no model
 - não usar esse campo para outro tipo de usuário
 
 ## 9.3 Não duplicar produtor por CPF/CNPJ
@@ -555,6 +576,11 @@ Mesmo que o menu esconda itens, a segurança real sempre deve estar no backend.
 - `app/Models/Produtor/ProdutorPropostas.php`
 - `app/Models/Produtor/ProdutorPropostasEnderecos.php`
 - `app/Models/Usina/UsinaSolar.php`
+- `app/Http/Controllers/Admin/Cobranca/CustomerChargeController.php` + `app/Repositories/Cobranca/CustomerChargeRepository.php`
+- `app/Http/Controllers/Admin/Pagamento/PaymentSlipController.php` + `app/Repositories/Pagamento/PaymentSlipRepository.php`
+- `app/Http/Controllers/Admin/Relatorio/BillReportController.php` + `app/Services/Admin/Reports/BillReportService.php`
+- `app/Services/Pagamento/Providers/Cora/` (integração Cora)
+- `app/Services/Imap/AbstractImapFetcherService.php` (importação de faturas via IMAP)
 
 ## Frontend
 - `resources/js/Pages/Auth/Produtor/Proposta/Create/Page.jsx`
@@ -563,8 +589,11 @@ Mesmo que o menu esconda itens, a segurança real sempre deve estar no backend.
 - `resources/js/Components/UserData/DadosPessoais.jsx`
 - `resources/js/Components/UserData/Contato.jsx`
 - `resources/js/Components/UserData/Endereco.jsx`
-- `resources/js/Pages/Admin/Usinas/Create/Page.jsx`
-- `resources/js/Pages/Admin/Usinas/Edit/Page.jsx`
+- `resources/js/Pages/Consultor/Producer/Usina/Create/Page.jsx`
+- `resources/js/Pages/Consultor/Producer/Usina/Edit/Page.jsx`
+- `resources/js/Pages/Admin/Cobranca/Index/Page.jsx`
+- `resources/js/Pages/Admin/Financeiro/Pagamento/Index/Page.jsx`
+- `resources/js/Pages/Admin/Relatorio/Fatura/Page.jsx`
 
 ---
 
@@ -659,13 +688,14 @@ Exemplos:
 ## 17.5 Para novas equipes
 Começar sempre por esta ordem:
 1. ler este README por completo
-2. revisar `RoleUser`
-3. revisar `User`, `ProducerProfile`, `UsinaSolar`
-4. revisar middlewares
-5. revisar rotas
-6. revisar requests
-7. revisar controllers e repositories principais
-8. só depois alterar frontend
+2. ler `CLAUDE.md` (referência operacional atualizada: models, enums, jobs, dívida técnica)
+3. revisar `RoleUser`
+4. revisar `User`, `ProducerProfile`, `UsinaSolar`, `ClientProfile`
+5. revisar middlewares
+6. revisar rotas
+7. revisar requests
+8. revisar controllers e repositories principais
+9. só depois alterar frontend
 
 ---
 
@@ -676,8 +706,9 @@ Versões anteriores desta documentação tratavam `produtor` como legado transit
 Isso não representa mais o estado atual do código.
 
 ## 18.2 Campos com significado implícito
-`UsinaSolar.user_id` significa **produtor proprietário**.
+`UsinaSolar.producer_profile_id` significa **produtor proprietário**.
 Isso deve ser lembrado por qualquer nova equipe.
+(Histórico: antes da migration `2026_05_19` essa referência era feita por `UsinaSolar.user_id`, coluna hoje removida.)
 
 ## 18.3 Fluxos híbridos em evolução
 O projeto passou por evolução incremental. Por isso, em algumas áreas pode existir nomenclatura antiga convivendo com a nova.
@@ -693,9 +724,9 @@ Ao manter o sistema, priorizar sempre a regra atual documentada aqui.
 - padronizar nomenclatura de campos compartilhados
 
 ## Médio prazo
-- consolidar faturamento/cobrança
-- padronizar services/repositories mais sensíveis
-- criar testes automatizados para propostas e usinas
+- padronizar services/repositories mais sensíveis (ex.: dividir `ClientReportService`, `StoreProdutorPropostaRequest`)
+- criar Policies para `UsinaSolar`, `CustomerCharge`, `ProducerProfile`
+- criar testes automatizados para Cora/pagamentos, IMAP, PDF e WhatsApp
 
 ## Longo prazo
 - congelamento por competência
@@ -709,16 +740,18 @@ Ao manter o sistema, priorizar sempre a regra atual documentada aqui.
 
 Se você está assumindo este projeto agora, memorize estes pontos:
 
-1. o sistema é um CRM/ERP de operação de energia
+1. o sistema é um CRM/ERP de operação de energia por compensação/assinatura, com ciclo completo até cobrança e pagamento
 2. existem quatro roles oficiais: admin, consultor, cliente e produtor
 3. produtor é role oficial e também entidade de domínio
-4. toda usina pertence a um produtor
-5. consultor é responsável comercial por clientes, produtores e usinas de sua carteira
+4. toda usina pertence a um produtor via `producer_profile_id` (não existe mais `UsinaSolar.user_id`)
+5. consultor é responsável comercial por clientes, produtores e usinas de sua carteira (scoping obrigatório)
 6. proposta de produtor pode criar o produtor inline
 7. `ProducerProfile` é obrigatório para o domínio de produtor ficar consistente
-8. o backend é a fonte real de autorização
-9. o frontend usa Inertia + React + MUI
-10. qualquer mudança relevante deve manter coerência entre model, request, controller, repository e página React correspondente
+8. faturas de concessionária são importadas via IMAP/upload, aprovadas e geram `CustomerCharge`, que por sua vez gera pagamento via Cora
+9. o backend é a fonte real de autorização
+10. o frontend usa Inertia + React + MUI
+11. qualquer mudança relevante deve manter coerência entre model, request, controller, repository e página React correspondente
+12. para detalhes operacionais atualizados (models, enums, jobs, dívida técnica, comandos), consultar `CLAUDE.md`
 
 ---
 
