@@ -32,24 +32,6 @@ class ValidateConcessionaireBillService
                 );
             }
 
-            if ($bill->review_status === 'pending_review') {
-                $issues[] = $this->makeIssue(
-                    $bill->id,
-                    'missing_review',
-                    'warning',
-                    'A fatura ainda não foi revisada.'
-                );
-            }
-
-            if (! $bill->clientProfile?->is_active_client) {
-                $issues[] = $this->makeIssue(
-                    $bill->id,
-                    'client_not_active',
-                    'warning',
-                    'O cadastro está vinculado a um prospect ou cliente ainda não ativo.'
-                );
-            }
-
             if (! $bill->consumer_unit_id) {
                 $issues[] = $this->makeIssue(
                     $bill->id,
@@ -60,15 +42,6 @@ class ValidateConcessionaireBillService
             }
 
             $activeUsinaLink = $bill->consumerUnit?->activeUsinaLink ?? $bill->clientProfile?->activeUsinaLink;
-
-            if (! $activeUsinaLink) {
-                $issues[] = $this->makeIssue(
-                    $bill->id,
-                    'missing_active_usina',
-                    'error',
-                    'A Unidade Consumidora não possui vínculo ativo com usina.'
-                );
-            }
 
             if (! $bill->clientProfile?->activeDiscountRule) {
                 $issues[] = $this->makeIssue(

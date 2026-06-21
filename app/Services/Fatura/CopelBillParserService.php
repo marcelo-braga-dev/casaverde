@@ -6,6 +6,10 @@ use DomainException;
 
 class CopelBillParserService
 {
+    public const INJECTED_ENERGY_PREFIXES = ['ENERGIA INJ. OUC MPT TE'];
+
+    public const INJECTED_CONSUMPTION_PREFIXES = ['ENERGIA INJ. OUC MPT TE', 'ENERGIA INJ. OUC MPT TUS', 'ENERGIA INJ. BAND.'];
+
     public function parse(string $rawText): array
     {
         $text = $this->normalizeText($rawText);
@@ -70,14 +74,11 @@ class CopelBillParserService
             'vencimento' => $this->normalizeDate($vencimento),
             'valor_total' => $this->normalizeDecimal($valorTotal),
             'consumo_kwh' => $consumoKwh ? $this->normalizeDecimal($consumoKwh) : null,
-            'injected_energy_kwh' => $this->sumItemsByPrefixes($items, ['ENERGIA INJ. OUC MPT TE'], 'quantidade'),
-            'injected_energy_amount' => $this->sumItemsByPrefixes($items, ['ENERGIA INJ. OUC MPT TE'], 'valor'),
-            'injected_consumption_kwh' => $this->sumItemsByPrefixes($items, [
-                'ENERGIA INJ. OUC MPT TE', 'ENERGIA INJ. OUC MPT TUS', 'ENERGIA INJ. BAND.',
-            ], 'quantidade'),
-            'injected_consumption_amount' => $this->sumItemsByPrefixes($items, [
-                'ENERGIA INJ. OUC MPT TE', 'ENERGIA INJ. OUC MPT TUS', 'ENERGIA INJ. BAND.',
-            ], 'valor'),
+            'injected_energy_kwh' => $this->sumItemsByPrefixes($items, self::INJECTED_ENERGY_PREFIXES, 'quantidade'),
+            'injected_energy_amount' => $this->sumItemsByPrefixes($items, self::INJECTED_ENERGY_PREFIXES, 'valor'),
+            'injected_consumption_kwh' => $this->sumItemsByPrefixes($items, self::INJECTED_CONSUMPTION_PREFIXES, 'quantidade'),
+            'injected_consumption_amount' => $this->sumItemsByPrefixes($items, self::INJECTED_CONSUMPTION_PREFIXES, 'valor'),
+            'items' => $items,
             'raw_text' => $text,
         ];
     }
@@ -116,17 +117,29 @@ class CopelBillParserService
     {
         $sum = 0.0;
 
-        foreach ($items as $item) {
-            foreach ($prefixes as $prefix) {
-                if (str_starts_with($item['descricao'], $prefix)) {
-                    $sum += $item[$field];
-
-                    break;
-                }
-            }
+        foreach (self::filterByPrefixes($items, $prefixes) as $item) {
+            $sum += $item[$field];
         }
 
         return round($sum, 2);
+    }
+
+    /**
+     * Filtra os itens extraídos do PDF cuja descrição comece com um dos
+     * prefixos informados. Usado também para exibir, na tela de conferência,
+     * quais linhas compõem cada total calculado (energia/consumo injetado).
+     */
+    public static function filterByPrefixes(array $items, array $prefixes): array
+    {
+        return array_values(array_filter($items, function (array $item) use ($prefixes) {
+            foreach ($prefixes as $prefix) {
+                if (str_starts_with($item['descricao'], $prefix)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }));
     }
 
     private function parseBrazilianNumber(string $value): float

@@ -10,6 +10,7 @@ use App\Models\Cliente\ConsumerUnit;
 use App\Models\Fatura\ConcessionaireBill;
 use App\Models\Usina\Concessionaria;
 use App\Models\Usina\UsinaSolar;
+use App\Services\Fatura\BuildBillEnergyBreakdownService;
 use App\Services\Fatura\DeleteConcessionaireBillService;
 use App\Services\Fatura\ReviewConcessionaireBillService;
 use App\Services\Fatura\StoreParsedConcessionaireBillService;
@@ -65,7 +66,8 @@ class ConcessionaireBillController extends Controller
 
     public function show(
         ConcessionaireBill $fatura,
-        SuggestBillUsinaService $suggestBillUsinaService
+        SuggestBillUsinaService $suggestBillUsinaService,
+        BuildBillEnergyBreakdownService $energyBreakdownService
     ) {
         $fatura->load([
             'clientProfile',
@@ -90,6 +92,7 @@ class ConcessionaireBillController extends Controller
                 ->get(['id', 'nome']),
 
             'suggestedUsinaId' => $suggestBillUsinaService->handle($fatura),
+            'energyBreakdown' => $energyBreakdownService->handle($fatura),
             'reviewStatuses' => ['pending_review', 'reviewed', 'corrected', 'approved'],
 
             'usinas' => UsinaSolar::query()

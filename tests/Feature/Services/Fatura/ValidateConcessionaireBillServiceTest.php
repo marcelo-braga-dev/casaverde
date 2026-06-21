@@ -29,7 +29,7 @@ describe('ValidateConcessionaireBillService', function () {
         expect($issues)->toContain('missing_consumer_unit');
     });
 
-    it('does not flag missing_consumer_unit or missing_active_usina when the uc has an active usina link', function () {
+    it('does not flag missing_consumer_unit when the uc has an active usina link', function () {
         $client = ClientProfile::factory()->active()->create();
         ClientDiscountRule::factory()->create(['client_profile_id' => $client->id]);
         $unit = ConsumerUnit::factory()->create(['client_profile_id' => $client->id]);
@@ -49,23 +49,7 @@ describe('ValidateConcessionaireBillService', function () {
 
         $issues = collect($this->service->handle($bill))->pluck('issue_code');
 
-        expect($issues)->not->toContain('missing_consumer_unit')
-            ->and($issues)->not->toContain('missing_active_usina');
-    });
-
-    it('flags missing_active_usina when the consumer unit has no active usina link', function () {
-        $client = ClientProfile::factory()->active()->create();
-        ClientDiscountRule::factory()->create(['client_profile_id' => $client->id]);
-        $unit = ConsumerUnit::factory()->create(['client_profile_id' => $client->id]);
-
-        $bill = ConcessionaireBill::factory()->create([
-            'client_profile_id' => $client->id,
-            'consumer_unit_id' => $unit->id,
-        ]);
-
-        $issues = collect($this->service->handle($bill))->pluck('issue_code');
-
-        expect($issues)->toContain('missing_active_usina');
+        expect($issues)->not->toContain('missing_consumer_unit');
     });
 
     it('flags duplicate_reference for two bills of the same consumer unit and reference label', function () {

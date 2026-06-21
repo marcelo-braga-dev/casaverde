@@ -42,6 +42,12 @@ class ReviewConcessionaireBillService
                 'valor_total' => self::nullableDecimal($data['valor_total'] ?? null),
                 'consumo_kwh' => self::nullableDecimal($data['consumo_kwh'] ?? null),
 
+                'injected_energy_kwh' => self::nullableDecimal($data['injected_energy_kwh'] ?? null),
+                'injected_energy_amount' => self::nullableDecimal($data['injected_energy_amount'] ?? null),
+                'injected_consumption_kwh' => self::nullableDecimal($data['injected_consumption_kwh'] ?? null),
+                'injected_consumption_amount' => self::nullableDecimal($data['injected_consumption_amount'] ?? null),
+                'injected_consumption_discount_percent' => $this->nullablePercent($data['injected_consumption_discount_percent'] ?? null),
+
                 'notes' => $data['notes'] ?? null,
                 'review_notes' => $data['review_notes'] ?? null,
                 'review_status' => $data['review_status'] ?? $bill->review_status,
@@ -98,6 +104,20 @@ class ReviewConcessionaireBillService
 
     public static function nullableDecimal(mixed $value): ?float
     {
+        $number = self::parseDecimalString($value);
+
+        return $number === null || $number <= 0 ? null : $number;
+    }
+
+    private function nullablePercent(mixed $value): ?float
+    {
+        $number = self::parseDecimalString($value);
+
+        return $number === null ? null : min(100, max(0, $number));
+    }
+
+    private static function parseDecimalString(mixed $value): ?float
+    {
         if ($value === null || $value === '') {
             return null;
         }
@@ -121,8 +141,6 @@ class ReviewConcessionaireBillService
             return null;
         }
 
-        $number = (float) $value;
-
-        return $number <= 0 ? null : $number;
+        return (float) $value;
     }
 }

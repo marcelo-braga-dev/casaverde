@@ -45,6 +45,12 @@ class UpdateConcessionaireBillReviewRequest extends FormRequest
             ],
             'consumo_kwh' => ['nullable'],
 
+            'injected_energy_kwh' => ['nullable'],
+            'injected_energy_amount' => ['nullable'],
+            'injected_consumption_kwh' => ['nullable'],
+            'injected_consumption_amount' => ['nullable'],
+            'injected_consumption_discount_percent' => ['nullable'],
+
             'notes' => ['nullable', 'string'],
             'review_notes' => ['nullable', 'string'],
             'review_status' => ['required', 'string', 'max:50'],

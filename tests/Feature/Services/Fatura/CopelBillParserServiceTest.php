@@ -42,6 +42,13 @@ TEXT;
         expect($parsed['injected_energy_amount'])->toBe(-560.86);
         expect($parsed['injected_consumption_kwh'])->toBe(-5031.74);
         expect($parsed['injected_consumption_amount'])->toBe(-1147.91);
+
+        expect($parsed['items'])->toBeArray()->not->toBeEmpty();
+        expect($parsed['items'][0])->toMatchArray([
+            'descricao' => 'ENERGIA ELET CONSUMO',
+            'quantidade' => 2716.0,
+            'valor' => 999.30,
+        ]);
     });
 
 });

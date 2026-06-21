@@ -18,6 +18,12 @@ import {
     FormControlLabel,
     Paper,
     Stack,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
     TextField,
     Typography,
     Tab,
@@ -113,8 +119,44 @@ const ExtractedField = ({ label, value, validation = "text" }) => {
     );
 };
 
+const BreakdownTable = ({ title, description, items, kwhTotal, amountTotal }) => (
+    <Box sx={{ mb: 2.5 }}>
+        <Typography variant="body2" fontWeight={800} sx={{ mb: 0.25 }}>{title}</Typography>
+        <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 1 }}>{description}</Typography>
+        {items.length > 0 ? (
+            <TableContainer component={Paper} variant="outlined" sx={{ borderRadius: 2 }}>
+                <Table size="small">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell sx={{ fontWeight: 700 }}>Linha da fatura</TableCell>
+                            <TableCell sx={{ fontWeight: 700 }} align="right">Quantidade (kWh)</TableCell>
+                            <TableCell sx={{ fontWeight: 700 }} align="right">Valor</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {items.map((item, index) => (
+                            <TableRow key={`${item.descricao}-${index}`}>
+                                <TableCell>{item.descricao || "—"}</TableCell>
+                                <TableCell align="right">{formatNumber(abs(item.quantidade)) ? `${formatNumber(abs(item.quantidade))} kWh` : "—"}</TableCell>
+                                <TableCell align="right">{formatMoney(abs(item.valor)) || "—"}</TableCell>
+                            </TableRow>
+                        ))}
+                        <TableRow sx={{ bgcolor: "rgba(139,92,246,0.06)" }}>
+                            <TableCell sx={{ fontWeight: 800 }}>Total</TableCell>
+                            <TableCell align="right" sx={{ fontWeight: 800 }}>{formatNumber(abs(kwhTotal)) ? `${formatNumber(abs(kwhTotal))} kWh` : "—"}</TableCell>
+                            <TableCell align="right" sx={{ fontWeight: 800 }}>{formatMoney(abs(amountTotal)) || "—"}</TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        ) : (
+            <Typography variant="body2" color="text.secondary">Nenhuma linha da fatura corresponde a este cálculo.</Typography>
+        )}
+    </Box>
+);
+
 /* ─── Page ────────────────────────────────────────────────────────────── */
-const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [], consumerUnits = [] }) => {
+const Page = ({ bill, suggestedUsinaId, energyBreakdown, reviewStatuses = [], usinas = [], consumerUnits = [] }) => {
     const { flash } = usePage().props;
     const [tab, setTab] = useState("dados");
     const [deleteOpen, setDeleteOpen] = useState(false);
@@ -138,6 +180,11 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [], consum
         vencimento: toInputDate(bill.vencimento ?? bill.extracted_payload?.vencimento),
         valor_total: inputDecimalValue(bill.valor_total ?? bill.extracted_payload?.valor_total),
         consumo_kwh: inputDecimalValue(bill.consumo_kwh ?? bill.extracted_payload?.consumo_kwh),
+        injected_energy_kwh: inputDecimalValue(abs(bill.injected_energy_kwh)),
+        injected_energy_amount: inputDecimalValue(abs(bill.injected_energy_amount)),
+        injected_consumption_kwh: inputDecimalValue(abs(bill.injected_consumption_kwh)),
+        injected_consumption_amount: inputDecimalValue(abs(bill.injected_consumption_amount)),
+        injected_consumption_discount_percent: isInvalid(bill.injected_consumption_discount_percent) ? "" : String(bill.injected_consumption_discount_percent),
     }), [bill, suggestedUsinaId]);
 
     const { data, setData, put, processing, errors, setError, clearErrors } = useForm(initialData);
@@ -150,8 +197,6 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [], consum
         { label: "Unidade Consumidora", value: data.unidade_consumidora, validation: "positive" },
         { label: "Número da instalação", value: data.numero_instalacao, validation: "text" },
         { label: "Referência / Mês-Ano", value: data.reference_label, validation: "text" },
-        { label: "Mês de referência", value: data.reference_month, validation: "positive" },
-        { label: "Ano de referência", value: data.reference_year, validation: "positive" },
         { label: "Vencimento", value: formatDate(data.vencimento), validation: "text" },
         { label: "Valor total / Valor cobrado", value: formatMoney(data.valor_total), validation: "money" },
         { label: "Consumo kWh", value: formatNumber(data.consumo_kwh), validation: "positive" },
@@ -163,14 +208,26 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [], consum
     const invalidFields = requiredFields.filter((f) => isInvalidField(f));
     const pendingIssues = (bill.issues ?? []).filter((i) => !i.is_resolved);
 
+    const decimalFields = ["valor_total", "consumo_kwh", "injected_energy_kwh", "injected_energy_amount", "injected_consumption_kwh", "injected_consumption_amount", "injected_consumption_discount_percent"];
+
     const hasUnsavedChanges = Object.keys(savedData).some((key) => {
-        if (["valor_total", "consumo_kwh"].includes(key)) return normalizeNumberForCompare(savedData[key]) !== normalizeNumberForCompare(data[key]);
+        if (decimalFields.includes(key)) return normalizeNumberForCompare(savedData[key]) !== normalizeNumberForCompare(data[key]);
         return String(savedData[key] ?? "") !== String(data[key] ?? "");
     });
 
     const hasInjectedData = [bill.injected_energy_kwh, bill.injected_energy_amount, bill.injected_consumption_kwh, bill.injected_consumption_amount]
         .some((v) => v !== null && v !== undefined);
     const injectedConfirmed = !hasInjectedData || injectedValuesConfirmed;
+
+    const differsFromBreakdown = (billValue, breakdownValue) => {
+        const a = Math.abs(parseBrazilianNumber(billValue) || 0);
+        const b = Math.abs(parseBrazilianNumber(breakdownValue) || 0);
+        return Math.abs(a - b) > 0.01;
+    };
+    const injectedEnergyIsManual = differsFromBreakdown(bill.injected_energy_kwh, energyBreakdown.injected_energy.kwh_total)
+        || differsFromBreakdown(bill.injected_energy_amount, energyBreakdown.injected_energy.amount_total);
+    const injectedConsumptionIsManual = differsFromBreakdown(bill.injected_consumption_kwh, energyBreakdown.injected_consumption.kwh_total)
+        || differsFromBreakdown(bill.injected_consumption_amount, energyBreakdown.injected_consumption.amount_total);
 
     const canApprove = data.review_status === "pending_review" && invalidFields.length === 0 && !hasUnsavedChanges && injectedConfirmed && !processing;
 
@@ -335,18 +392,49 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [], consum
                                             </Paper>
                                         </Grid>
                                     </Grid>
-                                    <Stack spacing={0}>
-                                        <InfoRow label="Margem de desconto aplicada">
-                                            {bill.injected_consumption_discount_percent !== null && bill.injected_consumption_discount_percent !== undefined
-                                                ? `${formatNumber(bill.injected_consumption_discount_percent)}%`
-                                                : "—"}
-                                        </InfoRow>
-                                        <InfoRow label="Desconto sobre consumo injetado">
-                                            <Typography variant="body2" fontWeight={700} color="success.main">
-                                                {formatMoney(abs(bill.injected_consumption_discount_amount)) || "—"}
-                                            </Typography>
-                                        </InfoRow>
-                                    </Stack>
+                                    {injectedEnergyIsManual ? (
+                                        <Alert severity="info" icon={<IconPencil size={18} />} sx={{ borderRadius: 2, mb: 2.5 }}>
+                                            <strong>Energia Injetada</strong> foi inserida manualmente — não corresponde mais ao cálculo automático das linhas do PDF.
+                                        </Alert>
+                                    ) : (
+                                        <BreakdownTable
+                                            title="Como chegamos em Energia Injetada"
+                                            description='Soma das linhas da fatura cuja descrição começa com "ENERGIA INJ. OUC MPT TE".'
+                                            items={energyBreakdown.injected_energy.items}
+                                            kwhTotal={energyBreakdown.injected_energy.kwh_total}
+                                            amountTotal={energyBreakdown.injected_energy.amount_total}
+                                        />
+                                    )}
+                                    {injectedConsumptionIsManual ? (
+                                        <Alert severity="info" icon={<IconPencil size={18} />} sx={{ borderRadius: 2, mb: 2.5 }}>
+                                            <strong>Consumo Injetado</strong> foi inserido manualmente — não corresponde mais ao cálculo automático das linhas do PDF.
+                                        </Alert>
+                                    ) : (
+                                        <BreakdownTable
+                                            title="Como chegamos em Consumo Injetado"
+                                            description='Soma das linhas da fatura cuja descrição começa com "ENERGIA INJ. OUC MPT TE", "ENERGIA INJ. OUC MPT TUS" ou "ENERGIA INJ. BAND.".'
+                                            items={energyBreakdown.injected_consumption.items}
+                                            kwhTotal={energyBreakdown.injected_consumption.kwh_total}
+                                            amountTotal={energyBreakdown.injected_consumption.amount_total}
+                                        />
+                                    )}
+
+                                    <Box sx={{ mb: 1 }}>
+                                        <Typography variant="body2" fontWeight={800} sx={{ mb: 0.25 }}>Como chegamos no Desconto sobre consumo injetado</Typography>
+                                        <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 1 }}>
+                                            Valor do Consumo Injetado multiplicado pela margem de desconto ativa do cliente no momento da extração da fatura.
+                                        </Typography>
+                                        <Paper variant="outlined" sx={{ p: 1.5, borderRadius: 2 }}>
+                                            <Stack direction="row" alignItems="center" justifyContent="center" spacing={1.5} flexWrap="wrap">
+                                                <Typography fontWeight={700}>{formatMoney(abs(energyBreakdown.discount.base_amount)) || "—"}</Typography>
+                                                <Typography color="text.secondary">×</Typography>
+                                                <Typography fontWeight={700}>{formatNumber(energyBreakdown.discount.percent)}%</Typography>
+                                                <Typography color="text.secondary">=</Typography>
+                                                <Typography fontWeight={800} color="success.main">{formatMoney(abs(energyBreakdown.discount.amount)) || "—"}</Typography>
+                                            </Stack>
+                                        </Paper>
+                                    </Box>
+
                                     {hasInjectedData && (
                                         <Paper
                                             elevation={0}
@@ -408,14 +496,12 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [], consum
                                     <SectionHeader icon={<IconReceipt size={18} color="#fff" />} label="Vínculo e Metadados" gradient="linear-gradient(135deg,#64748b,#475569)" />
                                     <Stack spacing={0}>
                                         <InfoRow label="Cliente">{bill.client_profile?.nome || bill.client_profile?.razao_social || "—"}</InfoRow>
-                                        <InfoRow label="Código do cliente">{bill.client_profile?.client_code || "—"}</InfoRow>
                                         <InfoRow label="Unidade Consumidora">
                                             {bill.consumer_unit?.display_label || bill.consumer_unit?.uc_code || (
                                                 <Typography variant="body2" fontWeight={700} color="error.main">Não vinculada</Typography>
                                             )}
                                         </InfoRow>
                                         <InfoRow label="Usina vinculada">{bill.usina?.uc || "—"}</InfoRow>
-                                        <InfoRow label="Usina sugerida">{suggestedUsinaId || "—"}</InfoRow>
                                         <InfoRow label="Extração de Dados">
                                             <Chip label={getStatusLabel(bill.parser_status)} color={parserStatusColor} size="small" />
                                         </InfoRow>
@@ -469,16 +555,44 @@ const Page = ({ bill, suggestedUsinaId, reviewStatuses = [], usinas = [], consum
                                                     <TextField fullWidth type="date" label="Vencimento" value={data.vencimento} error={Boolean(errors.vencimento)} helperText={errors.vencimento} InputLabelProps={{ shrink: true }} onChange={(e) => setData("vencimento", e.target.value)} size="small" />
                                                 </Grid>
                                                 <Grid size={{ xs: 12, md: 6 }}>
-                                                    <TextField fullWidth type="number" label="Mês de referência" value={data.reference_month} error={Boolean(errors.reference_month)} helperText={errors.reference_month} onChange={(e) => setData("reference_month", e.target.value)} size="small" />
-                                                </Grid>
-                                                <Grid size={{ xs: 12, md: 6 }}>
-                                                    <TextField fullWidth type="number" label="Ano de referência" value={data.reference_year} error={Boolean(errors.reference_year)} helperText={errors.reference_year} onChange={(e) => setData("reference_year", e.target.value)} size="small" />
-                                                </Grid>
-                                                <Grid size={{ xs: 12, md: 6 }}>
                                                     <TextField fullWidth label="Valor total" value={data.valor_total} error={Boolean(errors.valor_total)} helperText={errors.valor_total || "Ex: 50415.00"} onFocus={() => clearInvalidDecimalOnFocus("valor_total")} onBlur={() => formatDecimalOnBlur("valor_total")} onChange={(e) => setData("valor_total", normalizeDecimalTyping(e.target.value))} size="small" />
                                                 </Grid>
                                                 <Grid size={{ xs: 12, md: 6 }}>
                                                     <TextField fullWidth label="Consumo kWh" value={data.consumo_kwh} error={Boolean(errors.consumo_kwh)} helperText={errors.consumo_kwh || "Ex: 100 ou 100.50"} onFocus={() => clearInvalidDecimalOnFocus("consumo_kwh")} onBlur={() => formatDecimalOnBlur("consumo_kwh")} onChange={(e) => setData("consumo_kwh", normalizeDecimalTyping(e.target.value))} size="small" />
+                                                </Grid>
+                                            </Grid>
+
+                                            <Divider />
+
+                                            <Typography variant="body2" fontWeight={800}>Energia Injetada e Consumo Injetado</Typography>
+                                            <Typography variant="caption" color="text.secondary">
+                                                Ajuste manualmente se o cálculo automático a partir das linhas do PDF não refletir a fatura corretamente.
+                                            </Typography>
+                                            <Grid container spacing={1.5}>
+                                                <Grid size={{ xs: 12, md: 6 }}>
+                                                    <TextField fullWidth label="Energia Injetada (kWh)" value={data.injected_energy_kwh} error={Boolean(errors.injected_energy_kwh)} helperText={errors.injected_energy_kwh || "Ex: 2034 ou 2034.50"} onFocus={() => clearInvalidDecimalOnFocus("injected_energy_kwh")} onBlur={() => formatDecimalOnBlur("injected_energy_kwh")} onChange={(e) => setData("injected_energy_kwh", normalizeDecimalTyping(e.target.value))} size="small" />
+                                                </Grid>
+                                                <Grid size={{ xs: 12, md: 6 }}>
+                                                    <TextField fullWidth label="Energia Injetada (R$)" value={data.injected_energy_amount} error={Boolean(errors.injected_energy_amount)} helperText={errors.injected_energy_amount || "Ex: 560.86"} onFocus={() => clearInvalidDecimalOnFocus("injected_energy_amount")} onBlur={() => formatDecimalOnBlur("injected_energy_amount")} onChange={(e) => setData("injected_energy_amount", normalizeDecimalTyping(e.target.value))} size="small" />
+                                                </Grid>
+                                                <Grid size={{ xs: 12, md: 6 }}>
+                                                    <TextField fullWidth label="Consumo Injetado (kWh)" value={data.injected_consumption_kwh} error={Boolean(errors.injected_consumption_kwh)} helperText={errors.injected_consumption_kwh || "Ex: 5031 ou 5031.74"} onFocus={() => clearInvalidDecimalOnFocus("injected_consumption_kwh")} onBlur={() => formatDecimalOnBlur("injected_consumption_kwh")} onChange={(e) => setData("injected_consumption_kwh", normalizeDecimalTyping(e.target.value))} size="small" />
+                                                </Grid>
+                                                <Grid size={{ xs: 12, md: 6 }}>
+                                                    <TextField fullWidth label="Consumo Injetado (R$)" value={data.injected_consumption_amount} error={Boolean(errors.injected_consumption_amount)} helperText={errors.injected_consumption_amount || "Ex: 1147.91"} onFocus={() => clearInvalidDecimalOnFocus("injected_consumption_amount")} onBlur={() => formatDecimalOnBlur("injected_consumption_amount")} onChange={(e) => setData("injected_consumption_amount", normalizeDecimalTyping(e.target.value))} size="small" />
+                                                </Grid>
+                                                <Grid size={{ xs: 12, md: 6 }}>
+                                                    <TextField
+                                                        fullWidth
+                                                        label="Margem de desconto (%)"
+                                                        value={data.injected_consumption_discount_percent}
+                                                        error={Boolean(errors.injected_consumption_discount_percent)}
+                                                        helperText={errors.injected_consumption_discount_percent || "Ex: 20 ou 20.50 — entre 0 e 100"}
+                                                        onFocus={() => { if (Number.isNaN(parseBrazilianNumber(data.injected_consumption_discount_percent))) setData("injected_consumption_discount_percent", ""); }}
+                                                        onBlur={() => { const n = parseBrazilianNumber(data.injected_consumption_discount_percent); if (!Number.isNaN(n)) setData("injected_consumption_discount_percent", Math.min(100, Math.max(0, n)).toFixed(2)); }}
+                                                        onChange={(e) => setData("injected_consumption_discount_percent", normalizeDecimalTyping(e.target.value))}
+                                                        size="small"
+                                                    />
                                                 </Grid>
                                             </Grid>
 
