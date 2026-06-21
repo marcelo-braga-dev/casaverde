@@ -15,6 +15,7 @@ class CustomerChargeController extends Controller
         $filters = $request->only([
             'status',
             'client_profile_id',
+            'client_name',
             'reference_month',
             'reference_year',
         ]);

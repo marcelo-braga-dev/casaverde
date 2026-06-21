@@ -18,6 +18,7 @@ class BillReportController extends Controller
             'parser_status',
             'reference_month',
             'reference_year',
+            'client_name',
         ]);
 
         return Inertia::render('Admin/Relatorio/Fatura/Page', [

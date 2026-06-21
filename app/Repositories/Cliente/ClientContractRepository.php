@@ -21,6 +21,14 @@ class ClientContractRepository
                         ->orWhere('cnpj', 'like', "%{$document}%");
                 });
             })
+            ->when($filters['client_name'] ?? null, function ($query, $name) {
+                $query->whereHas('clientProfile', function ($subQuery) use ($name) {
+                    $subQuery
+                        ->where('nome', 'like', "%{$name}%")
+                        ->orWhere('razao_social', 'like', "%{$name}%")
+                        ->orWhere('nome_fantasia', 'like', "%{$name}%");
+                });
+            })
             ->orderByDesc('id')
             ->paginate($perPage)
             ->withQueryString();

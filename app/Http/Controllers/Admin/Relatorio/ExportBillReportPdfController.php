@@ -17,6 +17,7 @@ class ExportBillReportPdfController extends Controller
             'parser_status',
             'reference_month',
             'reference_year',
+            'client_name',
         ]);
 
         $report = $service->handle($filters);

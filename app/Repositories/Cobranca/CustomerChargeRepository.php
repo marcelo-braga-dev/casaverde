@@ -25,6 +25,16 @@ class CustomerChargeRepository
             $query->where('client_profile_id', $filters['client_profile_id']);
         }
 
+        if (! empty($filters['client_name'])) {
+            $name = $filters['client_name'];
+
+            $query->whereHas('clientProfile', function ($q) use ($name) {
+                $q->where('nome', 'like', "%{$name}%")
+                    ->orWhere('razao_social', 'like', "%{$name}%")
+                    ->orWhere('nome_fantasia', 'like', "%{$name}%");
+            });
+        }
+
         if (! empty($filters['reference_year'])) {
             $query->where('reference_year', $filters['reference_year']);
         }

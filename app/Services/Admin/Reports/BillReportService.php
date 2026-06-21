@@ -41,6 +41,16 @@ class BillReportService
             $query->where('reference_year', $filters['reference_year']);
         }
 
+        if (! empty($filters['client_name'])) {
+            $name = $filters['client_name'];
+
+            $query->whereHas('clientProfile', function ($q) use ($name) {
+                $q->where('nome', 'like', "%{$name}%")
+                    ->orWhere('razao_social', 'like', "%{$name}%")
+                    ->orWhere('nome_fantasia', 'like', "%{$name}%");
+            });
+        }
+
         $bills = $query->get();
 
         return [

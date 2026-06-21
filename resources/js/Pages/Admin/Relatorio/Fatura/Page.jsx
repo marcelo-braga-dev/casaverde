@@ -49,6 +49,7 @@ export default function Page({
         parser_status: filters.parser_status || "",
         reference_month: filters.reference_month || "",
         reference_year: filters.reference_year || "",
+        client_name: filters.client_name || "",
     });
 
     const submit = (e) => {
@@ -125,6 +126,15 @@ export default function Page({
                     <CardContent>
                         <form onSubmit={submit}>
                             <Grid container spacing={2}>
+                                <Grid size={{ xs: 12, md: 3 }}>
+                                    <TextField
+                                        label="Nome do cliente"
+                                        value={data.client_name}
+                                        onChange={(e) => setData("client_name", e.target.value)}
+                                        fullWidth
+                                    />
+                                </Grid>
+
                                 <Grid size={{ xs: 12, md: 3 }}>
                                     <TextField
                                         type="date"

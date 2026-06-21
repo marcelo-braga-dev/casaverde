@@ -61,6 +61,7 @@ export default function Page({
     const { data, setData, get, processing } = useForm({
         status: filters.status || "",
         client_profile_id: filters.client_profile_id || "",
+        client_name: filters.client_name || "",
         reference_month: filters.reference_month || "",
         reference_year: filters.reference_year || "",
     });
@@ -125,6 +126,15 @@ export default function Page({
                                         label="ID do cliente"
                                         value={data.client_profile_id}
                                         onChange={(e) => setData("client_profile_id", e.target.value)}
+                                        fullWidth
+                                    />
+                                </Grid>
+
+                                <Grid size={{ xs: 12, md: 3 }}>
+                                    <TextField
+                                        label="Nome do cliente"
+                                        value={data.client_name}
+                                        onChange={(e) => setData("client_name", e.target.value)}
                                         fullWidth
                                     />
                                 </Grid>

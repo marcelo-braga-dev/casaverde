@@ -15,7 +15,7 @@ class ClientContractController extends Controller
 {
     public function index(Request $request, ClientContractRepository $repository)
     {
-        $filters = $request->only(['id', 'code', 'document']);
+        $filters = $request->only(['id', 'code', 'document', 'client_name']);
 
         return Inertia::render('Consultor/Cliente/Contract/Index/Page', [
             'contracts' => $repository->paginate($filters, 20),

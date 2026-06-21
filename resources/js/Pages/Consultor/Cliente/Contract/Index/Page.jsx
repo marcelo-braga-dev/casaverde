@@ -22,6 +22,7 @@ const Page = ({ contracts, filters = {} }) => {
         id: filters?.id ?? "",
         code: filters?.code ?? "",
         document: filters?.document ?? "",
+        client_name: filters?.client_name ?? "",
     });
 
     const submitFilter = (e) => {
@@ -45,7 +46,7 @@ const Page = ({ contracts, filters = {} }) => {
                 <CardContent>
                     <form onSubmit={submitFilter}>
                         <Grid container spacing={2}>
-                            <Grid size={{ xs: 12, md: 3 }}>
+                            <Grid size={{ xs: 12, md: 2 }}>
                                 <TextField
                                     label="ID"
                                     value={data.id}
@@ -54,7 +55,7 @@ const Page = ({ contracts, filters = {} }) => {
                                 />
                             </Grid>
 
-                            <Grid size={{ xs: 12, md: 4 }}>
+                            <Grid size={{ xs: 12, md: 3 }}>
                                 <TextField
                                     label="Código do Contrato"
                                     value={data.code}
@@ -63,7 +64,16 @@ const Page = ({ contracts, filters = {} }) => {
                                 />
                             </Grid>
 
-                            <Grid size={{ xs: 12, md: 4 }}>
+                            <Grid size={{ xs: 12, md: 3 }}>
+                                <TextField
+                                    label="Nome do Cliente"
+                                    value={data.client_name}
+                                    onChange={(e) => setData("client_name", e.target.value)}
+                                    fullWidth
+                                />
+                            </Grid>
+
+                            <Grid size={{ xs: 12, md: 3 }}>
                                 <TextField
                                     label="CPF/CNPJ do Cliente"
                                     value={data.document}
