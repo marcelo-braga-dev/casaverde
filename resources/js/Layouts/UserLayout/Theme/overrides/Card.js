@@ -45,6 +45,19 @@ export default function Card(theme) {
                 },
                 avatar: {
                     marginRight: '12px',
+                    width: 40,
+                    height: 40,
+                    borderRadius: 12,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                    backgroundColor: theme.palette.primary.light,
+                    color: theme.palette.primary.dark,
+                    '& svg': {
+                        width: 22,
+                        height: 22,
+                    },
                 },
                 action: {
                     margin: 0,
