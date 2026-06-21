@@ -51,7 +51,7 @@ const Page = ({ blocks }) => {
                             <TableBody>
                                 {items.map((block) => (
                                     <TableRow key={block.id}>
-                                        <TableCell>{block.id}</TableCell>
+                                        <TableCell>#{block.id}</TableCell>
                                         <TableCell>{block.nome}</TableCell>
                                         <TableCell>{block.descricao ?? "Não informado"}</TableCell>
                                         <TableCell>

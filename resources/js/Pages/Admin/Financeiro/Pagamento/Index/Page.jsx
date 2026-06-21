@@ -277,7 +277,7 @@ export default function Page({
                                 {payments?.data?.length > 0 ? (
                                     payments.data.map((payment) => (
                                         <TableRow key={payment.id}>
-                                            <TableCell>{payment.id}</TableCell>
+                                            <TableCell>#{payment.id}</TableCell>
 
                                             <TableCell>
                                                 {getClientName(payment)}

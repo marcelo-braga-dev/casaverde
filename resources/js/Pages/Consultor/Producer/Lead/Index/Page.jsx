@@ -63,7 +63,7 @@ const Page = ({leads}) => {
                             <TableBody>
                                 {items.map((lead) => (
                                     <TableRow key={lead.id}>
-                                        <TableCell>{lead.id}</TableCell>
+                                        <TableCell>#{lead.id}</TableCell>
                                         <TableCell>{getProducerName(lead)}</TableCell>
                                         <TableCell>{lead?.consultor?.name ?? "Não informado"}</TableCell>
                                         <TableCell>{lead?.concessionaria?.nome ?? "Não informado"}</TableCell>

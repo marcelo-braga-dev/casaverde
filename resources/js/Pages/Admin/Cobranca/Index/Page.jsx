@@ -206,7 +206,7 @@ export default function Page({
                                 {charges?.data?.length > 0 ? (
                                     charges.data.map((charge) => (
                                         <TableRow key={charge.id}>
-                                            <TableCell>{charge.id}</TableCell>
+                                            <TableCell>#{charge.id}</TableCell>
 
                                             <TableCell>{getClientName(charge)}</TableCell>
 

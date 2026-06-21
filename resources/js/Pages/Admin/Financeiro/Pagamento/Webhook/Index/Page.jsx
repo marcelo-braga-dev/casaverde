@@ -193,7 +193,7 @@ export default function Page({
                                 {events?.data?.length > 0 ? (
                                     events.data.map((event) => (
                                         <TableRow key={event.id}>
-                                            <TableCell>{event.id}</TableCell>
+                                            <TableCell>#{event.id}</TableCell>
                                             <TableCell>{providerLabels[event.provider] || event.provider}</TableCell>
                                             <TableCell>{event.event_type || "-"}</TableCell>
                                             <TableCell>{event.provider_payment_id || "-"}</TableCell>

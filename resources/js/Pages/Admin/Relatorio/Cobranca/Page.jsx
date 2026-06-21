@@ -226,7 +226,7 @@ export default function Page({report, filters = {}, statuses = []}) {
                                 <TableBody>
                                     {report.items.map((charge) => (
                                         <TableRow key={charge.id}>
-                                            <TableCell>{charge.id}</TableCell>
+                                            <TableCell>#{charge.id}</TableCell>
                                             <TableCell>{charge.client_name}</TableCell>
                                             <TableCell>{charge.reference_label || "-"}</TableCell>
                                             <TableCell><StatusChip status={charge.status}/></TableCell>

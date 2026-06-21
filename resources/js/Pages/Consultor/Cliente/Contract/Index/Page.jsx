@@ -119,7 +119,7 @@ const Page = ({ contracts, filters = {} }) => {
 
                                 {items.map((contract) => (
                                     <TableRow key={contract.id}>
-                                        <TableCell>{contract.id}</TableCell>
+                                        <TableCell>#{contract.id}</TableCell>
                                         <TableCell>{contract.contract_code}</TableCell>
                                         <TableCell>{contract?.client_profile?.display_name ?? "Não informado"}</TableCell>
                                         <TableCell>{contract?.client_profile?.documento ?? "Não informado"}</TableCell>

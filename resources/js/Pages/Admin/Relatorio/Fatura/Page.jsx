@@ -241,6 +241,7 @@ export default function Page({
                             <Table>
                                 <TableHead>
                                     <TableRow>
+                                        <TableCell>ID</TableCell>
                                         <TableCell>Cliente</TableCell>
                                         <TableCell>UC</TableCell>
                                         <TableCell>Referência</TableCell>
@@ -254,6 +255,7 @@ export default function Page({
                                 <TableBody>
                                     {report.items.map((bill) => (
                                         <TableRow key={bill.id}>
+                                            <TableCell>#{bill.id}</TableCell>
                                             <TableCell>{bill.client_name}</TableCell>
                                             <TableCell>{bill.unidade_consumidora || "-"}</TableCell>
                                             <TableCell>{bill.reference_label || "-"}</TableCell>

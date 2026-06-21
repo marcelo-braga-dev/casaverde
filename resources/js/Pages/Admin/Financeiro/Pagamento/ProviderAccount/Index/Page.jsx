@@ -98,7 +98,7 @@ export default function Page({accounts}) {
                                 {accounts?.data?.length > 0 ? (
                                     accounts.data.map((account) => (
                                         <TableRow key={account.id}>
-                                            <TableCell>{account.id}</TableCell>
+                                            <TableCell>#{account.id}</TableCell>
 
                                             <TableCell>{account.name}</TableCell>
 

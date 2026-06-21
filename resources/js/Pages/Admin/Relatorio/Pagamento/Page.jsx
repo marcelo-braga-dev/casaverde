@@ -225,7 +225,7 @@ export default function Page({ report, filters = {}, statuses = [], providers = 
                                 <TableBody>
                                     {report.items.map((payment) => (
                                         <TableRow key={payment.id}>
-                                            <TableCell>{payment.id}</TableCell>
+                                            <TableCell>#{payment.id}</TableCell>
                                             <TableCell>{payment.client_name}</TableCell>
                                             <TableCell>{payment.provider}</TableCell>
                                             <TableCell>{payment.payment_method}</TableCell>
