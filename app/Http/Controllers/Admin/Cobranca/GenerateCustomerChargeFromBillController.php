@@ -17,7 +17,7 @@ class GenerateCustomerChargeFromBillController extends Controller
             $charge = $service->handle($fatura);
 
             return redirect()
-                ->route('admin.cobrancas.show', $charge->id)
+                ->route('admin.financeiro.cobrancas.show', $charge->id)
                 ->with('success', 'Cobrança gerada com sucesso.');
         } catch (InvalidArgumentException $e) {
             return redirect()
