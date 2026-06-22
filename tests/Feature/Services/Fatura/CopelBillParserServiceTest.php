@@ -51,4 +51,19 @@ TEXT;
         ]);
     });
 
+    it('extracts a 9-digit unidade consumidora from the address line', function () {
+        $rawText = <<<'TEXT'
+Nome: CIBELE APARECIDA DA SILVA PEREIRA
+Endereço: Av Amazonas, 455 - Sala 02 - Nova 108226930
+Alianca
+05/2026 20/06/2026 R$865,62
+ENERGIA ELET CONSUMO kWh 2.375 0,368947 876,25 54,86 166,49 0,275750
+0400688361 CONSUMO kWh TP 91422 93797 1 2375
+TEXT;
+
+        $parsed = $this->service->parse($rawText);
+
+        expect($parsed['unidade_consumidora'])->toBe('108226930');
+    });
+
 });

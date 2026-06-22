@@ -21,8 +21,8 @@ class CopelBillParserService
 
         $unidadeConsumidora = $this->extractFirstMatch($text, [
             '/UNIDADE\s+CONSUMIDORA\s*[:\-]?\s*([0-9\.\-\/]+)/iu',
-            '/FAT-\d{2}-\d+\.\d+\s+([0-9]{8})\s+R?\$?[\d\.\,]+/iu',
-            '/Endere(?:ç|c)o:\s*[^\n]*?\s+([0-9]{8})\s*$/imu',
+            '/FAT-\d{2}-\d+\.\d+\s+([0-9]{6,10})\s+R?\$?[\d\.\,]+/iu',
+            '/Endere(?:ç|c)o:\s*[^\n]*?\s+([0-9]{6,10})\s*$/imu',
             '/\bUC\s*[:\-]?\s*([0-9]{8})\b/iu',
         ]);
 
