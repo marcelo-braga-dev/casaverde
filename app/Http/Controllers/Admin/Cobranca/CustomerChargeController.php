@@ -29,6 +29,8 @@ class CustomerChargeController extends Controller
 
     public function show(CustomerCharge $cobranca)
     {
+        $this->authorize('view', $cobranca);
+
         return Inertia::render('Admin/Cobranca/Show/Page', [
             'charge' => $cobranca->load([
                 'clientProfile',

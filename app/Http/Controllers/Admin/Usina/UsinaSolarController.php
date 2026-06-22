@@ -53,6 +53,8 @@ class UsinaSolarController extends Controller
 
     public function store(StoreUsinaSolarRequest $request)
     {
+        $this->authorize('create', UsinaSolar::class);
+
         $data = $request->validated();
 
         $usina = DB::transaction(function () use ($data) {
@@ -110,6 +112,8 @@ class UsinaSolarController extends Controller
 
     public function show(UsinaSolar $usina)
     {
+        $this->authorize('view', $usina);
+
         return Inertia::render(
             'Consultor/Producer/Usina/Show/Page',
             [
@@ -127,6 +131,8 @@ class UsinaSolarController extends Controller
 
     public function edit(UsinaSolar $usina)
     {
+        $this->authorize('update', $usina);
+
         return Inertia::render('Consultor/Producer/Usina/Edit/Page', [
             'usina' => $usina->load(['produtor', 'consultor', 'concessionaria', 'block', 'address']),
             'produtores' => ProducerProfile::query()
@@ -147,6 +153,8 @@ class UsinaSolarController extends Controller
 
     public function update(StoreUsinaSolarRequest $request, UsinaSolar $usina)
     {
+        $this->authorize('update', $usina);
+
         $data = $request->validated();
 
         try {

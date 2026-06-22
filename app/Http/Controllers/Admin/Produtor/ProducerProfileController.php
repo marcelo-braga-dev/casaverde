@@ -50,7 +50,8 @@ class ProducerProfileController extends Controller
     public function store(StoreProducerProfileRequest $request,
         CreateOrFindProducerProfileService $service
     ) {
-        // $this->authorize('create', ProducerProfile::class);
+        $this->authorize('create', ProducerProfile::class);
+
         $result = $service->handle($request->validated());
 
         return redirect()
@@ -66,6 +67,8 @@ class ProducerProfileController extends Controller
 
     public function show(ProducerProfile $producerProfile)
     {
+        $this->authorize('view', $producerProfile);
+
         $producerProfile->load(['proposals', 'consultor', 'usinas', 'usinas.activeClientLinks', 'platformUser', 'activeFeeRule']);
 
         $isAdmin = auth()->user()?->role_id === RoleUser::$ADMIN;
@@ -88,6 +91,8 @@ class ProducerProfileController extends Controller
 
     public function edit(ProducerProfile $producerProfile)
     {
+        $this->authorize('update', $producerProfile);
+
         return Inertia::render('Consultor/Producer/Profile/Edit/Page', [
             'producer' => $producerProfile,
         ]);
@@ -95,6 +100,8 @@ class ProducerProfileController extends Controller
 
     public function update(StoreProducerProfileRequest $request, ProducerProfile $producerProfile)
     {
+        $this->authorize('update', $producerProfile);
+
         $producerProfile->update($request->validated());
         $producerProfile->contacts()->update($request->only(['celular', 'telefone', 'email']));
 
@@ -105,6 +112,8 @@ class ProducerProfileController extends Controller
 
     public function destroy(ProducerProfile $producerProfile)
     {
+        $this->authorize('delete', $producerProfile);
+
         $producerProfile->delete();
 
         return redirect()->route('consultor.producer.profiles.index')
