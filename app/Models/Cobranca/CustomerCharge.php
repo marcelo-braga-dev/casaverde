@@ -37,6 +37,7 @@ class CustomerCharge extends BaseModel
         'approved_at',
         'paid_at',
         'cancelled_at',
+        'reminder_sent_at',
         'notes',
     ];
 
@@ -51,6 +52,7 @@ class CustomerCharge extends BaseModel
         'approved_at' => 'datetime',
         'paid_at' => 'datetime',
         'cancelled_at' => 'datetime',
+        'reminder_sent_at' => 'datetime',
     ];
 
     public function clientProfile()

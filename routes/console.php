@@ -14,3 +14,5 @@ Schedule::command('concessionaire-bills:import')->hourly();
 Schedule::command('casaverde:generate-monthly-charges')->hourly();
 Schedule::command('casaverde:mark-overdue-charges')->everyTenMinutes();
 Schedule::command('casaverde:sync-payments')->everyFiveMinutes();
+Schedule::command('casaverde:send-charge-reminders')->dailyAt('08:00');
+Schedule::command('casaverde:generate-missing-payments')->hourly();
