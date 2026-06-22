@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Cliente\ClientDiscountRule;
 use App\Models\Cliente\ClientProfile;
 use App\Models\Cobranca\CustomerCharge;
 use App\Models\Fatura\ConcessionaireBill;
@@ -15,11 +14,13 @@ describe('GenerateCustomerChargeFromBillService', function () {
         $this->actingAs($this->admin);
     });
 
-    it('generates a draft charge from an approved bill', function () {
+    it('generates a draft charge based on the injected consumption amount, not the bill total', function () {
         $client = ClientProfile::factory()->create();
         $bill = ConcessionaireBill::factory()->approved()->create([
             'client_profile_id' => $client->id,
-            'valor_total' => 200.00,
+            'valor_total' => 796.17,
+            'injected_consumption_amount' => -1000.00,
+            'injected_consumption_discount_percent' => 0,
         ]);
 
         $charge = $this->service->handle($bill);
@@ -27,37 +28,30 @@ describe('GenerateCustomerChargeFromBillService', function () {
         expect($charge)->toBeInstanceOf(CustomerCharge::class)
             ->and($charge->status)->toBe('draft')
             ->and($charge->client_profile_id)->toBe($client->id)
-            ->and((float) $charge->original_amount)->toBe(200.00);
+            ->and((float) $charge->original_amount)->toBe(1000.00);
     });
 
-    it('applies the clients active discount rule to calculate final amount', function () {
+    it('applies the bill discount percent to calculate the final amount (R$1000 - 20% = R$800)', function () {
         $client = ClientProfile::factory()->create();
-
-        ClientDiscountRule::factory()->create([
-            'client_profile_id' => $client->id,
-            'discount_percent' => 20.0,
-            'starts_on' => now()->subDay(),
-            'ends_on' => null,
-            'is_active' => true,
-        ]);
-
         $bill = ConcessionaireBill::factory()->approved()->create([
             'client_profile_id' => $client->id,
-            'valor_total' => 100.00,
+            'injected_consumption_amount' => -1000.00,
+            'injected_consumption_discount_percent' => 20.0,
         ]);
 
         $charge = $this->service->handle($bill);
 
         expect((float) $charge->discount_percent)->toBe(20.0)
-            ->and((float) $charge->discount_amount)->toBe(20.0)
-            ->and((float) $charge->final_amount)->toBe(80.0);
+            ->and((float) $charge->discount_amount)->toBe(200.0)
+            ->and((float) $charge->final_amount)->toBe(800.0);
     });
 
-    it('creates charge with zero discount when client has no active rule', function () {
+    it('creates charge with zero discount when the bill has none set', function () {
         $client = ClientProfile::factory()->create();
         $bill = ConcessionaireBill::factory()->approved()->create([
             'client_profile_id' => $client->id,
-            'valor_total' => 150.00,
+            'injected_consumption_amount' => -150.00,
+            'injected_consumption_discount_percent' => null,
         ]);
 
         $charge = $this->service->handle($bill);
@@ -83,7 +77,7 @@ describe('GenerateCustomerChargeFromBillService', function () {
         $client = ClientProfile::factory()->create();
         $bill = ConcessionaireBill::factory()->approved()->create([
             'client_profile_id' => $client->id,
-            'valor_total' => 100.00,
+            'injected_consumption_amount' => -100.00,
         ]);
 
         $this->service->handle($bill);
@@ -98,7 +92,7 @@ describe('GenerateCustomerChargeFromBillService', function () {
         $client = ClientProfile::factory()->create();
         $bill = ConcessionaireBill::factory()->approved()->create([
             'client_profile_id' => $client->id,
-            'valor_total' => 80.00,
+            'injected_consumption_amount' => -80.00,
         ]);
 
         $charge = $this->service->handle($bill);
@@ -111,7 +105,7 @@ describe('GenerateCustomerChargeFromBillService', function () {
         $client = ClientProfile::factory()->create();
         $bill = ConcessionaireBill::factory()->approved()->create([
             'client_profile_id' => $client->id,
-            'valor_total' => 100.00,
+            'injected_consumption_amount' => -100.00,
             'reference_month' => 5,
             'reference_year' => 2026,
             'reference_label' => '05/2026',
@@ -129,7 +123,7 @@ describe('GenerateCustomerChargeFromBillService', function () {
         $client = ClientProfile::factory()->create();
         $bill = ConcessionaireBill::factory()->approved()->create([
             'client_profile_id' => $client->id,
-            'valor_total' => 50.00,
+            'injected_consumption_amount' => -50.00,
         ]);
 
         $charge = $this->service->handle($bill);

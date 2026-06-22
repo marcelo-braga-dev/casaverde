@@ -38,7 +38,31 @@ describe('BuildBillEnergyBreakdownService', function () {
 
         expect($breakdown['discount']['base_amount'])->toBe(-1147.91)
             ->and($breakdown['discount']['percent'])->toBe(20.0)
-            ->and($breakdown['discount']['amount'])->toBe(-229.58);
+            ->and($breakdown['discount']['amount'])->toBe(-229.58)
+            ->and($breakdown['discount']['final_amount'])->toBe(918.33);
+    });
+
+    it('subtracts the discount from the injected consumption to compute final_amount, never adds it', function () {
+        $bill = ConcessionaireBill::factory()->create([
+            'injected_consumption_amount' => -1000.00,
+            'injected_consumption_discount_percent' => 20.00,
+        ]);
+
+        $breakdown = $this->service->handle($bill);
+
+        expect($breakdown['discount']['amount'])->toBe(-200.0)
+            ->and($breakdown['discount']['final_amount'])->toBe(800.0);
+    });
+
+    it('never returns a negative final_amount', function () {
+        $bill = ConcessionaireBill::factory()->create([
+            'injected_consumption_amount' => -100.00,
+            'injected_consumption_discount_percent' => 150.00,
+        ]);
+
+        $breakdown = $this->service->handle($bill);
+
+        expect($breakdown['discount']['final_amount'])->toBe(0.0);
     });
 
     it('returns empty buckets when the bill has no extracted items', function () {

@@ -430,8 +430,38 @@ const Page = ({ bill, suggestedUsinaId, energyBreakdown, reviewStatuses = [], us
                                                 <Typography color="text.secondary">×</Typography>
                                                 <Typography fontWeight={700}>{formatNumber(energyBreakdown.discount.percent)}%</Typography>
                                                 <Typography color="text.secondary">=</Typography>
-                                                <Typography fontWeight={800} color="success.main">{formatMoney(abs(energyBreakdown.discount.amount)) || "—"}</Typography>
+                                                <Typography fontWeight={800} color="error.main">{formatMoney(abs(energyBreakdown.discount.amount)) || "—"}</Typography>
                                             </Stack>
+                                        </Paper>
+                                    </Box>
+
+                                    <Box sx={{ mb: 1 }}>
+                                        <Typography variant="body2" fontWeight={800} sx={{ mb: 0.25 }}>Como chegamos no Valor da Fatura ao Cliente</Typography>
+                                        <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 1 }}>
+                                            A margem de desconto é a <strong>comissão da Casa Verde</strong> e é sempre <strong>subtraída</strong> do Consumo Injetado — nunca somada — para chegar no valor cobrado do cliente.
+                                        </Typography>
+                                        <Paper variant="outlined" sx={{ p: 1.5, borderRadius: 2 }}>
+                                            <Stack direction="row" alignItems="center" justifyContent="center" spacing={1.5} flexWrap="wrap" sx={{ mb: 1.5 }}>
+                                                <Typography fontWeight={700}>{formatMoney(abs(energyBreakdown.discount.base_amount)) || "—"}</Typography>
+                                                <Typography color="error.main" fontWeight={700}>−</Typography>
+                                                <Typography fontWeight={700} color="error.main">{formatMoney(abs(energyBreakdown.discount.amount)) || "—"}</Typography>
+                                                <Typography color="text.secondary">=</Typography>
+                                                <Typography fontWeight={800} color="success.main">{formatMoney(energyBreakdown.discount.final_amount) || "—"}</Typography>
+                                            </Stack>
+                                            <Divider sx={{ mb: 1 }} />
+                                            <InfoRow label="Consumo Injetado (total)">
+                                                {formatMoney(abs(energyBreakdown.discount.base_amount)) || "—"}
+                                            </InfoRow>
+                                            <InfoRow label={`Comissão Casa Verde (margem ${formatNumber(energyBreakdown.discount.percent)}%)`}>
+                                                <Typography variant="body2" fontWeight={700} color="error.main">
+                                                    − {formatMoney(abs(energyBreakdown.discount.amount)) || "—"}
+                                                </Typography>
+                                            </InfoRow>
+                                            <InfoRow label="Valor da Fatura ao Cliente (participação)">
+                                                <Typography variant="body2" fontWeight={800} color="success.main">
+                                                    {formatMoney(energyBreakdown.discount.final_amount) || "—"}
+                                                </Typography>
+                                            </InfoRow>
                                         </Paper>
                                     </Box>
 

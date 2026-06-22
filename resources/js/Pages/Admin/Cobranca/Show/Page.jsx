@@ -375,7 +375,7 @@ export default function Page({ charge }) {
                 <Grid container spacing={2}>
                     {[
                         {
-                            label: "Valor Original",
+                            label: "Consumo Injetado",
                             value: <MoneyText value={charge.original_amount} />,
                             gradient: "linear-gradient(135deg,#64748b,#475569)",
                             icon: <IconReceipt size={20} />,
@@ -469,7 +469,7 @@ export default function Page({ charge }) {
                                 <Divider sx={{ mb: 2 }} />
 
                                 <Stack spacing={0}>
-                                    <InfoRow label="Valor original" value={<MoneyText value={charge.original_amount} />} />
+                                    <InfoRow label="Consumo Injetado" value={<MoneyText value={charge.original_amount} />} />
                                     <InfoRow
                                         label={`Desconto contratual (${discountPercent}%)`}
                                         value={<Box component="span" sx={{ color: "#10b981" }}>− <MoneyText value={charge.discount_amount} /></Box>}

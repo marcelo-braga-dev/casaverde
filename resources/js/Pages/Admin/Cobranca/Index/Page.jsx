@@ -194,7 +194,7 @@ export default function Page({
                                     <TableCell>Cliente</TableCell>
                                     <TableCell>Referência</TableCell>
                                     <TableCell>Vencimento</TableCell>
-                                    <TableCell>Valor original</TableCell>
+                                    <TableCell>Consumo Injetado</TableCell>
                                     <TableCell>Desconto</TableCell>
                                     <TableCell>Valor final</TableCell>
                                     <TableCell>Status</TableCell>

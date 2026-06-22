@@ -91,6 +91,21 @@ describe('ImportAutomaticConcessionaireBillService', function () {
         expect($this->setting->refresh()->last_checked_at)->not->toBeNull();
     });
 
+    it('defaults the bill to the Copel concessionaria when the setting has none configured', function () {
+        Concessionaria::factory()->create(['nome' => 'Copel Distribuição']);
+        $this->setting->update(['concessionaria_id' => null]);
+
+        $this->mock(ImapConcessionaireFetcherService::class, function ($mock) {
+            $mock->shouldReceive('fetchMessages')->andReturn([fakeMessageWithAttachment()]);
+        });
+
+        $service = app(ImportAutomaticConcessionaireBillService::class);
+        $service->handle($this->clientProfile, $this->setting);
+
+        $bill = ConcessionaireBill::first();
+        expect($bill->concessionaria->nome)->toBe('Copel Distribuição');
+    });
+
     it('skips an attachment that was already imported, identified by its content hash', function () {
         $this->mock(ImapConcessionaireFetcherService::class, function ($mock) {
             $mock->shouldReceive('fetchMessages')->andReturn([fakeMessageWithAttachment()]);

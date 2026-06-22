@@ -254,7 +254,7 @@ export default function Page({ cobranca }) {
 
                                     <Stack spacing={0}>
                                         <Stack direction="row" justifyContent="space-between" alignItems="center" py={1}>
-                                            <Typography variant="body2" color="text.secondary">Valor original (fatura)</Typography>
+                                            <Typography variant="body2" color="text.secondary">Consumo Injetado</Typography>
                                             <Typography variant="body2" sx={{ fontWeight: 700 }}>{formatMoney(original)}</Typography>
                                         </Stack>
                                         <Stack direction="row" justifyContent="space-between" alignItems="center" py={1}>

@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Fatura\ConcessionaireBill;
 use App\Models\Importacao\ClientEmailImportSetting;
+use App\Models\Usina\Concessionaria;
 use App\Services\Fatura\CopelBillParserService;
 use App\Services\Fatura\PdfTextExtractorService;
 use App\Services\Fatura\ProtectedPdfResolverService;
@@ -80,6 +81,7 @@ class ReprocessConcessionaireBillsCommand extends Command
                     'consumer_unit_id' => $bill->consumer_unit_id ?: $consumerUnit?->id,
                     'usina_id' => $bill->usina_id
                         ?: ($consumerUnit?->activeUsinaLink?->usina_id ?? $clientProfile->activeUsinaLink?->usina_id),
+                    'concessionaria_id' => $bill->concessionaria_id ?: Concessionaria::copel()?->id,
                     'reference_month' => $parsed['reference_month'],
                     'reference_year' => $parsed['reference_year'],
                     'reference_label' => $parsed['reference_label'],

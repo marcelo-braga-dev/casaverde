@@ -63,7 +63,10 @@ class ClienteEconomiaRelatorioService
             $charge = $charges->get($m);
             $bill = $bills->get($m);
 
-            $originalAmount = (float) ($charge?->original_amount ?? $bill?->valor_total ?? 0);
+            // "Valor que pagaria sem o Casa Verde" é sempre o valor cheio da fatura da
+            // concessionária — não confundir com CustomerCharge::original_amount, que é
+            // apenas a base de cálculo da cobrança (Consumo Injetado).
+            $originalAmount = (float) ($bill?->valor_total ?? $charge?->original_amount ?? 0);
             $finalAmount = (float) ($charge?->final_amount ?? $originalAmount);
             $discountAmount = (float) ($charge?->discount_amount ?? 0);
             $consumoKwh = (float) ($bill?->consumo_kwh ?? 0);
@@ -111,7 +114,7 @@ class ClienteEconomiaRelatorioService
             return [];
         }
 
-        $originalAmount = (float) ($charge?->original_amount ?? $bill?->valor_total ?? 0);
+        $originalAmount = (float) ($bill?->valor_total ?? $charge?->original_amount ?? 0);
         $finalAmount = (float) ($charge?->final_amount ?? $originalAmount);
         $discountAmount = (float) ($charge?->discount_amount ?? 0);
         $consumoKwh = (float) ($bill?->consumo_kwh ?? 0);
@@ -169,28 +172,33 @@ class ClienteEconomiaRelatorioService
 
     private function getAllTimeSummary(int $clientProfileId): array
     {
+        // "Valor que pagaria sem o Casa Verde" usa o valor cheio da fatura da
+        // concessionária (bills.valor_total), não customer_charges.original_amount
+        // (que é só a base de cálculo da cobrança — Consumo Injetado).
         $totals = CustomerCharge::query()
-            ->where('client_profile_id', $clientProfileId)
-            ->whereIn('status', ['paid', 'open', 'waiting_payment', 'overdue'])
+            ->where('customer_charges.client_profile_id', $clientProfileId)
+            ->whereIn('customer_charges.status', ['paid', 'open', 'waiting_payment', 'overdue'])
+            ->leftJoin('concessionaire_bills', 'concessionaire_bills.id', '=', 'customer_charges.concessionaire_bill_id')
             ->selectRaw('
-                SUM(original_amount) as total_original,
-                SUM(final_amount)    as total_final,
-                SUM(discount_amount) as total_savings,
-                COUNT(*)             as total_charges,
-                MIN(CONCAT(reference_year, LPAD(reference_month, 2, "0"))) as first_period,
-                MAX(CONCAT(reference_year, LPAD(reference_month, 2, "0"))) as last_period
+                SUM(COALESCE(concessionaire_bills.valor_total, customer_charges.original_amount)) as total_original,
+                SUM(customer_charges.final_amount)    as total_final,
+                COUNT(*)             as total_charges
             ')
             ->first();
 
         $paidTotals = CustomerCharge::query()
-            ->where('client_profile_id', $clientProfileId)
-            ->where('status', 'paid')
-            ->selectRaw('SUM(final_amount) as total_paid, SUM(discount_amount) as total_saved_paid')
+            ->leftJoin('concessionaire_bills', 'concessionaire_bills.id', '=', 'customer_charges.concessionaire_bill_id')
+            ->where('customer_charges.client_profile_id', $clientProfileId)
+            ->where('customer_charges.status', 'paid')
+            ->selectRaw('
+                SUM(customer_charges.final_amount) as total_paid,
+                SUM(COALESCE(concessionaire_bills.valor_total, customer_charges.original_amount) - customer_charges.final_amount) as total_saved_paid
+            ')
             ->first();
 
         $totalOriginal = (float) ($totals?->total_original ?? 0);
         $totalFinal = (float) ($totals?->total_final ?? 0);
-        $totalSavings = (float) ($totals?->total_savings ?? 0);
+        $totalSavings = max(0, $totalOriginal - $totalFinal);
 
         return [
             'total_original' => $totalOriginal,

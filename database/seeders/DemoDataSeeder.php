@@ -553,6 +553,8 @@ class DemoDataSeeder extends Seeder
                     'vencimento' => $period->copy()->addDays(10)->toDateString(),
                     'valor_total' => $valor,
                     'consumo_kwh' => $consumo,
+                    'injected_consumption_amount' => -$valor,
+                    'injected_consumption_discount_percent' => $discount,
                     'pdf_disk' => 'local',
                     'pdf_path' => 'demo/faturas/demo_'.$i.'_'.$refYear.$refMonth.'.pdf',
                     'review_status' => 'approved',
@@ -562,7 +564,8 @@ class DemoDataSeeder extends Seeder
 
                 $billCount++;
 
-                // Cobrança vinculada
+                // Cobrança vinculada — incide sobre o Consumo Injetado (= $valor neste
+                // seeder, ver injected_consumption_amount acima), não sobre valor_total.
                 $discountAmt = round($valor * ($discount / 100), 2);
                 $finalAmt = round($valor - $discountAmt, 2);
 

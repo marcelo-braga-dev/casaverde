@@ -43,4 +43,13 @@ class Concessionaria extends Model
     {
         return $this->hasMany(ConcessionaireBill::class, 'concessionaria_id');
     }
+
+    /**
+     * CopelBillParserService só sabe ler o layout da Copel — usado como
+     * concessionária padrão quando a fatura não informa uma explicitamente.
+     */
+    public static function copel(): ?self
+    {
+        return self::query()->where('nome', 'like', '%Copel%')->first();
+    }
 }

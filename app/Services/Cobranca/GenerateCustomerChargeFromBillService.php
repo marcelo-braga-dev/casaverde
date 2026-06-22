@@ -21,14 +21,16 @@ class GenerateCustomerChargeFromBillService
 
         return DB::transaction(function () use ($bill) {
             $bill->loadMissing([
-                'clientProfile.activeDiscountRule',
                 'clientProfile.platformUser',
                 'usina',
                 'concessionaria',
             ]);
 
-            $discountPercent = (float) ($bill->clientProfile?->activeDiscountRule?->discount_percent ?? 0);
-            $originalAmount = (float) $bill->valor_total;
+            // A cobrança ao cliente incide sobre o Consumo Injetado (total), não sobre o
+            // valor total da fatura da concessionária — este último inclui taxas e tarifas
+            // que não fazem parte do que é repassado ao cliente da assinatura.
+            $originalAmount = abs((float) $bill->injected_consumption_amount);
+            $discountPercent = (float) ($bill->injected_consumption_discount_percent ?? 0);
             $discountAmount = round($originalAmount * ($discountPercent / 100), 2);
             $finalAmount = max(0, $originalAmount - $discountAmount);
 

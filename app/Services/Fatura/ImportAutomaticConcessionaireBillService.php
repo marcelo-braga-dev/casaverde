@@ -7,6 +7,7 @@ use App\Models\Fatura\ConcessionaireBill;
 use App\Models\Fatura\ImportedConcessionaireEmail;
 use App\Models\Fatura\ImportRun;
 use App\Models\Importacao\ClientEmailImportSetting;
+use App\Models\Usina\Concessionaria;
 use App\Services\Fatura\Imap\ImapConcessionaireFetcherService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -211,7 +212,7 @@ class ImportAutomaticConcessionaireBillService
                         'consumer_unit_id' => $consumerUnit?->id,
                         'usina_id' => $consumerUnit?->activeUsinaLink?->usina_id
                             ?? $clientProfile->activeUsinaLink?->usina_id,
-                        'concessionaria_id' => $setting->concessionaria_id,
+                        'concessionaria_id' => $setting->concessionaria_id ?? Concessionaria::copel()?->id,
                         'import_source' => 'email',
                         'reference_month' => $parsed['reference_month'],
                         'reference_year' => $parsed['reference_year'],

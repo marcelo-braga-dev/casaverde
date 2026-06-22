@@ -117,7 +117,7 @@ export default function Page({ cobrancas, filters = {}, totais = {} }) {
                     head={
                         <TableRow>
                             <TableCell>Competência</TableCell>
-                            <TableCell align="right">Valor Original</TableCell>
+                            <TableCell align="right">Consumo Injetado</TableCell>
                             <TableCell align="right">Desconto</TableCell>
                             <TableCell align="right">Valor Final</TableCell>
                             <TableCell>Vencimento</TableCell>

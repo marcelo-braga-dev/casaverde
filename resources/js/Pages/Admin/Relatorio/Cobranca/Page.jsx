@@ -182,7 +182,7 @@ export default function Page({report, filters = {}, statuses = []}) {
                     <Grid size={{xs: 12, sm: 6, md: 3}}>
                         <Card>
                             <CardContent>
-                                <Typography color="text.secondary">Valor original</Typography>
+                                <Typography color="text.secondary">Consumo Injetado</Typography>
                                 <MoneyText value={summary.original_amount} bold variant="h5" component="div"/>
                             </CardContent>
                         </Card>

@@ -15,6 +15,11 @@ class BuildBillEnergyBreakdownService
 
         $consumptionAmount = (float) ($bill->injected_consumption_amount ?? 0);
         $discountPercent = (float) ($bill->injected_consumption_discount_percent ?? 0);
+        $discountAmount = round($consumptionAmount * ($discountPercent / 100), 2);
+
+        // A margem de desconto é sempre subtraída do Consumo Injetado para chegar
+        // ao valor cobrado ao cliente — mesma fórmula usada em GenerateCustomerChargeFromBillService.
+        $finalAmount = (float) max(0, round(abs($consumptionAmount) - abs($discountAmount), 2));
 
         return [
             'injected_energy' => [
@@ -32,7 +37,8 @@ class BuildBillEnergyBreakdownService
             'discount' => [
                 'base_amount' => round($consumptionAmount, 2),
                 'percent' => round($discountPercent, 2),
-                'amount' => round($consumptionAmount * ($discountPercent / 100), 2),
+                'amount' => $discountAmount,
+                'final_amount' => $finalAmount,
             ],
         ];
     }

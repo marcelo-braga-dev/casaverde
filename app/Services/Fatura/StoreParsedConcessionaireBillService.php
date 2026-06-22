@@ -6,6 +6,7 @@ use App\Models\Cliente\ClientProfile;
 use App\Models\Cliente\ConsumerUnit;
 use App\Models\Fatura\ConcessionaireBill;
 use App\Models\Importacao\ClientEmailImportSetting;
+use App\Models\Usina\Concessionaria;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -55,7 +56,7 @@ class StoreParsedConcessionaireBillService
                 'client_profile_id' => $clientProfileId,
                 'consumer_unit_id' => $consumerUnit?->id,
                 'usina_id' => $data['usina_id'] ?? null,
-                'concessionaria_id' => $data['concessionaria_id'] ?? null,
+                'concessionaria_id' => $data['concessionaria_id'] ?? $setting?->concessionaria_id ?? Concessionaria::copel()?->id,
                 'created_by_user_id' => auth()->id(),
                 'import_source' => 'manual',
                 'pdf_disk' => 'local',
