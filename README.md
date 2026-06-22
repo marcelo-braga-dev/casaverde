@@ -246,8 +246,10 @@ O projeto já possui base funcional para:
 - vínculo cliente-usina (`ClientUsinaLink`) e contratos (`ClientContract`)
 - geração automática de cobrança (`CustomerCharge`) a partir de fatura aprovada
 - pagamento de cobranças via Cora (boleto/Pix) com webhook de retorno e jobs de sincronização de status
+- lembrete automático de cobrança (pré-vencimento e pós-vencimento) via `OperationalAlert` com link de WhatsApp pronto para o consultor
 - relatórios financeiros e operacionais (faturas, com export em Excel/PDF)
 - filtros de busca (incluindo por nome de cliente) nas principais páginas de listagem financeira
+- Policies de autorização por registro para `UsinaSolar`, `CustomerCharge` e `ProducerProfile` (consultor só acessa sua própria carteira)
 
 ## 7.2 Fluxos já alinhados recentemente
 A arquitetura foi atualizada para comportar corretamente:
@@ -267,7 +269,7 @@ A arquitetura foi atualizada para comportar corretamente:
 - trilha histórica por competência
 - automações operacionais mais profundas
 - expandir filtro por nome de cliente para demais páginas com filtros, à medida que forem criadas (ver convenção em `CLAUDE.md`)
-- aumentar cobertura de testes em Cora/pagamentos, IMAP, PDF e WhatsApp (atualmente sem cobertura)
+- aumentar cobertura de testes em geração de PDF (Cora/pagamentos, IMAP e WhatsApp já têm cobertura)
 
 ---
 
@@ -724,9 +726,9 @@ Ao manter o sistema, priorizar sempre a regra atual documentada aqui.
 - padronizar nomenclatura de campos compartilhados
 
 ## Médio prazo
-- padronizar services/repositories mais sensíveis (ex.: dividir `ClientReportService`, `StoreProdutorPropostaRequest`)
-- criar Policies para `UsinaSolar`, `CustomerCharge`, `ProducerProfile`
-- criar testes automatizados para Cora/pagamentos, IMAP, PDF e WhatsApp
+- padronizar services/repositories mais sensíveis (ex.: dividir `ClientReportService`, `ImportAutomaticConcessionaireBillService`)
+- revisar `FormRequest::authorize()` que hoje só checam `auth()->check()` sem validar a role
+- criar testes automatizados para geração de PDF (Cora/pagamentos, IMAP e WhatsApp já cobertos)
 
 ## Longo prazo
 - congelamento por competência

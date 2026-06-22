@@ -72,7 +72,7 @@ Redirecionamento pós-login (`app/Http/Middleware/RedirectUserByRole.php`):
 - Services injetados via construtor (DI) — **nunca `new Service()` direto**.
 - Repositories em `app/Repositories/` — consultas de listagem/paginação complexas ficam aqui, não nos controllers.
 - DTOs em `app/DTOs/` — único diretório válido. Subpastas: `Endereco/`, `Payments/`, `UsinaSolar/`, `Usuario/`.
-- Policies para autorização (`app/Policies/`). Atualmente: `ClientProfilePolicy`, `CommercialProposalPolicy`. Demais entidades usam verificação manual — expandir quando possível.
+- Policies para autorização (`app/Policies/`). Atualmente: `ClientProfilePolicy`, `CommercialProposalPolicy`, `UsinaSolarPolicy`, `CustomerChargePolicy`, `ProducerProfilePolicy`. Todas seguem o padrão `before()` com bypass para ADMIN e checagem por `consultor_user_id`/`platform_user_id` para as demais roles. Registradas em `AppServiceProvider::boot()` via `Gate::policy()` — não há `AuthServiceProvider` neste Laravel 12, então não há auto-discovery. Demais entidades usam verificação manual — expandir quando possível.
 - Scoping de consultor via Query Scopes — nunca filtros manuais repetidos. Exemplo: `scopeSomenteMeusClientes()` em `User`.
 - Nomenclatura: inglês em models/classes; português aceitável em variáveis/comentários.
 - `FormRequest::authorize()` deve validar a role, não só `auth()->check()`.
@@ -85,7 +85,7 @@ Redirecionamento pós-login (`app/Http/Middleware/RedirectUserByRole.php`):
 ### Usina Solar
 - `UsinaSolar.producer_profile_id` = referência ao `ProducerProfile` do produtor proprietário (**campo crítico**).
 - `UsinaSolar.consultor_user_id` = FK para `users` (role consultor).
-- **NÃO existe mais `UsinaSolar.user_id`** — foi removido na migration `2026_05_19`. O relacionamento `user()` no model (`UsinaSolar.php:59`) é código legado sem coluna correspondente — não usar e remover ao tocar o arquivo.
+- **NÃO existe mais `UsinaSolar.user_id`** — foi removido na migration `2026_05_19`. Não recriar o relacionamento `user()` no model.
 - Toda usina DEVE ter `producer_profile_id` e `consultor_user_id`.
 - Campos de energia: `energia_disponivel_kwh`, `energia_alocada_kwh`, `energia_saldo_kwh`.
 
@@ -173,10 +173,19 @@ app/Jobs/
 ├── MarkChargeAsOverdueJob.php
 ├── SendChargeReminderJob.php
 ├── SyncPaymentStatusJob.php
-└── ProcessPaymentWebhookJob.php
+└── Pagamento/ProcessPaymentWebhookJob.php
 ```
 
-Serviços de automação recorrente: `ChargeAutomationService`, `ChargeReminderService`, `PaymentAutomationService` em `app/Services/Automation/`.
+Serviços de automação recorrente em `app/Services/Automation/`:
+- `ChargeAutomationService` — gera `CustomerCharge` a partir de fatura aprovada.
+- `PaymentAutomationService` — gera pagamento (`PaymentSlip`) para cobranças sem pagamento ativo.
+- `ChargeReminderService` — dispara lembrete de cobrança: pré-vencimento (3 dias antes do `due_date`, uma vez) e pós-vencimento (a cada 5 dias enquanto `status=overdue`). Despacha `SendChargeReminderJob`, que delega para `GenerateChargeReminderAlertService` (cria um `OperationalAlert` com link `wa.me` pronto no `payload`, atribuído ao consultor responsável). Controlado pela coluna `customer_charges.reminder_sent_at`.
+
+Agendamento (`routes/console.php`):
+- `casaverde:send-charge-reminders` (`SendChargeRemindersCommand`) — `dailyAt('08:00')`.
+- `casaverde:generate-missing-payments` (`GenerateMissingPaymentsCommand`) — `hourly()`.
+
+Não existe envio automático de WhatsApp (sem credenciais de Business API/Twilio/Z-API) — `WhatsAppLinkService` apenas gera o link `wa.me` para clique humano do consultor a partir do alerta.
 
 ---
 
@@ -272,9 +281,9 @@ Menu construído com base em `auth.user.role_name` — segurança real sempre no
 
 - Framework: Pest PHP
 - Ambiente: SQLite in-memory (`phpunit.xml` define `DB_CONNECTION=sqlite`, `DB_DATABASE=:memory:`)
-- Cobertura atual: 39 arquivos de teste (Feature + Unit)
-- Áreas cobertas: Auth, Middleware, Dashboard (Admin/Consultor), Services (Cliente, Cobrança, Usina, Fatura, Proposta), Controllers (ConsumerUnit, ClientUsinaLink, ConcessionariaController, ProducerFeeRule)
-- **Áreas sem cobertura**: Cora/pagamentos, IMAP, PDF, WhatsApp
+- Cobertura atual: 57 arquivos de teste (Feature + Unit)
+- Áreas cobertas: Auth, Middleware, Dashboard (Admin/Consultor), Services (Cliente, Cobrança, Usina, Fatura, Proposta, Automation), Controllers (ConsumerUnit, ClientUsinaLink, ConcessionariaController, ProducerFeeRule), Policies (UsinaSolar, CustomerCharge, ProducerProfile), Pagamento/Cora (auth, provider, webhook signature, webhook controller, processamento de webhook, geração de boleto/Pix), IMAP (`ImportAutomaticConcessionaireBillService`, com fetcher/extrator/desbloqueio de PDF mockados), WhatsApp (`WhatsAppLinkService`)
+- **Áreas sem cobertura**: geração de PDF (dompdf/snappy)
 
 Preferir testes de integração com SQLite — sem mocks de DB.
 
@@ -284,11 +293,10 @@ Preferir testes de integração com SQLite — sem mocks de DB.
 
 | Problema | Local | Ação |
 |----------|-------|------|
-| `UsinaSolar::user()` referencia coluna removida | `app/Models/Usina/UsinaSolar.php:59` | Remover método legado |
-| `FormRequest::authorize()` retorna só `auth()->check()` | Fatura, Cobranca, Cliente, Produtor, Pagamento Requests | Validar role explicitamente |
-| Controllers/Services acima de 200 linhas | `ClientReportService`, `StoreProdutorPropostaRequest` | Dividir em classes menores |
-| Policies faltando para UsinaSolar, CustomerCharge, ProducerProfile | `app/Policies/` | Criar e registrar |
+| `FormRequest::authorize()` retorna só `auth()->check()` | Fatura, Cobranca, Cliente, Produtor, Pagamento Requests (~23 classes) | Validar role explicitamente — pacote dedicado futuro, volume grande |
+| Controllers/Services acima de 200 linhas | `ClientReportService`, `ImportAutomaticConcessionaireBillService`, `ScanUsinaOperationalAlertsService`, `ClienteEconomiaRelatorioService`, `AdminDashboardMetricsService`, `ExecutiveCockpitService` | Dividir em classes menores |
 | N+1 potenciais | Services sem eager loading | Adicionar `.with()` onde necessário |
+| Sem cobertura de teste para geração de PDF | dompdf/snappy | Criar testes quando o fluxo for revisado |
 
 ---
 
@@ -316,6 +324,10 @@ npm run build
 # Migrations
 php artisan migrate
 php artisan migrate:fresh --seed
+
+# Automações financeiras (também agendadas via routes/console.php)
+php artisan casaverde:send-charge-reminders
+php artisan casaverde:generate-missing-payments
 
 # Seeders disponíveis
 # RolesSeeder, UserSeeder, ConcessionariasSeeder,
