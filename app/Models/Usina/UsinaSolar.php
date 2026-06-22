@@ -56,11 +56,6 @@ class UsinaSolar extends Model
         'remaining_energy_kwh',
     ];
 
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'user_id');
-    }
-
     public function produtor()
     {
         return $this->belongsTo(ProducerProfile::class, 'producer_profile_id');
