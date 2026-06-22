@@ -452,7 +452,7 @@ const Page = ({ bill, suggestedUsinaId, energyBreakdown, reviewStatuses = [], us
                                             <InfoRow label="Consumo Injetado (total)">
                                                 {formatMoney(abs(energyBreakdown.discount.base_amount)) || "—"}
                                             </InfoRow>
-                                            <InfoRow label={`Comissão Casa Verde (margem ${formatNumber(energyBreakdown.discount.percent)}%)`}>
+                                            <InfoRow label={`Valor do Desconto (${formatNumber(energyBreakdown.discount.percent)}%)`}>
                                                 <Typography variant="body2" fontWeight={700} color="error.main">
                                                     − {formatMoney(abs(energyBreakdown.discount.amount)) || "—"}
                                                 </Typography>
