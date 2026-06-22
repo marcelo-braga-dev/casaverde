@@ -457,7 +457,7 @@ const Page = ({ bill, suggestedUsinaId, energyBreakdown, reviewStatuses = [], us
                                                     − {formatMoney(abs(energyBreakdown.discount.amount)) || "—"}
                                                 </Typography>
                                             </InfoRow>
-                                            <InfoRow label="Valor da Fatura ao Cliente (participação)">
+                                            <InfoRow label="Valor da Fatura ao Cliente">
                                                 <Typography variant="body2" fontWeight={800} color="success.main">
                                                     {formatMoney(energyBreakdown.discount.final_amount) || "—"}
                                                 </Typography>
