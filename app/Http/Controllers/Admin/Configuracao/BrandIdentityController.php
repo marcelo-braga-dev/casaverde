@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Config\UpdateBrandIdentityRequest;
 use App\Models\Config\SystemSetting;
 use App\Services\Config\SystemSettingService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Inertia\Inertia;
@@ -32,7 +33,7 @@ class BrandIdentityController extends Controller
         ]);
     }
 
-    public function update(UpdateBrandIdentityRequest $request, SystemSettingService $settings): \Illuminate\Http\RedirectResponse
+    public function update(UpdateBrandIdentityRequest $request, SystemSettingService $settings): RedirectResponse
     {
         $userId = auth()->id();
 
@@ -51,14 +52,14 @@ class BrandIdentityController extends Controller
         return back()->with('success', 'Identidade visual atualizada com sucesso.');
     }
 
-    public function destroyLogo(SystemSettingService $settings): \Illuminate\Http\RedirectResponse
+    public function destroyLogo(SystemSettingService $settings): RedirectResponse
     {
         $this->removeFile($settings, 'brand_logo_path');
 
         return back()->with('success', 'Logo restaurado para o padrão.');
     }
 
-    public function destroyFavicon(SystemSettingService $settings): \Illuminate\Http\RedirectResponse
+    public function destroyFavicon(SystemSettingService $settings): RedirectResponse
     {
         $this->removeFile($settings, 'brand_favicon_path');
 

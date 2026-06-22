@@ -167,42 +167,42 @@ class ClientProposalController extends Controller
 
             // CLIENTE
             'cliente' => [
-            'id' => $cliente?->id,
-            'email' => (
-                $cliente?->email
-                ?? $cliente?->platformUser?->email
-            ),
-            'user_data' => [
-                'nome' => ($cliente?->nome),
-                'razao_social' => ($cliente?->razao_social),
-                'nome_fantasia' => ($cliente?->nome_fantasia),
-                'cpf' => ($cliente?->cpf),
-                'cnpj' => ($cliente?->cnpj),
-            ],
-            'contatos' => [
-                'celular' => (
-                    $cliente?->telefone
-                    ?? $cliente?->celular
-                ),
+                'id' => $cliente?->id,
                 'email' => (
                     $cliente?->email
                     ?? $cliente?->platformUser?->email
                 ),
-            ],
+                'user_data' => [
+                    'nome' => ($cliente?->nome),
+                    'razao_social' => ($cliente?->razao_social),
+                    'nome_fantasia' => ($cliente?->nome_fantasia),
+                    'cpf' => ($cliente?->cpf),
+                    'cnpj' => ($cliente?->cnpj),
+                ],
+                'contatos' => [
+                    'celular' => (
+                        $cliente?->telefone
+                        ?? $cliente?->celular
+                    ),
+                    'email' => (
+                        $cliente?->email
+                        ?? $cliente?->platformUser?->email
+                    ),
+                ],
             ],
 
             // ENDEREÇO
             'endereco' => [
                 'endereco_completo' => collect([
-                $proposal?->address?->rua,
-                $proposal?->address?->numero,
-                $proposal?->address?->bairro,
-                $proposal?->address?->cidade,
-                $proposal?->address?->estado,
-                $proposal?->address?->cep,
+                    $proposal?->address?->rua,
+                    $proposal?->address?->numero,
+                    $proposal?->address?->bairro,
+                    $proposal?->address?->cidade,
+                    $proposal?->address?->estado,
+                    $proposal?->address?->cep,
                 ])
-                ->filter()
-                ->implode(', '),
+                    ->filter()
+                    ->implode(', '),
 
             ],
 
