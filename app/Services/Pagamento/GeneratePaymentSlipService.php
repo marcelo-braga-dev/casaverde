@@ -32,7 +32,7 @@ class GeneratePaymentSlipService
 
         return DB::transaction(function () use ($charge, $provider, $paymentMethod) {
             $charge->loadMissing([
-                'clientProfile',
+                'clientProfile.contacts',
                 'platformUser',
             ]);
 
@@ -44,9 +44,9 @@ class GeneratePaymentSlipService
                 ?? $charge->clientProfile?->nome
                 ?? $charge->clientProfile?->razao_social
                 ?? 'Cliente',
-                email: $charge->platformUser?->email ?? $charge->clientProfile?->email ?? null,
+                email: $charge->platformUser?->email ?? $charge->clientProfile?->contacts?->email ?? null,
                 document: $charge->clientProfile?->cpf ?? $charge->clientProfile?->cnpj ?? null,
-                phone: $charge->clientProfile?->phone ?? null,
+                phone: $charge->clientProfile?->contacts?->celular ?? $charge->clientProfile?->contacts?->telefone ?? null,
             );
 
             $dto = new CreatePaymentDTO(

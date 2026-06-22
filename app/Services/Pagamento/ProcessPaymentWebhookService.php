@@ -21,29 +21,29 @@ class ProcessPaymentWebhookService
             return $event;
         }
 
-        return DB::transaction(function () use ($event) {
-            $event->update([
-                'attempts' => $event->attempts + 1,
-                'last_attempt_at' => now(),
-            ]);
+        $event->update([
+            'attempts' => $event->attempts + 1,
+            'last_attempt_at' => now(),
+        ]);
 
-            try {
+        try {
+            DB::transaction(function () use ($event) {
                 match ($event->provider) {
                     'cora' => $this->processCora($event),
                     default => $this->ignore($event, 'Provider de webhook não suportado.'),
                 };
+            });
 
-                return $event->fresh();
-            } catch (Throwable $e) {
-                $event->update([
-                    'status' => 'failed',
-                    'error_message' => $e->getMessage(),
-                    'processed_at' => now(),
-                ]);
+            return $event->fresh();
+        } catch (Throwable $e) {
+            $event->update([
+                'status' => 'failed',
+                'error_message' => $e->getMessage(),
+                'processed_at' => now(),
+            ]);
 
-                throw $e;
-            }
-        });
+            throw $e;
+        }
     }
 
     private function processCora(PaymentWebhookEvent $event): void

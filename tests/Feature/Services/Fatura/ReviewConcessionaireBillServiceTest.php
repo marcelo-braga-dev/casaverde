@@ -1,7 +1,7 @@
 <?php
 
-use App\Models\Cliente\ClientProfile;
 use App\Models\Cliente\ClientDiscountRule;
+use App\Models\Cliente\ClientProfile;
 use App\Models\Fatura\ConcessionaireBill;
 use App\Models\Usina\Concessionaria;
 use App\Services\Fatura\ReviewConcessionaireBillService;
