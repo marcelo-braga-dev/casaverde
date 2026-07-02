@@ -31,6 +31,7 @@ class EnergyBill extends Model
         'total_pagar' => 'decimal:2',
         'consumo_kwh' => 'decimal:2',
         'parser_payload' => 'array',
+        'unidade_consumidora' => 'string',
     ];
 
     protected $appends = [

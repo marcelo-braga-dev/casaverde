@@ -15,8 +15,12 @@ class ConsumerUnitController extends Controller
     {
         $this->authorize('update', $clientProfile);
 
+        $request->merge([
+            'uc_code' => ltrim(preg_replace('/\D+/', '', (string) $request->input('uc_code')) ?? '', '0'),
+        ]);
+
         $data = $request->validate([
-            'uc_code' => ['required', 'string', 'max:30'],
+            'uc_code' => ['required', 'digits_between:6,12'],
             'label' => ['nullable', 'string', 'max:120'],
             'consumo_previsto_kwh_mes' => ['required', 'numeric', 'min:0'],
             'concessionaria_id' => ['nullable', 'integer', 'exists:concessionarias,id'],
@@ -72,8 +76,12 @@ class ConsumerUnitController extends Controller
     {
         $this->authorize('update', $clientProfile);
 
+        $request->merge([
+            'uc_code' => ltrim(preg_replace('/\D+/', '', (string) $request->input('uc_code')) ?? '', '0'),
+        ]);
+
         $data = $request->validate([
-            'uc_code' => ['required', 'string', 'max:30'],
+            'uc_code' => ['required', 'digits_between:6,12'],
             'label' => ['nullable', 'string', 'max:120'],
             'consumo_previsto_kwh_mes' => ['required', 'numeric', 'min:0'],
             'concessionaria_id' => ['nullable', 'integer', 'exists:concessionarias,id'],

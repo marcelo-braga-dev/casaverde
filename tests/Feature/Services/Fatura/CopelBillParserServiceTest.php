@@ -66,4 +66,48 @@ TEXT;
         expect($parsed['unidade_consumidora'])->toBe('108226930');
     });
 
+    it('extracts a 12-digit unidade consumidora from the UC label', function () {
+        $rawText = <<<'TEXT'
+Nome: JOAO DA SILVA
+UC: 123456789012
+05/2026 20/06/2026 R$100,00
+TEXT;
+
+        $parsed = $this->service->parse($rawText);
+
+        expect($parsed['unidade_consumidora'])->toBe('123456789012');
+    });
+
+    it('strips leading zeros from a zero-padded unidade consumidora', function () {
+        $rawText = <<<'TEXT'
+Nome: JOAO DA SILVA
+UC: 0000123412394821
+05/2026 20/06/2026 R$100,00
+TEXT;
+
+        $parsed = $this->service->parse($rawText);
+
+        expect($parsed['unidade_consumidora'])->toBe('123412394821');
+    });
+
+    it('throws a specific error when the unidade consumidora cannot be extracted', function () {
+        $rawText = <<<'TEXT'
+Nome: SEM UC NO TEXTO
+05/2026 20/06/2026 R$100,00
+TEXT;
+
+        expect(fn () => $this->service->parse($rawText))
+            ->toThrow(DomainException::class, 'Não foi possível localizar o número da Unidade Consumidora (UC) na fatura Copel. Sem esse valor, a fatura não pode ser processada.');
+    });
+
+    it('throws when the other required fields are missing but the UC is present', function () {
+        $rawText = <<<'TEXT'
+Nome: JOAO DA SILVA
+UC: 123456789012
+TEXT;
+
+        expect(fn () => $this->service->parse($rawText))
+            ->toThrow(DomainException::class, 'Não foi possível localizar os campos obrigatórios da fatura Copel.');
+    });
+
 });

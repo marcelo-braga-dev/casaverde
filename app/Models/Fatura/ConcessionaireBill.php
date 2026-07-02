@@ -56,6 +56,7 @@ class ConcessionaireBill extends Model
     ];
 
     protected $casts = [
+        'unidade_consumidora' => 'string',
         'vencimento' => 'date',
         'valor_total' => 'decimal:2',
         'consumo_kwh' => 'decimal:2',

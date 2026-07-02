@@ -34,6 +34,7 @@ import {
     IconTrash,
 } from '@tabler/icons-react';
 import { useState } from 'react';
+import onlyDigits from '@/Utils/onlyDigits';
 
 const STATUS_MAP = {
     active:    { label: 'Ativa',     color: 'success' },
@@ -102,10 +103,11 @@ function UcForm({ profile, uc = null, concessionarias = [], onClose }) {
                         <TextField
                             label="Código UC"
                             value={form.data.uc_code}
-                            onChange={e => form.setData('uc_code', e.target.value)}
+                            onChange={e => form.setData('uc_code', onlyDigits(e.target.value))}
                             error={!!form.errors.uc_code}
                             required
                             fullWidth
+                            slotProps={{ htmlInput: { inputMode: 'numeric' } }}
                         />
                     </Grid>
                     <Grid size={{ xs: 12, sm: 6 }}>

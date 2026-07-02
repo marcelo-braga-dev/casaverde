@@ -43,7 +43,7 @@ class StoreCommercialProposalRequest extends FormRequest
             'media_consumo' => ['nullable'],
             'prazo_locacao' => ['nullable'],
             'valor_medio' => ['nullable'],
-            'unidade_consumidora' => ['nullable'],
+            'unidade_consumidora' => ['nullable', 'digits_between:6,12'],
             'valid_until' => ['nullable', 'date'],
             'notes' => ['nullable'],
         ];
@@ -51,11 +51,14 @@ class StoreCommercialProposalRequest extends FormRequest
 
     protected function prepareForValidation(): void
     {
+        $ucDigits = ltrim(preg_replace('/\D+/', '', (string) $this->input('unidade_consumidora')) ?? '', '0');
+
         $this->merge([
             'cpf' => ClientProfile::normalizeDocument($this->cpf),
             'cnpj' => ClientProfile::normalizeDocument($this->cnpj),
             'telefone' => ClientProfile::normalizeDocument($this->telefone),
             'email' => $this->email ? mb_strtolower(trim($this->email)) : null,
+            'unidade_consumidora' => $ucDigits !== '' ? $ucDigits : null,
         ]);
     }
 }

@@ -22,7 +22,7 @@ class StoreConsumerUnitRequest extends FormRequest
     {
         return [
             'client_profile_id' => ['required', 'integer', 'exists:client_profiles,id'],
-            'uc_code' => ['required', 'string', 'max:30'],
+            'uc_code' => ['required', 'digits_between:6,12'],
             'label' => ['nullable', 'string', 'max:120'],
             'consumo_previsto_kwh_mes' => ['required', 'numeric', 'min:0'],
             'concessionaria_id' => ['nullable', 'integer', 'exists:concessionarias,id'],
@@ -44,6 +44,7 @@ class StoreConsumerUnitRequest extends FormRequest
     {
         $this->merge([
             'consumo_previsto_kwh_mes' => $this->normalizeNumber($this->input('consumo_previsto_kwh_mes')),
+            'uc_code' => ltrim(preg_replace('/\D+/', '', (string) $this->input('uc_code')) ?? '', '0'),
         ]);
     }
 }

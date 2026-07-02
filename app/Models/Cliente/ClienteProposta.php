@@ -41,6 +41,7 @@ class ClienteProposta extends Model
         'taxa_reducao' => 'float',
         'valor_medio' => 'float',
         'media_consumo' => 'float',
+        'unidade_consumidora' => 'string',
     ];
 
     protected $with = ['endereco', 'concessionaria', 'cliente'];

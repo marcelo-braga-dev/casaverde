@@ -19,12 +19,11 @@ class CopelBillParserService
             '/^\s*([A-ZÀ-Ú][A-ZÀ-Ú\s]{5,})\s*$/mu',
         ]);
 
-        $unidadeConsumidora = $this->extractFirstMatch($text, [
-            '/UNIDADE\s+CONSUMIDORA\s*[:\-]?\s*([0-9\.\-\/]+)/iu',
-            '/FAT-\d{2}-\d+\.\d+\s+([0-9]{6,10})\s+R?\$?[\d\.\,]+/iu',
-            '/Endere(?:ç|c)o:\s*[^\n]*?\s+([0-9]{6,10})\s*$/imu',
-            '/\bUC\s*[:\-]?\s*([0-9]{8})\b/iu',
-        ]);
+        $unidadeConsumidora = $this->extractUnidadeConsumidora($text);
+
+        if (! $unidadeConsumidora) {
+            throw new DomainException('Não foi possível localizar o número da Unidade Consumidora (UC) na fatura Copel. Sem esse valor, a fatura não pode ser processada.');
+        }
 
         $numeroInstalacao = $this->extractFirstMatch($text, [
             '/INSTALA(?:Ç|C)[ÃA]O\s*[:\-]?\s*([0-9\.\-\/]+)/iu',
@@ -69,7 +68,7 @@ class CopelBillParserService
             'reference_month' => (int) $referenceMonth,
             'reference_year' => (int) $referenceYear,
             'reference_label' => $referencia,
-            'unidade_consumidora' => $unidadeConsumidora ? preg_replace('/\D+/', '', $unidadeConsumidora) : null,
+            'unidade_consumidora' => $unidadeConsumidora,
             'numero_instalacao' => $numeroInstalacao ? preg_replace('/\D+/', '', $numeroInstalacao) : null,
             'vencimento' => $this->normalizeDate($vencimento),
             'valor_total' => $this->normalizeDecimal($valorTotal),
@@ -166,6 +165,44 @@ class CopelBillParserService
         }
 
         return null;
+    }
+
+    /**
+     * A UC pode vir com zeros à esquerda (largura fixa de campo no PDF, ex:
+     * "0000123412394821"), que não fazem parte do número real. Cada padrão é
+     * testado e normalizado isoladamente (não apenas o primeiro que casar),
+     * pois um padrão mais permissivo pode capturar algo inválido enquanto um
+     * padrão mais específico, mais abaixo na lista, teria o valor correto.
+     */
+    private function extractUnidadeConsumidora(string $text): ?string
+    {
+        $patterns = [
+            '/UNIDADE\s+CONSUMIDORA\s*[:\-]?\s*([0-9\.\-\/]+)/iu',
+            '/FAT-\d{2}-\d+\.\d+\s+([0-9]{6,20})\s+R?\$?[\d\.\,]+/iu',
+            '/Endere(?:ç|c)o:\s*[^\n]*?\s+([0-9]{6,20})\s*$/imu',
+            '/\bUC\s*[:\-]?\s*([0-9]{6,20})\b/iu',
+        ];
+
+        foreach ($patterns as $pattern) {
+            if (! preg_match($pattern, $text, $matches)) {
+                continue;
+            }
+
+            $normalized = $this->normalizeUnidadeConsumidora($matches[1]);
+
+            if ($normalized !== null) {
+                return $normalized;
+            }
+        }
+
+        return null;
+    }
+
+    private function normalizeUnidadeConsumidora(string $value): ?string
+    {
+        $digits = ltrim(preg_replace('/\D+/', '', $value) ?? '', '0');
+
+        return preg_match('/^\d{6,12}$/', $digits) ? $digits : null;
     }
 
     private function normalizeDecimal(string $value): float

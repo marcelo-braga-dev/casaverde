@@ -24,6 +24,7 @@ import {
     IconFileInvoice,
     IconUser,
 } from "@tabler/icons-react";
+import onlyDigits from "@/Utils/onlyDigits";
 
 function safeRoute(n, p) { try { return route(n, p); } catch { return '#'; } }
 
@@ -243,9 +244,9 @@ export default function Page({ bill, suggestedUsinaId, reviewStatuses = [] }) {
                                             </Grid>
                                             <Grid size={{ xs: 12, md: 6 }}>
                                                 <TextField label="Unidade Consumidora" value={data.unidade_consumidora}
-                                                    onChange={e => setData('unidade_consumidora', e.target.value)}
+                                                    onChange={e => setData('unidade_consumidora', onlyDigits(e.target.value))}
                                                     error={!!errors.unidade_consumidora} helperText={errors.unidade_consumidora}
-                                                    fullWidth size="small" />
+                                                    fullWidth size="small" slotProps={{ htmlInput: { inputMode: 'numeric' } }} />
                                             </Grid>
                                             <Grid size={{ xs: 12, md: 6 }}>
                                                 <TextField label="Número da instalação" value={data.numero_instalacao}

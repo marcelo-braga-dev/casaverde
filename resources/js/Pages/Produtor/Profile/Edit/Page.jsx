@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import SearchableSelect from "@/Components/Form/SearchableSelect.jsx";
+import onlyDigits from "@/Utils/onlyDigits";
 
 export default function Page({ producer, users = [], addresses = [] }) {
     const { data, setData, put, processing, errors } = useForm({
@@ -138,7 +139,7 @@ export default function Page({ producer, users = [], addresses = [] }) {
                                 <TextField label="Geração anual" value={data.geracao_anual} onChange={(e) => setData("geracao_anual", e.target.value)} error={!!errors.geracao_anual} helperText={errors.geracao_anual} fullWidth />
                             </Grid>
                             <Grid size={{ xs: 12, md: 3 }}>
-                                <TextField label="Unidade consumidora" value={data.unidade_consumidora} onChange={(e) => setData("unidade_consumidora", e.target.value)} error={!!errors.unidade_consumidora} helperText={errors.unidade_consumidora} fullWidth />
+                                <TextField label="Unidade consumidora" value={data.unidade_consumidora} onChange={(e) => setData("unidade_consumidora", onlyDigits(e.target.value))} error={!!errors.unidade_consumidora} helperText={errors.unidade_consumidora} fullWidth slotProps={{ htmlInput: { inputMode: "numeric" } }} />
                             </Grid>
 
                             <Grid size={{ xs: 12, md: 3 }}>

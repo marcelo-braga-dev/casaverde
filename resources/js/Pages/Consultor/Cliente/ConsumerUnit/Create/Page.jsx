@@ -13,6 +13,7 @@ import {
 import Grid from "@mui/material/Grid2";
 import { IconBolt, IconDeviceFloppy } from "@tabler/icons-react";
 import SearchableSelect from "@/Components/Form/SearchableSelect.jsx";
+import onlyDigits from "@/Utils/onlyDigits";
 
 function clientLabel(client) {
     const name = client.tipo_pessoa === "pj"
@@ -84,11 +85,12 @@ export default function Page({ clients = [], concessionarias = [] }) {
                                 <TextField
                                     label="Código UC"
                                     value={data.uc_code}
-                                    onChange={(e) => setData("uc_code", e.target.value)}
+                                    onChange={(e) => setData("uc_code", onlyDigits(e.target.value))}
                                     error={!!errors.uc_code}
                                     helperText={errors.uc_code}
                                     required
                                     fullWidth
+                                    slotProps={{ htmlInput: { inputMode: "numeric" } }}
                                 />
                             </Grid>
 

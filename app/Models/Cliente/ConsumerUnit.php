@@ -27,6 +27,7 @@ class ConsumerUnit extends Model
 
     protected $casts = [
         'consumo_previsto_kwh_mes' => 'decimal:2',
+        'uc_code' => 'string',
     ];
 
     protected $appends = ['display_label'];
@@ -41,12 +42,12 @@ class ConsumerUnit extends Model
     public static function normalizeCode(?string $value): ?string
     {
         if (! $value) {
-            return $value;
+            return null;
         }
 
-        $digits = preg_replace('/\D+/', '', $value);
+        $digits = ltrim(preg_replace('/\D+/', '', $value) ?? '', '0');
 
-        return $digits !== '' ? $digits : $value;
+        return $digits !== '' ? $digits : null;
     }
 
     // ── Relationships ─────────────────────────────────────────────────────

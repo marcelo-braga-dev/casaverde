@@ -10,6 +10,7 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import SearchableSelect from "@/Components/Form/SearchableSelect.jsx";
+import onlyDigits from "@/Utils/onlyDigits";
 
 export default function Page({
     concessionarias = [],
@@ -124,10 +125,11 @@ export default function Page({
                                 <TextField
                                     label="Unidade consumidora"
                                     value={data.unidade_consumidora}
-                                    onChange={(e) => setData("unidade_consumidora", e.target.value)}
+                                    onChange={(e) => setData("unidade_consumidora", onlyDigits(e.target.value))}
                                     error={!!errors.unidade_consumidora}
                                     helperText={errors.unidade_consumidora}
                                     fullWidth
+                                    slotProps={{ htmlInput: { inputMode: "numeric" } }}
                                 />
                             </Grid>
 

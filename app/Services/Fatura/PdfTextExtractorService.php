@@ -12,6 +12,10 @@ class PdfTextExtractorService
             throw new RuntimeException('Arquivo PDF não encontrado para leitura.');
         }
 
+        if (! function_exists('exec')) {
+            throw new RuntimeException('A função exec() está desabilitada no PHP (disable_functions) — não é possível extrair o texto do PDF.');
+        }
+
         $command = sprintf(
             'pdftotext -layout %s - 2>&1',
             escapeshellarg($absolutePdfPath)

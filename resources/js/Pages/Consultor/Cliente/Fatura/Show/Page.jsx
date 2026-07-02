@@ -51,6 +51,7 @@ import {
     IconWallet,
     IconX,
 } from "@tabler/icons-react";
+import onlyDigits from "@/Utils/onlyDigits";
 
 /* ─── helpers ─────────────────────────────────────────────────────────── */
 const isInvalid = (v) => v === null || v === undefined || String(v).trim() === "" || v === "-";
@@ -573,7 +574,7 @@ const Page = ({ bill, suggestedUsinaId, energyBreakdown, reviewStatuses = [], us
                                             <TextField fullWidth label="Nome do titular" value={data.nome} error={Boolean(errors.nome)} helperText={errors.nome} onChange={(e) => setData("nome", e.target.value)} size="small" />
                                             <Grid container spacing={1.5}>
                                                 <Grid size={{ xs: 12, md: 6 }}>
-                                                    <TextField fullWidth label="Unidade Consumidora" value={data.unidade_consumidora} error={Boolean(errors.unidade_consumidora)} helperText={errors.unidade_consumidora} onChange={(e) => setData("unidade_consumidora", e.target.value)} size="small" />
+                                                    <TextField fullWidth label="Unidade Consumidora" value={data.unidade_consumidora} error={Boolean(errors.unidade_consumidora)} helperText={errors.unidade_consumidora} onChange={(e) => setData("unidade_consumidora", onlyDigits(e.target.value))} size="small" slotProps={{ htmlInput: { inputMode: "numeric" } }} />
                                                 </Grid>
                                                 <Grid size={{ xs: 12, md: 6 }}>
                                                     <TextField fullWidth label="Número da instalação" value={data.numero_instalacao} error={Boolean(errors.numero_instalacao)} helperText={errors.numero_instalacao} onChange={(e) => setData("numero_instalacao", e.target.value)} size="small" />

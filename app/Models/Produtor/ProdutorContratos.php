@@ -33,6 +33,10 @@ class ProdutorContratos extends Model
         'contrato_data',
     ];
 
+    protected $casts = [
+        'unidade_consumidora' => 'string',
+    ];
+
     // --------------
     // setters
     // --------------

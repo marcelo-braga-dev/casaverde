@@ -37,6 +37,7 @@ class CommercialProposal extends BaseModel
         'valor_medio' => 'float',
         'media_consumo' => 'float',
         'discount_percent' => 'float',
+        'unidade_consumidora' => 'string',
     ];
 
     protected $appends = ['proposal_code'];

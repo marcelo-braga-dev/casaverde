@@ -27,7 +27,7 @@ class UpdateConcessionaireBillReviewRequest extends FormRequest
             'concessionaria_id' => ['required', 'integer', 'exists:concessionarias,id'],
 
             'nome' => ['nullable', 'string', 'max:255'],
-            'unidade_consumidora' => ['nullable', 'string', 'max:255'],
+            'unidade_consumidora' => ['required', 'digits_between:6,12'],
             'numero_instalacao' => ['nullable', 'string', 'max:255'],
 
             'reference_month' => ['nullable', 'integer', 'min:1', 'max:12'],
@@ -55,5 +55,12 @@ class UpdateConcessionaireBillReviewRequest extends FormRequest
             'review_notes' => ['nullable', 'string'],
             'review_status' => ['required', 'string', 'max:50'],
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'unidade_consumidora' => ltrim(preg_replace('/\D+/', '', (string) $this->input('unidade_consumidora')) ?? '', '0'),
+        ]);
     }
 }

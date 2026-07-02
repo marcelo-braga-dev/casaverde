@@ -29,6 +29,10 @@ class ProtectedPdfResolverService
             return $tempOutput;
         }
 
+        if (! function_exists('exec')) {
+            throw new RuntimeException('A função exec() está desabilitada no PHP (disable_functions) — não é possível desbloquear o PDF.');
+        }
+
         $command = sprintf(
             'qpdf --password=%s --decrypt %s %s 2>&1',
             escapeshellarg($password),

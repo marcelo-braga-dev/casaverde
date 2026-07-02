@@ -22,6 +22,7 @@ import {
 } from "@tabler/icons-react";
 import AddressCard from "@/Components/Partials/AddressCard.jsx";
 import SearchableSelect from "@/Components/Form/SearchableSelect.jsx";
+import onlyDigits from "@/Utils/onlyDigits";
 
 const emptyAddress = {
     cep: "",
@@ -293,10 +294,11 @@ const Page = ({ proposal, concessionarias = [] }) => {
                                 <TextField
                                     label="Unidade Consumidora"
                                     value={data.unidade_consumidora}
-                                    onChange={(e) => setData("unidade_consumidora", e.target.value)}
+                                    onChange={(e) => setData("unidade_consumidora", onlyDigits(e.target.value))}
                                     error={!!errors.unidade_consumidora}
                                     helperText={errors.unidade_consumidora}
                                     fullWidth
+                                    slotProps={{ htmlInput: { inputMode: "numeric" } }}
                                 />
                             </Grid>
 

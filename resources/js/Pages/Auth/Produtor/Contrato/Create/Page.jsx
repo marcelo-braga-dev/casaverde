@@ -7,6 +7,7 @@ import useInputMask from "@/Utils/Masks/InputsMask.js";
 import Endereco from "@/Components/UserData/Endereco.jsx";
 import {router, useForm} from "@inertiajs/react";
 import formatarMoneyReal from "@/Utils/Formatters/formatarMoney.js";
+import onlyDigits from "@/Utils/onlyDigits";
 
 const Page = ({contratante}) => {
     const {data, setData} = useForm({
@@ -131,9 +132,10 @@ const Page = ({contratante}) => {
                             <Grid size={{xs: 12, md: 3}}>
                                 <TextField
                                     label="Unidade Consumidora"
-                                    onChange={e => setData('unidade_consumidora', e.target.value)}
+                                    onChange={e => setData('unidade_consumidora', onlyDigits(e.target.value))}
                                     required
                                     fullWidth
+                                    slotProps={{ htmlInput: { inputMode: 'numeric' } }}
                                 />
                             </Grid>
                             <Grid size={{xs: 12, md: 3}}>
