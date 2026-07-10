@@ -6,20 +6,20 @@
 
 ---
 
-## 0. ATENÇÃO — NÃO CONFUNDIR COM O SITE DA CASA VERDE CONSÓRCIO
+## 0. ATENÇÃO — NÃO CONFUNDIR COM A LANDING PAGE B2C JÁ EXISTENTE
 
-Este repositório já contém `landpage-wordpress-briefing.md`, um briefing para a landing page da **Casa Verde Consórcio** (B2C: venda de assinatura de energia solar para consumidores finais, com paleta verde/laranja, foco em "economize até 25% na conta de luz").
+Este repositório já contém `landpage-wordpress-briefing.md`, um briefing para uma landing page **B2C** (venda de assinatura de energia solar para consumidores finais, com paleta verde/laranja, foco em "economize até 25% na conta de luz"). Essa página é de um site diferente, de outra marca, e **não deve ser citada nem referenciada** neste material.
 
-**Este relatório é para um produto diferente:**
+**Este relatório é para um produto diferente, a ser divulgado no site institucional da empresa matriz:**
 
-| | Casa Verde Consórcio (briefing existente) | **GD Solar ERP (este relatório)** |
+| | Landing page B2C (outro site, não citar) | **GD Solar ERP (este relatório)** |
 |---|---|---|
 | O que vende | Assinatura de energia solar por compensação | **O software/plataforma** que gerencia esse tipo de negócio |
 | Para quem | Consumidor final (pessoa física/jurídica que quer desconto na conta de luz) | **Outras empresas** de energia por compensação/assinatura, consórcios, comercializadoras, gestoras de usinas GD |
 | Modelo | B2C, venda de kWh com desconto | **B2B SaaS**, venda de licença/assinatura de software |
 | CTA típico | "Quero economizar agora" | "Agende uma demonstração" / "Fale com nosso time" |
 
-O CRM Casa Verde (código deste repositório) é, na verdade, a **prova viva** de que o GD Solar ERP funciona: é o sistema que a própria Casa Verde Consórcio usa para rodar sua operação. Isso pode (e deve) ser usado como case/prova social — "a plataforma que já opera uma comercializadora real de energia solar por compensação".
+O sistema descrito neste relatório é, na verdade, a **prova viva** de que o GD Solar ERP funciona: é a mesma plataforma que já roda em produção a operação real de uma comercializadora de energia solar por compensação. Isso pode (e deve) ser usado como case/prova social — **sem citar nomes de empresas ou marcas específicas**, apenas como "plataforma testada em operação real de energia solar por compensação".
 
 ---
 
@@ -139,7 +139,7 @@ Sistema de chamados com categoria, prioridade, SLA de primeira resposta, notas i
 3. **Pagamento nativo Pix + Boleto** sem sistema externo — cobrança sai da plataforma já pronta para pagar.
 4. **Automação de cobrança e lembrete de ponta a ponta** — de fatura aprovada até lembrete de atraso, zero toque manual.
 5. **4 portais em 1 produto só** (Admin, Consultor, Produtor, Cliente) — cliente final e produtor (fornecedor de energia) também usam a plataforma, não só a equipe interna.
-6. **Prova real de uso em produção** — já roda a operação real de uma comercializadora de energia solar por compensação (Casa Verde), não é um MVP sem tração.
+6. **Prova real de uso em produção** — já roda a operação real de uma comercializadora de energia solar por compensação, não é um MVP sem tração.
 7. **Stack moderna e testada**: Laravel 12 + React 18, 96 migrations, 62 arquivos de teste automatizado (Pest + SQLite), autorização via Policies por papel — não é um sistema legado remendado.
 8. **Importação automática de fatura por e-mail (IMAP)**, incluindo faturas em PDF protegido por senha — um detalhe técnico raro que resolve uma dor muito específica e muito comum (concessionárias enviam PDF travado).
 
@@ -169,7 +169,7 @@ Use como prova social técnica, não como jargão para o visitante leigo — tra
 6. **4 portais, 1 produto** — mostrar mockups dos 4 dashboards (Admin/Consultor/Produtor/Cliente) lado a lado.
 7. **Pagamento Pix + Boleto nativo** — seção de confiança financeira, com selo visual "Integração Cora".
 8. **Robustez técnica** — números da seção 5 traduzidos ("99 automações rodando por você", "testado automaticamente a cada atualização").
-9. **Prova social / case** — "conheça quem já usa" (a própria Casa Verde, se autorizado a divulgar, ou "empresa real de energia solar por compensação").
+9. **Prova social / case** — "conheça quem já usa": referenciar de forma genérica uma "empresa real de energia solar por compensação em operação", sem citar nomes específicos, a menos que a autorização de divulgação seja confirmada com o cliente final.
 10. **Planos/Pricing** (ver seção 8) ou, se ainda não definido, "Fale com o time para um plano sob medida".
 11. **FAQ** — perguntas típicas de decisor B2B (ver seção 7).
 12. **CTA final** — "Agende uma demonstração" / "Fale com um especialista", formulário curto (nome, empresa, e-mail, telefone, quantas usinas/clientes gerencia hoje).
