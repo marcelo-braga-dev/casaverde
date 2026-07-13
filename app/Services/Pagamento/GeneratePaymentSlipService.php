@@ -6,6 +6,7 @@ use App\DTOs\Payments\CreatePaymentDTO;
 use App\DTOs\Payments\PaymentCustomerDTO;
 use App\Models\Cobranca\CustomerCharge;
 use App\Models\Pagamento\PaymentSlip;
+use App\Models\Users\UserAddress;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
@@ -47,6 +48,7 @@ class GeneratePaymentSlipService
                 email: $charge->platformUser?->email ?? $charge->clientProfile?->contacts?->email ?? null,
                 document: $charge->clientProfile?->cpf ?? $charge->clientProfile?->cnpj ?? null,
                 phone: $charge->clientProfile?->contacts?->celular ?? $charge->clientProfile?->contacts?->telefone ?? null,
+                address: $this->resolveAddress($charge),
             );
 
             $dto = new CreatePaymentDTO(
@@ -91,6 +93,7 @@ class GeneratePaymentSlipService
                         'email' => $dto->customer->email,
                         'document' => $dto->customer->document,
                         'phone' => $dto->customer->phone,
+                        'address' => $dto->customer->address,
                     ],
                     'metadata' => $dto->metadata,
                 ],
@@ -98,5 +101,29 @@ class GeneratePaymentSlipService
                 'generated_at' => now(),
             ]);
         });
+    }
+
+    private function resolveAddress(CustomerCharge $charge): ?array
+    {
+        $userId = $charge->clientProfile?->platform_user_id;
+
+        if (! $userId) {
+            return null;
+        }
+
+        $address = UserAddress::query()->where('user_id', $userId)->first();
+
+        if (! $address || ! $address->cep) {
+            return null;
+        }
+
+        return [
+            'zip_code' => $address->cep,
+            'street_name' => $address->rua,
+            'street_number' => $address->numero ?: 'S/N',
+            'neighborhood' => $address->bairro,
+            'city' => $address->cidade,
+            'state' => $address->estado,
+        ];
     }
 }

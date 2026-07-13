@@ -27,9 +27,13 @@ class SyncPaymentSlipService
         $response = $provider->getPayment($slip->provider_payment_id);
 
         return DB::transaction(function () use ($slip, $response) {
+            // Guarda o status anterior antes de qualquer update: MarkPaymentAsPaidService
+            // usa "status === paid" como trava de idempotência, então não podemos gravar
+            // 'paid' no slip antes de chamá-lo, senão a trava dispara e ele nunca roda.
+            $wasAlreadyPaid = $slip->status === 'paid';
+
             $slip->update([
                 'provider_status' => $response->providerStatus,
-                'status' => $response->status,
                 'barcode' => $response->barcode ?? $slip->barcode,
                 'digitable_line' => $response->digitableLine ?? $slip->digitable_line,
                 'pix_qr_code' => $response->pixQrCode ?? $slip->pix_qr_code,
@@ -42,13 +46,15 @@ class SyncPaymentSlipService
                 ]),
             ]);
 
-            if ($response->status === 'paid') {
+            if ($response->status === 'paid' && ! $wasAlreadyPaid) {
                 $this->markPaymentAsPaidService->handle($slip->fresh(), [
                     'provider_status' => $response->providerStatus,
                     'paid_amount' => $response->paidAmount,
                     'paid_at' => $response->paidAt,
                     'raw_payload' => $response->rawPayload,
                 ]);
+            } else {
+                $slip->update(['status' => $response->status]);
             }
 
             return $slip->fresh();

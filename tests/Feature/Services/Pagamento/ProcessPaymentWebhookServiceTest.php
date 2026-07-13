@@ -1,11 +1,13 @@
 <?php
 
 use App\Models\Cobranca\CustomerCharge;
+use App\Models\Pagamento\PaymentProviderAccount;
 use App\Models\Pagamento\PaymentSlip;
 use App\Models\Pagamento\PaymentTransaction;
 use App\Models\Pagamento\PaymentWebhookEvent;
 use App\Services\Pagamento\MarkPaymentAsPaidService;
 use App\Services\Pagamento\ProcessPaymentWebhookService;
+use Illuminate\Support\Facades\Http;
 
 describe('ProcessPaymentWebhookService', function () {
 
@@ -158,6 +160,112 @@ describe('ProcessPaymentWebhookService', function () {
         expect($result->status)->toBe('ignored')
             ->and($result->error_message)->toBe('Status não exige ação operacional.')
             ->and($slip->refresh()->status)->toBe('generated');
+    });
+
+    it('syncs with the Mercado Pago API and marks the slip as paid when approved', function () {
+        $account = PaymentProviderAccount::factory()->mercadoPago()->create([
+            'base_url' => 'https://mp.test',
+        ]);
+
+        $charge = CustomerCharge::factory()->create(['status' => 'waiting_payment']);
+        $slip = PaymentSlip::factory()->create([
+            'customer_charge_id' => $charge->id,
+            'payment_provider_account_id' => $account->id,
+            'provider' => 'mercado_pago',
+            'provider_payment_id' => 'ORD111',
+            'status' => 'generated',
+        ]);
+
+        Http::fake([
+            'mp.test/v1/orders/ORD111' => Http::response([
+                'id' => 'ORD111',
+                'status' => 'processed',
+                'status_detail' => 'accredited',
+                'total_paid_amount' => (string) $slip->amount,
+                'last_updated_date' => '2026-06-22T10:00:00.000-03:00',
+                'transactions' => [
+                    'payments' => [
+                        ['id' => 'PAY111', 'status' => 'processed', 'status_detail' => 'accredited', 'payment_method' => ['id' => 'pix', 'type' => 'bank_transfer']],
+                    ],
+                ],
+            ], 200),
+        ]);
+
+        $event = PaymentWebhookEvent::factory()->create([
+            'provider' => 'mercado_pago',
+            'provider_payment_id' => 'ORD111',
+            'payload' => ['action' => 'order.processed', 'type' => 'order', 'data' => ['id' => 'ORD111']],
+        ]);
+
+        $result = $this->service->handle($event);
+
+        expect($result->status)->toBe('processed')
+            ->and($slip->refresh()->status)->toBe('paid')
+            ->and($charge->refresh()->status)->toBe('paid');
+    });
+
+    it('does not mark the Mercado Pago slip as paid while the order is still processing', function () {
+        $account = PaymentProviderAccount::factory()->mercadoPago()->create([
+            'base_url' => 'https://mp.test',
+        ]);
+
+        $slip = PaymentSlip::factory()->create([
+            'payment_provider_account_id' => $account->id,
+            'provider' => 'mercado_pago',
+            'provider_payment_id' => 'ORD112',
+            'status' => 'generated',
+        ]);
+
+        Http::fake([
+            'mp.test/v1/orders/ORD112' => Http::response([
+                'id' => 'ORD112',
+                'status' => 'processing',
+                'status_detail' => 'in_process',
+                'total_paid_amount' => '0.00',
+                'transactions' => [
+                    'payments' => [
+                        ['id' => 'PAY112', 'status' => 'processing', 'status_detail' => 'in_process', 'payment_method' => ['id' => 'bolbradesco', 'type' => 'ticket']],
+                    ],
+                ],
+            ], 200),
+        ]);
+
+        $event = PaymentWebhookEvent::factory()->create([
+            'provider' => 'mercado_pago',
+            'provider_payment_id' => 'ORD112',
+            'payload' => ['action' => 'order.updated', 'type' => 'order', 'data' => ['id' => 'ORD112']],
+        ]);
+
+        $result = $this->service->handle($event);
+
+        expect($result->status)->toBe('processed')
+            ->and($slip->refresh()->status)->toBe('generated');
+    });
+
+    it('ignores the Mercado Pago event when no matching slip exists', function () {
+        $event = PaymentWebhookEvent::factory()->create([
+            'provider' => 'mercado_pago',
+            'provider_payment_id' => 'unknown',
+            'payload' => ['action' => 'payment.updated', 'data' => ['id' => 'unknown']],
+        ]);
+
+        $result = $this->service->handle($event);
+
+        expect($result->status)->toBe('ignored')
+            ->and($result->error_message)->toBe('Pagamento não encontrado no sistema.');
+    });
+
+    it('ignores the Mercado Pago event when there is no provider payment id in the payload', function () {
+        $event = PaymentWebhookEvent::factory()->create([
+            'provider' => 'mercado_pago',
+            'provider_payment_id' => null,
+            'payload' => ['action' => 'payment.updated'],
+        ]);
+
+        $result = $this->service->handle($event);
+
+        expect($result->status)->toBe('ignored')
+            ->and($result->error_message)->toBe('Webhook sem ID do pagamento no provider.');
     });
 
 });

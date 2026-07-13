@@ -29,4 +29,15 @@ class PaymentProviderAccountFactory extends Factory
     {
         return $this->state(fn () => ['webhook_secret' => $secret]);
     }
+
+    public function mercadoPago(): static
+    {
+        return $this->state(fn () => [
+            'provider' => 'mercado_pago',
+            'name' => 'Mercado Pago Sandbox',
+            'base_url' => 'https://mercadopago.test',
+            'client_id' => 'public-key-'.fake()->uuid(),
+            'client_secret' => 'access-token-'.fake()->uuid(),
+        ]);
+    }
 }

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
 import { Head, Link, router, useForm } from "@inertiajs/react";
 import {
@@ -10,6 +11,7 @@ import {
     Chip,
     Divider,
     LinearProgress,
+    Menu,
     MenuItem,
     Stack,
     Table,
@@ -161,8 +163,15 @@ export default function Page({ charge }) {
         router.post(route("admin.financeiro.cobrancas.approve", charge.id), {}, { preserveScroll: true });
     };
 
-    const generatePayment = () => {
-        router.post(route("admin.financeiro.pagamentos.generate-from-charge", charge.id), {}, { preserveScroll: true });
+    const [paymentMenuAnchor, setPaymentMenuAnchor] = useState(null);
+
+    const generatePayment = (provider, paymentMethod) => {
+        setPaymentMenuAnchor(null);
+        router.post(
+            route("admin.financeiro.pagamentos.generate-from-charge", charge.id),
+            { provider, payment_method: paymentMethod },
+            { preserveScroll: true }
+        );
     };
 
     const cancelCharge = () => {
@@ -333,19 +342,38 @@ export default function Page({ charge }) {
                                     )}
 
                                     {["open", "waiting_payment"].includes(charge.status) && !hasActivePayment && (
-                                        <Tooltip title="Gerar boleto ou Pix para esta cobrança">
-                                            <span>
-                                                <ConfirmActionButton
-                                                    color="primary"
-                                                    size="small"
-                                                    message="Deseja gerar boleto/Pix para esta cobrança?"
-                                                    onConfirm={generatePayment}
-                                                    startIcon={<IconCreditCard size={15} />}
-                                                >
-                                                    Gerar boleto/Pix
-                                                </ConfirmActionButton>
-                                            </span>
-                                        </Tooltip>
+                                        <>
+                                            <Tooltip title="Gerar boleto ou Pix para esta cobrança">
+                                                <span>
+                                                    <Button
+                                                        color="primary"
+                                                        variant="outlined"
+                                                        size="small"
+                                                        startIcon={<IconCreditCard size={15} />}
+                                                        onClick={(e) => setPaymentMenuAnchor(e.currentTarget)}
+                                                        sx={whatsappActionSx}
+                                                    >
+                                                        Gerar pagamento
+                                                    </Button>
+                                                </span>
+                                            </Tooltip>
+
+                                            <Menu
+                                                anchorEl={paymentMenuAnchor}
+                                                open={Boolean(paymentMenuAnchor)}
+                                                onClose={() => setPaymentMenuAnchor(null)}
+                                            >
+                                                <MenuItem onClick={() => generatePayment("cora", "boleto_pix")}>
+                                                    Cora — Boleto + Pix
+                                                </MenuItem>
+                                                <MenuItem onClick={() => generatePayment("mercado_pago", "pix")}>
+                                                    Mercado Pago — Pix
+                                                </MenuItem>
+                                                <MenuItem onClick={() => generatePayment("mercado_pago", "boleto")}>
+                                                    Mercado Pago — Boleto
+                                                </MenuItem>
+                                            </Menu>
+                                        </>
                                     )}
 
                                     {["open", "waiting_payment"].includes(charge.status) && (

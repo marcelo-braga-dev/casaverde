@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\ProdutorActivationController;
 use App\Http\Controllers\Webhook\Payments\CoraWebhookController;
+use App\Http\Controllers\Webhook\Payments\MercadoPagoWebhookController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -15,6 +16,9 @@ require __DIR__.'/consultor/index.php';
 
 Route::post('/webhooks/payments/cora', CoraWebhookController::class)
     ->name('webhooks.payments.cora');
+
+Route::post('/webhooks/payments/mercado-pago', MercadoPagoWebhookController::class)
+    ->name('webhooks.payments.mercado-pago');
 
 Route::get('/', function () {
     return redirect()->route('login');

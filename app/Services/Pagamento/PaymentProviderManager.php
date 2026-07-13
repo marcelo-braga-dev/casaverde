@@ -5,6 +5,7 @@ namespace App\Services\Pagamento;
 use App\Contracts\Payments\PaymentProviderContract;
 use App\Models\Pagamento\PaymentProviderAccount;
 use App\Services\Pagamento\Providers\Cora\CoraPaymentProvider;
+use App\Services\Pagamento\Providers\MercadoPago\MercadoPagoPaymentProvider;
 use InvalidArgumentException;
 
 class PaymentProviderManager
@@ -13,6 +14,7 @@ class PaymentProviderManager
     {
         $instance = match ($provider) {
             'cora' => app(CoraPaymentProvider::class),
+            'mercado_pago' => app(MercadoPagoPaymentProvider::class),
             default => throw new InvalidArgumentException("Provider de pagamento não suportado: {$provider}"),
         };
 

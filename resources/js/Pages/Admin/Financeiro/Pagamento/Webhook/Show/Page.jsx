@@ -29,7 +29,7 @@ const STATUS_MAP = {
     failed:    { label: 'Falhou',     color: 'error' },
 };
 
-const PROVIDER_LABELS = { cora: 'Cora' };
+const PROVIDER_LABELS = { cora: 'Cora', mercado_pago: 'Mercado Pago' };
 
 function InfoRow({ label, value, mono = false }) {
     return (

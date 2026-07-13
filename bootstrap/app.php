@@ -28,6 +28,13 @@ return Application::configure(basePath: dirname(__DIR__))
             'roundcube_sessauth',
         ]);
 
+        // Webhooks de pagamento são chamados pelo provider (Cora, Mercado Pago), que não
+        // tem sessão/token CSRF do Laravel — sem essa exclusão, toda notificação de
+        // pagamento externa recebe 419 e o sistema nunca fica sabendo do pagamento.
+        $middleware->validateCsrfTokens(except: [
+            'webhooks/payments/*',
+        ]);
+
         $middleware->alias([
             'role' => EnsureUserHasRole::class,
             'redirect.role' => RedirectUserByRole::class,

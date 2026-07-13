@@ -23,7 +23,7 @@ class PaymentWebhookEventController extends Controller
             'events' => $repository->paginate($filters, 20),
             'filters' => $filters,
             'statuses' => ['received', 'processed', 'ignored', 'failed'],
-            'providers' => ['cora'],
+            'providers' => ['cora', 'mercado_pago'],
         ]);
     }
 
