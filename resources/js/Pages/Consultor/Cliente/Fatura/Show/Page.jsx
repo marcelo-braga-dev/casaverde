@@ -120,7 +120,7 @@ const ExtractedField = ({ label, value, validation = "text" }) => {
     );
 };
 
-const BreakdownTable = ({ title, description, items, kwhTotal, amountTotal }) => (
+const BreakdownTable = ({ title, description, items, kwhTotal, amountTotal, showKwh = true, showAmount = true }) => (
     <Box sx={{ mb: 2.5 }}>
         <Typography variant="body2" fontWeight={800} sx={{ mb: 0.25 }}>{title}</Typography>
         <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 1 }}>{description}</Typography>
@@ -130,22 +130,22 @@ const BreakdownTable = ({ title, description, items, kwhTotal, amountTotal }) =>
                     <TableHead>
                         <TableRow>
                             <TableCell sx={{ fontWeight: 700 }}>Linha da fatura</TableCell>
-                            <TableCell sx={{ fontWeight: 700 }} align="right">Quantidade (kWh)</TableCell>
-                            <TableCell sx={{ fontWeight: 700 }} align="right">Valor</TableCell>
+                            {showKwh && <TableCell sx={{ fontWeight: 700 }} align="right">Quantidade (kWh)</TableCell>}
+                            {showAmount && <TableCell sx={{ fontWeight: 700 }} align="right">Valor</TableCell>}
                         </TableRow>
                     </TableHead>
                     <TableBody>
                         {items.map((item, index) => (
                             <TableRow key={`${item.descricao}-${index}`}>
                                 <TableCell>{item.descricao || "—"}</TableCell>
-                                <TableCell align="right">{formatNumber(abs(item.quantidade)) ? `${formatNumber(abs(item.quantidade))} kWh` : "—"}</TableCell>
-                                <TableCell align="right">{formatMoney(abs(item.valor)) || "—"}</TableCell>
+                                {showKwh && <TableCell align="right">{formatNumber(abs(item.quantidade)) ? `${formatNumber(abs(item.quantidade))} kWh` : "—"}</TableCell>}
+                                {showAmount && <TableCell align="right">{formatMoney(abs(item.valor)) || "—"}</TableCell>}
                             </TableRow>
                         ))}
                         <TableRow sx={{ bgcolor: "rgba(139,92,246,0.06)" }}>
                             <TableCell sx={{ fontWeight: 800 }}>Total</TableCell>
-                            <TableCell align="right" sx={{ fontWeight: 800 }}>{formatNumber(abs(kwhTotal)) ? `${formatNumber(abs(kwhTotal))} kWh` : "—"}</TableCell>
-                            <TableCell align="right" sx={{ fontWeight: 800 }}>{formatMoney(abs(amountTotal)) || "—"}</TableCell>
+                            {showKwh && <TableCell align="right" sx={{ fontWeight: 800 }}>{formatNumber(abs(kwhTotal)) ? `${formatNumber(abs(kwhTotal))} kWh` : "—"}</TableCell>}
+                            {showAmount && <TableCell align="right" sx={{ fontWeight: 800 }}>{formatMoney(abs(amountTotal)) || "—"}</TableCell>}
                         </TableRow>
                     </TableBody>
                 </Table>
@@ -376,18 +376,12 @@ const Page = ({ bill, suggestedUsinaId, energyBreakdown, reviewStatuses = [], us
                                                 <Typography fontWeight={800} sx={{ mt: 0.25, fontSize: "0.95rem" }}>
                                                     {formatNumber(abs(bill.injected_energy_kwh)) ? `${formatNumber(abs(bill.injected_energy_kwh))} kWh` : "—"}
                                                 </Typography>
-                                                <Typography variant="body2" color="text.secondary">
-                                                    {formatMoney(abs(bill.injected_energy_amount)) || "—"}
-                                                </Typography>
                                             </Paper>
                                         </Grid>
                                         <Grid size={{ xs: 12, sm: 6 }}>
                                             <Paper variant="outlined" sx={{ p: 1.5, borderRadius: 2, height: "100%" }}>
                                                 <Typography variant="caption" color="text.secondary" fontWeight={600}>Consumo Injetado</Typography>
                                                 <Typography fontWeight={800} sx={{ mt: 0.25, fontSize: "0.95rem" }}>
-                                                    {formatNumber(abs(bill.injected_consumption_kwh)) ? `${formatNumber(abs(bill.injected_consumption_kwh))} kWh` : "—"}
-                                                </Typography>
-                                                <Typography variant="body2" color="text.secondary">
                                                     {formatMoney(abs(bill.injected_consumption_amount)) || "—"}
                                                 </Typography>
                                             </Paper>
@@ -404,6 +398,7 @@ const Page = ({ bill, suggestedUsinaId, energyBreakdown, reviewStatuses = [], us
                                             items={energyBreakdown.injected_energy.items}
                                             kwhTotal={energyBreakdown.injected_energy.kwh_total}
                                             amountTotal={energyBreakdown.injected_energy.amount_total}
+                                            showAmount={false}
                                         />
                                     )}
                                     {injectedConsumptionIsManual ? (
@@ -417,6 +412,7 @@ const Page = ({ bill, suggestedUsinaId, energyBreakdown, reviewStatuses = [], us
                                             items={energyBreakdown.injected_consumption.items}
                                             kwhTotal={energyBreakdown.injected_consumption.kwh_total}
                                             amountTotal={energyBreakdown.injected_consumption.amount_total}
+                                            showKwh={false}
                                         />
                                     )}
 
