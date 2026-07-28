@@ -75,7 +75,16 @@ class ClienteController extends Controller
             'consumerUnits.address',
             'consumerUnits.activeUsinaLink.usina.produtor',
             'consumerUnits.activeUsinaLinks.usina.produtor',
+            'concessionaireBills.concessionaria',
+            'concessionaireBills.consumerUnit',
         ]);
+
+        $cliente->setRelation(
+            'concessionaireBills',
+            $cliente->concessionaireBills
+                ->sortByDesc(fn ($bill) => $bill->reference_year * 100 + $bill->reference_month)
+                ->values()
+        );
 
         // Margens (desconto) e configuração de importação de fatura só ficam visíveis para admin
         if (auth()->user()?->role_id !== RoleUser::$ADMIN) {

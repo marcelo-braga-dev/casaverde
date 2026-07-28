@@ -10,10 +10,12 @@ import DiscountRuleForm from './Partials/DiscountRuleForm.jsx';
 import DiscountRulesList from './Partials/DiscountRulesList.jsx';
 import ClientEmailImportSettingForm from './Partials/ClientEmailImportSettingForm.jsx';
 import ClientProposalsList from './Partials/ClientProposalsList.jsx';
+import ConcessionaireBillsList from './Partials/ConcessionaireBillsList.jsx';
 import { Alert, Box, Paper, Stack } from '@mui/material';
 import {
     IconBolt,
     IconDiscount2,
+    IconFileInvoice,
     IconFileText,
     IconMailCog,
     IconShield,
@@ -46,6 +48,7 @@ const Page = ({
     const emailImportSetting = profile?.email_import_setting ?? profile?.emailImportSetting ?? null;
     const proposals          = profile?.proposals ?? [];
     const platformUser       = profile?.platform_user ?? null;
+    const concessionaireBills = profile?.concessionaire_bills ?? profile?.concessionaireBills ?? [];
 
     const [value, setValue] = React.useState('1');
 
@@ -66,6 +69,7 @@ const Page = ({
                                 <TabList onChange={(_, v) => setValue(v)} aria-label="tabs do cliente">
                                     <Tab icon={<IconFileText />}    label="Propostas"   value="1" />
                                     <Tab icon={<IconBolt />}        label="UCs"         value="2" />
+                                    <Tab icon={<IconFileInvoice />} label="Faturas"     value="7" />
                                     <Tab icon={<IconSolarPanel2 />} label="Usinas"      value="3" />
                                     {admin && <Tab icon={<IconDiscount2 />}   label="Margens"     value="4" />}
                                     {admin && <Tab icon={<IconMailCog />}     label="Integração"  value="5" />}
@@ -82,6 +86,10 @@ const Page = ({
                                     profile={profile}
                                     concessionarias={concessionarias}
                                 />
+                            </TabPanel>
+
+                            <TabPanel value="7">
+                                <ConcessionaireBillsList bills={concessionaireBills} admin={admin} />
                             </TabPanel>
 
                             <TabPanel value="3">

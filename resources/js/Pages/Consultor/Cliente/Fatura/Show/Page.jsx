@@ -230,7 +230,7 @@ const Page = ({ bill, suggestedUsinaId, energyBreakdown, reviewStatuses = [], us
     const injectedConsumptionIsManual = differsFromBreakdown(bill.injected_consumption_kwh, energyBreakdown.injected_consumption.kwh_total)
         || differsFromBreakdown(bill.injected_consumption_amount, energyBreakdown.injected_consumption.amount_total);
 
-    const canApprove = data.review_status === "pending_review" && invalidFields.length === 0 && !hasUnsavedChanges && injectedConfirmed && !processing;
+    const canApprove = data.review_status !== "approved" && invalidFields.length === 0 && !hasUnsavedChanges && injectedConfirmed && !processing;
 
     const submit = (e) => {
         e.preventDefault();
