@@ -9,6 +9,9 @@ export default function ConfirmActionButton({
                                                 color = "primary",
                                                 size = "medium",
                                                 fullWidth = false,
+                                                startIcon,
+                                                sx,
+                                                ...buttonProps
                                             }) {
     const handleClick = () => {
         if (disabled) {
@@ -28,7 +31,10 @@ export default function ConfirmActionButton({
             size={size}
             disabled={disabled}
             fullWidth={fullWidth}
+            startIcon={startIcon}
+            sx={sx}
             onClick={handleClick}
+            {...buttonProps}
         >
             {children}
         </Button>

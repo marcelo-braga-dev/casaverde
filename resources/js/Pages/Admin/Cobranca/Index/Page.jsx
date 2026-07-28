@@ -10,6 +10,7 @@ import {
     Table,
     TableBody,
     TableCell,
+    TableContainer,
     TableHead,
     TableRow,
     TextField,
@@ -187,12 +188,14 @@ export default function Page({
                             Lista de cobranças
                         </Typography>
 
+                        <TableContainer sx={{ overflowX: "auto" }}>
                         <Table>
                             <TableHead>
                                 <TableRow>
                                     <TableCell>ID</TableCell>
                                     <TableCell>Cliente</TableCell>
                                     <TableCell>Referência</TableCell>
+                                    <TableCell>Fatura Concessionária</TableCell>
                                     <TableCell>Vencimento</TableCell>
                                     <TableCell>Consumo Injetado</TableCell>
                                     <TableCell>Desconto</TableCell>
@@ -213,6 +216,16 @@ export default function Page({
                                             <TableCell>
                                                 {charge.reference_label ||
                                                     `${charge.reference_month}/${charge.reference_year}`}
+                                            </TableCell>
+
+                                            <TableCell>
+                                                {charge.bill ? (
+                                                    <Link href={route("consultor.cliente.faturas.show", charge.bill.id)}>
+                                                        #{charge.bill.id}
+                                                    </Link>
+                                                ) : (
+                                                    "-"
+                                                )}
                                             </TableCell>
 
                                             <TableCell>
@@ -250,7 +263,7 @@ export default function Page({
                                     ))
                                 ) : (
                                     <TableRow>
-                                        <TableCell colSpan={9}>
+                                        <TableCell colSpan={10}>
                                             <Typography textAlign="center" color="text.secondary">
                                                 Nenhuma cobrança encontrada.
                                             </Typography>
@@ -259,6 +272,7 @@ export default function Page({
                                 )}
                             </TableBody>
                         </Table>
+                        </TableContainer>
 
                         {charges?.links?.length > 0 && (
                             <Stack direction="row" spacing={1} marginTop={3} flexWrap="wrap">

@@ -128,6 +128,14 @@ const STATUS_CONFIG = {
     cancelled:       { label: "Cancelada",      color: "#6b7280", bg: "#f9fafb" },
 };
 
+const BILL_REVIEW_STATUS_LABELS = {
+    pending_review: "Aguardando Revisão",
+    reviewed:       "Revisada",
+    corrected:      "Corrigida",
+    approved:       "Aprovada",
+    rejected:       "Rejeitada",
+};
+
 export default function Page({ charge }) {
     const admin = isAdmin(useAuthUser());
     const hasActivePayment = charge.payment_slips?.some((payment) =>
@@ -194,8 +202,6 @@ export default function Page({ charge }) {
     const valorFatura = formatCurrency(charge.final_amount);
     const dataVencimento = formatDateBR(charge.due_date);
 
-    const whatsappActionSx = { borderColor: "rgba(255,255,255,0.4)", color: "#fff" };
-
     const discountPercent = charge.discount_percent || 0;
     const originalAmt = Number(charge.original_amount || 0);
     const finalAmt = Number(charge.final_amount || 0);
@@ -258,143 +264,160 @@ export default function Page({ charge }) {
                                 </Box>
                             </Stack>
 
-                            <Stack direction={{ xs: "row", md: "column" }} spacing={1.5} alignItems={{ xs: "center", md: "flex-end" }}>
-                                <Chip
-                                    label={statusCfg.label}
-                                    size="medium"
-                                    sx={{
-                                        bgcolor: "rgba(255,255,255,0.15)",
-                                        color: "#fff",
-                                        fontWeight: 800,
-                                        fontSize: 13,
-                                        border: "1px solid rgba(255,255,255,0.25)",
+                            <Chip
+                                label={statusCfg.label}
+                                size="medium"
+                                sx={{
+                                    bgcolor: "rgba(255,255,255,0.15)",
+                                    color: "#fff",
+                                    fontWeight: 800,
+                                    fontSize: 13,
+                                    border: "1px solid rgba(255,255,255,0.25)",
+                                }}
+                            />
+                        </Stack>
+                    </CardContent>
+                </Card>
+
+                {/* ── Ações Disponíveis ─────────────────────────────── */}
+                <Card
+                    sx={{
+                        borderRadius: "var(--cv-radius-xl)",
+                        border: "2px solid #3b82f6",
+                        boxShadow: "0 8px 30px rgba(59,130,246,0.18)",
+                    }}
+                >
+                    <CardContent sx={{ p: 3 }}>
+                        <SectionHeader
+                            icon={<IconBolt size={18} />}
+                            title="Ações Disponíveis"
+                            gradient="linear-gradient(135deg,#3b82f6,#1d4ed8)"
+                        />
+                        <Divider sx={{ mb: 2.5 }} />
+
+                        <Stack direction="row" spacing={1.5} flexWrap="wrap" useFlexGap>
+                            {["open", "waiting_payment"].includes(charge.status) && (
+                                <WhatsAppButton
+                                    templateKey="lembrete_vencimento"
+                                    phone={clientPhone}
+                                    variables={{
+                                        cliente_nome: clientName,
+                                        mes_referencia: mesReferencia,
+                                        valor_fatura: valorFatura,
+                                        data_vencimento: dataVencimento,
                                     }}
+                                    label="Enviar Lembrete"
+                                    variant="contained"
+                                    size="medium"
+                                    startIcon={<IconBrandWhatsapp size={17} />}
+                                    sx={{ fontWeight: 700 }}
                                 />
+                            )}
 
-                                <Stack direction="row" spacing={1} flexWrap="wrap" justifyContent="flex-end">
-                                    {["open", "waiting_payment"].includes(charge.status) && (
-                                        <WhatsAppButton
-                                            templateKey="lembrete_vencimento"
-                                            phone={clientPhone}
-                                            variables={{
-                                                cliente_nome: clientName,
-                                                mes_referencia: mesReferencia,
-                                                valor_fatura: valorFatura,
-                                                data_vencimento: dataVencimento,
-                                            }}
-                                            label="Enviar Lembrete"
-                                            variant="outlined"
-                                            size="small"
-                                            startIcon={<IconBrandWhatsapp size={15} />}
-                                            sx={whatsappActionSx}
-                                        />
-                                    )}
+                            {charge.status === "overdue" && (
+                                <WhatsAppButton
+                                    templateKey="fatura_vencida"
+                                    phone={clientPhone}
+                                    variables={{
+                                        cliente_nome: clientName,
+                                        mes_referencia: mesReferencia,
+                                        valor_fatura: valorFatura,
+                                        data_vencimento: dataVencimento,
+                                    }}
+                                    label="Cobrar via WhatsApp"
+                                    variant="contained"
+                                    size="medium"
+                                    startIcon={<IconBrandWhatsapp size={17} />}
+                                    sx={{ fontWeight: 700 }}
+                                />
+                            )}
 
-                                    {charge.status === "overdue" && (
-                                        <WhatsAppButton
-                                            templateKey="fatura_vencida"
-                                            phone={clientPhone}
-                                            variables={{
-                                                cliente_nome: clientName,
-                                                mes_referencia: mesReferencia,
-                                                valor_fatura: valorFatura,
-                                                data_vencimento: dataVencimento,
-                                            }}
-                                            label="Cobrar via WhatsApp"
-                                            variant="outlined"
-                                            size="small"
-                                            startIcon={<IconBrandWhatsapp size={15} />}
-                                            sx={whatsappActionSx}
-                                        />
-                                    )}
+                            {charge.status === "paid" && (
+                                <WhatsAppButton
+                                    templateKey="pagamento_confirmado"
+                                    phone={clientPhone}
+                                    variables={{
+                                        cliente_nome: clientName,
+                                        mes_referencia: mesReferencia,
+                                        valor_fatura: valorFatura,
+                                    }}
+                                    label="Confirmar Pagamento"
+                                    variant="contained"
+                                    size="medium"
+                                    startIcon={<IconBrandWhatsapp size={17} />}
+                                    sx={{ fontWeight: 700 }}
+                                />
+                            )}
 
-                                    {charge.status === "paid" && (
-                                        <WhatsAppButton
-                                            templateKey="pagamento_confirmado"
-                                            phone={clientPhone}
-                                            variables={{
-                                                cliente_nome: clientName,
-                                                mes_referencia: mesReferencia,
-                                                valor_fatura: valorFatura,
-                                            }}
-                                            label="Confirmar Pagamento"
-                                            variant="outlined"
-                                            size="small"
-                                            startIcon={<IconBrandWhatsapp size={15} />}
-                                            sx={whatsappActionSx}
-                                        />
-                                    )}
+                            {charge.status === "draft" && (
+                                <Tooltip title="Abrir esta cobrança para pagamento">
+                                    <span>
+                                        <ConfirmActionButton
+                                            color="success"
+                                            size="medium"
+                                            message="Deseja abrir esta cobrança?"
+                                            onConfirm={approveCharge}
+                                            startIcon={<IconCheck size={17} />}
+                                            sx={{ fontWeight: 700 }}
+                                        >
+                                            Abrir cobrança
+                                        </ConfirmActionButton>
+                                    </span>
+                                </Tooltip>
+                            )}
 
-                                    {charge.status === "draft" && (
-                                        <Tooltip title="Abrir esta cobrança para pagamento">
-                                            <span>
-                                                <ConfirmActionButton
-                                                    color="success"
-                                                    size="small"
-                                                    message="Deseja abrir esta cobrança?"
-                                                    onConfirm={approveCharge}
-                                                    startIcon={<IconCheck size={15} />}
-                                                >
-                                                    Abrir cobrança
-                                                </ConfirmActionButton>
-                                            </span>
-                                        </Tooltip>
-                                    )}
-
-                                    {["open", "waiting_payment"].includes(charge.status) && !hasActivePayment && (
-                                        <>
-                                            <Tooltip title="Gerar boleto ou Pix para esta cobrança">
-                                                <span>
-                                                    <Button
-                                                        color="primary"
-                                                        variant="outlined"
-                                                        size="small"
-                                                        startIcon={<IconCreditCard size={15} />}
-                                                        onClick={(e) => setPaymentMenuAnchor(e.currentTarget)}
-                                                        sx={whatsappActionSx}
-                                                    >
-                                                        Gerar pagamento
-                                                    </Button>
-                                                </span>
-                                            </Tooltip>
-
-                                            <Menu
-                                                anchorEl={paymentMenuAnchor}
-                                                open={Boolean(paymentMenuAnchor)}
-                                                onClose={() => setPaymentMenuAnchor(null)}
+                            {["open", "waiting_payment"].includes(charge.status) && !hasActivePayment && (
+                                <>
+                                    <Tooltip title="Gerar boleto ou Pix para esta cobrança">
+                                        <span>
+                                            <Button
+                                                color="primary"
+                                                variant="contained"
+                                                size="medium"
+                                                startIcon={<IconCreditCard size={17} />}
+                                                onClick={(e) => setPaymentMenuAnchor(e.currentTarget)}
+                                                sx={{ fontWeight: 700 }}
                                             >
-                                                <MenuItem onClick={() => generatePayment("cora", "boleto_pix")}>
-                                                    Cora — Boleto + Pix
-                                                </MenuItem>
-                                                <MenuItem onClick={() => generatePayment("mercado_pago", "pix")}>
-                                                    Mercado Pago — Pix
-                                                </MenuItem>
-                                                <MenuItem onClick={() => generatePayment("mercado_pago", "boleto")}>
-                                                    Mercado Pago — Boleto
-                                                </MenuItem>
-                                            </Menu>
-                                        </>
-                                    )}
+                                                Gerar pagamento
+                                            </Button>
+                                        </span>
+                                    </Tooltip>
 
-                                    {["open", "waiting_payment"].includes(charge.status) && (
-                                        <Tooltip title="Marcar como atrasada">
-                                            <span>
-                                                <ConfirmActionButton
-                                                    color="error"
-                                                    variant="outlined"
-                                                    size="small"
-                                                    message="Deseja marcar esta cobrança como atrasada?"
-                                                    onConfirm={markOverdue}
-                                                    startIcon={<IconX size={15} />}
-                                                    sx={{ borderColor: "rgba(255,255,255,0.4)", color: "#fca5a5" }}
-                                                >
-                                                    Marcar atrasada
-                                                </ConfirmActionButton>
-                                            </span>
-                                        </Tooltip>
-                                    )}
-                                </Stack>
-                            </Stack>
+                                    <Menu
+                                        anchorEl={paymentMenuAnchor}
+                                        open={Boolean(paymentMenuAnchor)}
+                                        onClose={() => setPaymentMenuAnchor(null)}
+                                    >
+                                        <MenuItem onClick={() => generatePayment("cora", "boleto_pix")}>
+                                            Cora — Boleto + Pix
+                                        </MenuItem>
+                                        <MenuItem onClick={() => generatePayment("mercado_pago", "pix")}>
+                                            Mercado Pago — Pix
+                                        </MenuItem>
+                                        <MenuItem onClick={() => generatePayment("mercado_pago", "boleto")}>
+                                            Mercado Pago — Boleto
+                                        </MenuItem>
+                                    </Menu>
+                                </>
+                            )}
+
+                            {["open", "waiting_payment"].includes(charge.status) && (
+                                <Tooltip title="Marcar como atrasada">
+                                    <span>
+                                        <ConfirmActionButton
+                                            color="error"
+                                            variant="outlined"
+                                            size="medium"
+                                            message="Deseja marcar esta cobrança como atrasada?"
+                                            onConfirm={markOverdue}
+                                            startIcon={<IconX size={17} />}
+                                            sx={{ fontWeight: 700 }}
+                                        >
+                                            Marcar atrasada
+                                        </ConfirmActionButton>
+                                    </span>
+                                </Tooltip>
+                            )}
                         </Stack>
                     </CardContent>
                 </Card>
@@ -605,22 +628,64 @@ export default function Page({ charge }) {
                                 </CardContent>
                             </Card>
 
-                            {admin && charge.bill && (
-                                <Link href={route("consultor.cliente.faturas.show", charge.bill.id)}>
-                                    <Button
-                                        variant="outlined"
-                                        fullWidth
-                                        startIcon={<IconFileInvoice size={17} />}
-                                        sx={{
-                                            borderRadius: "var(--cv-radius-xl)",
-                                            py: 1.5,
-                                            fontWeight: 700,
-                                            borderColor: "var(--cv-border-soft)",
-                                        }}
-                                    >
-                                        Ver fatura origem
-                                    </Button>
-                                </Link>
+                            {charge.bill && (
+                                <Card
+                                    sx={{
+                                        borderRadius: "var(--cv-radius-xl)",
+                                        border: "1px solid var(--cv-border-soft)",
+                                        boxShadow: "var(--cv-shadow-md)",
+                                    }}
+                                >
+                                    <CardContent sx={{ p: 3 }}>
+                                        <SectionHeader
+                                            icon={<IconFileInvoice size={18} />}
+                                            title="Fatura de Concessionária"
+                                            gradient="linear-gradient(135deg,#8b5cf6,#6d28d9)"
+                                        />
+                                        <Divider sx={{ mb: 2 }} />
+
+                                        <Stack spacing={0}>
+                                            <InfoRow label="Referência" value={charge.bill.reference_label || "—"} />
+                                            <InfoRow label="Titular" value={charge.bill.nome || "—"} />
+                                            <InfoRow label="UC" value={charge.bill.unidade_consumidora || "—"} />
+                                            <InfoRow
+                                                label="Vencimento"
+                                                value={charge.bill.vencimento ? <DateText value={charge.bill.vencimento} /> : "—"}
+                                            />
+                                            <InfoRow
+                                                label="Valor Total"
+                                                value={<MoneyText value={charge.bill.valor_total} />}
+                                            />
+                                            <InfoRow
+                                                label="Consumo kWh"
+                                                value={charge.bill.consumo_kwh ? `${charge.bill.consumo_kwh} kWh` : "—"}
+                                            />
+                                            <InfoRow
+                                                label="Status de revisão"
+                                                value={BILL_REVIEW_STATUS_LABELS[charge.bill.review_status] || charge.bill.review_status || "—"}
+                                            />
+                                        </Stack>
+
+                                        {admin && (
+                                            <Link href={route("consultor.cliente.faturas.show", charge.bill.id)}>
+                                                <Button
+                                                    variant="outlined"
+                                                    fullWidth
+                                                    startIcon={<IconFileInvoice size={17} />}
+                                                    sx={{
+                                                        mt: 2.5,
+                                                        borderRadius: "var(--cv-radius-xl)",
+                                                        py: 1.5,
+                                                        fontWeight: 700,
+                                                        borderColor: "var(--cv-border-soft)",
+                                                    }}
+                                                >
+                                                    Ver fatura de concessionária
+                                                </Button>
+                                            </Link>
+                                        )}
+                                    </CardContent>
+                                </Card>
                             )}
                         </Stack>
                     </Grid>

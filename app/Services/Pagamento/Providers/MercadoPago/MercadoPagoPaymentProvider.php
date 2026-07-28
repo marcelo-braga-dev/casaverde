@@ -5,7 +5,9 @@ namespace App\Services\Pagamento\Providers\MercadoPago;
 use App\Contracts\Payments\PaymentProviderContract;
 use App\DTOs\Payments\CreatePaymentDTO;
 use App\DTOs\Payments\PaymentProviderResponseDTO;
+use App\Exceptions\Payments\PaymentProviderException;
 use App\Models\Pagamento\PaymentProviderAccount;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 use RuntimeException;
@@ -43,11 +45,27 @@ class MercadoPagoPaymentProvider implements PaymentProviderContract
 
         $response = $this->httpClient
             ->client($this->account, $token)
-            ->withHeaders(['X-Idempotency-Key' => $dto->externalId])
+            // Cada chamada é uma nova tentativa de cobrança e deve gerar um pedido novo no
+            // Mercado Pago. Usar $dto->externalId (fixo por cobrança) como chave fazia o MP
+            // devolver o pedido falho em cache em retentativas, e rejeitar com 409 ao trocar
+            // o método de pagamento (pix -> boleto) sob a mesma chave.
+            ->withHeaders(['X-Idempotency-Key' => (string) Str::uuid()])
             ->post('/v1/orders', $payload);
 
         if (! $response->successful()) {
-            throw new RuntimeException('Falha ao gerar pagamento no Mercado Pago: '.$response->body());
+            Log::error('Falha ao gerar pagamento no Mercado Pago', [
+                'payment_provider_account_id' => $this->account->id,
+                'external_id' => $dto->externalId,
+                'http_status' => $response->status(),
+                'request_payload' => $payload,
+                'response_body' => $response->json() ?? $response->body(),
+            ]);
+
+            throw new PaymentProviderException(
+                'Falha ao gerar pagamento no Mercado Pago: '.$response->body(),
+                $response->status(),
+                $response->json() ?? ['raw' => $response->body()],
+            );
         }
 
         return $this->mapResponse($response->json());
@@ -165,6 +183,7 @@ class MercadoPagoPaymentProvider implements PaymentProviderContract
             'processed' => str_contains((string) $statusDetail, 'rejected') ? 'failed' : 'paid',
             'canceled' => 'cancelled',
             'expired' => 'expired',
+            'failed' => 'failed',
             // 'action_required' (Pix aguardando pagamento), 'processing'/'pending' (Boleto
             // aguardando compensação) — todos ainda em aberto do lado do provider.
             default => 'generated',

@@ -1,5 +1,6 @@
 <?php
 
+use App\Exceptions\Payments\PaymentProviderException;
 use App\Models\Cliente\ClientProfile;
 use App\Models\Cobranca\CustomerCharge;
 use App\Models\Pagamento\PaymentProviderAccount;
@@ -72,7 +73,7 @@ describe('GeneratePaymentSlipService', function () {
             ->toThrow(InvalidArgumentException::class, 'Já existe um pagamento ativo para esta cobrança.');
     });
 
-    it('does not leave a partial slip when the provider call fails', function () {
+    it('records a failed slip with the provider error when the provider call fails', function () {
         Http::fake([
             'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
             'cora.test/invoices' => Http::response(['error' => 'invalid'], 422),
@@ -80,7 +81,29 @@ describe('GeneratePaymentSlipService', function () {
 
         $charge = CustomerCharge::factory()->create(['status' => 'open']);
 
-        expect(fn () => $this->service->handle($charge))->toThrow(RuntimeException::class);
+        expect(fn () => $this->service->handle($charge))
+            ->toThrow(PaymentProviderException::class);
+
+        $slip = PaymentSlip::where('customer_charge_id', $charge->id)->first();
+
+        expect($slip)->not->toBeNull()
+            ->and($slip->status)->toBe('failed')
+            ->and($slip->provider)->toBe('cora')
+            ->and($slip->error_message)->toContain('Falha ao gerar pagamento na Cora')
+            ->and($slip->response_payload)->toBe(['error' => 'invalid']);
+    });
+
+    it('refuses to request a Mercado Pago boleto when the client has no address on file', function () {
+        PaymentProviderAccount::factory()->mercadoPago()->create([
+            'base_url' => 'https://mp.test',
+            'is_active' => true,
+            'is_default' => true,
+        ]);
+
+        $charge = CustomerCharge::factory()->create(['status' => 'open']);
+
+        expect(fn () => $this->service->handle($charge, 'mercado_pago', 'boleto'))
+            ->toThrow(InvalidArgumentException::class, 'Não é possível gerar boleto via Mercado Pago');
 
         expect(PaymentSlip::where('customer_charge_id', $charge->id)->count())->toBe(0);
     });

@@ -68,7 +68,7 @@ describe('MercadoPagoPaymentProvider', function () {
 
         Http::assertSent(fn ($request) => str_contains($request->url(), '/v1/orders')
             && $request['transactions']['payments'][0]['payment_method']['id'] === 'pix'
-            && $request->hasHeader('X-Idempotency-Key', 'charge-1'));
+            && $request->hasHeader('X-Idempotency-Key'));
     });
 
     it('creates a boleto order mapping payment_method to bolbradesco/ticket', function () {

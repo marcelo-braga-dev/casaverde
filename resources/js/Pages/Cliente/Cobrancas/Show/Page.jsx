@@ -9,7 +9,6 @@ import {
     CardContent,
     Chip,
     Divider,
-    LinearProgress,
     Stack,
     Typography,
 } from '@mui/material';
@@ -139,8 +138,6 @@ export default function Page({ cobranca }) {
     const manualDesc = cobranca?.manual_discount_amount ?? 0;
     const manualAcr = cobranca?.manual_addition_amount ?? 0;
     const final = cobranca?.final_amount ?? 0;
-    const economiaPercent = original > 0 ? ((desconto / original) * 100).toFixed(1) : 0;
-    const savingPct = original > 0 ? Math.min(100, (desconto / original) * 100) : 0;
 
     return (
         <Layout
@@ -291,16 +288,6 @@ export default function Page({ cobranca }) {
                                     </Box>
 
                                     <Stack spacing={1} sx={{ mt: 2 }}>
-                                        <Stack direction="row" justifyContent="space-between" sx={{ mb: 0.5 }}>
-                                            <Typography variant="caption" color="text.secondary">Desconto aplicado</Typography>
-                                            <Typography variant="caption" sx={{ fontWeight: 700, color: 'success.main' }}>{economiaPercent}%</Typography>
-                                        </Stack>
-                                        <LinearProgress
-                                            variant="determinate"
-                                            value={savingPct}
-                                            color="success"
-                                            sx={{ height: 6, borderRadius: 3, bgcolor: 'grey.100' }}
-                                        />
                                         <Typography variant="caption" color="text.secondary">
                                             Você paga {formatMoney(final)} em vez de {formatMoney(original)}
                                         </Typography>
@@ -363,9 +350,6 @@ export default function Page({ cobranca }) {
                                     <Typography variant="h3" sx={{ fontWeight: 950, color: '#059669', letterSpacing: '-0.05em', mt: 0.5 }}>
                                         {formatMoney(desconto)}
                                     </Typography>
-                                    <Typography variant="body2" sx={{ color: '#065f46', mt: 0.5 }}>
-                                        {economiaPercent}% de desconto sobre {formatMoney(original)}
-                                    </Typography>
                                     {manualDesc > 0 && (
                                         <Chip
                                             label={`+ ${formatMoney(manualDesc)} desconto manual`}
@@ -421,9 +405,8 @@ export default function Page({ cobranca }) {
                                             { label: 'Original',  value: formatMoney(original),  color: 'text.primary' },
                                             { label: 'Desconto',  value: `-${formatMoney(desconto)}`, color: 'success.main' },
                                             { label: 'Final',     value: formatMoney(final),     color: 'primary.main' },
-                                            { label: 'Economia',  value: `${economiaPercent}%`,  color: 'success.dark' },
                                         ].map(item => (
-                                            <Grid key={item.label} size={{ xs: 6 }}>
+                                            <Grid key={item.label} size={{ xs: 4 }}>
                                                 <Box sx={{ bgcolor: 'grey.50', borderRadius: 2, p: 1.5, textAlign: 'center' }}>
                                                     <Typography variant="caption" color="text.secondary" display="block">{item.label}</Typography>
                                                     <Typography variant="subtitle2" sx={{ fontWeight: 950, color: item.color }}>{item.value}</Typography>

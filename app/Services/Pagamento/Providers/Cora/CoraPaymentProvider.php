@@ -5,7 +5,9 @@ namespace App\Services\Pagamento\Providers\Cora;
 use App\Contracts\Payments\PaymentProviderContract;
 use App\DTOs\Payments\CreatePaymentDTO;
 use App\DTOs\Payments\PaymentProviderResponseDTO;
+use App\Exceptions\Payments\PaymentProviderException;
 use App\Models\Pagamento\PaymentProviderAccount;
+use Illuminate\Support\Facades\Log;
 use RuntimeException;
 
 class CoraPaymentProvider implements PaymentProviderContract
@@ -39,7 +41,19 @@ class CoraPaymentProvider implements PaymentProviderContract
             ->post('/invoices', $payload);
 
         if (! $response->successful()) {
-            throw new RuntimeException('Falha ao gerar pagamento na Cora: '.$response->body());
+            Log::error('Falha ao gerar pagamento na Cora', [
+                'payment_provider_account_id' => $this->account->id,
+                'external_id' => $dto->externalId,
+                'http_status' => $response->status(),
+                'request_payload' => $payload,
+                'response_body' => $response->json() ?? $response->body(),
+            ]);
+
+            throw new PaymentProviderException(
+                'Falha ao gerar pagamento na Cora: '.$response->body(),
+                $response->status(),
+                $response->json() ?? ['raw' => $response->body()],
+            );
         }
 
         return $this->mapResponse($response->json());

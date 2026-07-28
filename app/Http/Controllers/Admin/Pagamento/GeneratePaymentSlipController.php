@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Pagamento;
 
+use App\Exceptions\Payments\PaymentProviderException;
 use App\Http\Controllers\Controller;
 use App\Models\Cobranca\CustomerCharge;
 use App\Services\Pagamento\GeneratePaymentSlipService;
@@ -31,6 +32,10 @@ class GeneratePaymentSlipController extends Controller
             return redirect()
                 ->route('admin.financeiro.pagamentos.show', $slip->id)
                 ->with('success', 'Pagamento gerado com sucesso.');
+        } catch (PaymentProviderException) {
+            return redirect()
+                ->back()
+                ->with('error', 'Não foi possível gerar o pagamento junto ao provedor. Consulte o histórico de tentativas em Pagamentos para mais detalhes ou tente novamente.');
         } catch (InvalidArgumentException|RuntimeException $e) {
             return redirect()
                 ->back()
