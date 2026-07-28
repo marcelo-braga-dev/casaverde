@@ -110,7 +110,7 @@ const PropostaModelo = ({dados, imagemGrafico}) => {
                     <View style={styles.tableRow}>
                         <Text style={styles.tableColHeader}></Text>
                         <Text style={styles.tableColHeader}>Na Concessionária</Text>
-                        <Text style={styles.tableColHeader}>No Consórcio</Text>
+                        <Text style={styles.tableColHeader}>Na Casa Verde</Text>
                         <Text style={styles.tableColHeader}>Desconto Total</Text>
                     </View>
                     <View style={styles.tableRow}>
