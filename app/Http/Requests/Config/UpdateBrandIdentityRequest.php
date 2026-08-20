@@ -20,6 +20,7 @@ class UpdateBrandIdentityRequest extends FormRequest
             'color_secondary' => ['required', 'regex:/^#[0-9A-Fa-f]{6}$/'],
             'logo' => ['nullable', 'image', 'mimes:png,jpg,jpeg,svg,webp', 'max:2048'],
             'favicon' => ['nullable', 'mimes:png,ico,jpg,jpeg,svg,webp', 'max:512'],
+            'boleto_logo' => ['nullable', 'image', 'mimes:png,jpg,jpeg,webp', 'max:2048'],
         ];
     }
 
@@ -33,6 +34,8 @@ class UpdateBrandIdentityRequest extends FormRequest
             'logo.max' => 'O logo deve ter no máximo 2MB.',
             'favicon.mimes' => 'O favicon deve ser PNG, ICO, JPG, SVG ou WEBP.',
             'favicon.max' => 'O favicon deve ter no máximo 512KB.',
+            'boleto_logo.image' => 'A logo do boleto deve ser uma imagem (PNG, JPG ou WEBP).',
+            'boleto_logo.max' => 'A logo do boleto deve ter no máximo 2MB.',
         ];
     }
 }

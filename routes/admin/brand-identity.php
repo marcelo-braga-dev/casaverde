@@ -10,4 +10,5 @@ Route::name('brand-identity.')
         Route::post('/', [BrandIdentityController::class, 'update'])->name('update');
         Route::delete('/logo', [BrandIdentityController::class, 'destroyLogo'])->name('logo.destroy');
         Route::delete('/favicon', [BrandIdentityController::class, 'destroyFavicon'])->name('favicon.destroy');
+        Route::delete('/boleto-logo', [BrandIdentityController::class, 'destroyBoletoLogo'])->name('boleto-logo.destroy');
     });

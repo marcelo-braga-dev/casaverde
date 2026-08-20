@@ -16,6 +16,7 @@ import {
     Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
+import { IconFileText } from "@tabler/icons-react";
 
 const statusLabels = {
     pending: "Pendente",
@@ -312,11 +313,28 @@ export default function Page({
                                             </TableCell>
 
                                             <TableCell align="right">
-                                                <Link href={route("admin.financeiro.pagamentos.show", payment.id)}>
-                                                    <Button variant="outlined" size="small">
-                                                        Ver
-                                                    </Button>
-                                                </Link>
+                                                <Stack direction="row" spacing={1} justifyContent="flex-end">
+                                                    {payment.provider === "mercado_pago" && payment.barcode && payment.digitable_line && (
+                                                        <Button
+                                                            component="a"
+                                                            href={route("admin.financeiro.pagamentos.boleto-pdf", payment.id)}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            variant="contained"
+                                                            size="small"
+                                                            startIcon={<IconFileText size={16} />}
+                                                            sx={{ bgcolor: "#064E3B", "&:hover": { bgcolor: "#053e2f" } }}
+                                                        >
+                                                            Boleto CV
+                                                        </Button>
+                                                    )}
+
+                                                    <Link href={route("admin.financeiro.pagamentos.show", payment.id)}>
+                                                        <Button variant="outlined" size="small">
+                                                            Ver
+                                                        </Button>
+                                                    </Link>
+                                                </Stack>
                                             </TableCell>
                                         </TableRow>
                                     ))

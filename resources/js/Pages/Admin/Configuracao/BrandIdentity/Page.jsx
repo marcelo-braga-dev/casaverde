@@ -14,6 +14,7 @@ import {
 import Grid from '@mui/material/Grid2';
 import {
     IconCheck,
+    IconFileText,
     IconPalette,
     IconPhoto,
     IconRefresh,
@@ -123,10 +124,12 @@ export default function Page({ brand }) {
         color_secondary: brand?.color_secondary ?? '#4F9A2A',
         logo: null,
         favicon: null,
+        boleto_logo: null,
     });
 
     const [logoPreview, setLogoPreview] = useState(brand?.logo_url ?? null);
     const [faviconPreview, setFaviconPreview] = useState(brand?.favicon_url ?? null);
+    const [boletoLogoPreview, setBoletoLogoPreview] = useState(brand?.boleto_logo_url ?? null);
 
     function pickLogo(file) {
         setData('logo', file);
@@ -136,6 +139,11 @@ export default function Page({ brand }) {
     function pickFavicon(file) {
         setData('favicon', file);
         setFaviconPreview(file ? URL.createObjectURL(file) : brand?.favicon_url ?? null);
+    }
+
+    function pickBoletoLogo(file) {
+        setData('boleto_logo', file);
+        setBoletoLogoPreview(file ? URL.createObjectURL(file) : brand?.boleto_logo_url ?? null);
     }
 
     function submit(e) {
@@ -157,6 +165,13 @@ export default function Page({ brand }) {
     function restoreFavicon() {
         if (!window.confirm('Restaurar o favicon padrão da plataforma?')) return;
         router.delete(safeRoute('admin.brand-identity.favicon.destroy'), {
+            onSuccess: () => window.location.reload(),
+        });
+    }
+
+    function restoreBoletoLogo() {
+        if (!window.confirm('Remover a logo do boleto?')) return;
+        router.delete(safeRoute('admin.brand-identity.boleto-logo.destroy'), {
             onSuccess: () => window.location.reload(),
         });
     }
@@ -250,6 +265,23 @@ export default function Page({ brand }) {
                                     error={errors.favicon}
                                 />
                             </Stack>
+                        </SectionCard>
+
+                        <SectionCard
+                            icon={IconFileText}
+                            color="#064E3B"
+                            title="Logo do Boleto"
+                            description="Imagem exibida no cabeçalho do PDF de boleto de cobrança enviado ao cliente."
+                        >
+                            <ImageUploadField
+                                label="Logo para o boleto (PDF)"
+                                helperText="PNG, JPG ou WEBP — até 2MB. Se não for enviada, o boleto exibe apenas o nome da plataforma em texto."
+                                preview={boletoLogoPreview}
+                                onSelect={pickBoletoLogo}
+                                onRestoreDefault={brand?.boleto_logo_url ? restoreBoletoLogo : null}
+                                error={errors.boleto_logo}
+                                accept="image/png,image/jpeg,image/webp"
+                            />
                         </SectionCard>
 
                         <Stack direction="row" justifyContent="flex-end">

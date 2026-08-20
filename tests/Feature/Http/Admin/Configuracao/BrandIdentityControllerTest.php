@@ -96,4 +96,42 @@ describe('BrandIdentityController', function () {
         expect(SystemSetting::where('key', 'brand_logo_path')->first())->toBeNull();
     });
 
+    it('uploads a boleto logo and exposes its url on the index page', function () {
+        $this->actingAs($this->admin)
+            ->post(route('admin.brand-identity.update'), [
+                'name' => 'Solmar Energia',
+                'color_primary' => '#112233',
+                'color_secondary' => '#445566',
+                'boleto_logo' => UploadedFile::fake()->image('boleto-logo.png'),
+            ])
+            ->assertRedirect();
+
+        $path = SystemSetting::where('key', 'brand_boleto_logo_path')->first()->value;
+        Storage::disk('public')->assertExists($path);
+
+        $this->actingAs($this->admin)
+            ->get(route('admin.brand-identity.index'))
+            ->assertInertia(fn ($page) => $page->where('brand.boleto_logo_url', fn ($url) => str_contains($url, $path)));
+    });
+
+    it('restores the default boleto logo, removing the stored file and setting', function () {
+        $this->actingAs($this->admin)
+            ->post(route('admin.brand-identity.update'), [
+                'name' => 'Solmar Energia',
+                'color_primary' => '#112233',
+                'color_secondary' => '#445566',
+                'boleto_logo' => UploadedFile::fake()->image('boleto-logo.png'),
+            ])
+            ->assertRedirect();
+
+        $path = SystemSetting::where('key', 'brand_boleto_logo_path')->first()->value;
+
+        $this->actingAs($this->admin)
+            ->delete(route('admin.brand-identity.boleto-logo.destroy'))
+            ->assertRedirect();
+
+        Storage::disk('public')->assertMissing($path);
+        expect(SystemSetting::where('key', 'brand_boleto_logo_path')->first())->toBeNull();
+    });
+
 });

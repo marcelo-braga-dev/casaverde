@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\Pagamento\CancelPaymentSlipController;
+use App\Http\Controllers\Admin\Pagamento\DownloadPaymentSlipPdfController;
 use App\Http\Controllers\Admin\Pagamento\GeneratePaymentSlipController;
 use App\Http\Controllers\Admin\Pagamento\PaymentProviderAccountController;
 use App\Http\Controllers\Admin\Pagamento\PaymentSlipController;
@@ -12,6 +13,9 @@ Route::name('financeiro.pagamentos.')
     ->group(function () {
         Route::get('/', [PaymentSlipController::class, 'index'])->name('index');
         Route::get('/{pagamento}', [PaymentSlipController::class, 'show'])->name('show');
+
+        Route::get('/{pagamento}/boleto.pdf', [DownloadPaymentSlipPdfController::class, 'show'])
+            ->name('boleto-pdf');
 
         Route::post('/gerar-da-cobranca/{cobranca}', [GeneratePaymentSlipController::class, 'store'])
             ->name('generate-from-charge');

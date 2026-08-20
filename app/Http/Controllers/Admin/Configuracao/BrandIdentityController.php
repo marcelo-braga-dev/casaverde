@@ -29,6 +29,7 @@ class BrandIdentityController extends Controller
                 'color_secondary' => $settings->get('brand_color_secondary', self::DEFAULT_COLOR_SECONDARY),
                 'logo_url' => $this->urlFor($settings->get('brand_logo_path')),
                 'favicon_url' => $this->urlFor($settings->get('brand_favicon_path')),
+                'boleto_logo_url' => $this->urlFor($settings->get('brand_boleto_logo_path')),
             ],
         ]);
     }
@@ -49,6 +50,10 @@ class BrandIdentityController extends Controller
             $this->replaceFile($settings, 'brand_favicon_path', $request->file('favicon'), $userId);
         }
 
+        if ($request->hasFile('boleto_logo')) {
+            $this->replaceFile($settings, 'brand_boleto_logo_path', $request->file('boleto_logo'), $userId);
+        }
+
         return back()->with('success', 'Identidade visual atualizada com sucesso.');
     }
 
@@ -66,6 +71,13 @@ class BrandIdentityController extends Controller
         return back()->with('success', 'Favicon restaurado para o padrão.');
     }
 
+    public function destroyBoletoLogo(SystemSettingService $settings): RedirectResponse
+    {
+        $this->removeFile($settings, 'brand_boleto_logo_path');
+
+        return back()->with('success', 'Logo do boleto restaurado para o padrão.');
+    }
+
     private function replaceFile(SystemSettingService $settings, string $key, $file, ?int $userId): void
     {
         $previous = $settings->get($key);
@@ -73,7 +85,12 @@ class BrandIdentityController extends Controller
             Storage::disk('public')->delete($previous);
         }
 
-        $prefix = $key === 'brand_logo_path' ? 'logo' : 'favicon';
+        $prefix = match ($key) {
+            'brand_logo_path' => 'logo',
+            'brand_favicon_path' => 'favicon',
+            'brand_boleto_logo_path' => 'boleto-logo',
+            default => 'brand',
+        };
         $filename = $prefix.'-'.now()->timestamp.'-'.Str::random(8).'.'.$file->getClientOriginalExtension();
         $path = $file->storeAs('brand', $filename, 'public');
 

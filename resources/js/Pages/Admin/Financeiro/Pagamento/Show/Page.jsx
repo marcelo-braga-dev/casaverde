@@ -394,6 +394,20 @@ export default function Page({ payment }) {
                                             </Button>
                                         )}
 
+                                        {payment.provider === "mercado_pago" && payment.barcode && payment.digitable_line && (
+                                            <Button
+                                                variant="contained"
+                                                component="a"
+                                                href={route("admin.financeiro.pagamentos.boleto-pdf", payment.id)}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                startIcon={<IconFileText size={16} />}
+                                                sx={{ fontWeight: 700, bgcolor: "#064E3B", "&:hover": { bgcolor: "#053e2f" } }}
+                                            >
+                                                Baixar boleto (PDF Casa Verde)
+                                            </Button>
+                                        )}
+
                                         {payment.pdf_url && (
                                             <Button
                                                 variant="outlined"
@@ -404,7 +418,7 @@ export default function Page({ payment }) {
                                                 startIcon={<IconFileText size={16} />}
                                                 sx={{ fontWeight: 700 }}
                                             >
-                                                Boleto PDF
+                                                Boleto PDF (Mercado Pago)
                                             </Button>
                                         )}
                                     </Stack>
