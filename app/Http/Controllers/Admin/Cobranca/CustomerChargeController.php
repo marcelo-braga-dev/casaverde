@@ -43,6 +43,7 @@ class CustomerChargeController extends Controller
                 'approvedBy',
                 'paymentSlips.providerAccount',
                 'paymentSlips.transactions',
+                'histories.user',
             ]),
         ]);
     }

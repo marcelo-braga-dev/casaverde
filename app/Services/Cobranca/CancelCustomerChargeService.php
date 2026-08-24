@@ -3,6 +3,7 @@
 namespace App\Services\Cobranca;
 
 use App\Models\Cobranca\CustomerCharge;
+use App\Models\Cobranca\CustomerChargeHistory;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
@@ -39,7 +40,15 @@ class CancelCustomerChargeService
                 'notes' => $notes,
             ]);
 
-            return $charge->fresh();
+            $charge = $charge->fresh();
+
+            CustomerChargeHistory::log(
+                $charge,
+                'cancelled',
+                $reason ? "Cobrança cancelada. Motivo: {$reason}" : 'Cobrança cancelada.'
+            );
+
+            return $charge;
         });
     }
 }

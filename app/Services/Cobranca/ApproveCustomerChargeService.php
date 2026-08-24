@@ -3,6 +3,7 @@
 namespace App\Services\Cobranca;
 
 use App\Models\Cobranca\CustomerCharge;
+use App\Models\Cobranca\CustomerChargeHistory;
 use InvalidArgumentException;
 
 class ApproveCustomerChargeService
@@ -19,6 +20,10 @@ class ApproveCustomerChargeService
             'approved_at' => now(),
         ]);
 
-        return $charge->fresh();
+        $charge = $charge->fresh();
+
+        CustomerChargeHistory::log($charge, 'approved', 'Cobrança aberta para pagamento.');
+
+        return $charge;
     }
 }

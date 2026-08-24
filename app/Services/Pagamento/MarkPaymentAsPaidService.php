@@ -2,6 +2,7 @@
 
 namespace App\Services\Pagamento;
 
+use App\Models\Cobranca\CustomerChargeHistory;
 use App\Models\Pagamento\PaymentSlip;
 use App\Models\Pagamento\PaymentTransaction;
 use Carbon\CarbonInterface;
@@ -53,6 +54,14 @@ class MarkPaymentAsPaidService
                 'status' => 'paid',
                 'paid_at' => $paidAt,
             ]);
+
+            if ($slip->charge) {
+                CustomerChargeHistory::log(
+                    $slip->charge->fresh(),
+                    'marked_paid',
+                    "Pagamento confirmado via {$slip->provider} (boleto/pix #{$slip->id})."
+                );
+            }
         });
     }
 

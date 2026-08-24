@@ -3,6 +3,7 @@
 namespace App\Services\Cobranca;
 
 use App\Models\Cobranca\CustomerCharge;
+use App\Models\Cobranca\CustomerChargeHistory;
 use InvalidArgumentException;
 
 class MarkCustomerChargeAsOverdueService
@@ -17,6 +18,10 @@ class MarkCustomerChargeAsOverdueService
             'status' => 'overdue',
         ]);
 
-        return $charge->fresh();
+        $charge = $charge->fresh();
+
+        CustomerChargeHistory::log($charge, 'marked_overdue', 'Marcada como atrasada manualmente.');
+
+        return $charge;
     }
 }

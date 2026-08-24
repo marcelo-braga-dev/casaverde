@@ -10,6 +10,7 @@ import {
     CardContent,
     Chip,
     Divider,
+    IconButton,
     LinearProgress,
     Menu,
     MenuItem,
@@ -31,6 +32,7 @@ import DateText from "@/Components/Admin/DateText.jsx";
 import ConfirmActionButton from "@/Components/Admin/ConfirmActionButton.jsx";
 import EmptyState from "@/Components/Admin/EmptyState.jsx";
 import WhatsAppButton from "@/Components/WhatsApp/WhatsAppButton";
+import EditDueDateDialog from "./Partials/EditDueDateDialog.jsx";
 import formatCurrency from "@/Utils/formatCurrency.js";
 import useAuthUser from "@/Hooks/useAuthUser.js";
 import { isAdmin } from "@/Utils/permissions.js";
@@ -43,6 +45,8 @@ import {
     IconCheck,
     IconCreditCard,
     IconFileInvoice,
+    IconHistory,
+    IconPencil,
     IconReceipt,
     IconReceiptRefund,
     IconUser,
@@ -141,6 +145,8 @@ export default function Page({ charge }) {
     const hasActivePayment = charge.payment_slips?.some((payment) =>
         ["pending", "generated"].includes(payment.status)
     );
+    const canEditDueDate = !["paid", "cancelled"].includes(charge.status);
+    const [editDueDateOpen, setEditDueDateOpen] = useState(false);
 
     const adjustmentForm = useForm({
         type: "discount",
@@ -279,6 +285,39 @@ export default function Page({ charge }) {
                     </CardContent>
                 </Card>
 
+                {/* ── Motivo do Cancelamento ────────────────────────── */}
+                {charge.status === "cancelled" && (
+                    <Card
+                        sx={{
+                            borderRadius: "var(--cv-radius-xl)",
+                            border: "1px solid #fee2e2",
+                            boxShadow: "var(--cv-shadow-md)",
+                            background: "linear-gradient(135deg,#fff5f5,#fee2e2)",
+                        }}
+                    >
+                        <CardContent sx={{ p: 3 }}>
+                            <SectionHeader
+                                icon={<IconX size={18} />}
+                                title="Motivo do Cancelamento"
+                                gradient="linear-gradient(135deg,#ef4444,#dc2626)"
+                            />
+                            <Divider sx={{ mb: 2 }} />
+
+                            <Stack spacing={1.5}>
+                                <Typography variant="body2" sx={{ whiteSpace: "pre-line" }}>
+                                    {charge.notes || "Nenhum motivo informado."}
+                                </Typography>
+
+                                {charge.cancelled_at && (
+                                    <Typography variant="caption" color="text.secondary">
+                                        Cancelada em <DateText value={charge.cancelled_at} />
+                                    </Typography>
+                                )}
+                            </Stack>
+                        </CardContent>
+                    </Card>
+                )}
+
                 {/* ── Ações Disponíveis ─────────────────────────────── */}
                 <Card
                     sx={{
@@ -415,6 +454,23 @@ export default function Page({ charge }) {
                                         >
                                             Marcar atrasada
                                         </ConfirmActionButton>
+                                    </span>
+                                </Tooltip>
+                            )}
+
+                            {canEditDueDate && (
+                                <Tooltip title="Editar a data de vencimento desta cobrança">
+                                    <span>
+                                        <Button
+                                            color="secondary"
+                                            variant="outlined"
+                                            size="medium"
+                                            startIcon={<IconPencil size={17} />}
+                                            onClick={() => setEditDueDateOpen(true)}
+                                            sx={{ fontWeight: 700 }}
+                                        >
+                                            Editar vencimento
+                                        </Button>
                                     </span>
                                 </Tooltip>
                             )}
@@ -598,7 +654,21 @@ export default function Page({ charge }) {
                                     <Stack spacing={0}>
                                         <InfoRow
                                             label="Vencimento"
-                                            value={<DateText value={charge.due_date} />}
+                                            value={
+                                                <Stack direction="row" alignItems="center" spacing={0.5}>
+                                                    <DateText value={charge.due_date} />
+                                                    {canEditDueDate && (
+                                                        <Tooltip title="Editar vencimento">
+                                                            <IconButton
+                                                                size="small"
+                                                                onClick={() => setEditDueDateOpen(true)}
+                                                            >
+                                                                <IconPencil size={14} />
+                                                            </IconButton>
+                                                        </Tooltip>
+                                                    )}
+                                                </Stack>
+                                            }
                                         />
                                         <InfoRow
                                             label="Paga em"
@@ -942,6 +1012,64 @@ export default function Page({ charge }) {
                     </CardContent>
                 </Card>
 
+                {/* ── Histórico de Alterações ───────────────────────── */}
+                <Card
+                    sx={{
+                        borderRadius: "var(--cv-radius-xl)",
+                        border: "1px solid var(--cv-border-soft)",
+                        boxShadow: "var(--cv-shadow-md)",
+                    }}
+                >
+                    <CardContent sx={{ p: 3 }}>
+                        <SectionHeader
+                            icon={<IconHistory size={18} />}
+                            title="Histórico de Alterações"
+                            gradient="linear-gradient(135deg,#6366f1,#4338ca)"
+                        />
+                        <Divider sx={{ mb: 2 }} />
+
+                        {charge.histories?.length > 0 ? (
+                            <Stack spacing={0}>
+                                {charge.histories.map((entry, index) => (
+                                    <Stack
+                                        key={entry.id}
+                                        direction="row"
+                                        spacing={2}
+                                        py={1.2}
+                                        sx={{
+                                            borderBottom:
+                                                index < charge.histories.length - 1
+                                                    ? "1px solid var(--cv-border-soft)"
+                                                    : "none",
+                                        }}
+                                    >
+                                        <Box
+                                            sx={{
+                                                width: 8,
+                                                height: 8,
+                                                borderRadius: "50%",
+                                                background: "#6366f1",
+                                                mt: 0.9,
+                                                flexShrink: 0,
+                                            }}
+                                        />
+                                        <Box flex={1}>
+                                            <Typography variant="body2" fontWeight={600}>
+                                                {entry.description}
+                                            </Typography>
+                                            <Typography variant="caption" color="text.secondary">
+                                                {entry.user?.name || "Sistema"} · <DateText value={entry.created_at} />
+                                            </Typography>
+                                        </Box>
+                                    </Stack>
+                                ))}
+                            </Stack>
+                        ) : (
+                            <EmptyState title="Nenhuma alteração registrada ainda." />
+                        )}
+                    </CardContent>
+                </Card>
+
                 {/* ── Ações finais (Pagar manualmente / Cancelar) ───── */}
                 {!["paid", "cancelled"].includes(charge.status) && (
                     <Grid container spacing={3}>
@@ -1039,6 +1167,13 @@ export default function Page({ charge }) {
                     </Grid>
                 )}
             </Stack>
+
+            <EditDueDateDialog
+                open={editDueDateOpen}
+                charge={charge}
+                hasActivePayment={hasActivePayment}
+                onClose={() => setEditDueDateOpen(false)}
+            />
         </Layout>
     );
 }

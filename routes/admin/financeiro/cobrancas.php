@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\Cobranca\CustomerChargeController;
 use App\Http\Controllers\Admin\Cobranca\GenerateCustomerChargeFromBillController;
 use App\Http\Controllers\Admin\Cobranca\MarkCustomerChargeAsOverdueController;
 use App\Http\Controllers\Admin\Cobranca\MarkCustomerChargeAsPaidController;
+use App\Http\Controllers\Admin\Cobranca\UpdateCustomerChargeDueDateController;
 use Illuminate\Support\Facades\Route;
 
 Route::name('financeiro.cobrancas.')
@@ -33,4 +34,7 @@ Route::name('financeiro.cobrancas.')
 
         Route::post('/{cobranca}/adjustments', [CustomerChargeAdjustmentController::class, 'store'])
             ->name('adjustments.store');
+
+        Route::put('/{cobranca}/due-date', [UpdateCustomerChargeDueDateController::class, 'update'])
+            ->name('update-due-date');
     });

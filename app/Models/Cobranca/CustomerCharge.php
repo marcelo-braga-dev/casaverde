@@ -115,6 +115,11 @@ class CustomerCharge extends BaseModel
         return $this->hasMany(PaymentSlip::class, 'customer_charge_id');
     }
 
+    public function histories()
+    {
+        return $this->hasMany(CustomerChargeHistory::class, 'customer_charge_id')->latest();
+    }
+
     public function canBeCancelled(): bool
     {
         return ! in_array($this->status, ['paid', 'cancelled'], true);

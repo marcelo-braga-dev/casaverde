@@ -14,6 +14,13 @@ describe('MarkChargeAsOverdueJob', function () {
         (new MarkChargeAsOverdueJob($charge->id))->handle();
 
         expect($charge->refresh()->status)->toBe('overdue');
+
+        $this->assertDatabaseHas('customer_charge_histories', [
+            'customer_charge_id' => $charge->id,
+            'user_id' => null,
+            'action' => 'marked_overdue',
+            'description' => 'Marcada automaticamente como atrasada (vencimento ultrapassado).',
+        ]);
     });
 
     it('marks a waiting_payment charge with a past due date as overdue', function () {

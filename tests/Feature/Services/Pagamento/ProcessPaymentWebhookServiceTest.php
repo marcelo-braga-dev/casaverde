@@ -39,6 +39,11 @@ describe('ProcessPaymentWebhookService', function () {
             ->and($slip->refresh()->status)->toBe('paid')
             ->and($charge->refresh()->status)->toBe('paid')
             ->and(PaymentTransaction::where('payment_slip_id', $slip->id)->count())->toBe(1);
+
+        $this->assertDatabaseHas('customer_charge_histories', [
+            'customer_charge_id' => $charge->id,
+            'action' => 'marked_paid',
+        ]);
     });
 
     it('marks the slip as cancelled when the webhook reports cancellation, and reopens an open charge', function () {

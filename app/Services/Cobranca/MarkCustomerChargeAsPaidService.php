@@ -3,6 +3,7 @@
 namespace App\Services\Cobranca;
 
 use App\Models\Cobranca\CustomerCharge;
+use App\Models\Cobranca\CustomerChargeHistory;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
 
@@ -27,7 +28,15 @@ class MarkCustomerChargeAsPaidService
                 'notes' => $notes,
             ]);
 
-            return $charge->fresh();
+            $charge = $charge->fresh();
+
+            CustomerChargeHistory::log(
+                $charge,
+                'marked_paid',
+                $note ? 'Pagamento manual: '.$note : 'Cobrança marcada como paga manualmente.'
+            );
+
+            return $charge;
         });
     }
 }

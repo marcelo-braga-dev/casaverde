@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Cobranca\CustomerCharge;
+use App\Models\Cobranca\CustomerChargeHistory;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 
@@ -37,5 +38,7 @@ class MarkChargeAsOverdueJob implements ShouldQueue
         $charge->update([
             'status' => 'overdue',
         ]);
+
+        CustomerChargeHistory::log($charge->fresh(), 'marked_overdue', 'Marcada automaticamente como atrasada (vencimento ultrapassado).');
     }
 }

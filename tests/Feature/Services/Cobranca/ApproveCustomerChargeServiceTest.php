@@ -71,4 +71,16 @@ describe('ApproveCustomerChargeService', function () {
         expect($updated)->toBeInstanceOf(CustomerCharge::class)
             ->and($updated->id)->toBe($charge->id);
     });
+
+    it('logs a history entry when approving', function () {
+        $charge = CustomerCharge::factory()->draft()->create();
+        $this->service->handle($charge);
+
+        $this->assertDatabaseHas('customer_charge_histories', [
+            'customer_charge_id' => $charge->id,
+            'user_id' => $this->admin->id,
+            'action' => 'approved',
+            'description' => 'Cobrança aberta para pagamento.',
+        ]);
+    });
 });
