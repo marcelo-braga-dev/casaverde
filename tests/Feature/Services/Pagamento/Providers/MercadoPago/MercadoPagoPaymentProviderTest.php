@@ -132,6 +132,27 @@ describe('MercadoPagoPaymentProvider', function () {
         Http::assertSent(fn ($request) => $request['payer']['identification']['type'] === 'CNPJ');
     });
 
+    it('falls back to a real, deliverable domain when the customer has no email', function () {
+        Http::fake([
+            'mp.test/v1/orders' => Http::response(['id' => 'ORD1', 'status' => 'action_required'], 201),
+        ]);
+
+        $dto = new CreatePaymentDTO(
+            externalId: 'charge-1',
+            amount: 250.00,
+            dueDate: '2026-07-01',
+            description: 'Cobrança teste',
+            paymentMethod: 'pix',
+            customer: new PaymentCustomerDTO(name: 'Cliente Teste', email: null, document: '12345678901'),
+        );
+
+        $this->provider->createPayment($dto);
+
+        // "casaverde.coop.br" não existe (era rejeitado pelo Mercado Pago com
+        // invalid_payer_email); o domínio real de e-mail é casaverdeconsorcio.com.br.
+        Http::assertSent(fn ($request) => $request['payer']['email'] === 'sem-email@casaverdeconsorcio.com.br');
+    });
+
     it('splits the customer name into first_name and last_name', function () {
         Http::fake([
             'mp.test/v1/orders' => Http::response(['id' => 'ORD1', 'status' => 'action_required'], 201),

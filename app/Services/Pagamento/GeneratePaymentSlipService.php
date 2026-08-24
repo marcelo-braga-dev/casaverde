@@ -57,7 +57,7 @@ class GeneratePaymentSlipService
             ?? $charge->clientProfile?->nome
             ?? $charge->clientProfile?->razao_social
             ?? 'Cliente',
-            email: $charge->platformUser?->email ?? $charge->clientProfile?->contacts?->email ?? null,
+            email: $this->resolveEmail($charge),
             document: $charge->clientProfile?->cpf ?? $charge->clientProfile?->cnpj ?? null,
             phone: $charge->clientProfile?->contacts?->celular ?? $charge->clientProfile?->contacts?->telefone ?? null,
             address: $address,
@@ -136,6 +136,30 @@ class GeneratePaymentSlipService
             'response_payload' => $response->rawPayload,
             'generated_at' => now(),
         ]);
+    }
+
+    /**
+     * O e-mail de contato do cliente (cadastro) é sempre preferido em relação ao
+     * e-mail de login da plataforma, porque clientes que nunca ativaram o portal
+     * recebem um e-mail sintético "cliente-{id}@casaverde.local" (IssueClientContractService)
+     * só para satisfazer o unique da tabela users — nunca é um endereço real, e
+     * provedores de pagamento (ex: Mercado Pago) rejeitam com invalid_payer_email.
+     */
+    private function resolveEmail(CustomerCharge $charge): ?string
+    {
+        $contactEmail = $charge->clientProfile?->contacts?->email;
+
+        if ($contactEmail) {
+            return $contactEmail;
+        }
+
+        $platformEmail = $charge->platformUser?->email;
+
+        if ($platformEmail && ! str_ends_with($platformEmail, '@casaverde.local')) {
+            return $platformEmail;
+        }
+
+        return null;
     }
 
     private function resolveAddress(CustomerCharge $charge): ?array

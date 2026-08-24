@@ -116,7 +116,9 @@ class MercadoPagoPaymentProvider implements PaymentProviderContract
         $amount = number_format($dto->amount, 2, '.', '');
 
         $payer = array_filter([
-            'email' => $dto->customer->email ?: 'sem-email@casaverde.coop.br',
+            // "casaverde.coop.br" não existe (domínio real é casaverdeconsorcio.com.br) —
+            // um domínio inexistente aqui é rejeitado pelo Mercado Pago com invalid_payer_email.
+            'email' => $dto->customer->email ?: 'sem-email@casaverdeconsorcio.com.br',
             'first_name' => $firstName,
             'last_name' => $lastName,
             'identification' => $document ? [

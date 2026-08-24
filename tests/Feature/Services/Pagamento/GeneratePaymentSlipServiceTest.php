@@ -5,6 +5,7 @@ use App\Models\Cliente\ClientProfile;
 use App\Models\Cobranca\CustomerCharge;
 use App\Models\Pagamento\PaymentProviderAccount;
 use App\Models\Pagamento\PaymentSlip;
+use App\Models\Users\User;
 use App\Services\Pagamento\GeneratePaymentSlipService;
 use Illuminate\Support\Facades\Http;
 
@@ -56,6 +57,50 @@ describe('GeneratePaymentSlipService', function () {
             ->and((float) $slip->amount)->toBe(300.0)
             ->and($slip->request_payload['customer']['phone'])->toBe('(41) 9 9999-0000')
             ->and($slip->request_payload['customer']['email'])->toBe('contato@example.com');
+    });
+
+    it('prefers the client contact email over the platform login email', function () {
+        Http::fake([
+            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
+            'cora.test/invoices' => Http::response(['id' => 'inv-1', 'status' => 'OPEN'], 201),
+        ]);
+
+        $client = ClientProfile::factory()->create();
+        $client->contacts->update(['email' => 'contato-real@example.com']);
+        $platformUser = User::factory()->create(['email' => 'login-portal@example.com']);
+
+        $charge = CustomerCharge::factory()->create([
+            'client_profile_id' => $client->id,
+            'platform_user_id' => $platformUser->id,
+            'status' => 'open',
+        ]);
+
+        $this->service->handle($charge);
+
+        expect(PaymentSlip::first()->request_payload['customer']['email'])->toBe('contato-real@example.com');
+    });
+
+    it('ignores the synthetic @casaverde.local placeholder login email and falls back to null', function () {
+        Http::fake([
+            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
+            'cora.test/invoices' => Http::response(['id' => 'inv-1', 'status' => 'OPEN'], 201),
+        ]);
+
+        $client = ClientProfile::factory()->create();
+        $client->contacts->update(['email' => null]);
+        $platformUser = User::factory()->create(['email' => 'cliente-'.$client->id.'@casaverde.local']);
+
+        $charge = CustomerCharge::factory()->create([
+            'client_profile_id' => $client->id,
+            'platform_user_id' => $platformUser->id,
+            'status' => 'open',
+        ]);
+
+        $this->service->handle($charge);
+
+        // O provider (Cora) recebe null e decide seu próprio fallback — o que importa
+        // aqui é que o e-mail sintético de login nunca chega até o provider de pagamento.
+        expect(PaymentSlip::first()->request_payload['customer']['email'])->toBeNull();
     });
 
     it('throws when the charge is not open or waiting payment', function () {
