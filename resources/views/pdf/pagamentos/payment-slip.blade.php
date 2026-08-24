@@ -19,11 +19,11 @@
             margin: 0;
             padding: 0;
             background: #FFFFFF;
-            line-height: 1.55;
+            line-height: 1.4;
         }
 
         .page {
-            padding: 24px 34px 28px;
+            padding: 20px 34px 22px;
         }
 
         /* ══════════════════════════════════════
@@ -32,9 +32,9 @@
         .hero {
             background: #064E3B;
             border-radius: 12px;
-            padding: 18px 26px 18px;
+            padding: 15px 26px;
             color: #FFFFFF;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
         }
 
         .hero-top {
@@ -53,8 +53,25 @@
             color: #6EE7B7;
         }
 
+        .logo-caption {
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 14px;
+            font-size: 16px;
+        }
+
+        .brand-logo-wrap {
+            display: inline-block;
+            vertical-align: middle;
+            background: #FFFFFF;
+            border-radius: 8px;
+            padding: 6px 14px;
+        }
+
         .brand-logo {
-            height: 30px;
+            height: 38px;
+            display: block;
+            border-radius: 6px;
         }
 
         .status-pill {
@@ -86,10 +103,10 @@
         }
 
         .doc-subtitle {
-            font-size: 10.5px;
+            font-size: 10px;
             color: rgba(255,255,255,.75);
-            line-height: 1.6;
-            max-width: 320px;
+            line-height: 1.4;
+            max-width: 340px;
         }
 
         .hero-amount-col {
@@ -122,23 +139,20 @@
         }
 
         .hero-grid {
-            margin-top: 14px;
+            display: table;
+            table-layout: fixed;
             width: 100%;
+            margin-top: 10px;
+            border-spacing: 8px 0;
         }
 
         .hero-card {
-            width: 31.3%;
-            display: inline-block;
+            display: table-cell;
             vertical-align: top;
-            margin-right: 2%;
-            background: rgba(255,255,255,.10);
-            border: 1px solid rgba(255,255,255,.20);
+            background: rgba(255,255,255,.12);
+            border: 1px solid rgba(255,255,255,.24);
             border-radius: 8px;
-            padding: 8px 13px;
-        }
-
-        .hero-card:last-child {
-            margin-right: 0;
+            padding: 6px 14px;
         }
 
         .hero-label {
@@ -146,21 +160,22 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             color: #6EE7B7;
-            margin-bottom: 4px;
+            margin-bottom: 3px;
             font-weight: 700;
         }
 
         .hero-value {
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 800;
             color: #FFFFFF;
+            word-break: break-word;
         }
 
         /* ══════════════════════════════════════
            SECTION / CARD
         ══════════════════════════════════════ */
         .section {
-            margin-bottom: 12px;
+            margin-bottom: 9px;
         }
 
         .section-title {
@@ -177,55 +192,113 @@
         .card {
             border: 1px solid #E2E8F0;
             border-radius: 10px;
-            padding: 13px 18px;
+            padding: 10px 18px;
             background: #FFFFFF;
-        }
-
-        .grid-2 {
-            width: 100%;
-        }
-
-        .grid-col {
-            width: 48%;
-            display: inline-block;
-            vertical-align: top;
-        }
-
-        .grid-col.right {
-            margin-left: 3%;
-            border-left: 1px solid #F1F5F9;
-            padding-left: 16px;
         }
 
         .info-row {
             display: table;
+            table-layout: fixed;
             width: 100%;
-            margin-bottom: 6px;
-            padding-bottom: 6px;
-            border-bottom: 1px dashed #F1F5F9;
         }
 
-        .info-row:last-child {
-            margin-bottom: 0;
-            padding-bottom: 0;
-            border-bottom: none;
+        .info-col {
+            display: table-cell;
+            width: 50%;
+            vertical-align: top;
+        }
+
+        .info-col.right {
+            padding-left: 16px;
+            border-left: 1px solid #F1F5F9;
         }
 
         .info-label {
-            display: table-cell;
+            display: block;
             font-size: 9px;
             text-transform: uppercase;
             letter-spacing: 0.6px;
             color: #94A3B8;
             font-weight: 700;
+            margin-bottom: 2px;
         }
 
         .info-value {
-            display: table-cell;
-            text-align: right;
+            display: block;
             font-size: 11px;
             font-weight: 700;
             color: #1E293B;
+            word-break: break-word;
+        }
+
+        /* ══════════════════════════════════════
+           CONSUMO — ITENS DA FATURA DA CONCESSIONÁRIA
+           (mesmo padrão visual da tabela "Como chegamos em
+           Energia Injetada" da tela de conferência de faturas)
+        ══════════════════════════════════════ */
+        .consumption-card {
+            border: 1px solid #E2E8F0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .consumption-table {
+            display: table;
+            table-layout: fixed;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .consumption-row {
+            display: table-row;
+        }
+
+        .consumption-cell {
+            display: table-cell;
+            vertical-align: middle;
+            font-size: 10px;
+            color: #1E293B;
+            padding: 6px 12px;
+            border-bottom: 1px solid #F1F5F9;
+        }
+
+        .consumption-row.head .consumption-cell {
+            font-size: 8.5px;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: #64748B;
+            font-weight: 700;
+            padding: 0 12px 5px;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        .consumption-row.total .consumption-cell {
+            font-weight: 800;
+            color: #065F46;
+            background: #F0FDF9;
+            border-bottom: none;
+        }
+
+        .consumption-row:last-child:not(.total) .consumption-cell {
+            border-bottom: none;
+        }
+
+        .consumption-cell:first-child {
+            padding-left: 16px;
+        }
+
+        .consumption-cell:last-child {
+            padding-right: 16px;
+        }
+
+        .consumption-cell.description {
+            width: 68%;
+        }
+
+        .consumption-cell.kwh {
+            width: 32%;
+            text-align: right;
+            font-weight: 700;
         }
 
         /* ══════════════════════════════════════
@@ -234,7 +307,7 @@
         .payment-card {
             border: 1.5px dashed #059669;
             border-radius: 10px;
-            padding: 14px 20px;
+            padding: 9px 18px;
             background: #F0FDF9;
             text-align: center;
             page-break-inside: avoid;
@@ -246,16 +319,16 @@
             letter-spacing: 1.2px;
             color: #059669;
             font-weight: 800;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         .digitable-line {
             font-family: 'DejaVu Sans Mono', monospace;
-            font-size: 13px;
+            font-size: 11px;
             font-weight: 700;
             color: #064E3B;
-            letter-spacing: 0.5px;
-            padding: 8px 12px;
+            letter-spacing: 0.3px;
+            padding: 6px 10px;
             background: #FFFFFF;
             border: 1px solid #A7F3D0;
             border-radius: 6px;
@@ -263,21 +336,21 @@
         }
 
         .barcode-wrap {
-            margin-top: 12px;
-            padding: 8px 14px;
+            margin-top: 7px;
+            padding: 5px 12px;
             background: #FFFFFF;
             border-radius: 6px;
             display: inline-block;
         }
 
         .barcode-wrap img {
-            height: 44px;
+            height: 30px;
         }
 
         .payment-card-caption {
             font-size: 8.5px;
             color: #64748B;
-            margin-top: 8px;
+            margin-top: 5px;
         }
 
         /* ══════════════════════════════════════
@@ -296,35 +369,35 @@
             vertical-align: top;
             border: 1px solid #E2E8F0;
             border-radius: 10px;
-            padding: 10px 12px;
+            padding: 7px 10px;
         }
 
         .step-number {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            line-height: 16px;
+            float: left;
+            width: 15px;
+            height: 15px;
+            line-height: 15px;
             text-align: center;
             border-radius: 999px;
             background: #064E3B;
             color: #6EE7B7;
-            font-size: 8.5px;
+            font-size: 8px;
             font-weight: 900;
-            margin-bottom: 6px;
         }
 
         .step-text {
-            font-size: 9.5px;
+            margin-left: 21px;
+            font-size: 9px;
             color: #334155;
-            line-height: 1.5;
+            line-height: 1.35;
         }
 
         /* ══════════════════════════════════════
            FOOTER
         ══════════════════════════════════════ */
         .footer {
-            margin-top: 14px;
-            padding-top: 12px;
+            margin-top: 10px;
+            padding-top: 9px;
             border-top: 1px solid #F1F5F9;
             page-break-inside: avoid;
         }
@@ -368,8 +441,6 @@
 
     $charge = $slip->charge;
     $clientProfile = $charge?->clientProfile;
-    $usina = $charge?->usina;
-    $consultor = $clientProfile?->consultor;
 @endphp
 
 <div class="page">
@@ -377,7 +448,10 @@
     <div class="hero">
         <div class="hero-top">
             @if(! empty($logoImage))
-                <img src="{{ $logoImage }}" alt="Casa Verde Energia" class="brand-logo">
+                <span class="brand-logo-wrap">
+                    <img src="{{ $logoImage }}" alt="Casa Verde Energia" class="brand-logo">
+                </span>
+                <span class="wordmark logo-caption">Casa<span>Verde</span></span>
             @else
                 <span class="wordmark">Casa<span>Verde</span> Energia</span>
             @endif
@@ -390,8 +464,7 @@
             <div class="hero-title-col">
                 <div class="doc-title">Boleto de Cobrança</div>
                 <div class="doc-subtitle">
-                    Documento de cobrança referente ao fornecimento de energia
-                    por compensação/assinatura Casa Verde Energia.
+                    Referente ao fornecimento de energia por compensação/assinatura.
                 </div>
             </div>
 
@@ -411,40 +484,48 @@
                 <div class="hero-label">Referência</div>
                 <div class="hero-value">{{ $charge?->reference_label ?: '—' }}</div>
             </div>
-            <div class="hero-card">
-                <div class="hero-label">Emitido via</div>
-                <div class="hero-value">Mercado Pago</div>
-            </div>
         </div>
     </div>
 
     <div class="section">
         <div class="section-title">Dados do pagador</div>
         <div class="card">
-            <div class="grid-2">
-                <div class="grid-col">
-                    <div class="info-row">
-                        <span class="info-label">Nome / Razão social</span>
-                        <span class="info-value">{{ $clientProfile?->display_name ?: '—' }}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">CPF / CNPJ</span>
-                        <span class="info-value">{{ $clientProfile?->documento ?: '—' }}</span>
-                    </div>
+            <div class="info-row">
+                <div class="info-col">
+                    <span class="info-label">Nome / Razão social</span>
+                    <span class="info-value">{{ $clientProfile?->display_name ?: '—' }}</span>
                 </div>
-                <div class="grid-col right">
-                    <div class="info-row">
-                        <span class="info-label">Usina</span>
-                        <span class="info-value">{{ $usina?->usina_nome ?: '—' }}</span>
-                    </div>
-                    <div class="info-row">
-                        <span class="info-label">Consultor responsável</span>
-                        <span class="info-value">{{ $consultor?->name ?: '—' }}</span>
-                    </div>
+                <div class="info-col right">
+                    <span class="info-label">CPF / CNPJ</span>
+                    <span class="info-value">{{ $clientProfile?->documento ?: '—' }}</span>
                 </div>
             </div>
         </div>
     </div>
+
+    @if(! empty($consumptionItems))
+        <div class="section">
+            <div class="section-title">Consumo Injetado — Fatura da Concessionária</div>
+            <div class="consumption-card">
+                <div class="consumption-table">
+                    <div class="consumption-row head">
+                        <span class="consumption-cell description">Linha da fatura</span>
+                        <span class="consumption-cell kwh">Quantidade (kWh)</span>
+                    </div>
+                    @foreach($consumptionItems as $item)
+                        <div class="consumption-row">
+                            <span class="consumption-cell description">{{ $item['descricao'] ?: '—' }}</span>
+                            <span class="consumption-cell kwh">{{ number_format(abs($item['quantidade']), 2, ',', '.') }} kWh</span>
+                        </div>
+                    @endforeach
+                    <div class="consumption-row total">
+                        <span class="consumption-cell description">Total</span>
+                        <span class="consumption-cell kwh">{{ number_format(abs(array_sum(array_column($consumptionItems, 'quantidade'))), 2, ',', '.') }} kWh</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 
     <div class="section">
         <div class="section-title">Pagamento — Boleto Bancário</div>
