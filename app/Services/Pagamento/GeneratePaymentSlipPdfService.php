@@ -5,7 +5,6 @@ namespace App\Services\Pagamento;
 use App\Exceptions\Payments\PaymentSlipPdfUnavailableException;
 use App\Models\Pagamento\PaymentSlip;
 use App\Services\Config\SystemSettingService;
-use App\Services\Fatura\BuildBillEnergyBreakdownService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 
@@ -14,7 +13,6 @@ class GeneratePaymentSlipPdfService
     public function __construct(
         private readonly BoletoBarcodeService $barcodeService,
         private readonly SystemSettingService $settings,
-        private readonly BuildBillEnergyBreakdownService $breakdownService,
     ) {}
 
     public function stream(PaymentSlip $slip)
@@ -42,16 +40,17 @@ class GeneratePaymentSlipPdfService
             'barcodeImage' => $this->barcodeService->barcodeImageBase64($slip->barcode),
             'digitableLine' => $this->barcodeService->formatDigitableLine($slip->digitable_line),
             'logoImage' => $this->logoImage(),
-            'consumptionItems' => $this->consumptionItems($slip),
+            'billItems' => $this->billItems($slip),
         ])->setPaper('a4');
     }
 
     /**
-     * Mesmas linhas usadas em "Como chegamos em Consumo Injetado" na tela de conferência
-     * de faturas (BuildBillEnergyBreakdownService), só que aqui expomos apenas kWh — sem os
-     * valores em R$ da concessionária, que não têm relação com o valor cobrado neste boleto.
+     * Todas as linhas extraídas da fatura da concessionária (energia consumida,
+     * energia injetada/compensada e taxas fixas como iluminação pública) —
+     * exibidas no boleto apenas como referência para o cliente conferir a fatura
+     * original, sem relação direta com o valor efetivamente cobrado neste boleto.
      */
-    private function consumptionItems(PaymentSlip $slip): array
+    private function billItems(PaymentSlip $slip): array
     {
         $bill = $slip->charge?->bill;
 
@@ -59,11 +58,12 @@ class GeneratePaymentSlipPdfService
             return [];
         }
 
-        $items = $this->breakdownService->handle($bill)['injected_consumption']['items'];
+        $items = $bill->extracted_payload['items'] ?? [];
 
         return array_map(fn (array $item) => [
             'descricao' => $item['descricao'],
-            'quantidade' => (float) $item['quantidade'],
+            'quantidade' => isset($item['quantidade']) ? (float) $item['quantidade'] : null,
+            'valor' => isset($item['valor']) ? (float) $item['valor'] : null,
         ], $items);
     }
 

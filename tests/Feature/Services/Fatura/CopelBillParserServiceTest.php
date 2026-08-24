@@ -49,6 +49,11 @@ TEXT;
             'quantidade' => 2716.0,
             'valor' => 999.30,
         ]);
+
+        $iluminacaoPublica = collect($parsed['items'])->firstWhere('descricao', 'CONT ILUMIN PUBLICA MUNICIPIO');
+        expect($iluminacaoPublica)->not->toBeNull();
+        expect($iluminacaoPublica['quantidade'])->toBeNull();
+        expect($iluminacaoPublica['valor'])->toBe(65.29);
     });
 
     it('extracts a 9-digit unidade consumidora from the address line', function () {

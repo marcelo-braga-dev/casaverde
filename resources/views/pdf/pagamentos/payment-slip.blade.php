@@ -272,14 +272,7 @@
             border-bottom: 1px solid #E2E8F0;
         }
 
-        .consumption-row.total .consumption-cell {
-            font-weight: 800;
-            color: #065F46;
-            background: #F0FDF9;
-            border-bottom: none;
-        }
-
-        .consumption-row:last-child:not(.total) .consumption-cell {
+        .consumption-row:last-child .consumption-cell {
             border-bottom: none;
         }
 
@@ -292,11 +285,12 @@
         }
 
         .consumption-cell.description {
-            width: 68%;
+            width: 46%;
         }
 
-        .consumption-cell.kwh {
-            width: 32%;
+        .consumption-cell.kwh,
+        .consumption-cell.valor {
+            width: 27%;
             text-align: right;
             font-weight: 700;
         }
@@ -503,25 +497,23 @@
         </div>
     </div>
 
-    @if(! empty($consumptionItems))
+    @if(! empty($billItems))
         <div class="section">
-            <div class="section-title">Consumo Injetado — Fatura da Concessionária</div>
+            <div class="section-title">Itens da Fatura da Concessionária</div>
             <div class="consumption-card">
                 <div class="consumption-table">
                     <div class="consumption-row head">
                         <span class="consumption-cell description">Linha da fatura</span>
                         <span class="consumption-cell kwh">Quantidade (kWh)</span>
+                        <span class="consumption-cell valor">Valor (R$)</span>
                     </div>
-                    @foreach($consumptionItems as $item)
+                    @foreach($billItems as $item)
                         <div class="consumption-row">
                             <span class="consumption-cell description">{{ $item['descricao'] ?: '—' }}</span>
-                            <span class="consumption-cell kwh">{{ number_format(abs($item['quantidade']), 2, ',', '.') }} kWh</span>
+                            <span class="consumption-cell kwh">{{ is_null($item['quantidade']) ? '—' : number_format(abs($item['quantidade']), 2, ',', '.').' kWh' }}</span>
+                            <span class="consumption-cell valor">{{ is_null($item['valor']) ? '—' : 'R$ '.number_format($item['valor'], 2, ',', '.') }}</span>
                         </div>
                     @endforeach
-                    <div class="consumption-row total">
-                        <span class="consumption-cell description">Total</span>
-                        <span class="consumption-cell kwh">{{ number_format(abs(array_sum(array_column($consumptionItems, 'quantidade'))), 2, ',', '.') }} kWh</span>
-                    </div>
                 </div>
             </div>
         </div>

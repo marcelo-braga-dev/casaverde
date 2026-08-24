@@ -85,28 +85,44 @@ class CopelBillParserService
     /**
      * Extrai as linhas da tabela "Itens da Fatura" (descrição, quantidade, valor).
      * O pdftotext -layout mistura essa tabela com blocos vizinhos (resumo de
-     * impostos, histórico de consumo) na mesma linha; o regex ancora em "kWh"
-     * e captura só os 3 números imediatamente seguintes (quantidade, tarifa
-     * c/ tributos, valor), ignorando qualquer texto mesclado depois disso.
+     * impostos, histórico de consumo) na mesma linha; o regex ancora na unidade
+     * (kWh ou UN) e captura só os números imediatamente seguintes, ignorando
+     * qualquer texto mesclado depois disso.
+     *
+     * Itens em kWh (energia) trazem quantidade, tarifa e valor; itens em UN
+     * (taxas fixas como a Contribuição de Iluminação Pública) trazem só tarifa
+     * e valor — não há quantidade de energia associada.
      */
     private function parseItemLines(string $text): array
     {
         $items = [];
 
         foreach (explode("\n", $text) as $line) {
-            if (! preg_match(
+            if (preg_match(
                 '/^\s*([A-ZÀ-ÚÇ][A-ZÀ-ÚÇ0-9.\/\s\-]*?)\s+kWh\s+(-?[\d.,]+)\s+(-?[\d.,]+)\s+(-?[\d.,]+)/u',
                 $line,
                 $matches
             )) {
+                $items[] = [
+                    'descricao' => trim($matches[1]),
+                    'quantidade' => $this->parseBrazilianNumber($matches[2]),
+                    'valor' => $this->parseBrazilianNumber($matches[4]),
+                ];
+
                 continue;
             }
 
-            $items[] = [
-                'descricao' => trim($matches[1]),
-                'quantidade' => $this->parseBrazilianNumber($matches[2]),
-                'valor' => $this->parseBrazilianNumber($matches[4]),
-            ];
+            if (preg_match(
+                '/^\s*([A-ZÀ-ÚÇ][A-ZÀ-ÚÇ0-9.\/\s\-]*?)\s+UN\s+(-?[\d.,]+)\s+(-?[\d.,]+)\s*$/u',
+                $line,
+                $matches
+            )) {
+                $items[] = [
+                    'descricao' => trim($matches[1]),
+                    'quantidade' => null,
+                    'valor' => $this->parseBrazilianNumber($matches[3]),
+                ];
+            }
         }
 
         return $items;
