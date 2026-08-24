@@ -195,10 +195,8 @@ export default function Page({
                                     <TableCell>ID</TableCell>
                                     <TableCell>Cliente</TableCell>
                                     <TableCell>Referência</TableCell>
-                                    <TableCell>Fatura Concessionária</TableCell>
+                                    <TableCell>Fatura</TableCell>
                                     <TableCell>Vencimento</TableCell>
-                                    <TableCell>Consumo Injetado</TableCell>
-                                    <TableCell>Desconto</TableCell>
                                     <TableCell>Valor final</TableCell>
                                     <TableCell>Status</TableCell>
                                     <TableCell align="right">Ações</TableCell>
@@ -233,14 +231,6 @@ export default function Page({
                                             </TableCell>
 
                                             <TableCell>
-                                                {money(charge.original_amount)}
-                                            </TableCell>
-
-                                            <TableCell>
-                                                {money(charge.discount_amount)}
-                                            </TableCell>
-
-                                            <TableCell>
                                                 <strong>{money(charge.final_amount)}</strong>
                                             </TableCell>
 
@@ -263,7 +253,7 @@ export default function Page({
                                     ))
                                 ) : (
                                     <TableRow>
-                                        <TableCell colSpan={10}>
+                                        <TableCell colSpan={8}>
                                             <Typography textAlign="center" color="text.secondary">
                                                 Nenhuma cobrança encontrada.
                                             </Typography>
