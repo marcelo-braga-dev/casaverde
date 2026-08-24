@@ -1,8 +1,7 @@
 import { useState } from "react";
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
-import { Head, Link, router, useForm } from "@inertiajs/react";
+import { Head, Link, router } from "@inertiajs/react";
 import {
-    Alert,
     Avatar,
     Box,
     Button,
@@ -11,7 +10,6 @@ import {
     Chip,
     Divider,
     IconButton,
-    LinearProgress,
     Menu,
     MenuItem,
     Stack,
@@ -21,7 +19,6 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    TextField,
     Tooltip,
     Typography,
 } from "@mui/material";
@@ -33,37 +30,32 @@ import ConfirmActionButton from "@/Components/Admin/ConfirmActionButton.jsx";
 import EmptyState from "@/Components/Admin/EmptyState.jsx";
 import WhatsAppButton from "@/Components/WhatsApp/WhatsAppButton";
 import EditDueDateDialog from "./Partials/EditDueDateDialog.jsx";
+import PaymentSlipDialog from "./Partials/PaymentSlipDialog.jsx";
+import AdjustmentsDialog from "./Partials/AdjustmentsDialog.jsx";
+import AddAdjustmentDialog from "./Partials/AddAdjustmentDialog.jsx";
+import ChangeHistoryDialog from "./Partials/ChangeHistoryDialog.jsx";
+import MarkPaidDialog from "./Partials/MarkPaidDialog.jsx";
+import CancelChargeDialog from "./Partials/CancelChargeDialog.jsx";
 import formatCurrency from "@/Utils/formatCurrency.js";
 import useAuthUser from "@/Hooks/useAuthUser.js";
 import { isAdmin } from "@/Utils/permissions.js";
 import {
     IconAdjustments,
+    IconBarcode,
     IconBolt,
     IconBrandWhatsapp,
-    IconBuildingBank,
     IconCalendar,
     IconCheck,
     IconCreditCard,
     IconFileInvoice,
+    IconFileText,
     IconHistory,
     IconPencil,
+    IconPlus,
     IconReceipt,
     IconReceiptRefund,
-    IconUser,
     IconX,
 } from "@tabler/icons-react";
-
-function formatDateBR(value) {
-    if (!value) return "";
-
-    const date = new Date(value);
-
-    if (Number.isNaN(date.getTime())) {
-        return String(value);
-    }
-
-    return date.toLocaleDateString("pt-BR");
-}
 
 function getClientName(charge) {
     return (
@@ -132,12 +124,16 @@ const STATUS_CONFIG = {
     cancelled:       { label: "Cancelada",      color: "#6b7280", bg: "#f9fafb" },
 };
 
-const BILL_REVIEW_STATUS_LABELS = {
-    pending_review: "Aguardando Revisão",
-    reviewed:       "Revisada",
-    corrected:      "Corrigida",
-    approved:       "Aprovada",
-    rejected:       "Rejeitada",
+const PAYMENT_METHOD_LABELS = {
+    boleto: "Boleto",
+    pix: "Pix",
+    boleto_pix: "Boleto + Pix",
+};
+
+const PROVIDER_LABELS = {
+    cora: "Cora",
+    mercado_pago: "Mercado Pago",
+    asaas: "Asaas",
 };
 
 export default function Page({ charge }) {
@@ -146,38 +142,20 @@ export default function Page({ charge }) {
         ["pending", "generated"].includes(payment.status)
     );
     const canEditDueDate = !["paid", "cancelled"].includes(charge.status);
+    const canFinalizeCharge = !["paid", "cancelled"].includes(charge.status);
+
     const [editDueDateOpen, setEditDueDateOpen] = useState(false);
-
-    const adjustmentForm = useForm({
-        type: "discount",
-        amount: "",
-        description: "",
-    });
-
-    const cancelForm = useForm({
-        reason: "",
-    });
-
-    const paidForm = useForm({
-        note: "",
-    });
-
-    const submitAdjustment = (e) => {
-        e.preventDefault();
-        adjustmentForm.post(route("admin.financeiro.cobrancas.adjustments.store", charge.id), {
-            preserveScroll: true,
-            onSuccess: () => {
-                adjustmentForm.reset("amount", "description");
-                adjustmentForm.setData("type", "discount");
-            },
-        });
-    };
+    const [selectedPayment, setSelectedPayment] = useState(null);
+    const [adjustmentsDialogOpen, setAdjustmentsDialogOpen] = useState(false);
+    const [addAdjustmentOpen, setAddAdjustmentOpen] = useState(false);
+    const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
+    const [markPaidOpen, setMarkPaidOpen] = useState(false);
+    const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+    const [paymentMenuAnchor, setPaymentMenuAnchor] = useState(null);
 
     const approveCharge = () => {
         router.post(route("admin.financeiro.cobrancas.approve", charge.id), {}, { preserveScroll: true });
     };
-
-    const [paymentMenuAnchor, setPaymentMenuAnchor] = useState(null);
 
     const generatePayment = (provider, paymentMethod) => {
         setPaymentMenuAnchor(null);
@@ -186,14 +164,6 @@ export default function Page({ charge }) {
             { provider, payment_method: paymentMethod },
             { preserveScroll: true }
         );
-    };
-
-    const cancelCharge = () => {
-        cancelForm.post(route("admin.financeiro.cobrancas.cancel", charge.id), { preserveScroll: true });
-    };
-
-    const markPaid = () => {
-        paidForm.post(route("admin.financeiro.cobrancas.mark-paid", charge.id), { preserveScroll: true });
     };
 
     const markOverdue = () => {
@@ -206,13 +176,23 @@ export default function Page({ charge }) {
     const clientPhone = charge.client_profile?.contacts?.celular;
     const mesReferencia = charge.reference_label || `${charge.reference_month}/${charge.reference_year}`;
     const valorFatura = formatCurrency(charge.final_amount);
-    const dataVencimento = formatDateBR(charge.due_date);
+    const dataVencimento = charge.due_date ? new Date(charge.due_date).toLocaleDateString("pt-BR") : "";
 
     const discountPercent = charge.discount_percent || 0;
     const originalAmt = Number(charge.original_amount || 0);
     const finalAmt = Number(charge.final_amount || 0);
     const savingsAmt = originalAmt - finalAmt;
     const savingsPct = originalAmt > 0 ? ((savingsAmt / originalAmt) * 100).toFixed(1) : 0;
+
+    const activePayment = charge.payment_slips?.find((payment) => ["pending", "generated"].includes(payment.status));
+    const latestPayment = activePayment || charge.payment_slips?.[charge.payment_slips.length - 1];
+
+    const adjustmentsCount = charge.adjustments?.length || 0;
+    const adjustmentsNet = (charge.adjustments || []).reduce(
+        (sum, adjustment) => sum + (adjustment.type === "discount" ? -Number(adjustment.amount) : Number(adjustment.amount)),
+        0
+    );
+    const historyCount = charge.histories?.length || 0;
 
     return (
         <Layout titlePage="Detalhes da Cobrança" menu="financeiro">
@@ -265,7 +245,7 @@ export default function Page({ charge }) {
                                         {clientName}
                                     </Typography>
                                     <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.55)" }}>
-                                        Ref: {charge.reference_label || `${charge.reference_month}/${charge.reference_year}`}
+                                        Ref: {mesReferencia}
                                     </Typography>
                                 </Box>
                             </Stack>
@@ -335,6 +315,19 @@ export default function Page({ charge }) {
                         <Divider sx={{ mb: 2.5 }} />
 
                         <Stack direction="row" spacing={1.5} flexWrap="wrap" useFlexGap>
+                            {latestPayment && (
+                                <Button
+                                    color="success"
+                                    variant="contained"
+                                    size="medium"
+                                    startIcon={<IconBarcode size={17} />}
+                                    onClick={() => setSelectedPayment(latestPayment)}
+                                    sx={{ fontWeight: 700 }}
+                                >
+                                    Ver boleto/Pix
+                                </Button>
+                            )}
+
                             {["open", "waiting_payment"].includes(charge.status) && (
                                 <WhatsAppButton
                                     templateKey="lembrete_vencimento"
@@ -405,6 +398,19 @@ export default function Page({ charge }) {
                                 </Tooltip>
                             )}
 
+                            {charge.status === "draft" && (
+                                <Button
+                                    color="secondary"
+                                    variant="outlined"
+                                    size="medium"
+                                    startIcon={<IconAdjustments size={17} />}
+                                    onClick={() => setAddAdjustmentOpen(true)}
+                                    sx={{ fontWeight: 700 }}
+                                >
+                                    Adicionar ajuste
+                                </Button>
+                            )}
+
                             {["open", "waiting_payment"].includes(charge.status) && !hasActivePayment && (
                                 <>
                                     <Tooltip title="Gerar boleto ou Pix para esta cobrança">
@@ -440,41 +446,76 @@ export default function Page({ charge }) {
                                 </>
                             )}
 
-                            {["open", "waiting_payment"].includes(charge.status) && (
-                                <Tooltip title="Marcar como atrasada">
-                                    <span>
-                                        <ConfirmActionButton
+                        </Stack>
+
+                        {(["open", "waiting_payment"].includes(charge.status) || canFinalizeCharge) && (
+                            <>
+                                <Divider sx={{ my: 2.5 }} />
+
+                                <Stack direction="row" spacing={1.5} flexWrap="wrap" useFlexGap>
+                                    {canEditDueDate && (
+                                        <Tooltip title="Editar a data de vencimento desta cobrança">
+                                            <span>
+                                                <Button
+                                                    color="secondary"
+                                                    variant="outlined"
+                                                    size="medium"
+                                                    startIcon={<IconPencil size={17} />}
+                                                    onClick={() => setEditDueDateOpen(true)}
+                                                    sx={{ fontWeight: 700 }}
+                                                >
+                                                    Editar vencimento
+                                                </Button>
+                                            </span>
+                                        </Tooltip>
+                                    )}
+
+                                    {["open", "waiting_payment"].includes(charge.status) && (
+                                        <Tooltip title="Marcar como atrasada">
+                                            <span>
+                                                <ConfirmActionButton
+                                                    color="error"
+                                                    variant="outlined"
+                                                    size="medium"
+                                                    message="Deseja marcar esta cobrança como atrasada?"
+                                                    onConfirm={markOverdue}
+                                                    startIcon={<IconX size={17} />}
+                                                    sx={{ fontWeight: 700 }}
+                                                >
+                                                    Marcar atrasada
+                                                </ConfirmActionButton>
+                                            </span>
+                                        </Tooltip>
+                                    )}
+
+                                    {canFinalizeCharge && (
+                                        <Button
+                                            color="success"
+                                            variant="outlined"
+                                            size="medium"
+                                            startIcon={<IconCheck size={17} />}
+                                            onClick={() => setMarkPaidOpen(true)}
+                                            sx={{ fontWeight: 700 }}
+                                        >
+                                            Marcar como paga
+                                        </Button>
+                                    )}
+
+                                    {canFinalizeCharge && (
+                                        <Button
                                             color="error"
                                             variant="outlined"
                                             size="medium"
-                                            message="Deseja marcar esta cobrança como atrasada?"
-                                            onConfirm={markOverdue}
                                             startIcon={<IconX size={17} />}
+                                            onClick={() => setCancelDialogOpen(true)}
                                             sx={{ fontWeight: 700 }}
                                         >
-                                            Marcar atrasada
-                                        </ConfirmActionButton>
-                                    </span>
-                                </Tooltip>
-                            )}
-
-                            {canEditDueDate && (
-                                <Tooltip title="Editar a data de vencimento desta cobrança">
-                                    <span>
-                                        <Button
-                                            color="secondary"
-                                            variant="outlined"
-                                            size="medium"
-                                            startIcon={<IconPencil size={17} />}
-                                            onClick={() => setEditDueDateOpen(true)}
-                                            sx={{ fontWeight: 700 }}
-                                        >
-                                            Editar vencimento
+                                            Cancelar cobrança
                                         </Button>
-                                    </span>
-                                </Tooltip>
-                            )}
-                        </Stack>
+                                    )}
+                                </Stack>
+                            </>
+                        )}
                     </CardContent>
                 </Card>
 
@@ -556,15 +597,16 @@ export default function Page({ charge }) {
                 </Grid>
 
                 {/* ── Main Content ─────────────────────────────────── */}
-                <Grid container spacing={3}>
+                <Grid container spacing={3} alignItems="stretch">
 
-                    {/* Left: Resumo financeiro */}
-                    <Grid size={{ xs: 12, md: 8 }}>
+                    {/* Resumo financeiro */}
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <Card
                             sx={{
                                 borderRadius: "var(--cv-radius-xl)",
                                 border: "1px solid var(--cv-border-soft)",
                                 boxShadow: "var(--cv-shadow-md)",
+                                height: "100%",
                             }}
                         >
                             <CardContent sx={{ p: 3 }}>
@@ -608,234 +650,140 @@ export default function Page({ charge }) {
                                             <MoneyText value={charge.final_amount} bold />
                                         </Typography>
                                     </Stack>
-
-                                    {originalAmt > 0 && (
-                                        <Box mt={1.5}>
-                                            <Stack direction="row" justifyContent="space-between" mb={0.5}>
-                                                <Typography variant="caption" color="text.secondary">
-                                                    Progresso de desconto
-                                                </Typography>
-                                                <Typography variant="caption" fontWeight={700} color="success.main">
-                                                    {savingsPct}% off
-                                                </Typography>
-                                            </Stack>
-                                            <LinearProgress
-                                                variant="determinate"
-                                                value={Number(savingsPct)}
-                                                color="success"
-                                                sx={{ borderRadius: 4, height: 6 }}
-                                            />
-                                        </Box>
-                                    )}
                                 </Box>
                             </CardContent>
                         </Card>
                     </Grid>
 
-                    {/* Right: Dados da cobrança */}
+                    {/* Dados da cobrança */}
                     <Grid size={{ xs: 12, md: 4 }}>
-                        <Stack spacing={2.5} height="100%">
+                        <Card
+                            sx={{
+                                borderRadius: "var(--cv-radius-xl)",
+                                border: "1px solid var(--cv-border-soft)",
+                                boxShadow: "var(--cv-shadow-md)",
+                                height: "100%",
+                            }}
+                        >
+                            <CardContent sx={{ p: 3 }}>
+                                <SectionHeader
+                                    icon={<IconCalendar size={18} />}
+                                    title="Dados da Cobrança"
+                                    gradient="linear-gradient(135deg,#f59e0b,#d97706)"
+                                />
+                                <Divider sx={{ mb: 2 }} />
+
+                                <Stack spacing={0}>
+                                    <InfoRow
+                                        label="Vencimento"
+                                        value={
+                                            <Stack direction="row" alignItems="center" spacing={0.5}>
+                                                <DateText value={charge.due_date} />
+                                                {canEditDueDate && (
+                                                    <Tooltip title="Editar vencimento">
+                                                        <IconButton
+                                                            size="small"
+                                                            onClick={() => setEditDueDateOpen(true)}
+                                                        >
+                                                            <IconPencil size={14} />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                )}
+                                            </Stack>
+                                        }
+                                    />
+                                    <InfoRow
+                                        label="Paga em"
+                                        value={charge.paid_at ? <DateText value={charge.paid_at} /> : "—"}
+                                    />
+                                    <InfoRow
+                                        label="Usina (UC)"
+                                        value={charge.usina?.uc || "—"}
+                                    />
+                                    <InfoRow
+                                        label="Concessionária"
+                                        value={charge.concessionaria?.nome || "—"}
+                                    />
+                                </Stack>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+
+                    {/* Fatura de concessionária */}
+                    {charge.bill && (
+                        <Grid size={{ xs: 12, md: 4 }}>
                             <Card
                                 sx={{
                                     borderRadius: "var(--cv-radius-xl)",
                                     border: "1px solid var(--cv-border-soft)",
                                     boxShadow: "var(--cv-shadow-md)",
-                                    flex: 1,
+                                    height: "100%",
                                 }}
                             >
                                 <CardContent sx={{ p: 3 }}>
                                     <SectionHeader
-                                        icon={<IconCalendar size={18} />}
-                                        title="Dados da Cobrança"
-                                        gradient="linear-gradient(135deg,#f59e0b,#d97706)"
+                                        icon={<IconFileInvoice size={18} />}
+                                        title="Fatura de Concessionária"
+                                        gradient="linear-gradient(135deg,#8b5cf6,#6d28d9)"
                                     />
                                     <Divider sx={{ mb: 2 }} />
 
                                     <Stack spacing={0}>
+                                        <InfoRow label="Referência" value={charge.bill.reference_label || "—"} />
+                                        <InfoRow label="Titular" value={charge.bill.nome || "—"} />
+                                        <InfoRow label="UC" value={charge.bill.unidade_consumidora || "—"} />
                                         <InfoRow
                                             label="Vencimento"
-                                            value={
-                                                <Stack direction="row" alignItems="center" spacing={0.5}>
-                                                    <DateText value={charge.due_date} />
-                                                    {canEditDueDate && (
-                                                        <Tooltip title="Editar vencimento">
-                                                            <IconButton
-                                                                size="small"
-                                                                onClick={() => setEditDueDateOpen(true)}
-                                                            >
-                                                                <IconPencil size={14} />
-                                                            </IconButton>
-                                                        </Tooltip>
-                                                    )}
-                                                </Stack>
-                                            }
+                                            value={charge.bill.vencimento ? <DateText value={charge.bill.vencimento} /> : "—"}
                                         />
                                         <InfoRow
-                                            label="Paga em"
-                                            value={charge.paid_at ? <DateText value={charge.paid_at} /> : "—"}
+                                            label="Valor Total"
+                                            value={<MoneyText value={charge.bill.valor_total} />}
                                         />
                                         <InfoRow
-                                            label="Aprovada em"
-                                            value={charge.approved_at ? <DateText value={charge.approved_at} /> : "—"}
+                                            label="Consumo kWh"
+                                            value={charge.bill.consumo_kwh ? `${charge.bill.consumo_kwh} kWh` : "—"}
                                         />
-                                        <InfoRow
-                                            label="Usina (UC)"
-                                            value={charge.usina?.uc || "—"}
-                                        />
-                                        <InfoRow
-                                            label="Concessionária"
-                                            value={charge.concessionaria?.nome || "—"}
-                                        />
-                                        <InfoRow
-                                            label="Gerada por"
-                                            value={charge.generated_by?.name || "—"}
-                                        />
-                                        <InfoRow
-                                            label="Aprovada por"
-                                            value={charge.approved_by?.name || "—"}
-                                        />
+                                    </Stack>
+
+                                    <Stack direction="row" spacing={1.5} mt={2.5}>
+                                        {charge.bill.pdf_link && (
+                                            <Button
+                                                variant="contained"
+                                                fullWidth
+                                                component="a"
+                                                href={charge.bill.pdf_link}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                startIcon={<IconFileText size={17} />}
+                                                sx={{ borderRadius: "var(--cv-radius-xl)", py: 1.5, fontWeight: 700 }}
+                                            >
+                                                Baixar PDF da fatura
+                                            </Button>
+                                        )}
+
+                                        {admin && (
+                                            <Tooltip title="Ver dados técnicos e status de importação da fatura">
+                                                <span>
+                                                    <Link href={route("consultor.cliente.faturas.show", charge.bill.id)}>
+                                                        <IconButton
+                                                            sx={{
+                                                                border: "1px solid var(--cv-border-soft)",
+                                                                borderRadius: "var(--cv-radius-xl)",
+                                                            }}
+                                                        >
+                                                            <IconFileInvoice size={18} />
+                                                        </IconButton>
+                                                    </Link>
+                                                </span>
+                                            </Tooltip>
+                                        )}
                                     </Stack>
                                 </CardContent>
                             </Card>
-
-                            {charge.bill && (
-                                <Card
-                                    sx={{
-                                        borderRadius: "var(--cv-radius-xl)",
-                                        border: "1px solid var(--cv-border-soft)",
-                                        boxShadow: "var(--cv-shadow-md)",
-                                    }}
-                                >
-                                    <CardContent sx={{ p: 3 }}>
-                                        <SectionHeader
-                                            icon={<IconFileInvoice size={18} />}
-                                            title="Fatura de Concessionária"
-                                            gradient="linear-gradient(135deg,#8b5cf6,#6d28d9)"
-                                        />
-                                        <Divider sx={{ mb: 2 }} />
-
-                                        <Stack spacing={0}>
-                                            <InfoRow label="Referência" value={charge.bill.reference_label || "—"} />
-                                            <InfoRow label="Titular" value={charge.bill.nome || "—"} />
-                                            <InfoRow label="UC" value={charge.bill.unidade_consumidora || "—"} />
-                                            <InfoRow
-                                                label="Vencimento"
-                                                value={charge.bill.vencimento ? <DateText value={charge.bill.vencimento} /> : "—"}
-                                            />
-                                            <InfoRow
-                                                label="Valor Total"
-                                                value={<MoneyText value={charge.bill.valor_total} />}
-                                            />
-                                            <InfoRow
-                                                label="Consumo kWh"
-                                                value={charge.bill.consumo_kwh ? `${charge.bill.consumo_kwh} kWh` : "—"}
-                                            />
-                                            <InfoRow
-                                                label="Status de revisão"
-                                                value={BILL_REVIEW_STATUS_LABELS[charge.bill.review_status] || charge.bill.review_status || "—"}
-                                            />
-                                        </Stack>
-
-                                        {admin && (
-                                            <Link href={route("consultor.cliente.faturas.show", charge.bill.id)}>
-                                                <Button
-                                                    variant="outlined"
-                                                    fullWidth
-                                                    startIcon={<IconFileInvoice size={17} />}
-                                                    sx={{
-                                                        mt: 2.5,
-                                                        borderRadius: "var(--cv-radius-xl)",
-                                                        py: 1.5,
-                                                        fontWeight: 700,
-                                                        borderColor: "var(--cv-border-soft)",
-                                                    }}
-                                                >
-                                                    Ver fatura de concessionária
-                                                </Button>
-                                            </Link>
-                                        )}
-                                    </CardContent>
-                                </Card>
-                            )}
-                        </Stack>
-                    </Grid>
+                        </Grid>
+                    )}
                 </Grid>
-
-                {/* ── Ajuste Manual (apenas draft) ─────────────────── */}
-                {charge.status === "draft" && (
-                    <Card
-                        sx={{
-                            borderRadius: "var(--cv-radius-xl)",
-                            border: "1px solid var(--cv-border-soft)",
-                            boxShadow: "var(--cv-shadow-md)",
-                        }}
-                    >
-                        <CardContent sx={{ p: 3 }}>
-                            <SectionHeader
-                                icon={<IconAdjustments size={18} />}
-                                title="Adicionar Ajuste Manual"
-                                gradient="linear-gradient(135deg,#8b5cf6,#6d28d9)"
-                            />
-                            <Divider sx={{ mb: 2.5 }} />
-
-                            <form onSubmit={submitAdjustment}>
-                                <Grid container spacing={2}>
-                                    <Grid size={{ xs: 12, md: 3 }}>
-                                        <TextField
-                                            select
-                                            label="Tipo de ajuste"
-                                            value={adjustmentForm.data.type}
-                                            onChange={(e) => adjustmentForm.setData("type", e.target.value)}
-                                            error={!!adjustmentForm.errors.type}
-                                            helperText={adjustmentForm.errors.type}
-                                            fullWidth
-                                            size="small"
-                                        >
-                                            <MenuItem value="discount">Desconto</MenuItem>
-                                            <MenuItem value="addition">Acréscimo</MenuItem>
-                                        </TextField>
-                                    </Grid>
-
-                                    <Grid size={{ xs: 12, md: 3 }}>
-                                        <TextField
-                                            label="Valor (R$)"
-                                            value={adjustmentForm.data.amount}
-                                            onChange={(e) => adjustmentForm.setData("amount", e.target.value)}
-                                            error={!!adjustmentForm.errors.amount}
-                                            helperText={adjustmentForm.errors.amount}
-                                            fullWidth
-                                            size="small"
-                                        />
-                                    </Grid>
-
-                                    <Grid size={{ xs: 12, md: 4 }}>
-                                        <TextField
-                                            label="Descrição do ajuste"
-                                            value={adjustmentForm.data.description}
-                                            onChange={(e) => adjustmentForm.setData("description", e.target.value)}
-                                            error={!!adjustmentForm.errors.description}
-                                            helperText={adjustmentForm.errors.description}
-                                            fullWidth
-                                            size="small"
-                                        />
-                                    </Grid>
-
-                                    <Grid size={{ xs: 12, md: 2 }} display="flex" alignItems="flex-start">
-                                        <Button
-                                            type="submit"
-                                            variant="contained"
-                                            fullWidth
-                                            disabled={adjustmentForm.processing}
-                                            sx={{ fontWeight: 700, py: 1 }}
-                                        >
-                                            Adicionar
-                                        </Button>
-                                    </Grid>
-                                </Grid>
-                            </form>
-                        </CardContent>
-                    </Card>
-                )}
 
                 {/* ── Pagamentos gerados ────────────────────────────── */}
                 <Card
@@ -868,8 +816,7 @@ export default function Page({ charge }) {
                                 <Table size="small">
                                     <TableHead>
                                         <TableRow>
-                                            <TableCell sx={{ fontWeight: 800 }}>ID</TableCell>
-                                            <TableCell sx={{ fontWeight: 800 }}>Provider</TableCell>
+                                            <TableCell sx={{ fontWeight: 800 }}>Método</TableCell>
                                             <TableCell sx={{ fontWeight: 800 }}>Valor</TableCell>
                                             <TableCell sx={{ fontWeight: 800 }}>Status</TableCell>
                                             <TableCell sx={{ fontWeight: 800 }}>Vencimento</TableCell>
@@ -881,16 +828,11 @@ export default function Page({ charge }) {
                                             <TableRow key={payment.id} hover>
                                                 <TableCell>
                                                     <Typography variant="body2" fontWeight={700}>
-                                                        #{payment.id}
+                                                        {PROVIDER_LABELS[payment.provider] || payment.provider}
                                                     </Typography>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Chip
-                                                        label={payment.provider}
-                                                        size="small"
-                                                        variant="outlined"
-                                                        sx={{ fontWeight: 700, textTransform: "capitalize" }}
-                                                    />
+                                                    <Typography variant="caption" color="text.secondary">
+                                                        {PAYMENT_METHOD_LABELS[payment.payment_method] || payment.payment_method}
+                                                    </Typography>
                                                 </TableCell>
                                                 <TableCell>
                                                     <Typography variant="body2" fontWeight={700}>
@@ -904,19 +846,15 @@ export default function Page({ charge }) {
                                                     <DateText value={payment.due_date} />
                                                 </TableCell>
                                                 <TableCell align="right">
-                                                    <Tooltip title="Ver detalhes do pagamento">
-                                                        <span>
-                                                            <Link href={route("admin.financeiro.pagamentos.show", payment.id)}>
-                                                                <Button
-                                                                    variant="outlined"
-                                                                    size="small"
-                                                                    sx={{ fontWeight: 700 }}
-                                                                >
-                                                                    Ver pagamento
-                                                                </Button>
-                                                            </Link>
-                                                        </span>
-                                                    </Tooltip>
+                                                    <Button
+                                                        variant="outlined"
+                                                        size="small"
+                                                        startIcon={<IconBarcode size={15} />}
+                                                        onClick={() => setSelectedPayment(payment)}
+                                                        sx={{ fontWeight: 700 }}
+                                                    >
+                                                        Ver boleto/Pix
+                                                    </Button>
                                                 </TableCell>
                                             </TableRow>
                                         ))}
@@ -929,243 +867,101 @@ export default function Page({ charge }) {
                     </CardContent>
                 </Card>
 
-                {/* ── Histórico de ajustes ──────────────────────────── */}
-                <Card
-                    sx={{
-                        borderRadius: "var(--cv-radius-xl)",
-                        border: "1px solid var(--cv-border-soft)",
-                        boxShadow: "var(--cv-shadow-md)",
-                    }}
-                >
-                    <CardContent sx={{ p: 3 }}>
-                        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
-                            <SectionHeader
-                                icon={<IconAdjustments size={18} />}
-                                title="Histórico de Ajustes"
-                                gradient="linear-gradient(135deg,#8b5cf6,#6d28d9)"
-                            />
-                            {charge.adjustments?.length > 0 && (
-                                <Chip
-                                    label={`${charge.adjustments.length} ajuste${charge.adjustments.length !== 1 ? "s" : ""}`}
-                                    size="small"
-                                    color="secondary"
-                                    variant="outlined"
-                                />
-                            )}
-                        </Stack>
-                        <Divider sx={{ mb: 2 }} />
+                {/* ── Ajustes e Histórico (resumo compacto) ─────────── */}
+                <Grid container spacing={3}>
+                    <Grid size={{ xs: 12, md: 6 }}>
+                        <Card
+                            sx={{
+                                borderRadius: "var(--cv-radius-xl)",
+                                border: "1px solid var(--cv-border-soft)",
+                                boxShadow: "var(--cv-shadow-md)",
+                                height: "100%",
+                            }}
+                        >
+                            <CardContent sx={{ p: 3 }}>
+                                <Stack direction="row" alignItems="center" justifyContent="space-between">
+                                    <SectionHeader
+                                        icon={<IconAdjustments size={18} />}
+                                        title="Ajustes"
+                                        gradient="linear-gradient(135deg,#8b5cf6,#6d28d9)"
+                                    />
+                                </Stack>
 
-                        {charge.adjustments?.length > 0 ? (
-                            <TableContainer>
-                                <Table size="small">
-                                    <TableHead>
-                                        <TableRow>
-                                            <TableCell sx={{ fontWeight: 800 }}>Tipo</TableCell>
-                                            <TableCell sx={{ fontWeight: 800 }}>Valor</TableCell>
-                                            <TableCell sx={{ fontWeight: 800 }}>Descrição</TableCell>
-                                            <TableCell sx={{ fontWeight: 800 }}>Criado por</TableCell>
-                                            <TableCell sx={{ fontWeight: 800 }}>Data</TableCell>
-                                        </TableRow>
-                                    </TableHead>
-                                    <TableBody>
-                                        {charge.adjustments.map((adjustment) => (
-                                            <TableRow key={adjustment.id} hover>
-                                                <TableCell>
-                                                    <Chip
-                                                        label={adjustment.type === "discount" ? "Desconto" : "Acréscimo"}
-                                                        size="small"
-                                                        color={adjustment.type === "discount" ? "success" : "error"}
-                                                        variant="outlined"
-                                                        sx={{ fontWeight: 700 }}
-                                                    />
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Typography
-                                                        variant="body2"
-                                                        fontWeight={700}
-                                                        color={adjustment.type === "discount" ? "success.main" : "error.main"}
-                                                    >
-                                                        {adjustment.type === "discount" ? "−" : "+"} <MoneyText value={adjustment.amount} />
-                                                    </Typography>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Typography variant="body2" color="text.secondary">
-                                                        {adjustment.description || "—"}
-                                                    </Typography>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <Typography variant="body2" fontWeight={600}>
-                                                        {adjustment.created_by?.name || "—"}
-                                                    </Typography>
-                                                </TableCell>
-                                                <TableCell>
-                                                    <DateText value={adjustment.created_at} />
-                                                </TableCell>
-                                            </TableRow>
-                                        ))}
-                                    </TableBody>
-                                </Table>
-                            </TableContainer>
-                        ) : (
-                            <EmptyState title="Nenhum ajuste lançado." />
-                        )}
-                    </CardContent>
-                </Card>
-
-                {/* ── Histórico de Alterações ───────────────────────── */}
-                <Card
-                    sx={{
-                        borderRadius: "var(--cv-radius-xl)",
-                        border: "1px solid var(--cv-border-soft)",
-                        boxShadow: "var(--cv-shadow-md)",
-                    }}
-                >
-                    <CardContent sx={{ p: 3 }}>
-                        <SectionHeader
-                            icon={<IconHistory size={18} />}
-                            title="Histórico de Alterações"
-                            gradient="linear-gradient(135deg,#6366f1,#4338ca)"
-                        />
-                        <Divider sx={{ mb: 2 }} />
-
-                        {charge.histories?.length > 0 ? (
-                            <Stack spacing={0}>
-                                {charge.histories.map((entry, index) => (
-                                    <Stack
-                                        key={entry.id}
-                                        direction="row"
-                                        spacing={2}
-                                        py={1.2}
-                                        sx={{
-                                            borderBottom:
-                                                index < charge.histories.length - 1
-                                                    ? "1px solid var(--cv-border-soft)"
-                                                    : "none",
-                                        }}
-                                    >
-                                        <Box
-                                            sx={{
-                                                width: 8,
-                                                height: 8,
-                                                borderRadius: "50%",
-                                                background: "#6366f1",
-                                                mt: 0.9,
-                                                flexShrink: 0,
-                                            }}
-                                        />
-                                        <Box flex={1}>
-                                            <Typography variant="body2" fontWeight={600}>
-                                                {entry.description}
-                                            </Typography>
-                                            <Typography variant="caption" color="text.secondary">
-                                                {entry.user?.name || "Sistema"} · <DateText value={entry.created_at} />
-                                            </Typography>
+                                <Typography variant="body2" color="text.secondary" mb={2}>
+                                    {adjustmentsCount > 0
+                                        ? `${adjustmentsCount} ajuste${adjustmentsCount !== 1 ? "s" : ""} lançado${adjustmentsCount !== 1 ? "s" : ""}, líquido de `
+                                        : "Nenhum ajuste lançado nesta cobrança."}
+                                    {adjustmentsCount > 0 && (
+                                        <Box component="span" fontWeight={800} color={adjustmentsNet <= 0 ? "success.main" : "error.main"}>
+                                            {adjustmentsNet <= 0 ? "− " : "+ "}
+                                            {formatCurrency(Math.abs(adjustmentsNet))}
                                         </Box>
-                                    </Stack>
-                                ))}
-                            </Stack>
-                        ) : (
-                            <EmptyState title="Nenhuma alteração registrada ainda." />
-                        )}
-                    </CardContent>
-                </Card>
+                                    )}
+                                </Typography>
 
-                {/* ── Ações finais (Pagar manualmente / Cancelar) ───── */}
-                {!["paid", "cancelled"].includes(charge.status) && (
-                    <Grid container spacing={3}>
-                        <Grid size={{ xs: 12, md: 6 }}>
-                            <Card
-                                sx={{
-                                    borderRadius: "var(--cv-radius-xl)",
-                                    border: "1px solid #d1fae5",
-                                    boxShadow: "var(--cv-shadow-md)",
-                                    background: "linear-gradient(135deg,#f0fdf4,#dcfce7)",
-                                }}
-                            >
-                                <CardContent sx={{ p: 3 }}>
-                                    <SectionHeader
-                                        icon={<IconCheck size={18} />}
-                                        title="Marcar como Paga Manualmente"
-                                        gradient="linear-gradient(135deg,#10b981,#059669)"
-                                    />
-                                    <Divider sx={{ mb: 2 }} />
-
-                                    <Stack spacing={2}>
-                                        <TextField
-                                            label="Observação (opcional)"
-                                            value={paidForm.data.note}
-                                            onChange={(e) => paidForm.setData("note", e.target.value)}
-                                            error={!!paidForm.errors.note}
-                                            helperText={paidForm.errors.note}
-                                            multiline
-                                            minRows={3}
-                                            fullWidth
+                                <Stack direction="row" spacing={1.5}>
+                                    <Button
+                                        variant="outlined"
+                                        size="small"
+                                        startIcon={<IconAdjustments size={15} />}
+                                        onClick={() => setAdjustmentsDialogOpen(true)}
+                                        disabled={adjustmentsCount === 0}
+                                        sx={{ fontWeight: 700 }}
+                                    >
+                                        Ver histórico
+                                    </Button>
+                                    {charge.status === "draft" && (
+                                        <Button
+                                            variant="text"
                                             size="small"
-                                        />
-
-                                        <ConfirmActionButton
-                                            color="success"
-                                            message="Deseja marcar esta cobrança como paga manualmente?"
-                                            onConfirm={markPaid}
-                                            disabled={paidForm.processing}
-                                            startIcon={<IconCheck size={16} />}
-                                            fullWidth
+                                            startIcon={<IconPlus size={15} />}
+                                            onClick={() => setAddAdjustmentOpen(true)}
                                             sx={{ fontWeight: 700 }}
                                         >
-                                            Marcar como paga
-                                        </ConfirmActionButton>
-                                    </Stack>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-
-                        <Grid size={{ xs: 12, md: 6 }}>
-                            <Card
-                                sx={{
-                                    borderRadius: "var(--cv-radius-xl)",
-                                    border: "1px solid #fee2e2",
-                                    boxShadow: "var(--cv-shadow-md)",
-                                    background: "linear-gradient(135deg,#fff5f5,#fee2e2)",
-                                }}
-                            >
-                                <CardContent sx={{ p: 3 }}>
-                                    <SectionHeader
-                                        icon={<IconX size={18} />}
-                                        title="Cancelar Cobrança"
-                                        gradient="linear-gradient(135deg,#ef4444,#dc2626)"
-                                    />
-                                    <Divider sx={{ mb: 2 }} />
-
-                                    <Stack spacing={2}>
-                                        <TextField
-                                            label="Motivo do cancelamento"
-                                            value={cancelForm.data.reason}
-                                            onChange={(e) => cancelForm.setData("reason", e.target.value)}
-                                            error={!!cancelForm.errors.reason}
-                                            helperText={cancelForm.errors.reason}
-                                            multiline
-                                            minRows={3}
-                                            fullWidth
-                                            size="small"
-                                        />
-
-                                        <ConfirmActionButton
-                                            color="error"
-                                            message="Deseja realmente cancelar esta cobrança? Esta ação não pode ser desfeita."
-                                            onConfirm={cancelCharge}
-                                            disabled={cancelForm.processing}
-                                            startIcon={<IconX size={16} />}
-                                            fullWidth
-                                            sx={{ fontWeight: 700 }}
-                                        >
-                                            Cancelar cobrança
-                                        </ConfirmActionButton>
-                                    </Stack>
-                                </CardContent>
-                            </Card>
-                        </Grid>
+                                            Adicionar
+                                        </Button>
+                                    )}
+                                </Stack>
+                            </CardContent>
+                        </Card>
                     </Grid>
-                )}
+
+                    <Grid size={{ xs: 12, md: 6 }}>
+                        <Card
+                            sx={{
+                                borderRadius: "var(--cv-radius-xl)",
+                                border: "1px solid var(--cv-border-soft)",
+                                boxShadow: "var(--cv-shadow-md)",
+                                height: "100%",
+                            }}
+                        >
+                            <CardContent sx={{ p: 3 }}>
+                                <SectionHeader
+                                    icon={<IconHistory size={18} />}
+                                    title="Histórico de Alterações"
+                                    gradient="linear-gradient(135deg,#6366f1,#4338ca)"
+                                />
+
+                                <Typography variant="body2" color="text.secondary" mb={2}>
+                                    {historyCount > 0
+                                        ? `${historyCount} alteraç${historyCount !== 1 ? "ões" : "ão"} registrada${historyCount !== 1 ? "s" : ""}.`
+                                        : "Nenhuma alteração registrada ainda."}
+                                </Typography>
+
+                                <Button
+                                    variant="outlined"
+                                    size="small"
+                                    startIcon={<IconHistory size={15} />}
+                                    onClick={() => setHistoryDialogOpen(true)}
+                                    disabled={historyCount === 0}
+                                    sx={{ fontWeight: 700 }}
+                                >
+                                    Ver histórico completo
+                                </Button>
+                            </CardContent>
+                        </Card>
+                    </Grid>
+                </Grid>
             </Stack>
 
             <EditDueDateDialog
@@ -1173,6 +969,42 @@ export default function Page({ charge }) {
                 charge={charge}
                 hasActivePayment={hasActivePayment}
                 onClose={() => setEditDueDateOpen(false)}
+            />
+
+            <PaymentSlipDialog
+                open={Boolean(selectedPayment)}
+                payment={selectedPayment}
+                onClose={() => setSelectedPayment(null)}
+            />
+
+            <AdjustmentsDialog
+                open={adjustmentsDialogOpen}
+                adjustments={charge.adjustments}
+                onClose={() => setAdjustmentsDialogOpen(false)}
+            />
+
+            <AddAdjustmentDialog
+                open={addAdjustmentOpen}
+                charge={charge}
+                onClose={() => setAddAdjustmentOpen(false)}
+            />
+
+            <ChangeHistoryDialog
+                open={historyDialogOpen}
+                histories={charge.histories}
+                onClose={() => setHistoryDialogOpen(false)}
+            />
+
+            <MarkPaidDialog
+                open={markPaidOpen}
+                charge={charge}
+                onClose={() => setMarkPaidOpen(false)}
+            />
+
+            <CancelChargeDialog
+                open={cancelDialogOpen}
+                charge={charge}
+                onClose={() => setCancelDialogOpen(false)}
             />
         </Layout>
     );
