@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import {
+    IconArrowRight,
     IconCheck,
     IconFileText,
     IconPalette,
@@ -63,28 +64,50 @@ function ColorField({ label, value, onChange, error, helperText }) {
     );
 }
 
-function ImageUploadField({ label, helperText, preview, onSelect, onRestoreDefault, error, accept = 'image/*', shape = 'square' }) {
+function ImagePreviewBox({ src, alt, shape }) {
+    return (
+        <Box
+            sx={{
+                width: 72, height: 72,
+                borderRadius: shape === 'circle' ? '50%' : 2,
+                border: '1px dashed', borderColor: 'grey.300',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                overflow: 'hidden', bgcolor: 'grey.50', flexShrink: 0,
+            }}
+        >
+            {src ? (
+                <Box component="img" src={src} alt={alt} sx={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+            ) : (
+                <IconPhoto size={28} style={{ opacity: 0.35 }} />
+            )}
+        </Box>
+    );
+}
+
+function ImageUploadField({ label, helperText, currentUrl, newPreview, onSelect, onRestoreDefault, error, accept = 'image/*', shape = 'square' }) {
     const inputRef = useRef(null);
 
     return (
         <Stack spacing={1.5}>
             <Typography variant="body2" sx={{ fontWeight: 700 }}>{label}</Typography>
-            <Stack direction="row" gap={2} alignItems="center">
-                <Box
-                    sx={{
-                        width: 72, height: 72,
-                        borderRadius: shape === 'circle' ? '50%' : 2,
-                        border: '1px dashed', borderColor: 'grey.300',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                        overflow: 'hidden', bgcolor: 'grey.50', flexShrink: 0,
-                    }}
-                >
-                    {preview ? (
-                        <Box component="img" src={preview} alt={label} sx={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-                    ) : (
-                        <IconPhoto size={28} style={{ opacity: 0.35 }} />
+            <Stack direction="row" gap={2} alignItems="center" flexWrap="wrap">
+                <Stack direction="row" gap={2} alignItems="center">
+                    <Stack alignItems="center" spacing={0.5}>
+                        <ImagePreviewBox src={currentUrl} alt={label} shape={shape} />
+                        <Typography variant="caption" color="text.secondary">Em uso</Typography>
+                    </Stack>
+
+                    {newPreview && (
+                        <>
+                            <IconArrowRight size={18} style={{ opacity: 0.4, flexShrink: 0 }} />
+                            <Stack alignItems="center" spacing={0.5}>
+                                <ImagePreviewBox src={newPreview} alt={`${label} (novo)`} shape={shape} />
+                                <Typography variant="caption" color="success.main" sx={{ fontWeight: 700 }}>Novo (não salvo)</Typography>
+                            </Stack>
+                        </>
                     )}
-                </Box>
+                </Stack>
+
                 <Stack spacing={1}>
                     <Stack direction="row" gap={1}>
                         <Button
@@ -127,23 +150,23 @@ export default function Page({ brand }) {
         boleto_logo: null,
     });
 
-    const [logoPreview, setLogoPreview] = useState(brand?.logo_url ?? null);
-    const [faviconPreview, setFaviconPreview] = useState(brand?.favicon_url ?? null);
-    const [boletoLogoPreview, setBoletoLogoPreview] = useState(brand?.boleto_logo_url ?? null);
+    const [logoPreview, setLogoPreview] = useState(null);
+    const [faviconPreview, setFaviconPreview] = useState(null);
+    const [boletoLogoPreview, setBoletoLogoPreview] = useState(null);
 
     function pickLogo(file) {
         setData('logo', file);
-        setLogoPreview(file ? URL.createObjectURL(file) : brand?.logo_url ?? null);
+        setLogoPreview(file ? URL.createObjectURL(file) : null);
     }
 
     function pickFavicon(file) {
         setData('favicon', file);
-        setFaviconPreview(file ? URL.createObjectURL(file) : brand?.favicon_url ?? null);
+        setFaviconPreview(file ? URL.createObjectURL(file) : null);
     }
 
     function pickBoletoLogo(file) {
         setData('boleto_logo', file);
-        setBoletoLogoPreview(file ? URL.createObjectURL(file) : brand?.boleto_logo_url ?? null);
+        setBoletoLogoPreview(file ? URL.createObjectURL(file) : null);
     }
 
     function submit(e) {
@@ -249,7 +272,8 @@ export default function Page({ brand }) {
                                 <ImageUploadField
                                     label="Logo da plataforma"
                                     helperText="PNG, JPG, SVG ou WEBP — até 2MB. Exibido no menu lateral."
-                                    preview={logoPreview}
+                                    currentUrl={brand?.logo_url}
+                                    newPreview={logoPreview}
                                     onSelect={pickLogo}
                                     onRestoreDefault={brand?.logo_url ? restoreLogo : null}
                                     error={errors.logo}
@@ -259,7 +283,8 @@ export default function Page({ brand }) {
                                 <ImageUploadField
                                     label="Favicon"
                                     helperText="PNG, ICO, JPG, SVG ou WEBP — até 512KB. Exibido na aba do navegador."
-                                    preview={faviconPreview}
+                                    currentUrl={brand?.favicon_url}
+                                    newPreview={faviconPreview}
                                     onSelect={pickFavicon}
                                     onRestoreDefault={brand?.favicon_url ? restoreFavicon : null}
                                     error={errors.favicon}
@@ -276,7 +301,8 @@ export default function Page({ brand }) {
                             <ImageUploadField
                                 label="Logo para o boleto (PDF)"
                                 helperText="PNG, JPG ou WEBP — até 2MB. Se não for enviada, o boleto exibe apenas o nome da plataforma em texto."
-                                preview={boletoLogoPreview}
+                                currentUrl={brand?.boleto_logo_url}
+                                newPreview={boletoLogoPreview}
                                 onSelect={pickBoletoLogo}
                                 onRestoreDefault={brand?.boleto_logo_url ? restoreBoletoLogo : null}
                                 error={errors.boleto_logo}
