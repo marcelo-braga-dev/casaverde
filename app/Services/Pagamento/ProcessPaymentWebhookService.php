@@ -110,6 +110,8 @@ class ProcessPaymentWebhookService
                 ]),
             ]);
 
+            $this->reopenChargeIfPaymentDied($slip);
+
             $event->update([
                 'status' => 'processed',
                 'error_message' => null,
@@ -127,6 +129,8 @@ class ProcessPaymentWebhookService
                     'webhook_expired' => $payload,
                 ]),
             ]);
+
+            $this->reopenChargeIfPaymentDied($slip);
 
             $event->update([
                 'status' => 'processed',
@@ -176,6 +180,17 @@ class ProcessPaymentWebhookService
             'error_message' => null,
             'processed_at' => now(),
         ]);
+    }
+
+    // Sem isso, uma cobrança "overdue" com o slip cancelado/expirado pelo webhook
+    // fica travada para sempre — nada além do cancelamento manual (que já reabre a
+    // charge) tira ela desse estado. Mesmo padrão usado em CancelPaymentSlipService
+    // e SyncPaymentSlipService.
+    private function reopenChargeIfPaymentDied(PaymentSlip $slip): void
+    {
+        if ($slip->charge && ! in_array($slip->charge->status, ['paid', 'cancelled'], true)) {
+            $slip->charge->update(['status' => 'open']);
+        }
     }
 
     private function ignore(PaymentWebhookEvent $event, string $message): void

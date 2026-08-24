@@ -55,9 +55,26 @@ class SyncPaymentSlipService
                 ]);
             } else {
                 $slip->update(['status' => $response->status]);
+                $this->reopenChargeIfPaymentDied($slip, $response->status);
             }
 
             return $slip->fresh();
         });
+    }
+
+    // Sem isso, uma cobrança que virou "overdue" enquanto o slip ainda estava
+    // pending/generated fica travada para sempre assim que o slip morre: nem
+    // GeneratePaymentSlipService nem a automação aceitam gerar pagamento para
+    // charge fora de open/waiting_payment, e nada além do cancelamento manual
+    // (CancelPaymentSlipService) reabre a charge. Mesmo padrão usado lá.
+    private function reopenChargeIfPaymentDied(PaymentSlip $slip, string $newStatus): void
+    {
+        if (! in_array($newStatus, ['cancelled', 'expired', 'failed'], true)) {
+            return;
+        }
+
+        if ($slip->charge && ! in_array($slip->charge->status, ['paid', 'cancelled'], true)) {
+            $slip->charge->update(['status' => 'open']);
+        }
     }
 }

@@ -41,8 +41,10 @@ describe('ProcessPaymentWebhookService', function () {
             ->and(PaymentTransaction::where('payment_slip_id', $slip->id)->count())->toBe(1);
     });
 
-    it('marks the slip as cancelled when the webhook reports cancellation', function () {
+    it('marks the slip as cancelled when the webhook reports cancellation, and reopens an open charge', function () {
+        $charge = CustomerCharge::factory()->create(['status' => 'open']);
         $slip = PaymentSlip::factory()->create([
+            'customer_charge_id' => $charge->id,
             'provider' => 'cora',
             'provider_payment_id' => 'inv-2',
             'status' => 'generated',
@@ -57,7 +59,8 @@ describe('ProcessPaymentWebhookService', function () {
         $this->service->handle($event);
 
         expect($slip->refresh()->status)->toBe('cancelled')
-            ->and($event->refresh()->status)->toBe('processed');
+            ->and($event->refresh()->status)->toBe('processed')
+            ->and($charge->refresh()->status)->toBe('open');
     });
 
     it('marks the slip as expired when the webhook reports expiration', function () {
@@ -77,6 +80,66 @@ describe('ProcessPaymentWebhookService', function () {
 
         expect($slip->refresh()->status)->toBe('expired')
             ->and($event->refresh()->status)->toBe('processed');
+    });
+
+    it('reopens an overdue charge when the webhook reports cancellation, unblocking reissue', function () {
+        $charge = CustomerCharge::factory()->create(['status' => 'overdue']);
+        PaymentSlip::factory()->create([
+            'customer_charge_id' => $charge->id,
+            'provider' => 'cora',
+            'provider_payment_id' => 'inv-2b',
+            'status' => 'generated',
+        ]);
+
+        $event = PaymentWebhookEvent::factory()->create([
+            'provider' => 'cora',
+            'provider_payment_id' => 'inv-2b',
+            'payload' => ['invoice' => ['id' => 'inv-2b', 'status' => 'CANCELLED']],
+        ]);
+
+        $this->service->handle($event);
+
+        expect($charge->refresh()->status)->toBe('open');
+    });
+
+    it('reopens an overdue charge when the webhook reports expiration, unblocking reissue', function () {
+        $charge = CustomerCharge::factory()->create(['status' => 'overdue']);
+        PaymentSlip::factory()->create([
+            'customer_charge_id' => $charge->id,
+            'provider' => 'cora',
+            'provider_payment_id' => 'inv-3b',
+            'status' => 'generated',
+        ]);
+
+        $event = PaymentWebhookEvent::factory()->create([
+            'provider' => 'cora',
+            'provider_payment_id' => 'inv-3b',
+            'payload' => ['invoice' => ['id' => 'inv-3b', 'status' => 'EXPIRED']],
+        ]);
+
+        $this->service->handle($event);
+
+        expect($charge->refresh()->status)->toBe('open');
+    });
+
+    it('does not reopen the charge via webhook cancellation when it is already paid', function () {
+        $charge = CustomerCharge::factory()->create(['status' => 'paid']);
+        PaymentSlip::factory()->create([
+            'customer_charge_id' => $charge->id,
+            'provider' => 'cora',
+            'provider_payment_id' => 'inv-2c',
+            'status' => 'generated',
+        ]);
+
+        $event = PaymentWebhookEvent::factory()->create([
+            'provider' => 'cora',
+            'provider_payment_id' => 'inv-2c',
+            'payload' => ['invoice' => ['id' => 'inv-2c', 'status' => 'CANCELLED']],
+        ]);
+
+        $this->service->handle($event);
+
+        expect($charge->refresh()->status)->toBe('paid');
     });
 
     it('ignores the event without raising an exception when no matching slip exists', function () {

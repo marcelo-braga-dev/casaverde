@@ -121,9 +121,16 @@ class ConcessionaireBill extends Model
         return $this->hasMany(CustomerCharge::class, 'concessionaire_bill_id');
     }
 
+    /**
+     * A cobrança ATIVA da fatura (nunca uma cancelada) — uma fatura pode ter várias
+     * cobranças ao longo do tempo (cada reemissão cancela a anterior e gera uma nova),
+     * mas no máximo uma não-cancelada por vez. Use charges() para o histórico completo.
+     */
     public function customerCharge()
     {
-        return $this->hasOne(CustomerCharge::class, 'concessionaire_bill_id');
+        return $this->hasOne(CustomerCharge::class, 'concessionaire_bill_id')
+            ->where('status', '!=', 'cancelled')
+            ->latestOfMany();
     }
 
     /**

@@ -58,7 +58,9 @@ class ClienteFaturaController extends Controller
 
         $fatura->load(['concessionaria', 'issues']);
 
-        $charge = $fatura->charges()->with('paymentSlips')->first();
+        // Mais recente primeiro: se a fatura já teve uma cobrança cancelada e reemitida,
+        // o cliente precisa ver a atual, não a cancelada mais antiga.
+        $charge = $fatura->charges()->with('paymentSlips')->latest()->first();
 
         return Inertia::render('Cliente/Faturas/Show/Page', [
             'fatura' => $fatura,

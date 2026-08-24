@@ -15,7 +15,12 @@ class GenerateCustomerChargeFromBillService
             throw new InvalidArgumentException('A cobrança só pode ser gerada a partir de uma fatura aprovada.');
         }
 
-        if (CustomerCharge::query()->where('concessionaire_bill_id', $bill->id)->exists()) {
+        $hasActiveCharge = CustomerCharge::query()
+            ->where('concessionaire_bill_id', $bill->id)
+            ->where('status', '!=', 'cancelled')
+            ->exists();
+
+        if ($hasActiveCharge) {
             throw new InvalidArgumentException('Já existe cobrança gerada para esta fatura.');
         }
 
