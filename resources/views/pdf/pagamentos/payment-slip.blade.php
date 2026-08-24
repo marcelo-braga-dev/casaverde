@@ -285,12 +285,11 @@
         }
 
         .consumption-cell.description {
-            width: 46%;
+            width: 68%;
         }
 
-        .consumption-cell.kwh,
-        .consumption-cell.valor {
-            width: 27%;
+        .consumption-cell.kwh {
+            width: 32%;
             text-align: right;
             font-weight: 700;
         }
@@ -505,13 +504,11 @@
                     <div class="consumption-row head">
                         <span class="consumption-cell description">Linha da fatura</span>
                         <span class="consumption-cell kwh">Quantidade (kWh)</span>
-                        <span class="consumption-cell valor">Valor (R$)</span>
                     </div>
                     @foreach($billItems as $item)
                         <div class="consumption-row">
                             <span class="consumption-cell description">{{ $item['descricao'] ?: '—' }}</span>
                             <span class="consumption-cell kwh">{{ is_null($item['quantidade']) ? '—' : number_format(abs($item['quantidade']), 2, ',', '.').' kWh' }}</span>
-                            <span class="consumption-cell valor">{{ is_null($item['valor']) ? '—' : 'R$ '.number_format($item['valor'], 2, ',', '.') }}</span>
                         </div>
                     @endforeach
                 </div>

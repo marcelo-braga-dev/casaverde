@@ -63,7 +63,6 @@ class GeneratePaymentSlipPdfService
         return array_map(fn (array $item) => [
             'descricao' => $item['descricao'],
             'quantidade' => isset($item['quantidade']) ? (float) $item['quantidade'] : null,
-            'valor' => isset($item['valor']) ? (float) $item['valor'] : null,
         ], $items);
     }
 
