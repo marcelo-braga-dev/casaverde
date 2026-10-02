@@ -27,10 +27,19 @@ class PaymentProviderManager
 
     public function defaultAccount(string $provider): PaymentProviderAccount
     {
+        return $this->defaultAccountQuery($provider)->firstOrFail();
+    }
+
+    public function hasDefaultAccount(string $provider): bool
+    {
+        return $this->defaultAccountQuery($provider)->exists();
+    }
+
+    private function defaultAccountQuery(string $provider)
+    {
         return PaymentProviderAccount::query()
             ->where('provider', $provider)
             ->where('is_active', true)
-            ->where('is_default', true)
-            ->firstOrFail();
+            ->where('is_default', true);
     }
 }

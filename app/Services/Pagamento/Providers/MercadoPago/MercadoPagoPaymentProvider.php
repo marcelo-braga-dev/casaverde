@@ -10,7 +10,6 @@ use App\Models\Pagamento\PaymentProviderAccount;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
-use RuntimeException;
 
 // Usa a Orders API (/v1/orders), não a Payments API clássica (/v1/payments): o Mercado
 // Pago passou a exigir a Orders API para os "usuários de teste" gerados a partir de
@@ -80,7 +79,11 @@ class MercadoPagoPaymentProvider implements PaymentProviderContract
             ->get('/v1/orders/'.$providerPaymentId);
 
         if (! $response->successful()) {
-            throw new RuntimeException('Falha ao consultar pagamento no Mercado Pago: '.$response->body());
+            throw new PaymentProviderException(
+                'Falha ao consultar pagamento no Mercado Pago: '.$response->body(),
+                $response->status(),
+                $response->json() ?? ['raw' => $response->body()],
+            );
         }
 
         return $this->mapResponse($response->json());

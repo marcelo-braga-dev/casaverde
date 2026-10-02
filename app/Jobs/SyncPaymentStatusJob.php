@@ -2,10 +2,12 @@
 
 namespace App\Jobs;
 
+use App\Exceptions\Payments\PaymentProviderException;
 use App\Models\Pagamento\PaymentSlip;
 use App\Services\Pagamento\SyncPaymentSlipService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\Log;
 
 class SyncPaymentStatusJob implements ShouldQueue
 {
@@ -33,6 +35,21 @@ class SyncPaymentStatusJob implements ShouldQueue
             return;
         }
 
-        $service->handle($payment);
+        try {
+            $service->handle($payment);
+        } catch (PaymentProviderException $e) {
+            // Rate limit (429) e instabilidade (5xx) do provider são transitórios e o
+            // casaverde:sync-payments roda a cada 5 min — a próxima rodada já tenta de novo.
+            if (! $this->isTransient($e->httpStatus)) {
+                throw $e;
+            }
+
+            Log::warning("[SyncPaymentStatus] Falha transitória ao sincronizar pagamento #{$payment->id} (HTTP {$e->httpStatus}); nova tentativa na próxima rodada.");
+        }
+    }
+
+    private function isTransient(?int $httpStatus): bool
+    {
+        return $httpStatus === 429 || ($httpStatus !== null && $httpStatus >= 500);
     }
 }
