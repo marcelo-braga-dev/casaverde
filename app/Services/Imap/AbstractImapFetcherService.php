@@ -10,6 +10,12 @@ abstract class AbstractImapFetcherService
 {
     public function fetchMessages(ClientEmailImportSetting $setting): array
     {
+        // ext-imap saiu do core no PHP 8.4 (agora é PECL); sem isso o erro vira um fatal
+        // "Call to undefined function" que não diz o que falta no servidor.
+        if (! function_exists('imap_open')) {
+            throw new RuntimeException('Extensão PHP "imap" não está instalada/habilitada no binário '.PHP_BINARY.' (PHP '.PHP_VERSION.').');
+        }
+
         $mailbox = $this->buildMailboxString($setting);
 
         $imap = @imap_open(

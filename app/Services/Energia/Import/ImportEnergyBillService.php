@@ -133,9 +133,9 @@ class ImportEnergyBillService
             }
         }
 
-        $setting->update([
+        ClientEmailImportSetting::withoutTimestamps(fn () => $setting->update([
             'last_checked_at' => now(),
-        ]);
+        ]));
 
         return $result;
     }

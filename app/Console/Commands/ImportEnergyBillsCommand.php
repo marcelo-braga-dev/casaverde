@@ -5,6 +5,8 @@ namespace App\Console\Commands;
 use App\Models\Importacao\ClientEmailImportSetting;
 use App\Services\Energia\Import\ImportEnergyBillService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class ImportEnergyBillsCommand extends Command
 {
@@ -30,10 +32,20 @@ class ImportEnergyBillsCommand extends Command
             return self::SUCCESS;
         }
 
+        $hadFailure = false;
+
         foreach ($settings as $setting) {
             $this->info("Processando cliente #{$setting->user_id} - {$setting->imap_email}");
 
-            $result = $service->importForSetting($setting);
+            try {
+                $result = $service->importForSetting($setting);
+            } catch (Throwable $e) {
+                $hadFailure = true;
+                Log::error("[energy-bills:import] Falha no setting #{$setting->id}: ".$e->getMessage());
+                $this->error($e->getMessage());
+
+                continue;
+            }
 
             $this->line(sprintf(
                 'Processados: %d | Importados: %d | Ignorados: %d | Falharam: %d',
@@ -44,6 +56,6 @@ class ImportEnergyBillsCommand extends Command
             ));
         }
 
-        return self::SUCCESS;
+        return $hadFailure ? self::FAILURE : self::SUCCESS;
     }
 }

@@ -17,6 +17,8 @@ use Throwable;
 
 class ImportAutomaticConcessionaireBillService
 {
+    private const MAX_RETRIES = 5;
+
     public function __construct(
         private readonly ImapConcessionaireFetcherService $fetcher,
         private readonly PdfTextExtractorService $pdfExtractor,
@@ -73,7 +75,15 @@ class ImportAutomaticConcessionaireBillService
                     continue;
                 }
 
-                $result = $this->handle($clientProfile, $setting, $run);
+                // Falha de conexão/credencial de uma caixa não pode abortar a importação dos demais clientes.
+                try {
+                    $result = $this->handle($clientProfile, $setting, $run);
+                } catch (Throwable $e) {
+                    Log::error("[ImportRun #{$run->id}] Falha ao processar setting #{$setting->id} (cliente #{$clientProfile->id}): ".$e->getMessage());
+                    $totals['total_failed']++;
+
+                    continue;
+                }
 
                 $totals['total_processed'] += $result['processed'];
                 $totals['total_imported'] += $result['imported'];
@@ -111,7 +121,9 @@ class ImportAutomaticConcessionaireBillService
             }
         }
 
-        $setting->update(['last_checked_at' => now()]);
+        // Sem tocar updated_at: ele é usado para detectar alteração real da configuração
+        // (ex.: senha do PDF corrigida) e liberar novas tentativas de anexos que falharam.
+        ClientEmailImportSetting::withoutTimestamps(fn () => $setting->update(['last_checked_at' => now()]));
 
         return $result;
     }
@@ -150,6 +162,24 @@ class ImportAutomaticConcessionaireBillService
             return;
         }
 
+        // O e-mail continua UNSEEN na caixa, então um anexo com erro permanente (ex.: senha
+        // do PDF errada) era reprocessado a cada execução até estourar retry_count (tinyint).
+        // Só volta a tentar quando a configuração do cliente mudar (ex.: senha corrigida).
+        $retryCount = 0;
+
+        if ($existingLog) {
+            $settingChangedSinceFailure = $setting->updated_at && $existingLog->updated_at
+                && $setting->updated_at->gt($existingLog->updated_at);
+
+            if ($existingLog->retry_count >= self::MAX_RETRIES && ! $settingChangedSinceFailure) {
+                $result['skipped']++;
+
+                return;
+            }
+
+            $retryCount = $settingChangedSinceFailure ? 0 : $existingLog->retry_count + 1;
+        }
+
         // ── Cria ou reaproveita o log de rastreamento ─────────────────────
         $logData = [
             'client_profile_id' => $clientProfile->id,
@@ -168,7 +198,7 @@ class ImportAutomaticConcessionaireBillService
         ];
 
         if ($existingLog) {
-            $existingLog->update($logData + ['retry_count' => $existingLog->retry_count + 1]);
+            $existingLog->update($logData + ['retry_count' => $retryCount]);
             $log = $existingLog;
         } else {
             $log = ImportedConcessionaireEmail::create($logData);

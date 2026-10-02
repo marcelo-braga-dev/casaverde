@@ -194,4 +194,89 @@ describe('ImportAutomaticConcessionaireBillService', function () {
             ->and(ImportedConcessionaireEmail::count())->toBe(2);
     });
 
+    it('stops retrying a permanently failing attachment after the retry limit until the setting changes', function () {
+        $this->mock(ImapConcessionaireFetcherService::class, function ($mock) {
+            $mock->shouldReceive('fetchMessages')->andReturn([fakeMessageWithAttachment()]);
+        });
+
+        $this->partialMock(ProtectedPdfResolverService::class, function ($mock) {
+            $mock->shouldReceive('unlockToTempFile')->andThrow(new RuntimeException('Senha incorreta para desbloquear o PDF.'));
+        });
+
+        $service = app(ImportAutomaticConcessionaireBillService::class);
+        $service->handle($this->clientProfile, $this->setting);
+
+        $log = ImportedConcessionaireEmail::first();
+        $log->timestamps = false;
+        $log->forceFill(['retry_count' => 255, 'updated_at' => now()->addMinute()])->save();
+
+        $result = $service->handle($this->clientProfile, $this->setting);
+
+        expect($result)->toBe(['processed' => 1, 'imported' => 0, 'skipped' => 1, 'failed' => 0])
+            ->and($log->refresh()->retry_count)->toBe(255);
+
+        $this->travel(2)->minutes();
+        $this->setting->update(['pdf_password' => 'nova-senha']);
+
+        $result = $service->handle($this->clientProfile, $this->setting);
+
+        expect($result['failed'])->toBe(1)
+            ->and($log->refresh()->retry_count)->toBe(0);
+    });
+
+    it('reaches the retry limit across hourly runs even though last_checked_at is updated', function () {
+        $this->mock(ImapConcessionaireFetcherService::class, function ($mock) {
+            $mock->shouldReceive('fetchMessages')->andReturn([fakeMessageWithAttachment()]);
+        });
+
+        $this->partialMock(ProtectedPdfResolverService::class, function ($mock) {
+            $mock->shouldReceive('unlockToTempFile')->andThrow(new RuntimeException('Senha incorreta para desbloquear o PDF.'));
+        });
+
+        $service = app(ImportAutomaticConcessionaireBillService::class);
+
+        foreach (range(0, 5) as $i) {
+            $service->handle($this->clientProfile, $this->setting->refresh());
+            $this->travel(1)->hours();
+        }
+
+        $result = $service->handle($this->clientProfile, $this->setting->refresh());
+
+        expect($result['skipped'])->toBe(1)
+            ->and($result['failed'])->toBe(0)
+            ->and(ImportedConcessionaireEmail::first()->retry_count)->toBe(5);
+    });
+
+    it('keeps importing other clients when one mailbox fails to connect', function () {
+        $otherClient = ClientProfile::factory()->create();
+        ClientEmailImportSetting::create([
+            'client_profile_id' => $otherClient->id,
+            'concessionaria_id' => $this->concessionaria->id,
+            'user_id' => $this->setting->user_id,
+            'imap_host' => 'mail.example.com',
+            'imap_port' => 993,
+            'imap_encryption' => 'ssl',
+            'imap_email' => 'other@example.com',
+            'imap_password' => 'secret',
+            'is_active' => true,
+        ]);
+
+        $this->mock(ImapConcessionaireFetcherService::class, function ($mock) {
+            $mock->shouldReceive('fetchMessages')
+                ->andReturnUsing(function (ClientEmailImportSetting $setting) {
+                    if ($setting->imap_email === 'import@example.com') {
+                        throw new RuntimeException('Falha ao conectar no IMAP');
+                    }
+
+                    return [fakeMessageWithAttachment()];
+                });
+        });
+
+        $run = app(ImportAutomaticConcessionaireBillService::class)->run();
+
+        expect($run->total_failed)->toBe(1)
+            ->and($run->total_imported)->toBe(1)
+            ->and(ConcessionaireBill::where('client_profile_id', $otherClient->id)->count())->toBe(1);
+    });
+
 });
