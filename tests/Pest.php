@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 /*
@@ -16,6 +17,9 @@ use Tests\TestCase;
 
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
+    // Services de pagamento falam com APIs reais (Cora/Mercado Pago): uma chamada sem
+    // Http::fake() correspondente deve quebrar o teste, nunca sair para a rede.
+    ->beforeEach(fn () => Http::preventStrayRequests())
     ->in('Feature');
 
 /*
