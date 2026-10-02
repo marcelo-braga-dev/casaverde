@@ -9,6 +9,7 @@ use App\Models\Cobranca\CustomerCharge;
 use App\Models\Endereco\Address;
 use App\Models\Pagamento\PaymentSlip;
 use App\Models\Users\UserAddress;
+use App\Support\DocumentValidator;
 use InvalidArgumentException;
 
 class GeneratePaymentSlipService
@@ -52,13 +53,22 @@ class GeneratePaymentSlipService
             throw new InvalidArgumentException('Não é possível gerar boleto via Mercado Pago: o cliente não possui endereço cadastrado (nem no portal, nem na unidade consumidora, nem na proposta comercial).');
         }
 
+        // cpf vazio ("") não pode mascarar o cnpj de clientes PJ.
+        $document = $charge->clientProfile?->cpf ?: $charge->clientProfile?->cnpj ?: null;
+
+        // O Mercado Pago responde a CPF/CNPJ com dígito verificador errado com um genérico
+        // "processing_error" (HTTP 402), sem indicar o campo — o admin não tem como agir.
+        if ($document && ! DocumentValidator::isValid($document)) {
+            throw new InvalidArgumentException('Não é possível gerar o pagamento: o CPF/CNPJ cadastrado para o cliente é inválido. Corrija o cadastro do cliente e tente novamente.');
+        }
+
         $customer = new PaymentCustomerDTO(
             name: $charge->clientProfile?->display_name
             ?? $charge->clientProfile?->nome
             ?? $charge->clientProfile?->razao_social
             ?? 'Cliente',
             email: $this->resolveEmail($charge),
-            document: $charge->clientProfile?->cpf ?? $charge->clientProfile?->cnpj ?? null,
+            document: $document,
             phone: $charge->clientProfile?->contacts?->celular ?? $charge->clientProfile?->contacts?->telefone ?? null,
             address: $address,
         );

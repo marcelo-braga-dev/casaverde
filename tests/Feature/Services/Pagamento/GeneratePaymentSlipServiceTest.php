@@ -153,4 +153,38 @@ describe('GeneratePaymentSlipService', function () {
         expect(PaymentSlip::where('customer_charge_id', $charge->id)->count())->toBe(0);
     });
 
+    it('refuses to request a payment when the client CPF has invalid check digits', function () {
+        $client = ClientProfile::factory()->create();
+        ClientProfile::whereKey($client->id)->toBase()->update(['cpf' => '12345678900']);
+
+        $charge = CustomerCharge::factory()->create([
+            'client_profile_id' => $client->id,
+            'status' => 'open',
+        ]);
+
+        expect(fn () => $this->service->handle($charge))
+            ->toThrow(InvalidArgumentException::class, 'CPF/CNPJ cadastrado para o cliente é inválido');
+
+        expect(PaymentSlip::where('customer_charge_id', $charge->id)->count())->toBe(0);
+    });
+
+    it('uses the CNPJ when the client CPF is an empty string', function () {
+        Http::fake([
+            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
+            'cora.test/invoices' => Http::response(['id' => 'inv-1', 'status' => 'OPEN'], 201),
+        ]);
+
+        $client = ClientProfile::factory()->pj()->create();
+        ClientProfile::whereKey($client->id)->toBase()->update(['cpf' => '']);
+
+        $charge = CustomerCharge::factory()->create([
+            'client_profile_id' => $client->id,
+            'status' => 'open',
+        ]);
+
+        $this->service->handle($charge);
+
+        expect(PaymentSlip::first()->request_payload['customer']['document'])->toBe($client->cnpj);
+    });
+
 });

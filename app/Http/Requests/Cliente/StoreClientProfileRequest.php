@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Cliente;
 
 use App\Models\Cliente\ClientProfile;
+use App\Rules\ValidDocument;
 use App\src\Roles\RoleUser;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -27,6 +28,7 @@ class StoreClientProfileRequest extends FormRequest
                 'required_if:tipo_pessoa,pf',
                 'string',
                 'max:14',
+                new ValidDocument,
                 Rule::unique('client_profiles', 'cpf')->ignore($clientProfileId),
             ],
 
@@ -35,6 +37,7 @@ class StoreClientProfileRequest extends FormRequest
                 'required_if:tipo_pessoa,pj',
                 'string',
                 'max:18',
+                new ValidDocument,
                 Rule::unique('client_profiles', 'cnpj')->ignore($clientProfileId),
             ],
 

@@ -74,17 +74,38 @@ class ClientProfileFactory extends Factory
         ]);
     }
 
+    // Sequenciais, mas com dígitos verificadores válidos (DocumentValidator).
     private function nextCpf(): string
     {
         self::$cpfCounter++;
 
-        return str_pad((string) self::$cpfCounter, 11, '0', STR_PAD_LEFT);
+        $cpf = str_pad((string) (self::$cpfCounter + 100000000), 9, '0', STR_PAD_LEFT);
+
+        foreach ([10, 11] as $weight) {
+            $sum = 0;
+            foreach (str_split($cpf) as $i => $digit) {
+                $sum += (int) $digit * ($weight - $i);
+            }
+            $cpf .= ((10 * $sum) % 11) % 10;
+        }
+
+        return $cpf;
     }
 
     private function nextCnpj(): string
     {
         self::$cnpjCounter++;
 
-        return str_pad((string) (self::$cnpjCounter + 50000), 14, '0', STR_PAD_LEFT);
+        $cnpj = str_pad((string) (self::$cnpjCounter + 50000), 8, '0', STR_PAD_LEFT).'0001';
+
+        foreach ([[5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2], [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]] as $weights) {
+            $sum = 0;
+            foreach ($weights as $i => $weight) {
+                $sum += (int) $cnpj[$i] * $weight;
+            }
+            $cnpj .= $sum % 11 < 2 ? 0 : 11 - ($sum % 11);
+        }
+
+        return $cnpj;
     }
 }
