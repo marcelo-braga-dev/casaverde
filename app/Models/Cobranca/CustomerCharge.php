@@ -2,6 +2,7 @@
 
 namespace App\Models\Cobranca;
 
+use App\Models\Alert\OperationalAlert;
 use App\Models\BaseModel;
 use App\Models\Cliente\ClientProfile;
 use App\Models\Fatura\ConcessionaireBill;
@@ -10,6 +11,7 @@ use App\Models\Users\User;
 use App\Models\Usina\Concessionaria;
 use App\Models\Usina\UsinaSolar;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Auth;
 
 class CustomerCharge extends BaseModel
 {
@@ -54,6 +56,27 @@ class CustomerCharge extends BaseModel
         'cancelled_at' => 'datetime',
         'reminder_sent_at' => 'datetime',
     ];
+
+    // Consultor só enxerga cobranças de clientes da própria carteira (mesma regra da
+    // CustomerChargePolicy::view).
+    public function scopeSomenteMinhasCobrancas($query)
+    {
+        $user = Auth::user();
+
+        if (! $user) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        if ($user->isAdmin()) {
+            return $query;
+        }
+
+        if ($user->isConsultor()) {
+            return $query->whereHas('clientProfile', fn ($q) => $q->where('consultor_user_id', $user->id));
+        }
+
+        return $query->whereRaw('1 = 0');
+    }
 
     public function clientProfile()
     {
@@ -113,6 +136,26 @@ class CustomerCharge extends BaseModel
     public function paymentSlips()
     {
         return $this->hasMany(PaymentSlip::class, 'customer_charge_id');
+    }
+
+    public function operationalAlerts()
+    {
+        return $this->morphMany(OperationalAlert::class, 'alertable');
+    }
+
+    // Em aberto, sem boleto pagável e com um boleto que venceu: o cliente não tem como
+    // pagar até alguém emitir um novo boleto e enviá-lo.
+    public function scopeAguardandoNovoBoleto($query)
+    {
+        return $query
+            ->whereIn('status', ['open', 'waiting_payment', 'overdue'])
+            ->whereDoesntHave('paymentSlips', fn ($q) => $q->whereIn('status', ['pending', 'generated']))
+            ->whereHas('paymentSlips', fn ($q) => $q->where('status', 'expired'));
+    }
+
+    public function isAguardandoNovoBoleto(): bool
+    {
+        return static::query()->whereKey($this->getKey())->aguardandoNovoBoleto()->exists();
     }
 
     public function histories()

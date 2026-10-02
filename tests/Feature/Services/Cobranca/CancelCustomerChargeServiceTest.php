@@ -1,9 +1,11 @@
 <?php
 
 use App\Models\Cobranca\CustomerCharge;
+use App\Models\Pagamento\PaymentProviderAccount;
 use App\Models\Pagamento\PaymentSlip;
 use App\Models\Users\User;
 use App\Services\Cobranca\CancelCustomerChargeService;
+use Illuminate\Support\Facades\Http;
 
 describe('CancelCustomerChargeService', function () {
 
@@ -23,13 +25,61 @@ describe('CancelCustomerChargeService', function () {
             ->and($updated->notes)->toContain('Cliente pediu cancelamento');
     });
 
-    it('cancels the active payment slips along with the charge', function () {
+    it('cancels the active payment slips at the provider along with the charge', function () {
+        Http::fake([
+            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
+            'cora.test/invoices/inv-1' => Http::response([], 204),
+        ]);
+
         $charge = CustomerCharge::factory()->create(['status' => 'open']);
-        $slip = PaymentSlip::factory()->create(['customer_charge_id' => $charge->id, 'status' => 'generated']);
+        $slip = PaymentSlip::factory()->create([
+            'customer_charge_id' => $charge->id,
+            'payment_provider_account_id' => PaymentProviderAccount::factory()->create(['base_url' => 'https://cora.test'])->id,
+            'provider_payment_id' => 'inv-1',
+            'status' => 'generated',
+        ]);
 
         $this->service->handle($charge);
 
         expect($slip->fresh()->status)->toBe('cancelled');
+        Http::assertSent(fn ($request) => $request->method() === 'DELETE' && str_ends_with($request->url(), '/invoices/inv-1'));
+    });
+
+    it('keeps the charge active when the provider refuses to cancel a still payable slip', function () {
+        Http::fake([
+            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
+            'cora.test/invoices/inv-2' => Http::sequence()
+                ->push(['error' => 'unavailable'], 503)
+                ->push(['id' => 'inv-2', 'status' => 'OPEN'], 200),
+        ]);
+
+        $charge = CustomerCharge::factory()->create(['status' => 'open']);
+        $slip = PaymentSlip::factory()->create([
+            'customer_charge_id' => $charge->id,
+            'payment_provider_account_id' => PaymentProviderAccount::factory()->create(['base_url' => 'https://cora.test'])->id,
+            'provider_payment_id' => 'inv-2',
+            'status' => 'generated',
+        ]);
+
+        expect(fn () => $this->service->handle($charge))
+            ->toThrow(InvalidArgumentException::class, 'Não foi possível cancelar o pagamento no provider.');
+
+        expect($charge->refresh()->status)->toBe('open')
+            ->and($slip->refresh()->status)->toBe('generated');
+    });
+
+    it('cancels locally a slip that never reached the provider', function () {
+        $charge = CustomerCharge::factory()->create(['status' => 'open']);
+        $slip = PaymentSlip::factory()->create([
+            'customer_charge_id' => $charge->id,
+            'provider_payment_id' => null,
+            'status' => 'pending',
+        ]);
+
+        $this->service->handle($charge);
+
+        expect($slip->fresh()->status)->toBe('cancelled')
+            ->and($charge->refresh()->status)->toBe('cancelled');
     });
 
     it('does not touch a payment slip that is already paid', function () {

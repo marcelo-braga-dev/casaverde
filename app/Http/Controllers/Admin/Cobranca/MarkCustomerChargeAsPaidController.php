@@ -15,6 +15,8 @@ class MarkCustomerChargeAsPaidController extends Controller
         MarkCustomerChargeAsPaidRequest $request,
         MarkCustomerChargeAsPaidService $service
     ) {
+        $this->authorize('update', $cobranca);
+
         try {
             $service->handle($cobranca, $request->validated('note'));
 

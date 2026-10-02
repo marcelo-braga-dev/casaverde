@@ -29,6 +29,7 @@ Route::name('financeiro.pagamentos.')
 
 Route::name('financeiro.payment-provider-accounts.')
     ->prefix('financeiro/payment-provider-accounts')
+    ->middleware('role:admin')
     ->group(function () {
         Route::get('/', [PaymentProviderAccountController::class, 'index'])->name('index');
         Route::get('/create', [PaymentProviderAccountController::class, 'create'])->name('create');

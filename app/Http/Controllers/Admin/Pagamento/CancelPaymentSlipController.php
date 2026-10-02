@@ -12,6 +12,8 @@ class CancelPaymentSlipController extends Controller
 {
     public function store(PaymentSlip $pagamento, CancelPaymentSlipService $service)
     {
+        $this->authorize('update', $pagamento->charge);
+
         try {
             $service->handle($pagamento);
 

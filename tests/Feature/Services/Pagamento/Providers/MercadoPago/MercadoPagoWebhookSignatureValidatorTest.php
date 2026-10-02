@@ -15,13 +15,13 @@ describe('MercadoPagoWebhookSignatureValidator', function () {
         $this->validator = app(MercadoPagoWebhookSignatureValidator::class);
     });
 
-    it('accepts any webhook when there is no account or no webhook_secret configured', function () {
+    it('rejects any webhook when there is no account or no webhook_secret configured', function () {
         $request = Request::create('/webhooks/payments/mercado-pago', 'POST', content: '{"data":{"id":"123"}}');
 
-        expect($this->validator->isValid($request, null))->toBeTrue();
+        expect($this->validator->isValid($request, null))->toBeFalse();
 
         $accountWithoutSecret = PaymentProviderAccount::factory()->mercadoPago()->create(['webhook_secret' => null]);
-        expect($this->validator->isValid($request, $accountWithoutSecret))->toBeTrue();
+        expect($this->validator->isValid($request, $accountWithoutSecret))->toBeFalse();
     });
 
     it('rejects the webhook when a secret is configured but no x-signature header is sent', function () {

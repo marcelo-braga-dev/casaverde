@@ -11,7 +11,8 @@ const statusMap = {
     pending: { label: "Pendente", color: "default" },
     generated: { label: "Gerado", color: "primary" },
     failed: { label: "Falhou", color: "error" },
-    expired: { label: "Expirado", color: "warning" },
+    expired: { label: "Vencido", color: "error" },
+    refunded: { label: "Estornado", color: "error" },
 
     received: { label: "Recebido", color: "default" },
     processed: { label: "Processado", color: "success" },

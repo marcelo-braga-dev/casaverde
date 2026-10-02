@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
 import { IconFileText } from "@tabler/icons-react";
+import useAuthUser from "@/Hooks/useAuthUser";
 
 const statusLabels = {
     pending: "Pendente",
@@ -24,7 +25,8 @@ const statusLabels = {
     paid: "Pago",
     cancelled: "Cancelado",
     failed: "Falhou",
-    expired: "Expirado",
+    expired: "Vencido",
+    refunded: "Estornado",
 };
 
 const statusColors = {
@@ -33,7 +35,8 @@ const statusColors = {
     paid: "success",
     cancelled: "default",
     failed: "error",
-    expired: "warning",
+    expired: "error",
+    refunded: "error",
 };
 
 const providerLabels = {
@@ -84,6 +87,7 @@ export default function Page({
                                   providers = [],
                                   paymentMethods = [],
                               }) {
+    const isAdmin = useAuthUser()?.role_name === "admin";
     const { data, setData, get, processing } = useForm({
         status: filters.status || "",
         provider: filters.provider || "",
@@ -129,13 +133,15 @@ export default function Page({
                                 </Typography>
                             </Stack>
 
-                            <Stack direction="row" spacing={1}>
-                                <Link href={route("admin.financeiro.payment-provider-accounts.index")}>
-                                    <Button variant="outlined">
-                                        Contas de pagamento
-                                    </Button>
-                                </Link>
-                            </Stack>
+                            {isAdmin && (
+                                <Stack direction="row" spacing={1}>
+                                    <Link href={route("admin.financeiro.payment-provider-accounts.index")}>
+                                        <Button variant="outlined">
+                                            Contas de pagamento
+                                        </Button>
+                                    </Link>
+                                </Stack>
+                            )}
                         </Stack>
                     </CardContent>
                 </Card>

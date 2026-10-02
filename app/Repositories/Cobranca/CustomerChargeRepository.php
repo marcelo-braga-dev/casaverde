@@ -9,6 +9,7 @@ class CustomerChargeRepository
     public function queryList(array $filters = [])
     {
         $query = CustomerCharge::query()
+            ->somenteMinhasCobrancas()
             ->with([
                 'clientProfile',
                 'usina',
@@ -16,6 +17,10 @@ class CustomerChargeRepository
                 'bill',
             ])
             ->orderByDesc('id');
+
+        if (! empty($filters['aguardando_novo_boleto'])) {
+            $query->aguardandoNovoBoleto();
+        }
 
         if (! empty($filters['status'])) {
             $query->where('status', $filters['status']);
@@ -48,6 +53,18 @@ class CustomerChargeRepository
 
     public function paginate(array $filters = [], int $perPage = 20)
     {
-        return $this->queryList($filters)->paginate($perPage)->withQueryString();
+        $page = $this->queryList($filters)->paginate($perPage)->withQueryString();
+
+        $aguardando = CustomerCharge::query()
+            ->whereKey($page->getCollection()->modelKeys())
+            ->aguardandoNovoBoleto()
+            ->pluck('id')
+            ->flip();
+
+        $page->getCollection()->each(
+            fn (CustomerCharge $charge) => $charge->setAttribute('aguardando_novo_boleto', $aguardando->has($charge->id))
+        );
+
+        return $page;
     }
 }

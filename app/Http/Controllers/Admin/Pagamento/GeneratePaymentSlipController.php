@@ -16,6 +16,8 @@ class GeneratePaymentSlipController extends Controller
 {
     public function store(Request $request, CustomerCharge $cobranca, GeneratePaymentSlipService $service)
     {
+        $this->authorize('update', $cobranca);
+
         $validated = $request->validate([
             'provider' => ['nullable', Rule::in(['cora', 'mercado_pago', 'asaas'])],
             'payment_method' => ['nullable', Rule::in(['boleto', 'pix', 'boleto_pix'])],

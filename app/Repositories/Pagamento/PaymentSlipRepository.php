@@ -9,6 +9,7 @@ class PaymentSlipRepository
     public function queryList(array $filters = [])
     {
         $query = PaymentSlip::query()
+            ->whereHas('charge', fn ($q) => $q->somenteMinhasCobrancas())
             ->with(['charge.clientProfile', 'providerAccount'])
             ->orderByDesc('id');
 

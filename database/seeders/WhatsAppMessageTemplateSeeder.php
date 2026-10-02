@@ -61,6 +61,14 @@ class WhatsAppMessageTemplateSeeder extends Seeder
                 'is_active' => true,
             ],
             [
+                'key' => 'enviar_boleto',
+                'name' => 'Envio de boleto / novo boleto',
+                'category' => 'Financeiro',
+                'message' => "Olá {{cliente_nome}}! 🧾 Segue o boleto da sua fatura de {{mes_referencia}}, no valor de {{valor_fatura}}, com vencimento em {{data_vencimento}}.\n\n{{dados_pagamento}}\n\nQualquer dúvida, é só chamar!",
+                'available_variables' => ['cliente_nome', 'mes_referencia', 'valor_fatura', 'data_vencimento', 'dados_pagamento'],
+                'is_active' => true,
+            ],
+            [
                 'key' => 'pagamento_confirmado',
                 'name' => 'Confirmação de pagamento recebido',
                 'category' => 'Financeiro',

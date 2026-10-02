@@ -296,4 +296,68 @@ describe('MercadoPagoPaymentProvider', function () {
             && $request['payer']['address']['state'] === 'SP');
     });
 
+    it('sends the charge due date as expiration_time so the boleto does not fall back to 3 business days', function () {
+        $this->travelTo('2026-10-01 10:00:00');
+        Http::fake(['mp.test/v1/orders' => Http::response(['id' => 'ORD1', 'status' => 'action_required'], 201)]);
+
+        $this->provider->createPayment(new CreatePaymentDTO(
+            externalId: 'charge-1',
+            amount: 100.0,
+            dueDate: '2026-10-12',
+            description: 'Cobrança',
+            paymentMethod: 'boleto',
+            customer: new PaymentCustomerDTO(name: 'Cliente Teste', email: 'c@example.com', document: '12345678901'),
+            idempotencyKey: 'charge-1-boleto-1',
+        ));
+
+        Http::assertSent(fn ($request) => $request['transactions']['payments'][0]['expiration_time'] === 'P11D'
+            && $request->header('X-Idempotency-Key')[0] === 'charge-1-boleto-1');
+    });
+
+    it('clamps expiration_time to the 1..30 day window accepted by the Orders API', function (string $dueDate, string $expected) {
+        $this->travelTo('2026-10-01 10:00:00');
+        Http::fake(['mp.test/v1/orders' => Http::response(['id' => 'ORD1', 'status' => 'action_required'], 201)]);
+
+        $this->provider->createPayment(new CreatePaymentDTO(
+            externalId: 'charge-1',
+            amount: 100.0,
+            dueDate: $dueDate,
+            description: 'Cobrança',
+            paymentMethod: 'boleto',
+            customer: new PaymentCustomerDTO(name: 'Cliente Teste', email: 'c@example.com', document: '12345678901'),
+        ));
+
+        Http::assertSent(fn ($request) => $request['transactions']['payments'][0]['expiration_time'] === $expected);
+    })->with([
+        'overdue charge gets 3 days to pay the new boleto' => ['2026-09-20', 'P3D'],
+        'due today' => ['2026-10-01', 'P3D'],
+        'due tomorrow' => ['2026-10-02', 'P1D'],
+        'beyond 30 days' => ['2026-12-31', 'P30D'],
+    ]);
+
+    it('reports the real due date encoded in the boleto barcode', function () {
+        Http::fake([
+            'mp.test/v1/orders/ORD111' => Http::response([
+                'id' => 'ORD111',
+                'status' => 'action_required',
+                'transactions' => ['payments' => [[
+                    'payment_method' => [
+                        'id' => 'bolbradesco',
+                        'type' => 'ticket',
+                        'barcode_content' => '34194159000000139431090220483492938649999000',
+                    ],
+                ]]],
+            ], 200),
+        ]);
+
+        expect($this->provider->getPayment('ORD111')->dueDate)->toBe('2026-10-05');
+    });
+
+    it('maps a refunded order to refunded instead of falling back to generated', function () {
+        Http::fake([
+            'mp.test/v1/orders/ORD111' => Http::response(['id' => 'ORD111', 'status' => 'refunded', 'status_detail' => 'refunded'], 200),
+        ]);
+
+        expect($this->provider->getPayment('ORD111')->status)->toBe('refunded');
+    });
 });

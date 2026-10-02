@@ -7,6 +7,7 @@ use App\Models\Pagamento\PaymentSlip;
 use App\Services\Pagamento\SyncPaymentSlipService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Log;
 
 class SyncPaymentStatusJob implements ShouldQueue
@@ -31,7 +32,7 @@ class SyncPaymentStatusJob implements ShouldQueue
             return;
         }
 
-        if (! in_array($payment->status, ['pending', 'generated'], true)) {
+        if (! in_array($payment->status, ['pending', 'generated', 'expired'], true)) {
             return;
         }
 
@@ -45,6 +46,8 @@ class SyncPaymentStatusJob implements ShouldQueue
             }
 
             Log::warning("[SyncPaymentStatus] Falha transitória ao sincronizar pagamento #{$payment->id} (HTTP {$e->httpStatus}); nova tentativa na próxima rodada.");
+        } catch (ConnectionException) {
+            Log::warning("[SyncPaymentStatus] Provider sem resposta ao sincronizar pagamento #{$payment->id}; nova tentativa na próxima rodada.");
         }
     }
 

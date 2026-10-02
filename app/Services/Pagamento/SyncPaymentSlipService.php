@@ -2,15 +2,19 @@
 
 namespace App\Services\Pagamento;
 
+use App\Models\Cobranca\CustomerChargeHistory;
 use App\Models\Pagamento\PaymentSlip;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use InvalidArgumentException;
+use Throwable;
 
 class SyncPaymentSlipService
 {
     public function __construct(
         private readonly PaymentProviderManager $providerManager,
         private readonly MarkPaymentAsPaidService $markPaymentAsPaidService,
+        private readonly CancelPaymentSlipService $cancelPaymentSlipService,
     ) {}
 
     public function handle(PaymentSlip $slip): PaymentSlip
@@ -26,7 +30,7 @@ class SyncPaymentSlipService
         $provider = $this->providerManager->make($slip->provider, $slip->providerAccount);
         $response = $provider->getPayment($slip->provider_payment_id);
 
-        return DB::transaction(function () use ($slip, $response) {
+        $synced = DB::transaction(function () use ($slip, $response) {
             // Guarda o status anterior antes de qualquer update: MarkPaymentAsPaidService
             // usa "status === paid" como trava de idempotência, então não podemos gravar
             // 'paid' no slip antes de chamá-lo, senão a trava dispara e ele nunca roda.
@@ -53,6 +57,13 @@ class SyncPaymentSlipService
                     'paid_at' => $response->paidAt,
                     'raw_payload' => $response->rawPayload,
                 ]);
+            } elseif ($slip->status === 'expired') {
+                // Vencido aqui, mas o provider ainda não fechou o pedido (o MP só expira
+                // 30 dias depois): só um pagamento muda esse estado.
+            } elseif ($wasAlreadyPaid) {
+                // Um slip pago nunca volta a "generated": qualquer status desconhecido do
+                // provider caía no default do mapper e reabria o boleto já pago.
+                $this->handleChangeOnPaidSlip($slip, $response->status);
             } else {
                 $slip->update(['status' => $response->status]);
                 $this->reopenChargeIfPaymentDied($slip, $response->status);
@@ -60,6 +71,55 @@ class SyncPaymentSlipService
 
             return $slip->fresh();
         });
+
+        if ($synced->status === 'paid' && $response->status === 'paid') {
+            $this->cancelReplacementSlips($synced);
+        }
+
+        return $synced;
+    }
+
+    // Boleto vencido que compensou depois (pago no último dia) enquanto um substituto já
+    // tinha sido emitido: o substituto precisa morrer para o cliente não pagar duas vezes.
+    private function cancelReplacementSlips(PaymentSlip $paidSlip): void
+    {
+        $paidSlip->charge?->paymentSlips()
+            ->with('providerAccount')
+            ->whereKeyNot($paidSlip->id)
+            ->whereIn('status', ['pending', 'generated'])
+            ->get()
+            ->each(function (PaymentSlip $replacement) use ($paidSlip) {
+                try {
+                    $this->cancelPaymentSlipService->handle($replacement);
+
+                    CustomerChargeHistory::log(
+                        $paidSlip->charge->fresh(),
+                        'payment_replacement_cancelled',
+                        "Boleto/Pix #{$replacement->id} cancelado: o pagamento #{$paidSlip->id} foi confirmado antes."
+                    );
+                } catch (Throwable $e) {
+                    Log::error("[SyncPaymentSlip] Cobrança #{$paidSlip->customer_charge_id} paga pelo slip #{$paidSlip->id}, mas o slip #{$replacement->id} não pôde ser cancelado: {$e->getMessage()}");
+                }
+            });
+    }
+
+    // Estorno não reabre a cobrança sozinho: o dinheiro pode ter sido devolvido por
+    // acordo (ex.: pagamento em duplicidade), então fica registrado para revisão humana.
+    private function handleChangeOnPaidSlip(PaymentSlip $slip, string $newStatus): void
+    {
+        if ($newStatus !== 'refunded') {
+            return;
+        }
+
+        $slip->update(['status' => 'refunded']);
+
+        if ($slip->charge) {
+            CustomerChargeHistory::log(
+                $slip->charge,
+                'payment_refunded',
+                "Pagamento #{$slip->id} estornado no {$slip->provider}. A cobrança continua como paga — revise e reabra se necessário."
+            );
+        }
     }
 
     // Sem isso, uma cobrança que virou "overdue" enquanto o slip ainda estava
@@ -69,7 +129,7 @@ class SyncPaymentSlipService
     // (CancelPaymentSlipService) reabre a charge. Mesmo padrão usado lá.
     private function reopenChargeIfPaymentDied(PaymentSlip $slip, string $newStatus): void
     {
-        if (! in_array($newStatus, ['cancelled', 'expired', 'failed'], true)) {
+        if (! in_array($newStatus, ['cancelled', 'expired', 'failed', 'refunded'], true)) {
             return;
         }
 

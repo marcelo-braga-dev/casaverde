@@ -139,4 +139,43 @@ describe('SyncPaymentSlipService', function () {
             ->toThrow(InvalidArgumentException::class, 'Pagamento sem ID no provider.');
     });
 
+    it('never downgrades a paid slip back to generated on an unknown provider status', function () {
+        $account = PaymentProviderAccount::factory()->mercadoPago()->create(['base_url' => 'https://mp.test', 'is_default' => false]);
+        Http::fake(['mp.test/v1/orders/ORD1' => Http::response(['id' => 'ORD1', 'status' => 'some_new_status'], 200)]);
+
+        $charge = CustomerCharge::factory()->create(['status' => 'paid']);
+        $slip = PaymentSlip::factory()->paid()->create([
+            'customer_charge_id' => $charge->id,
+            'payment_provider_account_id' => $account->id,
+            'provider' => 'mercado_pago',
+            'provider_payment_id' => 'ORD1',
+        ]);
+
+        $this->service->handle($slip);
+
+        expect($slip->fresh()->status)->toBe('paid')
+            ->and($charge->refresh()->status)->toBe('paid');
+    });
+
+    it('marks a paid slip as refunded and flags the charge for review without reopening it', function () {
+        $account = PaymentProviderAccount::factory()->mercadoPago()->create(['base_url' => 'https://mp.test', 'is_default' => false]);
+        Http::fake(['mp.test/v1/orders/ORD2' => Http::response(['id' => 'ORD2', 'status' => 'refunded', 'status_detail' => 'refunded'], 200)]);
+
+        $charge = CustomerCharge::factory()->create(['status' => 'paid']);
+        $slip = PaymentSlip::factory()->paid()->create([
+            'customer_charge_id' => $charge->id,
+            'payment_provider_account_id' => $account->id,
+            'provider' => 'mercado_pago',
+            'provider_payment_id' => 'ORD2',
+        ]);
+
+        $this->service->handle($slip);
+
+        expect($slip->fresh()->status)->toBe('refunded')
+            ->and($charge->refresh()->status)->toBe('paid');
+        $this->assertDatabaseHas('customer_charge_histories', [
+            'customer_charge_id' => $charge->id,
+            'action' => 'payment_refunded',
+        ]);
+    });
 });

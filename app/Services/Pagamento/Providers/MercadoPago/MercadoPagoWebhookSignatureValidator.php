@@ -9,8 +9,10 @@ class MercadoPagoWebhookSignatureValidator
 {
     public function isValid(Request $request, ?PaymentProviderAccount $account = null): bool
     {
+        // Sem secret não há como provar a origem: aceitar tudo deixava qualquer um
+        // disparar consultas à API do MP em nosso nome. Configure o secret do painel.
         if (! $account?->webhook_secret) {
-            return true;
+            return false;
         }
 
         $signatureHeader = $request->header('x-signature');

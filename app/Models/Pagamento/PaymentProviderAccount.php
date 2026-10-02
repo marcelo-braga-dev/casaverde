@@ -22,6 +22,13 @@ class PaymentProviderAccount extends Model
         'settings',
     ];
 
+    // O cast "encrypted" descriptografa no toArray(): sem isso o access token de produção
+    // ia para as props do Inertia nas telas de conta.
+    protected $hidden = [
+        'client_secret',
+        'webhook_secret',
+    ];
+
     protected $casts = [
         'is_active' => 'boolean',
         'is_default' => 'boolean',

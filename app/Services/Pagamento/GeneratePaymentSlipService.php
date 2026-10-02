@@ -10,18 +10,40 @@ use App\Models\Endereco\Address;
 use App\Models\Pagamento\PaymentSlip;
 use App\Models\Users\UserAddress;
 use App\Support\DocumentValidator;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Support\Facades\Cache;
 use InvalidArgumentException;
+use RuntimeException;
 
 class GeneratePaymentSlipService
 {
     public function __construct(
         private readonly PaymentProviderManager $providerManager,
+        private readonly PaymentSlipExpiredAlertService $expiredAlertService,
     ) {}
 
     public function handle(CustomerCharge $charge, string $provider = 'cora', string $paymentMethod = 'boleto_pix'): PaymentSlip
     {
-        if (! in_array($charge->status, ['open', 'waiting_payment'], true)) {
-            throw new InvalidArgumentException('A cobrança precisa estar aberta para gerar pagamento.');
+        // Dois cliques simultâneos passavam juntos pela checagem de slip ativo abaixo e
+        // emitiam dois boletos para a mesma cobrança.
+        $lock = Cache::lock('payment-slip:charge:'.$charge->id, 120);
+
+        if (! $lock->get()) {
+            throw new InvalidArgumentException('Já existe uma geração de pagamento em andamento para esta cobrança. Aguarde alguns segundos.');
+        }
+
+        try {
+            return $this->generate($charge, $provider, $paymentMethod);
+        } finally {
+            $lock->release();
+        }
+    }
+
+    private function generate(CustomerCharge $charge, string $provider, string $paymentMethod): PaymentSlip
+    {
+        // "overdue" incluído: cobrança atrasada com boleto vencido precisa de um novo boleto.
+        if (! in_array($charge->status, ['open', 'waiting_payment', 'overdue'], true)) {
+            throw new InvalidArgumentException('A cobrança precisa estar aberta ou atrasada para gerar pagamento.');
         }
 
         $existingSlip = PaymentSlip::query()
@@ -85,6 +107,14 @@ class GeneratePaymentSlipService
                 'client_profile_id' => $charge->client_profile_id,
                 'reference_label' => $charge->reference_label,
             ],
+            // Cada slip registrado (pago, cancelado ou falho) avança a tentativa; um timeout
+            // não registra slip, então a retentativa reusa a chave e recebe o mesmo pedido.
+            idempotencyKey: sprintf(
+                'charge-%d-%s-%d',
+                $charge->id,
+                $paymentMethod,
+                PaymentSlip::query()->where('customer_charge_id', $charge->id)->count() + 1,
+            ),
         );
 
         $requestPayload = [
@@ -104,6 +134,10 @@ class GeneratePaymentSlipService
 
         try {
             $response = $providerInstance->createPayment($dto);
+        } catch (ConnectionException) {
+            // O pedido pode ter sido criado no provider mesmo sem resposta: não registra
+            // tentativa falha, para a próxima tentativa reusar a chave de idempotência.
+            throw new RuntimeException('O provedor de pagamento não respondeu a tempo. Tente novamente em instantes — a nova tentativa não gera um pagamento duplicado.');
         } catch (PaymentProviderException $e) {
             // Persiste a tentativa falha para dar visibilidade histórica (tela de
             // Pagamentos) mesmo quando o provider rejeita a cobrança; a mensagem
@@ -126,7 +160,7 @@ class GeneratePaymentSlipService
             throw $e;
         }
 
-        return PaymentSlip::create([
+        $slip = PaymentSlip::create([
             'customer_charge_id' => $charge->id,
             'payment_provider_account_id' => $account->id,
             'provider' => $response->provider,
@@ -135,7 +169,7 @@ class GeneratePaymentSlipService
             'payment_method' => $paymentMethod,
             'status' => $response->status,
             'amount' => $charge->final_amount,
-            'due_date' => $charge->due_date,
+            'due_date' => $response->dueDate ?? $charge->due_date,
             'barcode' => $response->barcode,
             'digitable_line' => $response->digitableLine,
             'pix_qr_code' => $response->pixQrCode,
@@ -146,6 +180,10 @@ class GeneratePaymentSlipService
             'response_payload' => $response->rawPayload,
             'generated_at' => now(),
         ]);
+
+        $this->expiredAlertService->resolveFor($charge, "Novo boleto/Pix #{$slip->id} emitido.");
+
+        return $slip;
     }
 
     /**

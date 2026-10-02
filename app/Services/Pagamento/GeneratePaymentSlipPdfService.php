@@ -107,6 +107,16 @@ class GeneratePaymentSlipPdfService
                 'Este pagamento não possui código de barras ou linha digitável de boleto disponível para emissão de PDF.'
             );
         }
+
+        // O PDF costuma ser repassado ao cliente por admin/consultor: um boleto que o
+        // banco já não aceita não pode sair daqui.
+        $isPastDue = $slip->status !== 'paid' && $slip->effectiveDueDate()?->lt(today());
+
+        if (in_array($slip->status, ['expired', 'cancelled', 'refunded'], true) || $isPastDue) {
+            throw new PaymentSlipPdfUnavailableException(
+                'Este boleto está vencido ou cancelado e não pode mais ser pago. Gere um novo boleto na cobrança e envie ao cliente.'
+            );
+        }
     }
 
     private function fileName(PaymentSlip $slip): string

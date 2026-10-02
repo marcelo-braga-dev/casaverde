@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\DB;
 
 class MarkPaymentAsPaidService
 {
+    public function __construct(
+        private readonly PaymentSlipExpiredAlertService $expiredAlertService,
+    ) {}
+
     public function handle(PaymentSlip $slip, array $payload = []): void
     {
         DB::transaction(function () use ($slip, $payload) {
@@ -61,6 +65,8 @@ class MarkPaymentAsPaidService
                     'marked_paid',
                     "Pagamento confirmado via {$slip->provider} (boleto/pix #{$slip->id})."
                 );
+
+                $this->expiredAlertService->resolveFor($slip->charge, 'Pagamento confirmado.');
             }
         });
     }

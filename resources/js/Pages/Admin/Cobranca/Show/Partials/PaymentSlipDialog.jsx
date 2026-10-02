@@ -1,5 +1,7 @@
 import { Link } from "@inertiajs/react";
 import {
+    Alert,
+    AlertTitle,
     Box,
     Button,
     Dialog,
@@ -20,6 +22,8 @@ import StatusChip from "@/Components/Admin/StatusChip.jsx";
 import MoneyText from "@/Components/Admin/MoneyText.jsx";
 import DateText from "@/Components/Admin/DateText.jsx";
 import CopyField from "@/Components/Admin/CopyField.jsx";
+import WhatsAppButton from "@/Components/WhatsApp/WhatsAppButton";
+import { buildPaymentData, formatDueDate, isSlipExpired, isSlipPayable } from "@/Utils/paymentSlip.js";
 import {
     IconBarcode,
     IconExternalLink,
@@ -40,13 +44,17 @@ const paymentMethodLabels = {
     boleto_pix: "Boleto + Pix",
 };
 
-export default function PaymentSlipDialog({ open, payment, onClose }) {
+export default function PaymentSlipDialog({ open, payment, onClose, whatsapp }) {
     if (!payment) return null;
+
+    const expired = isSlipExpired(payment);
+    const payable = isSlipPayable(payment);
 
     const providerLabel = providerLabels[payment.provider] || payment.provider || "—";
     const methodLabel = paymentMethodLabels[payment.payment_method] || payment.payment_method || "—";
     const hasCasaVerdePdf = payment.provider === "mercado_pago" && payment.barcode && payment.digitable_line;
-    const hasAnyKey = payment.digitable_line || payment.barcode || payment.pix_copy_paste;
+    // Chaves e PDF de um boleto que o banco não aceita mais nunca devem ser repassados.
+    const hasAnyKey = !expired && (payment.digitable_line || payment.barcode || payment.pix_copy_paste);
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
@@ -78,12 +86,20 @@ export default function PaymentSlipDialog({ open, payment, onClose }) {
                         <Stack spacing={0.5} alignItems="flex-end">
                             <StatusChip status={payment.status} />
                             <Typography variant="caption" color="text.secondary">
-                                Vencimento: <DateText value={payment.due_date} />
+                                Vencimento: <strong>{formatDueDate(payment)}</strong>
                             </Typography>
                         </Stack>
                     </Stack>
 
                     <Divider />
+
+                    {expired && (
+                        <Alert severity="error" variant="filled">
+                            <AlertTitle sx={{ fontWeight: 800 }}>Boleto vencido — não envie ao cliente</AlertTitle>
+                            Este boleto venceu em {formatDueDate(payment)} e o banco não aceita mais o pagamento.
+                            Feche esta janela e use <strong>Gerar novo boleto</strong> na cobrança para emitir outro e enviá-lo ao cliente.
+                        </Alert>
+                    )}
 
                     {hasAnyKey ? (
                         <Stack spacing={2}>
@@ -104,13 +120,29 @@ export default function PaymentSlipDialog({ open, payment, onClose }) {
                                 multiline
                             />
                         </Stack>
-                    ) : (
+                    ) : !expired && (
                         <Typography variant="body2" color="text.secondary" textAlign="center" py={1}>
                             Nenhuma chave de pagamento disponível para este boleto/Pix.
                         </Typography>
                     )}
 
+                    {!expired && (
                     <Stack direction={{ xs: "column", sm: "row" }} spacing={1.5} flexWrap="wrap" useFlexGap>
+                        {payable && whatsapp && (
+                            <WhatsAppButton
+                                templateKey="enviar_boleto"
+                                phone={whatsapp.phone}
+                                variables={{
+                                    ...whatsapp.variables,
+                                    data_vencimento: formatDueDate(payment),
+                                    dados_pagamento: buildPaymentData(payment, { replacesExpired: whatsapp.replacesExpired && payment.status !== "expired" }),
+                                }}
+                                label="Enviar ao cliente pelo WhatsApp"
+                                variant="contained"
+                                sx={{ fontWeight: 700 }}
+                            />
+                        )}
+
                         {payment.checkout_url && (
                             <Button
                                 variant="contained"
@@ -154,6 +186,7 @@ export default function PaymentSlipDialog({ open, payment, onClose }) {
                             </Button>
                         )}
                     </Stack>
+                    )}
 
                     {payment.transactions?.length > 0 && (
                         <>

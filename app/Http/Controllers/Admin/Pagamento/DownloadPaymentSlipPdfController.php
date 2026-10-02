@@ -11,6 +11,8 @@ class DownloadPaymentSlipPdfController extends Controller
 {
     public function show(PaymentSlip $pagamento, GeneratePaymentSlipPdfService $service)
     {
+        $this->authorize('view', $pagamento->charge);
+
         try {
             return $service->stream($pagamento);
         } catch (PaymentSlipPdfUnavailableException $e) {

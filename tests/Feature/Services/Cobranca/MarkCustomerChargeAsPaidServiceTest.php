@@ -1,8 +1,11 @@
 <?php
 
 use App\Models\Cobranca\CustomerCharge;
+use App\Models\Pagamento\PaymentProviderAccount;
+use App\Models\Pagamento\PaymentSlip;
 use App\Models\Users\User;
 use App\Services\Cobranca\MarkCustomerChargeAsPaidService;
+use Illuminate\Support\Facades\Http;
 
 describe('MarkCustomerChargeAsPaidService', function () {
 
@@ -67,4 +70,46 @@ describe('MarkCustomerChargeAsPaidService', function () {
         ]);
     });
 
+    it('cancels the active slip at the provider so the customer cannot pay twice', function () {
+        Http::fake([
+            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
+            'cora.test/invoices/inv-1' => Http::response([], 204),
+        ]);
+
+        $charge = CustomerCharge::factory()->create(['status' => 'open']);
+        $slip = PaymentSlip::factory()->create([
+            'customer_charge_id' => $charge->id,
+            'payment_provider_account_id' => PaymentProviderAccount::factory()->create(['base_url' => 'https://cora.test'])->id,
+            'provider_payment_id' => 'inv-1',
+            'status' => 'generated',
+        ]);
+
+        $this->service->handle($charge, 'Pago via transferência');
+
+        expect($slip->fresh()->status)->toBe('cancelled')
+            ->and($charge->refresh()->status)->toBe('paid');
+    });
+
+    it('records the provider payment instead when the slip had already been paid there', function () {
+        Http::fake([
+            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
+            'cora.test/invoices/inv-2' => Http::sequence()
+                ->push(['error' => 'already paid'], 422)
+                ->push(['id' => 'inv-2', 'status' => 'PAID', 'total_paid' => 25000], 200),
+        ]);
+
+        $charge = CustomerCharge::factory()->create(['status' => 'open']);
+        $slip = PaymentSlip::factory()->create([
+            'customer_charge_id' => $charge->id,
+            'payment_provider_account_id' => PaymentProviderAccount::factory()->create(['base_url' => 'https://cora.test'])->id,
+            'provider_payment_id' => 'inv-2',
+            'status' => 'generated',
+        ]);
+
+        expect(fn () => $this->service->handle($charge))
+            ->toThrow(InvalidArgumentException::class, 'O pagamento já havia sido confirmado no provider');
+
+        expect($slip->fresh()->status)->toBe('paid')
+            ->and($charge->refresh()->status)->toBe('paid');
+    });
 });

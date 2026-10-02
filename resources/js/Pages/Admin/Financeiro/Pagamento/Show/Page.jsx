@@ -24,6 +24,7 @@ import {
     Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
+import { formatDueDate, isSlipExpired } from "@/Utils/paymentSlip.js";
 import CopyField from "@/Components/Admin/CopyField.jsx";
 import {
     IconArrowRight,
@@ -47,7 +48,8 @@ const statusConfig = {
     paid:      { label: "Pago",       color: "success",  bg: "#f0fdf4", border: "#bbf7d0" },
     cancelled: { label: "Cancelado",  color: "default",  bg: "#f9fafb", border: "#e5e7eb" },
     failed:    { label: "Falhou",     color: "error",    bg: "#fef2f2", border: "#fecaca" },
-    expired:   { label: "Expirado",   color: "warning",  bg: "#fffbeb", border: "#fde68a" },
+    expired:   { label: "Vencido",    color: "error",    bg: "#fef2f2", border: "#fecaca" },
+    refunded:  { label: "Estornado",  color: "error",    bg: "#fef2f2", border: "#fecaca" },
 };
 
 const providerLabels = {
@@ -155,6 +157,7 @@ export default function Page({ payment }) {
     const clientName = getClientName(payment);
     const methodLabel = paymentMethodLabels[payment.payment_method] || payment.payment_method || "—";
     const providerLabel = providerLabels[payment.provider] || payment.provider || "—";
+    const expired = isSlipExpired(payment);
 
     const methodIcon = payment.payment_method === "pix"
         ? <IconQrcode size={32} />
@@ -167,6 +170,13 @@ export default function Page({ payment }) {
             <Head title={`Pagamento #${payment.id}`} />
 
             <Stack spacing={3}>
+
+                {expired && (
+                    <Alert severity="error" variant="filled" sx={{ borderRadius: "var(--cv-radius-xl)" }}>
+                        <strong>Boleto vencido em {formatDueDate(payment)} — não envie ao cliente.</strong>{" "}
+                        O banco não aceita mais este pagamento. Abra a cobrança e use "Gerar novo boleto".
+                    </Alert>
+                )}
 
                 {/* ── Hero Card ─────────────────────────────────────── */}
                 <Card
@@ -247,7 +257,7 @@ export default function Page({ payment }) {
                                     </Tooltip>
                                 )}
 
-                                {!["paid", "cancelled", "expired"].includes(payment.status) && (
+                                {!["paid", "cancelled", "expired", "refunded"].includes(payment.status) && (
                                     <Tooltip title="Cancelar este pagamento no provider">
                                         <Button
                                             variant="outlined"
@@ -304,9 +314,7 @@ export default function Page({ payment }) {
                                         <InfoRow label="Status no provider" value={payment.provider_status} />
                                         <InfoRow
                                             label="Vencimento"
-                                            value={payment.due_date
-                                                ? new Date(payment.due_date).toLocaleDateString("pt-BR")
-                                                : "—"}
+                                            value={formatDueDate(payment)}
                                         />
                                         <InfoRow
                                             label="Gerado em"
@@ -336,7 +344,7 @@ export default function Page({ payment }) {
                                             </Link>
                                         )}
 
-                                        {payment.checkout_url && (
+                                        {!expired && payment.checkout_url && (
                                             <Button
                                                 variant="contained"
                                                 color="success"
@@ -351,7 +359,7 @@ export default function Page({ payment }) {
                                             </Button>
                                         )}
 
-                                        {payment.provider === "mercado_pago" && payment.barcode && payment.digitable_line && (
+                                        {!expired && payment.provider === "mercado_pago" && payment.barcode && payment.digitable_line && (
                                             <Button
                                                 variant="contained"
                                                 component="a"
@@ -365,7 +373,7 @@ export default function Page({ payment }) {
                                             </Button>
                                         )}
 
-                                        {payment.pdf_url && (
+                                        {!expired && payment.pdf_url && (
                                             <Button
                                                 variant="outlined"
                                                 component="a"
@@ -491,6 +499,12 @@ export default function Page({ payment }) {
                                     <Divider sx={{ mb: 2.5 }} />
 
                                     <Stack spacing={2}>
+                                        {expired && (
+                                            <Alert severity="error">
+                                                Dados de um boleto vencido — só para consulta. Não envie ao cliente.
+                                            </Alert>
+                                        )}
+
                                         <CopyField
                                             label="Linha digitável"
                                             value={payment.digitable_line}

@@ -1,6 +1,6 @@
 import { Badge, IconButton, Stack, Tooltip } from '@mui/material';
 import { Link, usePage } from '@inertiajs/react';
-import { IconFileInvoice, IconHeadset } from '@tabler/icons-react';
+import { IconFileInvoice, IconHeadset, IconReceiptOff } from '@tabler/icons-react';
 
 function safeRoute(name) {
     try {
@@ -31,9 +31,26 @@ export default function AppHeaderShortcuts() {
 
     const faturasHref = safeRoute('admin.relatorios.faturas');
     const suporteHref = safeRoute('support.tickets.index');
+    const cobrancasHref = safeRoute('admin.financeiro.cobrancas.index');
+    const awaitingNewSlip = navBadges?.chargesAwaitingNewSlip ?? 0;
 
     return (
         <Stack direction="row" alignItems="center" gap={0.5}>
+            {cobrancasHref && awaitingNewSlip > 0 && (
+                <Tooltip title={`${awaitingNewSlip} cobrança(s) com boleto vencido — enviar novo boleto ao cliente`}>
+                    <IconButton
+                        component={Link}
+                        href={`${cobrancasHref}?aguardando_novo_boleto=1`}
+                        size="small"
+                        sx={{ ...iconButtonSx, bgcolor: '#fef2f2', color: 'error.main' }}
+                    >
+                        <Badge badgeContent={awaitingNewSlip} color="error" max={99}>
+                            <IconReceiptOff size={20} />
+                        </Badge>
+                    </IconButton>
+                </Tooltip>
+            )}
+
             {faturasHref && (
                 <Tooltip title="Faturas de Concessionárias">
                     <IconButton component={Link} href={faturasHref} size="small" sx={iconButtonSx}>

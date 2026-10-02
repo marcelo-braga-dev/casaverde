@@ -15,6 +15,8 @@ class CancelCustomerChargeController extends Controller
         CancelCustomerChargeRequest $request,
         CancelCustomerChargeService $service
     ) {
+        $this->authorize('update', $cobranca);
+
         try {
             $service->handle($cobranca, $request->validated('reason'));
 

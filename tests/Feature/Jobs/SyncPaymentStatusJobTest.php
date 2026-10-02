@@ -5,6 +5,7 @@ use App\Jobs\SyncPaymentStatusJob;
 use App\Models\Pagamento\PaymentProviderAccount;
 use App\Models\Pagamento\PaymentSlip;
 use App\Services\Pagamento\SyncPaymentSlipService;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Log;
 
 describe('SyncPaymentStatusJob', function () {
@@ -37,5 +38,16 @@ describe('SyncPaymentStatusJob', function () {
 
         expect(fn () => (new SyncPaymentStatusJob($this->slip->id))->handle($service))
             ->toThrow(PaymentProviderException::class);
+    });
+
+    it('swallows provider timeouts so the next scheduled run retries', function () {
+        Log::spy();
+
+        $service = Mockery::mock(SyncPaymentSlipService::class);
+        $service->shouldReceive('handle')->once()->andThrow(new ConnectionException('timeout'));
+
+        (new SyncPaymentStatusJob($this->slip->id))->handle($service);
+
+        Log::shouldHaveReceived('warning')->once();
     });
 });

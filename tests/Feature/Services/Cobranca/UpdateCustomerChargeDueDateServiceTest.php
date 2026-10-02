@@ -1,9 +1,11 @@
 <?php
 
 use App\Models\Cobranca\CustomerCharge;
+use App\Models\Pagamento\PaymentProviderAccount;
 use App\Models\Pagamento\PaymentSlip;
 use App\Models\Users\User;
 use App\Services\Cobranca\UpdateCustomerChargeDueDateService;
+use Illuminate\Support\Facades\Http;
 
 describe('UpdateCustomerChargeDueDateService', function () {
 
@@ -72,16 +74,80 @@ describe('UpdateCustomerChargeDueDateService', function () {
             ->toThrow(InvalidArgumentException::class, 'Não é possível alterar o vencimento de uma cobrança paga ou cancelada.');
     });
 
-    it('allows updating the due date even when the charge has an active payment slip', function () {
+    it('cancels the active slip at the provider and reissues it with the new due date', function () {
+        Http::fake([
+            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
+            'cora.test/invoices/inv-old' => Http::response([], 204),
+            'cora.test/invoices' => Http::response(['id' => 'inv-new', 'status' => 'OPEN'], 201),
+        ]);
+
+        $account = PaymentProviderAccount::factory()->create(['base_url' => 'https://cora.test']);
         $charge = CustomerCharge::factory()->create(['status' => 'open', 'due_date' => '2026-08-10']);
-        PaymentSlip::factory()->create([
+        $oldSlip = PaymentSlip::factory()->create([
             'customer_charge_id' => $charge->id,
+            'payment_provider_account_id' => $account->id,
+            'provider_payment_id' => 'inv-old',
+            'payment_method' => 'boleto_pix',
             'status' => 'generated',
         ]);
 
         $result = $this->service->handle($charge, '2026-09-15');
 
-        expect($result->due_date->format('Y-m-d'))->toBe('2026-09-15');
+        $newSlip = $charge->paymentSlips()->where('status', 'generated')->sole();
+
+        expect($result->due_date->format('Y-m-d'))->toBe('2026-09-15')
+            ->and($oldSlip->fresh()->status)->toBe('cancelled')
+            ->and($newSlip->provider_payment_id)->toBe('inv-new')
+            ->and($newSlip->due_date->format('Y-m-d'))->toBe('2026-09-15');
+    });
+
+    it('keeps the old due date when the provider refuses to cancel the active slip', function () {
+        Http::fake([
+            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
+            'cora.test/invoices/inv-old' => Http::sequence()
+                ->push(['error' => 'unavailable'], 503)
+                ->push(['id' => 'inv-old', 'status' => 'OPEN'], 200),
+        ]);
+
+        $account = PaymentProviderAccount::factory()->create(['base_url' => 'https://cora.test']);
+        $charge = CustomerCharge::factory()->create(['status' => 'open', 'due_date' => '2026-08-10']);
+        PaymentSlip::factory()->create([
+            'customer_charge_id' => $charge->id,
+            'payment_provider_account_id' => $account->id,
+            'provider_payment_id' => 'inv-old',
+            'status' => 'generated',
+        ]);
+
+        expect(fn () => $this->service->handle($charge, '2026-09-15'))
+            ->toThrow(InvalidArgumentException::class);
+
+        expect($charge->refresh()->due_date->format('Y-m-d'))->toBe('2026-08-10');
+    });
+
+    it('applies the change and reports it when the new slip cannot be issued', function () {
+        Http::fake([
+            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
+            'cora.test/invoices/inv-old' => Http::response([], 204),
+            'cora.test/invoices' => Http::response(['error' => 'invalid'], 400),
+        ]);
+
+        $account = PaymentProviderAccount::factory()->create(['base_url' => 'https://cora.test']);
+        $charge = CustomerCharge::factory()->create(['status' => 'open', 'due_date' => '2026-08-10']);
+        PaymentSlip::factory()->create([
+            'customer_charge_id' => $charge->id,
+            'payment_provider_account_id' => $account->id,
+            'provider_payment_id' => 'inv-old',
+            'status' => 'generated',
+        ]);
+
+        expect(fn () => $this->service->handle($charge, '2026-09-15'))
+            ->toThrow(InvalidArgumentException::class, 'o novo não pôde ser emitido');
+
+        expect($charge->refresh()->due_date->format('Y-m-d'))->toBe('2026-09-15');
+        $this->assertDatabaseHas('customer_charge_histories', [
+            'customer_charge_id' => $charge->id,
+            'action' => 'payment_reissue_failed',
+        ]);
     });
 
 });

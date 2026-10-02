@@ -12,6 +12,8 @@ class SyncPaymentSlipController extends Controller
 {
     public function store(PaymentSlip $pagamento, SyncPaymentSlipService $service)
     {
+        $this->authorize('update', $pagamento->charge);
+
         try {
             $service->handle($pagamento);
 

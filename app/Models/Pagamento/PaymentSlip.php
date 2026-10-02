@@ -3,6 +3,8 @@
 namespace App\Models\Pagamento;
 
 use App\Models\Cobranca\CustomerCharge;
+use App\Support\BoletoDueDate;
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -34,6 +36,10 @@ class PaymentSlip extends Model
         'error_message',
     ];
 
+    protected $appends = [
+        'effective_due_date',
+    ];
+
     protected $casts = [
         'amount' => 'decimal:2',
         'due_date' => 'date:d/m/Y',
@@ -45,6 +51,19 @@ class PaymentSlip extends Model
         'created_at' => 'datetime:d/m/Y H:i',
         'updated_at' => 'datetime:d/m/Y H:i',
     ];
+
+    // O código de barras é a fonte da verdade: slips emitidos antes de o vencimento ser
+    // enviado ao Mercado Pago gravaram em due_date a data da cobrança, não a do banco.
+    public function effectiveDueDate(): ?CarbonImmutable
+    {
+        return BoletoDueDate::fromBarcode($this->barcode)
+            ?? ($this->due_date ? CarbonImmutable::parse($this->getRawOriginal('due_date')) : null);
+    }
+
+    public function getEffectiveDueDateAttribute(): ?string
+    {
+        return $this->effectiveDueDate()?->toDateString();
+    }
 
     public function charge()
     {

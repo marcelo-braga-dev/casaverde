@@ -79,7 +79,7 @@ describe('Charge + Payment lifecycle', function () {
 
         // Cobrança paga não aceita novo pagamento.
         expect(fn () => $this->generateSlip->handle($charge->refresh()))
-            ->toThrow(InvalidArgumentException::class, 'A cobrança precisa estar aberta para gerar pagamento.');
+            ->toThrow(InvalidArgumentException::class, 'A cobrança precisa estar aberta ou atrasada para gerar pagamento.');
     });
 
     it('cancels an issued payment and successfully reissues a new one for the same charge', function () {

@@ -7,6 +7,8 @@ use App\DTOs\Payments\CreatePaymentDTO;
 use App\DTOs\Payments\PaymentProviderResponseDTO;
 use App\Exceptions\Payments\PaymentProviderException;
 use App\Models\Pagamento\PaymentProviderAccount;
+use App\Support\BoletoDueDate;
+use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
@@ -44,11 +46,11 @@ class MercadoPagoPaymentProvider implements PaymentProviderContract
 
         $response = $this->httpClient
             ->client($this->account, $token)
-            // Cada chamada é uma nova tentativa de cobrança e deve gerar um pedido novo no
-            // Mercado Pago. Usar $dto->externalId (fixo por cobrança) como chave fazia o MP
-            // devolver o pedido falho em cache em retentativas, e rejeitar com 409 ao trocar
-            // o método de pagamento (pix -> boleto) sob a mesma chave.
-            ->withHeaders(['X-Idempotency-Key' => (string) Str::uuid()])
+            // A chave não pode ser fixa por cobrança ($dto->externalId): o MP devolvia o pedido
+            // falho em cache em novas tentativas e rejeitava com 409 ao trocar pix -> boleto.
+            // GeneratePaymentSlipService manda uma chave por tentativa (cobrança + método +
+            // nº de slips já registrados), estável só em retentativas após timeout.
+            ->withHeaders(['X-Idempotency-Key' => $dto->idempotencyKey ?: (string) Str::uuid()])
             ->post('/v1/orders', $payload);
 
         if (! $response->successful()) {
@@ -139,13 +141,33 @@ class MercadoPagoPaymentProvider implements PaymentProviderContract
             'payer' => $payer,
             'transactions' => [
                 'payments' => [
-                    [
+                    array_filter([
                         'amount' => $amount,
                         'payment_method' => $paymentMethod,
-                    ],
+                        'expiration_time' => $this->expirationTime($dto->dueDate),
+                    ]),
                 ],
             ],
         ];
+    }
+
+    // Sem expiration_time o MP aplica o padrão (boleto: 3 dias úteis; Pix: 24h) e ignora o
+    // vencimento da cobrança. A Orders API aceita de 1 a 30 dias (duração ISO 8601).
+    private function expirationTime(?string $dueDate): ?string
+    {
+        if (! $dueDate) {
+            return null;
+        }
+
+        $days = (int) CarbonImmutable::today()->diffInDays(CarbonImmutable::parse($dueDate)->startOfDay(), false);
+
+        // Cobrança já vencida (reemissão de boleto vencido): 3 dias, o prazo que o MP
+        // recomenda para não colidir com a compensação; senão o boleto venceria amanhã.
+        if ($days < 1) {
+            return 'P3D';
+        }
+
+        return 'P'.min(30, $days).'D';
     }
 
     private function splitName(string $name): array
@@ -179,6 +201,9 @@ class MercadoPagoPaymentProvider implements PaymentProviderContract
             paidAmount: $normalizedStatus === 'paid' && isset($data['total_paid_amount']) ? (float) $data['total_paid_amount'] : null,
             paidAt: $normalizedStatus === 'paid' ? ($data['last_updated_date'] ?? null) : null,
             rawPayload: $data,
+            // O MP joga o vencimento para o próximo dia útil e não o devolve na resposta;
+            // o código de barras é a fonte da data que o banco realmente vai aceitar.
+            dueDate: BoletoDueDate::fromBarcode($paymentMethodData['barcode_content'] ?? null)?->toDateString(),
         );
     }
 
@@ -187,6 +212,7 @@ class MercadoPagoPaymentProvider implements PaymentProviderContract
         return match ($status) {
             'processed' => str_contains((string) $statusDetail, 'rejected') ? 'failed' : 'paid',
             'canceled' => 'cancelled',
+            'refunded' => 'refunded',
             'expired' => 'expired',
             'failed' => 'failed',
             // 'action_required' (Pix aguardando pagamento), 'processing'/'pending' (Boleto

@@ -17,7 +17,15 @@ class OperationalAlertController extends Controller
         $module = $request->string('module')->toString();
         $search = $request->string('search')->toString();
 
-        $alerts = OperationalAlert::query()
+        $user = $request->user();
+
+        // Consultor vê só os alertas da própria carteira (atribuídos a ele ou de clientes dele).
+        $visible = fn () => OperationalAlert::query()->when($user?->isConsultor(), fn ($query) => $query->where(
+            fn ($q) => $q->where('assigned_to_user_id', $user->id)
+                ->orWhereHas('clientProfile', fn ($client) => $client->where('consultor_user_id', $user->id))
+        ));
+
+        $alerts = $visible()
             ->with(['usina.produtor', 'clientProfile', 'assignedTo'])
             ->when($status, fn ($query) => $query->where('status', $status))
             ->when($severity, fn ($query) => $query->where('severity', $severity))
@@ -37,19 +45,20 @@ class OperationalAlertController extends Controller
                         });
                 });
             })
-            ->orderByRaw("FIELD(status, 'open', 'in_progress', 'resolved', 'ignored')")
-            ->orderByRaw("FIELD(severity, 'critical', 'error', 'warning', 'info')")
+            // CASE em vez de FIELD(): FIELD é só do MySQL e quebra a suíte em SQLite.
+            ->orderByRaw("CASE status WHEN 'open' THEN 1 WHEN 'in_progress' THEN 2 WHEN 'resolved' THEN 3 WHEN 'ignored' THEN 4 ELSE 5 END")
+            ->orderByRaw("CASE severity WHEN 'critical' THEN 1 WHEN 'error' THEN 2 WHEN 'warning' THEN 3 WHEN 'info' THEN 4 ELSE 5 END")
             ->orderByDesc('id')
             ->paginate(20)
             ->withQueryString();
 
         $summary = [
-            'open' => OperationalAlert::query()->where('status', 'open')->count(),
-            'in_progress' => OperationalAlert::query()->where('status', 'in_progress')->count(),
-            'resolved' => OperationalAlert::query()->where('status', 'resolved')->count(),
-            'critical' => OperationalAlert::query()->where('severity', 'critical')->whereIn('status', ['open', 'in_progress'])->count(),
-            'error' => OperationalAlert::query()->where('severity', 'error')->whereIn('status', ['open', 'in_progress'])->count(),
-            'warning' => OperationalAlert::query()->where('severity', 'warning')->whereIn('status', ['open', 'in_progress'])->count(),
+            'open' => $visible()->where('status', 'open')->count(),
+            'in_progress' => $visible()->where('status', 'in_progress')->count(),
+            'resolved' => $visible()->where('status', 'resolved')->count(),
+            'critical' => $visible()->where('severity', 'critical')->whereIn('status', ['open', 'in_progress'])->count(),
+            'error' => $visible()->where('severity', 'error')->whereIn('status', ['open', 'in_progress'])->count(),
+            'warning' => $visible()->where('severity', 'warning')->whereIn('status', ['open', 'in_progress'])->count(),
         ];
 
         return Inertia::render('Admin/Alert/Operational/Index/Page', [

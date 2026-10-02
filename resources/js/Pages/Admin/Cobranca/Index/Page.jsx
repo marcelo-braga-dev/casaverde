@@ -1,6 +1,7 @@
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
 import { Head, Link, router, useForm } from "@inertiajs/react";
 import {
+    Alert,
     Button,
     Card,
     CardContent,
@@ -58,6 +59,7 @@ export default function Page({
                                  charges,
                                  filters = {},
                                  statuses = [],
+                                 aguardandoNovoBoletoCount = 0,
                              }) {
     const { data, setData, get, processing } = useForm({
         status: filters.status || "",
@@ -65,7 +67,10 @@ export default function Page({
         client_name: filters.client_name || "",
         reference_month: filters.reference_month || "",
         reference_year: filters.reference_year || "",
+        aguardando_novo_boleto: filters.aguardando_novo_boleto || "",
     });
+
+    const filteringAwaitingSlip = Boolean(filters.aguardando_novo_boleto);
 
     const submit = (e) => {
         e.preventDefault();
@@ -96,6 +101,30 @@ export default function Page({
             <Head title="Cobranças" />
 
             <Stack spacing={3}>
+                {(aguardandoNovoBoletoCount > 0 || filteringAwaitingSlip) && (
+                    <Alert
+                        severity={aguardandoNovoBoletoCount > 0 ? "error" : "success"}
+                        variant={aguardandoNovoBoletoCount > 0 ? "filled" : "standard"}
+                        action={
+                            <Button
+                                color="inherit"
+                                size="small"
+                                sx={{ fontWeight: 800, whiteSpace: "nowrap" }}
+                                onClick={() => router.get(
+                                    route("admin.financeiro.cobrancas.index"),
+                                    filteringAwaitingSlip ? {} : { aguardando_novo_boleto: 1 }
+                                )}
+                            >
+                                {filteringAwaitingSlip ? "Ver todas" : "Ver cobranças"}
+                            </Button>
+                        }
+                    >
+                        {aguardandoNovoBoletoCount > 0
+                            ? `${aguardandoNovoBoletoCount} cobrança${aguardandoNovoBoletoCount !== 1 ? "s" : ""} com pagamento atrasado e boleto vencido — o cliente precisa receber um novo boleto.`
+                            : "Nenhuma cobrança aguardando novo boleto."}
+                    </Alert>
+                )}
+
                 <Card>
                     <CardContent>
                         <Typography variant="h6" marginBottom={2}>
@@ -235,11 +264,22 @@ export default function Page({
                                             </TableCell>
 
                                             <TableCell>
-                                                <Chip
-                                                    label={statusLabels[charge.status] || charge.status}
-                                                    color={statusColors[charge.status] || "default"}
-                                                    size="small"
-                                                />
+                                                <Stack direction="row" spacing={0.5} flexWrap="wrap" useFlexGap>
+                                                    <Chip
+                                                        label={statusLabels[charge.status] || charge.status}
+                                                        color={statusColors[charge.status] || "default"}
+                                                        size="small"
+                                                    />
+                                                    {charge.aguardando_novo_boleto && (
+                                                        <Chip
+                                                            label="Boleto vencido — enviar novo"
+                                                            color="error"
+                                                            variant="outlined"
+                                                            size="small"
+                                                            sx={{ fontWeight: 700 }}
+                                                        />
+                                                    )}
+                                                </Stack>
                                             </TableCell>
 
                                             <TableCell align="right">

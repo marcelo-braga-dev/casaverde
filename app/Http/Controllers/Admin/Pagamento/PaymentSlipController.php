@@ -24,7 +24,7 @@ class PaymentSlipController extends Controller
         return Inertia::render('Admin/Financeiro/Pagamento/Index/Page', [
             'payments' => $repository->paginate($filters, 20),
             'filters' => $filters,
-            'statuses' => ['pending', 'generated', 'paid', 'cancelled', 'failed', 'expired'],
+            'statuses' => ['pending', 'generated', 'paid', 'cancelled', 'failed', 'expired', 'refunded'],
             'providers' => ['cora', 'mercado_pago', 'asaas'],
             'paymentMethods' => ['boleto', 'pix', 'boleto_pix'],
         ]);
@@ -32,6 +32,8 @@ class PaymentSlipController extends Controller
 
     public function show(PaymentSlip $pagamento)
     {
+        $this->authorize('view', $pagamento->charge);
+
         return Inertia::render('Admin/Financeiro/Pagamento/Show/Page', [
             'payment' => $pagamento->load([
                 'charge.clientProfile',

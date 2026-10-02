@@ -7,6 +7,8 @@ use App\Models\Pagamento\PaymentProviderAccount;
 use App\Models\Pagamento\PaymentSlip;
 use App\Models\Users\User;
 use App\Services\Pagamento\GeneratePaymentSlipService;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
 describe('GeneratePaymentSlipService', function () {
@@ -107,7 +109,7 @@ describe('GeneratePaymentSlipService', function () {
         $charge = CustomerCharge::factory()->create(['status' => 'paid']);
 
         expect(fn () => $this->service->handle($charge))
-            ->toThrow(InvalidArgumentException::class, 'A cobrança precisa estar aberta para gerar pagamento.');
+            ->toThrow(InvalidArgumentException::class, 'A cobrança precisa estar aberta ou atrasada para gerar pagamento.');
     });
 
     it('throws when an active slip already exists for the charge', function () {
@@ -187,4 +189,63 @@ describe('GeneratePaymentSlipService', function () {
         expect(PaymentSlip::first()->request_payload['customer']['document'])->toBe($client->cnpj);
     });
 
+    it('does not record a failed attempt on timeout and retries with the same idempotency key', function () {
+        $account = PaymentProviderAccount::factory()->mercadoPago()->create(['base_url' => 'https://mp.test']);
+        $calls = 0;
+        Http::fake([
+            'mp.test/v1/orders' => function () use (&$calls) {
+                if (++$calls === 1) {
+                    throw new ConnectionException('timeout');
+                }
+
+                return Http::response(['id' => 'ORD1', 'status' => 'action_required'], 201);
+            },
+        ]);
+
+        $charge = CustomerCharge::factory()->create(['status' => 'open']);
+
+        expect(fn () => $this->service->handle($charge, 'mercado_pago', 'pix'))
+            ->toThrow(RuntimeException::class, 'não respondeu a tempo');
+        expect(PaymentSlip::count())->toBe(0);
+
+        $slip = $this->service->handle($charge, 'mercado_pago', 'pix');
+
+        $keys = collect(Http::recorded())->map(fn ($pair) => $pair[0]->header('X-Idempotency-Key')[0] ?? null)->filter()->unique();
+        expect($slip->provider_payment_id)->toBe('ORD1')
+            ->and($keys->all())->toBe(["charge-{$charge->id}-pix-1"]);
+    });
+
+    it('stores the due date the provider actually encoded in the boleto barcode', function () {
+        PaymentProviderAccount::factory()->mercadoPago()->create(['base_url' => 'https://mp.test']);
+        Http::fake([
+            'mp.test/v1/orders' => Http::response([
+                'id' => 'ORD1',
+                'status' => 'action_required',
+                'transactions' => ['payments' => [[
+                    'payment_method' => [
+                        'id' => 'pix',
+                        'type' => 'bank_transfer',
+                        'barcode_content' => '34194159000000139431090220483492938649999000',
+                    ],
+                ]]],
+            ], 201),
+        ]);
+
+        $charge = CustomerCharge::factory()->create(['status' => 'open', 'due_date' => '2026-10-04']);
+
+        $slip = $this->service->handle($charge, 'mercado_pago', 'pix');
+
+        expect($slip->fresh()->getRawOriginal('due_date'))->toBe('2026-10-05');
+    });
+
+    it('refuses a concurrent generation for the same charge', function () {
+        $charge = CustomerCharge::factory()->create(['status' => 'open']);
+        $lock = Cache::lock('payment-slip:charge:'.$charge->id, 120);
+        $lock->get();
+
+        expect(fn () => $this->service->handle($charge))
+            ->toThrow(InvalidArgumentException::class, 'geração de pagamento em andamento');
+
+        $lock->release();
+    });
 });

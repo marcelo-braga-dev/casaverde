@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Enums\Fatura\BillReviewStatus;
+use App\Models\Cobranca\CustomerCharge;
 use App\Models\Fatura\ConcessionaireBill;
 use App\Models\Users\User;
 use App\Models\WhatsApp\WhatsAppMessageTemplate;
@@ -119,6 +120,7 @@ class HandleInertiaRequests extends Middleware
 
         return [
             'pendingReviewBills' => $pendingReviewBills,
+            'chargesAwaitingNewSlip' => CustomerCharge::query()->somenteMinhasCobrancas()->aguardandoNovoBoleto()->count(),
             'newSupportTickets' => $this->supportTicketService->countNew(),
         ];
     }

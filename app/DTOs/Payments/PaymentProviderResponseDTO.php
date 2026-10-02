@@ -18,5 +18,7 @@ class PaymentProviderResponseDTO
         public readonly ?float $paidAmount = null,
         public readonly ?string $paidAt = null,
         public readonly array $rawPayload = [],
+        // Vencimento efetivo no provider, quando difere do solicitado (ex.: ajuste para dia útil).
+        public readonly ?string $dueDate = null,
     ) {}
 }

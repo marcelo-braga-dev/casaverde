@@ -13,6 +13,10 @@ class ProcessPaymentWebhookJob implements ShouldQueue
 
     public int $tries = 3;
 
+    // O processamento do Mercado Pago consulta a API: sem intervalo, um 429 queimava
+    // as três tentativas em sequência.
+    public array $backoff = [30, 120];
+
     public function __construct(
         public readonly int $eventId,
     ) {}

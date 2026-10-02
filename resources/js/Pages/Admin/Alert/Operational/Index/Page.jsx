@@ -314,10 +314,36 @@ export default function OperationalAlertIndexPage() {
 
                                         <TableCell align="right">
                                             <Stack direction="row" spacing={1} justifyContent="flex-end">
+                                                {alert.payload?.customer_charge_id && (
+                                                    <Button
+                                                        component={Link}
+                                                        href={route('admin.financeiro.cobrancas.show', alert.payload.customer_charge_id)}
+                                                        size="small"
+                                                        variant={alert.type === 'payment_slip_expired' ? 'contained' : 'outlined'}
+                                                        color={alert.type === 'payment_slip_expired' ? 'error' : 'primary'}
+                                                    >
+                                                        {alert.type === 'payment_slip_expired' ? 'Gerar novo boleto' : 'Cobrança'}
+                                                    </Button>
+                                                )}
+
+                                                {alert.payload?.whatsapp_link && (
+                                                    <Button
+                                                        component="a"
+                                                        href={alert.payload.whatsapp_link}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        size="small"
+                                                        variant="outlined"
+                                                        color="success"
+                                                    >
+                                                        WhatsApp
+                                                    </Button>
+                                                )}
+
                                                 {alert.usina && (
                                                     <Button
                                                         component={Link}
-                                                        href={route('admin.usinas.management.show',)}
+                                                        href={route('auth.usinas.show', alert.usina.id)}
                                                         size="small"
                                                         variant="outlined"
                                                         startIcon={<VisibilityIcon />}

@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\Cobranca\CustomerCharge;
 use App\Services\Automation\GenerateChargeReminderAlertService;
+use App\Services\Pagamento\PaymentSlipExpiredAlertService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 
@@ -16,11 +17,21 @@ class SendChargeReminderJob implements ShouldQueue
         public readonly string $reason,
     ) {}
 
-    public function handle(GenerateChargeReminderAlertService $service): void
-    {
+    public function handle(
+        GenerateChargeReminderAlertService $service,
+        PaymentSlipExpiredAlertService $expiredAlertService,
+    ): void {
         $charge = CustomerCharge::query()->find($this->chargeId);
 
         if (! $charge) {
+            return;
+        }
+
+        if ($this->reason === 'payment_slip_expired') {
+            if ($charge->isAguardandoNovoBoleto()) {
+                $expiredAlertService->notify($charge);
+            }
+
             return;
         }
 

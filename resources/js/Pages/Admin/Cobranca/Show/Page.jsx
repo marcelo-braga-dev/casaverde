@@ -2,6 +2,8 @@ import { useState } from "react";
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
 import { Head, Link, router } from "@inertiajs/react";
 import {
+    Alert,
+    AlertTitle,
     Avatar,
     Box,
     Button,
@@ -38,6 +40,7 @@ import MarkPaidDialog from "./Partials/MarkPaidDialog.jsx";
 import CancelChargeDialog from "./Partials/CancelChargeDialog.jsx";
 import formatCurrency from "@/Utils/formatCurrency.js";
 import useAuthUser from "@/Hooks/useAuthUser.js";
+import { buildPaymentData, formatDueDate, isSlipExpired, isSlipPayable } from "@/Utils/paymentSlip.js";
 import { isAdmin } from "@/Utils/permissions.js";
 import {
     IconAdjustments,
@@ -136,7 +139,7 @@ const PROVIDER_LABELS = {
     asaas: "Asaas",
 };
 
-export default function Page({ charge }) {
+export default function Page({ charge, aguardandoNovoBoleto = false }) {
     const admin = isAdmin(useAuthUser());
     const hasActivePayment = charge.payment_slips?.some((payment) =>
         ["pending", "generated"].includes(payment.status)
@@ -186,6 +189,16 @@ export default function Page({ charge }) {
 
     const activePayment = charge.payment_slips?.find((payment) => ["pending", "generated"].includes(payment.status));
     const latestPayment = activePayment || charge.payment_slips?.[charge.payment_slips.length - 1];
+    const expiredPayment = [...(charge.payment_slips || [])].reverse().find((payment) => payment.status === "expired");
+    const canGeneratePayment = ["open", "waiting_payment", "overdue"].includes(charge.status) && !hasActivePayment;
+    const whatsappContext = {
+        phone: clientPhone,
+        variables: {
+            cliente_nome: clientName,
+            mes_referencia: mesReferencia,
+            valor_fatura: valorFatura,
+        },
+    };
 
     const adjustmentsCount = charge.adjustments?.length || 0;
     const adjustmentsNet = (charge.adjustments || []).reduce(
@@ -250,20 +263,65 @@ export default function Page({ charge }) {
                                 </Box>
                             </Stack>
 
-                            <Chip
-                                label={statusCfg.label}
-                                size="medium"
-                                sx={{
-                                    bgcolor: "rgba(255,255,255,0.15)",
-                                    color: "#fff",
-                                    fontWeight: 800,
-                                    fontSize: 13,
-                                    border: "1px solid rgba(255,255,255,0.25)",
-                                }}
-                            />
+                            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                                <Chip
+                                    label={statusCfg.label}
+                                    size="medium"
+                                    sx={{
+                                        bgcolor: "rgba(255,255,255,0.15)",
+                                        color: "#fff",
+                                        fontWeight: 800,
+                                        fontSize: 13,
+                                        border: "1px solid rgba(255,255,255,0.25)",
+                                    }}
+                                />
+                                {aguardandoNovoBoleto && (
+                                    <Chip
+                                        label="Boleto vencido"
+                                        size="medium"
+                                        color="error"
+                                        sx={{ fontWeight: 800, fontSize: 13 }}
+                                    />
+                                )}
+                            </Stack>
                         </Stack>
                     </CardContent>
                 </Card>
+
+                {aguardandoNovoBoleto && (
+                    <Alert
+                        severity="error"
+                        variant="filled"
+                        sx={{ borderRadius: "var(--cv-radius-xl)", alignItems: "center", "& .MuiAlert-message": { width: "100%" } }}
+                        action={
+                            canGeneratePayment && (
+                                <Button
+                                    color="inherit"
+                                    variant="outlined"
+                                    startIcon={<IconCreditCard size={17} />}
+                                    onClick={(e) => setPaymentMenuAnchor(e.currentTarget)}
+                                    sx={{ fontWeight: 800, whiteSpace: "nowrap", borderColor: "rgba(255,255,255,0.7)" }}
+                                >
+                                    Gerar novo boleto
+                                </Button>
+                            )
+                        }
+                    >
+                        <AlertTitle sx={{ fontWeight: 900, fontSize: 17 }}>
+                            Pagamento atrasado — o boleto venceu e é preciso enviar outro
+                        </AlertTitle>
+                        <Typography variant="body2">
+                            {expiredPayment
+                                ? `O boleto #${expiredPayment.id} venceu em ${formatDueDate(expiredPayment)} sem pagamento e o banco não aceita mais.`
+                                : "O último boleto venceu sem pagamento e o banco não aceita mais."}{" "}
+                            O cliente não tem como pagar até receber um novo boleto: gere um novo e envie pelo WhatsApp.
+                        </Typography>
+                        <Typography variant="caption" sx={{ display: "block", mt: 0.75, opacity: 0.9 }}>
+                            Se o cliente pagou no próprio dia do vencimento, a compensação pode levar até 3 dias úteis. O sistema continua conferindo
+                            e, se esse pagamento cair, cancela o boleto novo automaticamente.
+                        </Typography>
+                    </Alert>
+                )}
 
                 {/* ── Motivo do Cancelamento ────────────────────────── */}
                 {charge.status === "cancelled" && (
@@ -315,7 +373,7 @@ export default function Page({ charge }) {
                         <Divider sx={{ mb: 2.5 }} />
 
                         <Stack direction="row" spacing={1.5} flexWrap="wrap" useFlexGap>
-                            {latestPayment && (
+                            {latestPayment && !aguardandoNovoBoleto && (
                                 <Button
                                     color="success"
                                     variant="contained"
@@ -328,7 +386,24 @@ export default function Page({ charge }) {
                                 </Button>
                             )}
 
-                            {["open", "waiting_payment"].includes(charge.status) && (
+                            {activePayment && isSlipPayable(activePayment) && (
+                                <WhatsAppButton
+                                    templateKey="enviar_boleto"
+                                    phone={clientPhone}
+                                    variables={{
+                                        ...whatsappContext.variables,
+                                        data_vencimento: formatDueDate(activePayment),
+                                        dados_pagamento: buildPaymentData(activePayment, { replacesExpired: Boolean(expiredPayment) }),
+                                    }}
+                                    label="Enviar boleto ao cliente"
+                                    variant="contained"
+                                    size="medium"
+                                    startIcon={<IconBrandWhatsapp size={17} />}
+                                    sx={{ fontWeight: 700 }}
+                                />
+                            )}
+
+                            {["open", "waiting_payment"].includes(charge.status) && !aguardandoNovoBoleto && (
                                 <WhatsAppButton
                                     templateKey="lembrete_vencimento"
                                     phone={clientPhone}
@@ -346,7 +421,7 @@ export default function Page({ charge }) {
                                 />
                             )}
 
-                            {charge.status === "overdue" && (
+                            {charge.status === "overdue" && !aguardandoNovoBoleto && (
                                 <WhatsAppButton
                                     templateKey="fatura_vencida"
                                     phone={clientPhone}
@@ -411,19 +486,19 @@ export default function Page({ charge }) {
                                 </Button>
                             )}
 
-                            {["open", "waiting_payment"].includes(charge.status) && !hasActivePayment && (
+                            {canGeneratePayment && (
                                 <>
-                                    <Tooltip title="Gerar boleto ou Pix para esta cobrança">
+                                    <Tooltip title={aguardandoNovoBoleto ? "O boleto anterior venceu: gere um novo e envie ao cliente" : "Gerar boleto ou Pix para esta cobrança"}>
                                         <span>
                                             <Button
-                                                color="primary"
+                                                color={aguardandoNovoBoleto ? "error" : "primary"}
                                                 variant="contained"
                                                 size="medium"
                                                 startIcon={<IconCreditCard size={17} />}
                                                 onClick={(e) => setPaymentMenuAnchor(e.currentTarget)}
                                                 sx={{ fontWeight: 700 }}
                                             >
-                                                Gerar pagamento
+                                                {aguardandoNovoBoleto ? "Gerar novo boleto" : "Gerar pagamento"}
                                             </Button>
                                         </span>
                                     </Tooltip>
@@ -825,7 +900,11 @@ export default function Page({ charge }) {
                                     </TableHead>
                                     <TableBody>
                                         {charge.payment_slips.map((payment) => (
-                                            <TableRow key={payment.id} hover>
+                                            <TableRow
+                                                key={payment.id}
+                                                hover
+                                                sx={isSlipExpired(payment) ? { bgcolor: "#fef2f2" } : undefined}
+                                            >
                                                 <TableCell>
                                                     <Typography variant="body2" fontWeight={700}>
                                                         {PROVIDER_LABELS[payment.provider] || payment.provider}
@@ -843,7 +922,13 @@ export default function Page({ charge }) {
                                                     <StatusChip status={payment.status} />
                                                 </TableCell>
                                                 <TableCell>
-                                                    <DateText value={payment.due_date} />
+                                                    <Typography
+                                                        variant="body2"
+                                                        fontWeight={isSlipExpired(payment) ? 800 : 400}
+                                                        color={isSlipExpired(payment) ? "error.main" : "text.primary"}
+                                                    >
+                                                        {formatDueDate(payment)}
+                                                    </Typography>
                                                 </TableCell>
                                                 <TableCell align="right">
                                                     <Button
@@ -975,6 +1060,7 @@ export default function Page({ charge }) {
                 open={Boolean(selectedPayment)}
                 payment={selectedPayment}
                 onClose={() => setSelectedPayment(null)}
+                whatsapp={{ ...whatsappContext, replacesExpired: Boolean(expiredPayment) }}
             />
 
             <AdjustmentsDialog
