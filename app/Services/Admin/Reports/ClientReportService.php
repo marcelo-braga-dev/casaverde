@@ -24,9 +24,18 @@ class ClientReportService
         ];
     }
 
+    // Consultor vê só a própria carteira; admin (null) vê todos.
+    private function consultorId(): ?int
+    {
+        $user = auth()->user();
+
+        return $user?->isConsultor() ? $user->id : null;
+    }
+
     private function clients()
     {
         return ClientProfile::query()
+            ->somenteDoConsultor($this->consultorId())
             ->orderBy('nome')
             ->orderBy('razao_social')
             ->get()
@@ -43,6 +52,7 @@ class ClientReportService
     private function baseQuery(array $filters = [])
     {
         return CustomerCharge::query()
+            ->somenteMinhasCobrancas()
             ->with([
                 'clientProfile',
                 'bill',
@@ -201,6 +211,7 @@ class ClientReportService
         array $filters = []
     ): array {
         $client = ClientProfile::query()
+            ->somenteDoConsultor($this->consultorId())
             ->with([
                 'activeDiscountRule',
                 'activeUsinaLink.usina',

@@ -10,7 +10,7 @@ Route::name('auth.')
         Route::name('produtor.')
             ->prefix('produtor')
             ->group(function () {
-                Route::resource('kanban', KanbanProdutorController::class);
+                Route::resource('kanban', KanbanProdutorController::class)->only(['index']);
 
                 Route::name('api.')
                     ->prefix('produtor-api')

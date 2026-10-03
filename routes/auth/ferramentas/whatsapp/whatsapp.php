@@ -7,6 +7,6 @@ use Illuminate\Support\Facades\Route;
 Route::name('auth.ferramentas.whatsapp.')
     ->prefix('ferramentas/whatsapp')
     ->group(function () {
-        Route::resource('chat', WhatsappFerramentaController::class);
-        Route::resource('chatbot', ChatbotWhatsappController::class);
+        Route::resource('chat', WhatsappFerramentaController::class)->only(['index']);
+        Route::resource('chatbot', ChatbotWhatsappController::class)->only(['index']);
     });

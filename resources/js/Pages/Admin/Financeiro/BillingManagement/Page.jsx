@@ -76,7 +76,7 @@ export default function BillingManagementPage() {
 
     const handleFilterChange = (field, value) => {
         router.get(
-            route('admin.financeiro.billing-management'),
+            route('admin.financeiro.management.index'),
             {
                 ...filters,
                 [field]: value,

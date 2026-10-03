@@ -40,7 +40,14 @@ class ProducerLeadController extends Controller
 
     public function store(StoreProducerLeadRequest $request)
     {
-        $lead = ProducerLead::create($request->validated());
+        $data = $request->validated();
+
+        // Consultor só cria lead na própria carteira.
+        if (auth()->user()->isConsultor()) {
+            $data['consultor_user_id'] = auth()->id();
+        }
+
+        $lead = ProducerLead::create($data);
 
         return redirect()
             ->route('consultor.producer.leads.show', $lead->id)
@@ -49,6 +56,8 @@ class ProducerLeadController extends Controller
 
     public function show(ProducerLead $producerLead)
     {
+        $this->ensureOwnLead($producerLead);
+
         return Inertia::render('Consultor/Producer/Lead/Show/Page', [
             'lead' => $producerLead->load([
                 'consultor',
@@ -61,6 +70,8 @@ class ProducerLeadController extends Controller
 
     public function edit(ProducerLead $producerLead)
     {
+        $this->ensureOwnLead($producerLead);
+
         return Inertia::render('Consultor/Producer/Lead/Edit/Page', [
             'lead' => $producerLead->load([
                 'consultor',
@@ -85,10 +96,19 @@ class ProducerLeadController extends Controller
 
     public function update(StoreProducerLeadRequest $request, ProducerLead $producerLead)
     {
+        $this->ensureOwnLead($producerLead);
+
         $producerLead->update($request->validated());
 
         return redirect()
             ->route('consultor.producer.leads.show', $producerLead->id)
             ->with('success', 'Lead de produtor atualizado com sucesso.');
+    }
+
+    private function ensureOwnLead(ProducerLead $producerLead): void
+    {
+        $user = auth()->user();
+
+        abort_if($user->isConsultor() && (int) $producerLead->consultor_user_id !== (int) $user->id, 403);
     }
 }

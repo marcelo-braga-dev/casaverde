@@ -16,7 +16,7 @@ export default function Page({ user }) {
 
     const submit = (e) => {
         e.preventDefault();
-        put(route("admin.user.cliente.contact.update", user.id));
+        put(route("consultor.user.cliente.contact.update", user.id));
     };
 
     return (

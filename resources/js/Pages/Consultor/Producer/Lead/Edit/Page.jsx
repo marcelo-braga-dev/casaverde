@@ -19,7 +19,7 @@ const Page = ({ lead, consultores = [], producerProfiles = [], concessionarias =
 
     const submit = (e) => {
         e.preventDefault();
-        put(route("admin.producer-leads.update", lead.id));
+        put(route("consultor.producer.leads.update", lead.id));
     };
 
     const getProducerLabel = (producer) => {

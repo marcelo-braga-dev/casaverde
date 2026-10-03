@@ -4,23 +4,15 @@ use App\Http\Controllers\Admin\Fatura\ClientEmailImportSettingController;
 use App\Http\Controllers\Admin\Fatura\ImportHistoryController;
 use Illuminate\Support\Facades\Route;
 
-// ── Configurações de importação por email ────────────────────────────────
-// O grupo pai em admin/index.php já fornece o prefixo admin.
-// Aqui usamos apenas o sub-prefixo para que os nomes fiquem corretos:
-// admin. (pai) + fatura-import-settings. (filho) + index = admin.fatura-import-settings.index
-Route::name('fatura-import-settings.')
-    ->prefix('fatura-import-settings')
+// As telas de configuração de importação por e-mail (fatura-import-settings) ficaram
+// inacabadas (listagem vazia, formulário apontando para a rota errada, show/edit sem
+// página) e não tinham menu: rotas removidas até o módulo ser concluído. A configuração
+// por cliente é feita em consultor.user.cliente.email-import-setting. Só o update segue
+// ativo (endpoint sem tela, coberto por ClientEmailImportSettingControllerTest).
+Route::put('fatura-import-settings/{faturaImportSetting}', [ClientEmailImportSettingController::class, 'update'])
     ->middleware('role:admin')
-    ->group(function () {
-        Route::get('/', [ClientEmailImportSettingController::class, 'index'])->name('index');
-        Route::get('/create', [ClientEmailImportSettingController::class, 'create'])->name('create');
-        Route::get('/{faturaImportSetting}', [ClientEmailImportSettingController::class, 'show'])->name('show');
-        Route::get('/{faturaImportSetting}/edit', [ClientEmailImportSettingController::class, 'edit'])->name('edit');
-        Route::put('/{faturaImportSetting}', [ClientEmailImportSettingController::class, 'update'])->name('update');
-    });
+    ->name('fatura-import-settings.update');
 
-// ── Histórico de importações ─────────────────────────────────────────────
-// admin. (pai) + import-history. (filho) + index = admin.import-history.index
 Route::name('import-history.')
     ->prefix('import-history')
     ->middleware('role:admin')

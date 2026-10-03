@@ -25,6 +25,8 @@ class ClientContractController extends Controller
 
     public function create(CommercialProposal $proposal)
     {
+        $this->authorize('view', $proposal);
+
         $proposal->load([
             'clientProfile',
             'clientProfile.platformUser.userData.address',
@@ -49,6 +51,8 @@ class ClientContractController extends Controller
             ->with(['clientProfile.platformUser.userData.address', 'address'])
             ->findOrFail($request->validated()['commercial_proposal_id']);
 
+        $this->authorize('update', $proposal);
+
         $result = $service->handle($proposal, $request->validated());
 
         return redirect()
@@ -59,6 +63,8 @@ class ClientContractController extends Controller
 
     public function show(ClientContract $contract)
     {
+        $this->ensureInPortfolio($contract);
+
         return Inertia::render('Consultor/Cliente/Contract/Show/Page', [
             'contract' => $contract->load([
                 'clientProfile',
@@ -71,6 +77,8 @@ class ClientContractController extends Controller
 
     public function edit(ClientContract $contract)
     {
+        $this->ensureInPortfolio($contract);
+
         return Inertia::render('Consultor/Cliente/Contract/Edit/Page', [
             'contract' => $contract->load([
                 'clientProfile',
@@ -86,6 +94,8 @@ class ClientContractController extends Controller
         ClientContract $contract,
         IssueClientContractService $service
     ) {
+        $this->ensureInPortfolio($contract);
+
         $proposal = $contract->proposal()
             ->with(['clientProfile.platformUser.userData.address', 'address'])
             ->firstOrFail();
@@ -95,5 +105,15 @@ class ClientContractController extends Controller
         return redirect()
             ->route('consultor.cliente.contratos.show', $contract->id)
             ->with('success', 'Contrato atualizado com sucesso.');
+    }
+
+    private function ensureInPortfolio(ClientContract $contract): void
+    {
+        $user = auth()->user();
+
+        abort_if(
+            $user->isConsultor() && (int) $contract->clientProfile?->consultor_user_id !== (int) $user->id,
+            403
+        );
     }
 }

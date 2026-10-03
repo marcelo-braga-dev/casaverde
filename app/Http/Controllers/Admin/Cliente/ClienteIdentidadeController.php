@@ -10,6 +10,8 @@ class ClienteIdentidadeController extends Controller
 {
     public function update(Request $request, ClientProfile $cliente)
     {
+        $this->authorize('update', $cliente);
+
         $tipoPessoa = $cliente->tipo_pessoa;
 
         $rules = [

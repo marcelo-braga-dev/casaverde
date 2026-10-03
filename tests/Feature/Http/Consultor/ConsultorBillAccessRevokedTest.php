@@ -41,11 +41,7 @@ describe('Consultor não tem mais acesso a faturas de concessionária', function
             ->assertForbidden();
     });
 
-    it('blocks consultor from import settings and import history', function () {
-        $this->actingAs($this->consultor)
-            ->get(route('admin.fatura-import-settings.index'))
-            ->assertForbidden();
-
+    it('blocks consultor from the import history', function () {
         $this->actingAs($this->consultor)
             ->get(route('admin.import-history.index'))
             ->assertForbidden();

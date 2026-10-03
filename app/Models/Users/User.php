@@ -12,7 +12,9 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -144,19 +146,20 @@ class User extends Authenticatable
         return $this->hasOne(UserContact::class, 'user_id');
     }
 
-    public function usina(): HasOne
+    public function endereco(): HasOne
     {
-        return $this->hasOne(UsinaSolar::class, 'user_id', 'id');
+        return $this->hasOne(UserAddress::class, 'user_id');
     }
 
-    public function usinas(): HasMany
+    // usina_solars.user_id foi removida (2026_05_19): a posse é via ProducerProfile.
+    public function usina(): HasOneThrough
     {
-        return $this->hasMany(UsinaSolar::class, 'user_id');
+        return $this->hasOneThrough(UsinaSolar::class, ProducerProfile::class, 'platform_user_id', 'producer_profile_id');
     }
 
-    public function ownedUsinas(): HasMany
+    public function usinas(): HasManyThrough
     {
-        return $this->hasMany(UsinaSolar::class, 'user_id');
+        return $this->hasManyThrough(UsinaSolar::class, ProducerProfile::class, 'platform_user_id', 'producer_profile_id');
     }
 
     public function usinasComoConsultor(): HasMany
@@ -197,7 +200,7 @@ class User extends Authenticatable
 
     public function producerProfile(): HasOne
     {
-        return $this->hasOne(ProducerProfile::class, 'user_id');
+        return $this->hasOne(ProducerProfile::class, 'platform_user_id');
     }
 
     public function getNomeAttribute()

@@ -9,9 +9,9 @@ use Illuminate\Support\Facades\Route;
 Route::name('admin.financeiro.')
     ->prefix('financeiro')
     ->group(function () {
-        Route::resource('produtor', ProdutorFinanceiroController::class);
-        Route::resource('cliente', ClienteFinanceiroController::class);
-        Route::resource('vendedor', VendedorFinanceiroController::class);
+        Route::resource('produtor', ProdutorFinanceiroController::class)->only(['index']);
+        Route::resource('cliente', ClienteFinanceiroController::class)->only(['index']);
+        Route::resource('vendedor', VendedorFinanceiroController::class)->only(['index']);
 
         Route::get('energy-bill/{energyBill}/pdf', [EnergyBillFileController::class, 'show'])
             ->name('energy-bill.pdf');

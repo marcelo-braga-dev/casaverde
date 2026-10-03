@@ -9,8 +9,10 @@ class CoraWebhookSignatureValidator
 {
     public function isValid(Request $request, ?PaymentProviderAccount $account = null): bool
     {
+        // O processamento da Cora confia no payload para dar baixa (marca como pago):
+        // sem secret, qualquer um forjaria um pagamento. Sem secret, nada é aceito.
         if (! $account?->webhook_secret) {
-            return true;
+            return false;
         }
 
         $signature = $request->header('X-Cora-Signature')

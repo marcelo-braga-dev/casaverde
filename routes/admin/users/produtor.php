@@ -11,7 +11,7 @@ Route::name('admin.')
         Route::name('produtor.status.')
             ->prefix('produtor-status')
             ->group(function () {
-                Route::resource('analizar-documentos', AnalizarDocumentosController::class);
+                Route::resource('analizar-documentos', AnalizarDocumentosController::class)->only(['show', 'update']);
             });
 
         Route::name('produtor.api.')

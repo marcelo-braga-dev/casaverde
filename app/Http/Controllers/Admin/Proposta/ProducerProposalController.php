@@ -80,7 +80,8 @@ class ProducerProposalController extends Controller
 
     public function show(ProducerProposal $proposal, CalculateProducerProposalInvestmentService $investmentService)
     {
-        // $this->authorize('view', $proposal);
+        $user = auth()->user();
+        abort_if($user->isConsultor() && (int) $proposal->consultor_user_id !== (int) $user->id, 403);
 
         $proposal->load([
             'producerProfile.activeFeeRule',

@@ -12,7 +12,14 @@ class GerarPropostaProdutorController extends Controller
 {
     public function gerarPdf(Request $request)
     {
-        $html = $request->input('html');
+        // O PDF é gerado com enable-local-file-access (as imagens de fundo são locais):
+        // HTML livre permitiria <iframe src="file:///..."> e vazaria arquivos do servidor
+        // num PDF público. Só tags de formatação passam.
+        $html = strip_tags(
+            (string) $request->input('html'),
+            '<p><div><span><b><strong><i><em><u><br><h1><h2><h3><h4><h5><h6><table><thead><tbody><tr><td><th><ul><ol><li>'
+        );
+        $html = preg_replace('/\b(file|php|data|ftp|https?):/i', '', $html);
 
         // Caminho para as imagens das páginas
         $dirCapa = public_path('storage/propostas/produtor/paginas/1.jpg');

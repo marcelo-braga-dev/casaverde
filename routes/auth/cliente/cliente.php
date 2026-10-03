@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::name('auth.')
     ->group(function () {
-        Route::resource('cliente', ClienteController::class);
+        Route::resource('cliente', ClienteController::class)->only(['index', 'create', 'store', 'show']);
 
         Route::name('cliente.api.')
             ->prefix('cliente-api')

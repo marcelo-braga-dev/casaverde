@@ -10,6 +10,8 @@ class ProducerIdentidadeController extends Controller
 {
     public function update(Request $request, ProducerProfile $producerProfile)
     {
+        $this->authorize('update', $producerProfile);
+
         $tipoPessoa = $producerProfile->tipo_pessoa;
 
         $rules = [

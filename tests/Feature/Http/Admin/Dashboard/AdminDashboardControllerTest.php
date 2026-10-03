@@ -17,14 +17,13 @@ describe('Admin Dashboard Controller', function () {
             );
     });
 
-    it('renders dashboard for consultor user', function () {
+    // Métricas da empresa inteira, sem filtro de carteira: o consultor usa consultor.dashboard.
+    it('returns 403 for consultor trying to access the admin dashboard', function () {
         $consultor = User::factory()->consultor()->create();
 
         $this->actingAs($consultor)
             ->get(route('admin.dashboard'))
-            ->assertOk()
-            ->assertInertia(fn ($page) => $page->component('Admin/Dashboard/Page')
-            );
+            ->assertForbidden();
     });
 
     it('returns 403 for produtor trying to access admin dashboard', function () {

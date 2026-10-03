@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 Route::name('admin.config.')
     ->prefix('config')
     ->group(function () {
-        Route::resource('geral', ConfigController::class);
+        Route::resource('geral', ConfigController::class)->only(['index']);
 
         Route::name('api.')
             ->prefix('api')

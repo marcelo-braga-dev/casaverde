@@ -3,17 +3,27 @@
 use App\Http\Controllers\Admin\Dashboard\AdminDashboardController;
 use Illuminate\Support\Facades\Route;
 
+// O consultor só entra nos módulos abaixo, todos filtrados pela carteira dele
+// (CustomerCharge::somenteMinhasCobrancas, relatórios, alertas). Todo o resto da área
+// admin (configurações, usuários, integrações, cockpit) é exclusivo do admin.
 Route::middleware(['auth', 'role:admin,consultor'])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        require __DIR__.'/financeiro/cobrancas.php';
+        require __DIR__.'/financeiro/pagamentos.php';
+        require __DIR__.'/financeiro/payment-webhooks.php';
+        require __DIR__.'/relatorios.php';
+        require __DIR__.'/operational-alerts.php';
+    });
+
+Route::middleware(['auth', 'role:admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
         Route::get('/dashboard', AdminDashboardController::class)->name('dashboard');
 
-        require __DIR__.'/financeiro/cobrancas.php';
-        require __DIR__.'/financeiro/pagamentos.php';
-        require __DIR__.'/financeiro/payment-webhooks.php';
         require __DIR__.'/financeiro/management.php';
-        require __DIR__.'/relatorios.php';
         require __DIR__.'/settings.php';
         require __DIR__.'/brand-identity.php';
 
@@ -31,7 +41,6 @@ Route::middleware(['auth', 'role:admin,consultor'])
 
         require __DIR__.'/usinas.php';
         require __DIR__.'/cockpit.php';
-        require __DIR__.'/operational-alerts.php';
         require __DIR__.'/integracao.php';
         require __DIR__.'/acesso.php';
         require __DIR__.'/whatsapp.php';

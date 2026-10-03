@@ -5,12 +5,29 @@ use App\Models\Pagamento\PaymentProviderAccount;
 use App\Models\Pagamento\PaymentWebhookEvent;
 use Illuminate\Support\Facades\Queue;
 
+function postSignedCoraWebhook($test, array $payload)
+{
+    $body = json_encode($payload);
+
+    return $test->call('POST', '/webhooks/payments/cora', [], [], [], [
+        'CONTENT_TYPE' => 'application/json',
+        'HTTP_ACCEPT' => 'application/json',
+        'HTTP_X_CORA_SIGNATURE' => hash_hmac('sha256', $body, 'my-secret'),
+    ], $body);
+}
+
 describe('CoraWebhookController', function () {
+
+    beforeEach(function () {
+        $this->account = PaymentProviderAccount::factory()
+            ->withWebhookSecret('my-secret')
+            ->create(['provider' => 'cora', 'is_active' => true, 'is_default' => true]);
+    });
 
     it('creates a payment webhook event and dispatches the processing job', function () {
         Queue::fake();
 
-        $response = $this->postJson('/webhooks/payments/cora', [
+        $response = postSignedCoraWebhook($this, [
             'id' => 'evt-1',
             'event' => 'invoice.paid',
             'invoice' => ['id' => 'inv-1', 'status' => 'PAID'],
@@ -35,8 +52,8 @@ describe('CoraWebhookController', function () {
 
         $payload = ['id' => 'evt-1', 'event' => 'invoice.paid', 'invoice' => ['id' => 'inv-1', 'status' => 'PAID']];
 
-        $this->postJson('/webhooks/payments/cora', $payload)->assertOk();
-        $this->postJson('/webhooks/payments/cora', $payload)->assertOk();
+        postSignedCoraWebhook($this, $payload)->assertOk();
+        postSignedCoraWebhook($this, $payload)->assertOk();
 
         expect(PaymentWebhookEvent::count())->toBe(1);
         Queue::assertPushed(ProcessPaymentWebhookJob::class, 1);
@@ -44,10 +61,6 @@ describe('CoraWebhookController', function () {
 
     it('rejects the webhook with 401 when a webhook secret is configured and the signature is missing', function () {
         Queue::fake();
-
-        PaymentProviderAccount::factory()
-            ->withWebhookSecret('my-secret')
-            ->create(['provider' => 'cora', 'is_active' => true, 'is_default' => true]);
 
         $response = $this->postJson('/webhooks/payments/cora', [
             'id' => 'evt-1',
@@ -60,4 +73,13 @@ describe('CoraWebhookController', function () {
         Queue::assertNotPushed(ProcessPaymentWebhookJob::class);
     });
 
+    it('rejects every webhook when no secret is configured, since Cora payloads mark charges as paid', function () {
+        Queue::fake();
+        $this->account->update(['webhook_secret' => null]);
+
+        postSignedCoraWebhook($this, ['id' => 'evt-9', 'event' => 'invoice.paid', 'invoice' => ['id' => 'inv-9', 'status' => 'PAID']])
+            ->assertStatus(401);
+
+        expect(PaymentWebhookEvent::count())->toBe(0);
+    });
 });

@@ -22,7 +22,7 @@ export default function Page({
 
     const submit = (e) => {
         e.preventDefault();
-        post(route("admin.producer-leads.store"));
+        post(route("consultor.producer.leads.store"));
     };
 
     return (

@@ -12,7 +12,7 @@ class ClientUsinaHistoryController extends Controller
     {
         $this->authorize('view', $clientProfile);
 
-        return Inertia::render('Admin/Cliente/UsinaHistory/Page', [
+        return Inertia::render('Cliente/UsinaHistory/Page', [
             'client' => $clientProfile->load([
                 'activeUsinaLink.usina',
                 'usinaLinks.usina',

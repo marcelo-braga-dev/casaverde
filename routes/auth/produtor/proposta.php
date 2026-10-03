@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 Route::name('auth.produtor.')
     ->prefix('produtores')
     ->group(function () {
-        Route::resource('proposta', ProdutorPropostasController::class);
+        Route::resource('proposta', ProdutorPropostasController::class)->only(['index', 'create', 'store', 'show']);
 
         Route::name('proposta.api.')
             ->prefix('proposta-api')

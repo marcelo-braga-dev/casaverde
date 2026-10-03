@@ -13,6 +13,7 @@ Route::prefix('alertas-operacionais')
             ->name('index');
 
         Route::post('/scan', ScanOperationalAlertsController::class)
+            ->middleware('role:admin')
             ->name('scan');
 
         Route::put('/{alert}/resolve', ResolveOperationalAlertController::class)

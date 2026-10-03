@@ -9,7 +9,7 @@ const Page = ({taxaReducaoConta}) => {
     const [taxaReducao, setTaxaReducao] = useState(taxaReducaoConta)
     const updateTaxaReducaoConta = (e) => {
         e.preventDefault()
-        router.post(route('admin.config.api.update-taxa-reducao-conta', {taxaReducao}))
+        router.post(route('admin.admin.config.api.update-taxa-reducao-conta', {taxaReducao}))
     }
 
     return (

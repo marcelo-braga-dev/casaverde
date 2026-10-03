@@ -18,37 +18,40 @@ use Illuminate\Support\Facades\Route;
 Route::name('relatorios.')
     ->prefix('relatorios')
     ->group(function () {
-        Route::get('/financeiro', FinancialReportController::class)
-            ->name('financeiro');
-
-        Route::get('/cobrancas', ChargeReportController::class)
-            ->name('cobrancas');
-
-        Route::get('/pagamentos', PaymentReportController::class)
-            ->name('pagamentos');
-
+        // Únicos relatórios filtrados pela carteira do consultor.
         Route::get('/usinas', UsinaReportController::class)
             ->name('usinas');
 
         Route::get('/clientes', ClientReportController::class)
             ->name('clientes');
 
-        Route::get('/cobrancas/export', ExportChargeReportController::class)
-            ->name('cobrancas.export');
-
-        Route::get('/pagamentos/export', ExportPaymentReportController::class)
-            ->name('pagamentos.export');
-
-        Route::get('/cobrancas/export-pdf', ExportChargeReportPdfController::class)
-            ->name('cobrancas.export-pdf');
-
-        Route::get('/pagamentos/export-pdf', ExportPaymentReportPdfController::class)
-            ->name('pagamentos.export-pdf');
-
-        Route::get('/executivo', ExecutiveReportController::class)
-            ->name('executivo');
-
+        // Visão da empresa inteira (faturamento, cobranças, pagamentos): só admin.
         Route::middleware('role:admin')->group(function () {
+            Route::get('/financeiro', FinancialReportController::class)
+                ->name('financeiro');
+
+            Route::get('/cobrancas', ChargeReportController::class)
+                ->name('cobrancas');
+
+            Route::get('/pagamentos', PaymentReportController::class)
+                ->name('pagamentos');
+
+            Route::get('/cobrancas/export', ExportChargeReportController::class)
+                ->name('cobrancas.export');
+
+            Route::get('/pagamentos/export', ExportPaymentReportController::class)
+                ->name('pagamentos.export');
+
+            Route::get('/cobrancas/export-pdf', ExportChargeReportPdfController::class)
+                ->name('cobrancas.export-pdf');
+
+            Route::get('/pagamentos/export-pdf', ExportPaymentReportPdfController::class)
+                ->name('pagamentos.export-pdf');
+
+            Route::get('/executivo', ExecutiveReportController::class)
+                ->name('executivo');
+
+            // Consultor perdeu o acesso a faturas de propósito (ConsultorBillAccessRevokedTest).
             Route::get('/faturas', BillReportController::class)
                 ->name('faturas');
 

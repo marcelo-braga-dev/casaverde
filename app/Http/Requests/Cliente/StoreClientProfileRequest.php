@@ -12,7 +12,14 @@ class StoreClientProfileRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return auth()->check() && in_array(auth()->user()?->role_id, [RoleUser::$ADMIN, RoleUser::$CONSULTOR], true);
+        if (! auth()->check() || ! in_array(auth()->user()?->role_id, [RoleUser::$ADMIN, RoleUser::$CONSULTOR], true)) {
+            return false;
+        }
+
+        // Na edição, a checagem de carteira precisa vir antes da validação.
+        $cliente = $this->route('cliente');
+
+        return ! $cliente instanceof ClientProfile || $this->user()->can('update', $cliente);
     }
 
     public function rules(): array

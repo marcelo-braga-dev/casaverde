@@ -7,6 +7,7 @@ use App\DTOs\Payments\CreatePaymentDTO;
 use App\DTOs\Payments\PaymentProviderResponseDTO;
 use App\Exceptions\Payments\PaymentProviderException;
 use App\Models\Pagamento\PaymentProviderAccount;
+use App\Support\LogRedactor;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
 
@@ -45,7 +46,7 @@ class CoraPaymentProvider implements PaymentProviderContract
                 'payment_provider_account_id' => $this->account->id,
                 'external_id' => $dto->externalId,
                 'http_status' => $response->status(),
-                'request_payload' => $payload,
+                'request_payload' => LogRedactor::redact($payload),
                 'response_body' => $response->json() ?? $response->body(),
             ]);
 

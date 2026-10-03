@@ -244,7 +244,7 @@ export default function Page({ payment }) {
                                             variant="outlined"
                                             size="small"
                                             startIcon={<IconRefresh size={15} />}
-                                            onClick={() => router.post(route("admin.pagamentos.sync", payment.id))}
+                                            onClick={() => router.post(route("admin.financeiro.pagamentos.sync", payment.id))}
                                             sx={{
                                                 borderColor: "rgba(255,255,255,0.4)",
                                                 color: "#fff",
@@ -266,7 +266,7 @@ export default function Page({ payment }) {
                                             startIcon={<IconX size={15} />}
                                             onClick={() => {
                                                 if (confirm("Deseja realmente cancelar este pagamento?")) {
-                                                    router.post(route("admin.pagamentos.cancel", payment.id));
+                                                    router.post(route("admin.financeiro.pagamentos.cancel", payment.id));
                                                 }
                                             }}
                                             sx={{

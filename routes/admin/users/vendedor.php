@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 Route::name('user.')
     ->prefix('user')
     ->group(function () {
-        Route::resource('consultor', ConsultorController::class);
+        Route::resource('consultor', ConsultorController::class)->only(['index', 'create', 'store', 'show']);
 
         //        Route::name('vendedor.api.')
         //            ->prefix('vendedor-api')

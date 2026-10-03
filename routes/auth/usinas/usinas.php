@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::name('auth.')
     ->group(function () {
-        Route::resource('usinas', UsinasController::class);
+        Route::resource('usinas', UsinasController::class)->only(['index', 'show']);
 
         Route::prefix('usinas-concessionaria')
             ->name('concessionaria.')

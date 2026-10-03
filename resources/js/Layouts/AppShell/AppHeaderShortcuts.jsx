@@ -29,7 +29,8 @@ export default function AppHeaderShortcuts() {
         return null;
     }
 
-    const faturasHref = safeRoute('admin.relatorios.faturas');
+    // Faturas são exclusivas do admin (consultor perdeu esse acesso).
+    const faturasHref = roleName === 'admin' ? safeRoute('admin.relatorios.faturas') : null;
     const suporteHref = safeRoute('support.tickets.index');
     const cobrancasHref = safeRoute('admin.financeiro.cobrancas.index');
     const awaitingNewSlip = navBadges?.chargesAwaitingNewSlip ?? 0;

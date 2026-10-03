@@ -10,13 +10,13 @@ describe('CoraWebhookSignatureValidator', function () {
         $this->validator = app(CoraWebhookSignatureValidator::class);
     });
 
-    it('accepts any webhook when there is no account or no webhook_secret configured', function () {
+    it('rejects any webhook when there is no account or no webhook_secret configured', function () {
         $request = Request::create('/webhooks/payments/cora', 'POST', content: '{"status":"PAID"}');
 
-        expect($this->validator->isValid($request, null))->toBeTrue();
+        expect($this->validator->isValid($request, null))->toBeFalse();
 
         $accountWithoutSecret = PaymentProviderAccount::factory()->create(['webhook_secret' => null]);
-        expect($this->validator->isValid($request, $accountWithoutSecret))->toBeTrue();
+        expect($this->validator->isValid($request, $accountWithoutSecret))->toBeFalse();
     });
 
     it('rejects the webhook when a secret is configured but no signature header is sent', function () {

@@ -126,12 +126,16 @@ class ClienteController extends Controller
 
     public function edit(ClientProfile $cliente)
     {
+        $this->authorize('update', $cliente);
+
         return Inertia::render('Consultor/Cliente/Profile/Edit/Page',
             ['client' => $cliente]);
     }
 
     public function update(StoreClientProfileRequest $request, ClientProfile $cliente)
     {
+        $this->authorize('update', $cliente);
+
         $cliente->update($request->validated());
 
         if ($cliente->contacts) {
@@ -145,6 +149,8 @@ class ClienteController extends Controller
 
     public function destroy(ClientProfile $cliente)
     {
+        $this->authorize('delete', $cliente);
+
         $cliente->delete();
 
         return redirect()->route('consultor.user.cliente.index')

@@ -15,7 +15,7 @@ class ClientDiscountHistoryController extends Controller
 
         abort_unless(auth()->user()?->role_id === RoleUser::$ADMIN, 403);
 
-        return Inertia::render('Admin/Cliente/DiscountHistory/Page', [
+        return Inertia::render('Cliente/DiscountHistory/Page', [
             'client' => $clientProfile->load([
                 'activeDiscountRule',
                 'discountRules',

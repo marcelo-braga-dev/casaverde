@@ -11,6 +11,8 @@ class MarkCustomerChargeAsOverdueController extends Controller
 {
     public function store(CustomerCharge $cobranca, MarkCustomerChargeAsOverdueService $service)
     {
+        $this->authorize('update', $cobranca);
+
         try {
             $service->handle($cobranca);
 

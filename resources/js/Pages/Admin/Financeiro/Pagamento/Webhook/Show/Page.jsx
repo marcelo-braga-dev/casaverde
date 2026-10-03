@@ -193,7 +193,7 @@ export default function Page({ event }) {
                                         <InfoRow label="Valor" value={charge.final_amount != null ? `R$ ${Number(charge.final_amount).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : null} />
                                         <Divider sx={{ my: 2 }} />
                                         <Button component={Link} variant="outlined" fullWidth size="small"
-                                            href={route("admin.cobrancas.show", charge.id)}>
+                                            href={route("admin.financeiro.cobrancas.show", charge.id)}>
                                             Ver cobrança
                                         </Button>
                                     </Stack>

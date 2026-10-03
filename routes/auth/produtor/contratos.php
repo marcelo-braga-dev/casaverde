@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Route;
 Route::name('auth.')
     ->group(function () {
 
-        Route::resource('produtor-contratos', ContratosProdutorController::class);
+        Route::resource('produtor-contratos', ContratosProdutorController::class)->only(['create', 'store', 'show']);
 
         Route::name('produtor-contratos-api.')
             ->group(function () {

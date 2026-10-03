@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 Route::name('auth.')
     ->group(function () {
 
-        Route::resource('produtor', ProdutorController::class);
+        Route::resource('produtor', ProdutorController::class)->only(['index', 'create', 'store', 'show']);
 
         Route::name('produtor.api.')
             ->prefix('produtor-api')

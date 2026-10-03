@@ -12,13 +12,17 @@ class ClientContractDataController extends Controller
 {
     public function edit(User $user)
     {
-        return Inertia::render('Admin/Cliente/ContractData/Edit/Page', [
+        abort_unless(User::query()->somenteMeusClientes()->whereKey($user->id)->exists(), 403);
+
+        return Inertia::render('Cliente/ContractData/Edit/Page', [
             'user' => $user->load(['userData']),
         ]);
     }
 
     public function update(StoreClientContractDataRequest $request, User $user)
     {
+        abort_unless(User::query()->somenteMeusClientes()->whereKey($user->id)->exists(), 403);
+
         UserData::updateOrCreate(
             ['user_id' => $user->id],
             $request->validated()

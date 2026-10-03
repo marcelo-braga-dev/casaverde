@@ -8,7 +8,13 @@ class ClientContractRepository
 {
     public function paginate(array $filters = [], int $perPage = 20)
     {
+        $user = auth()->user();
+
         return ClientContract::query()
+            ->when($user?->isConsultor(), fn ($query) => $query->whereHas(
+                'clientProfile',
+                fn ($q) => $q->where('consultor_user_id', $user->id)
+            ))
             ->with(['clientProfile', 'proposal', 'user'])
             ->when($filters['id'] ?? null, fn ($query, $id) => $query->where('id', $id))
             ->when($filters['code'] ?? null, fn ($query, $code) => $query->where('contract_code', 'like', "%{$code}%"))

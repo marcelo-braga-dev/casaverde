@@ -12,13 +12,17 @@ class UsinaReportService
     {
         $range = ReportDateRange::fromFilters($filters);
 
+        $user = auth()->user();
+
         $usinas = UsinaSolar::query()
+            ->when($user?->isConsultor(), fn ($query) => $query->where('consultor_user_id', $user->id))
             ->with(['concessionaria', 'block'])
             ->orderByDesc('id')
             ->get();
 
         $items = $usinas->map(function (UsinaSolar $usina) use ($range) {
             $charges = CustomerCharge::query()
+                ->somenteMinhasCobrancas()
                 ->where('usina_id', $usina->id)
                 ->whereBetween('created_at', [$range->startDate, $range->endDate]);
 

@@ -11,6 +11,8 @@ class ApproveCustomerChargeController extends Controller
 {
     public function store(CustomerCharge $cobranca, ApproveCustomerChargeService $service)
     {
+        $this->authorize('update', $cobranca);
+
         try {
             $service->handle($cobranca);
 

@@ -54,4 +54,9 @@ class ClientProfilePolicy
 
         return false;
     }
+
+    public function delete(User $user, ClientProfile $clientProfile): bool
+    {
+        return $this->update($user, $clientProfile);
+    }
 }
