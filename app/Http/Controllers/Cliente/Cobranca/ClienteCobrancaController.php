@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Cliente\Cobranca;
 use App\Http\Controllers\Controller;
 use App\Models\Cliente\ClientProfile;
 use App\Models\Cobranca\CustomerCharge;
+use App\Models\Pagamento\PaymentSlip;
 use Inertia\Inertia;
 
 class ClienteCobrancaController extends Controller
@@ -52,12 +53,42 @@ class ClienteCobrancaController extends Controller
             'Acesso não autorizado a esta cobrança.'
         );
 
-        $cobranca->load(['bill.concessionaria', 'paymentSlips', 'adjustments']);
+        $cobranca->load(['bill.concessionaria', 'adjustments']);
 
         return Inertia::render('Cliente/Cobrancas/Show/Page', [
             'cobranca' => $cobranca,
             'profile' => $profile,
+            'pagamento' => $this->pagamentoDisponivel($cobranca),
         ]);
+    }
+
+    // Só os dados de pagamento: o slip completo traz payloads e erros do provider.
+    private function pagamentoDisponivel(CustomerCharge $cobranca): ?array
+    {
+        if (in_array($cobranca->status, ['paid', 'cancelled'], true)) {
+            return null;
+        }
+
+        $slip = $cobranca->paymentSlips()
+            ->whereIn('status', ['pending', 'generated'])
+            ->latest('id')
+            ->get()
+            ->first(fn (PaymentSlip $slip) => $slip->isPayable());
+
+        if (! $slip) {
+            return null;
+        }
+
+        return [
+            'id' => $slip->id,
+            'amount' => (float) $slip->amount,
+            'due_date' => $slip->effective_due_date,
+            'digitable_line' => $slip->digitable_line,
+            'pix_copy_paste' => $slip->pix_copy_paste,
+            'pdf_url' => $slip->barcode && $slip->digitable_line
+                ? route('cliente.cobrancas.boleto.pdf', [$cobranca, $slip])
+                : null,
+        ];
     }
 
     private function getTotais(int $clientProfileId): array

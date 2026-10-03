@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Cliente\Cobranca\ClienteBoletoPdfController;
 use App\Http\Controllers\Cliente\Cobranca\ClienteCobrancaController;
 use App\Http\Controllers\Cliente\Contrato\ClienteContratoController;
 use App\Http\Controllers\Cliente\Dashboard\ClienteDashboardController;
@@ -25,6 +26,7 @@ Route::middleware(['auth', 'role:cliente'])
         // Cobranças
         Route::get('/cobrancas', [ClienteCobrancaController::class, 'index'])->name('cobrancas.index');
         Route::get('/cobrancas/{cobranca}', [ClienteCobrancaController::class, 'show'])->name('cobrancas.show');
+        Route::get('/cobrancas/{cobranca}/boleto/{pagamento}', ClienteBoletoPdfController::class)->name('cobrancas.boleto.pdf');
 
         // Contratos
         Route::get('/contratos', [ClienteContratoController::class, 'index'])->name('contratos.index');

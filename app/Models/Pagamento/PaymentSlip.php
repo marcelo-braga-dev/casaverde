@@ -60,6 +60,19 @@ class PaymentSlip extends Model
             ?? ($this->due_date ? CarbonImmutable::parse($this->getRawOriginal('due_date')) : null);
     }
 
+    // Espelha isSlipPayable() de resources/js/Utils/paymentSlip.js: ativo e dentro da data
+    // que o banco aceita (a rotina diária pode ainda não ter marcado como expirado).
+    public function isPayable(): bool
+    {
+        if (! in_array($this->status, ['pending', 'generated'], true)) {
+            return false;
+        }
+
+        $due = $this->effectiveDueDate();
+
+        return ! $due || $due->gte(today());
+    }
+
     public function getEffectiveDueDateAttribute(): ?string
     {
         return $this->effectiveDueDate()?->toDateString();

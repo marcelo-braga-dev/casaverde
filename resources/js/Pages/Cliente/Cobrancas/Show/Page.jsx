@@ -1,6 +1,7 @@
 import Layout from '@/Layouts/UserLayout/Layout.jsx';
 import { formatMoney } from '@/Components/Reports/utils/chartFormatters';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, usePage } from '@inertiajs/react';
+import PagamentoCard from './Partials/PagamentoCard.jsx';
 import {
     Alert,
     Box,
@@ -130,7 +131,8 @@ function StatusTimeline({ status }) {
     );
 }
 
-export default function Page({ cobranca }) {
+export default function Page({ cobranca, pagamento }) {
+    const flashError = usePage().props.flash?.error;
     const st = STATUS_MAP[cobranca?.status] ?? { label: cobranca?.status, color: 'default', gradient: 'linear-gradient(135deg,#6b7280,#4b5563)' };
 
     const original = cobranca?.original_amount ?? 0;
@@ -163,6 +165,8 @@ export default function Page({ cobranca }) {
                 >
                     Voltar às cobranças
                 </Button>
+
+                {flashError && <Alert severity="error" sx={{ borderRadius: 2 }}>{flashError}</Alert>}
 
                 {/* ── Hero Card ──────────────────────────────────────────── */}
                 <Card sx={{
@@ -319,6 +323,8 @@ export default function Page({ cobranca }) {
                     {/* ── Coluna lateral ──────────────────────────────────── */}
                     <Grid size={{ xs: 12, md: 5 }}>
                         <Stack spacing={3}>
+                            <PagamentoCard pagamento={pagamento} />
+
                             {/* Economia em destaque */}
                             <Card sx={{
                                 borderRadius: 'var(--cv-radius-xl)',
