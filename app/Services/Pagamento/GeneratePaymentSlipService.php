@@ -9,6 +9,8 @@ use App\Models\Cobranca\CustomerCharge;
 use App\Models\Endereco\Address;
 use App\Models\Pagamento\PaymentSlip;
 use App\Models\Users\UserAddress;
+use App\Services\Cliente\ClientChargeNotificationService;
+use App\Services\Cliente\ClientContactEmailResolver;
 use App\Support\DocumentValidator;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Cache;
@@ -21,6 +23,8 @@ class GeneratePaymentSlipService
         private readonly PaymentProviderManager $providerManager,
         private readonly PaymentSlipExpiredAlertService $expiredAlertService,
         private readonly PaymentAlertService $paymentAlerts,
+        private readonly ClientContactEmailResolver $emailResolver,
+        private readonly ClientChargeNotificationService $clientNotifications,
     ) {}
 
     public function handle(CustomerCharge $charge, string $provider = 'mercado_pago', string $paymentMethod = 'pix'): PaymentSlip
@@ -90,7 +94,7 @@ class GeneratePaymentSlipService
             ?? $charge->clientProfile?->nome
             ?? $charge->clientProfile?->razao_social
             ?? 'Cliente',
-            email: $this->resolveEmail($charge),
+            email: $this->emailResolver->forCharge($charge),
             document: $document,
             phone: $charge->clientProfile?->contacts?->celular ?? $charge->clientProfile?->contacts?->telefone ?? null,
             address: $address,
@@ -186,32 +190,9 @@ class GeneratePaymentSlipService
 
         $this->expiredAlertService->resolveFor($charge, "Novo boleto/Pix #{$slip->id} emitido.");
         $this->paymentAlerts->generationOk($charge, $account);
+        $this->clientNotifications->paymentAvailable($slip);
 
         return $slip;
-    }
-
-    /**
-     * O e-mail de contato do cliente (cadastro) é sempre preferido em relação ao
-     * e-mail de login da plataforma, porque clientes que nunca ativaram o portal
-     * recebem um e-mail sintético "cliente-{id}@casaverde.local" (IssueClientContractService)
-     * só para satisfazer o unique da tabela users — nunca é um endereço real, e
-     * provedores de pagamento (ex: Mercado Pago) rejeitam com invalid_payer_email.
-     */
-    private function resolveEmail(CustomerCharge $charge): ?string
-    {
-        $contactEmail = $charge->clientProfile?->contacts?->email;
-
-        if ($contactEmail) {
-            return $contactEmail;
-        }
-
-        $platformEmail = $charge->platformUser?->email;
-
-        if ($platformEmail && ! str_ends_with($platformEmail, '@casaverde.local')) {
-            return $platformEmail;
-        }
-
-        return null;
     }
 
     private function resolveAddress(CustomerCharge $charge): ?array

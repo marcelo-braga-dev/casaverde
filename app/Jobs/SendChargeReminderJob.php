@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\Cobranca\CustomerCharge;
 use App\Services\Automation\GenerateChargeReminderAlertService;
+use App\Services\Cliente\ClientChargeNotificationService;
 use App\Services\Pagamento\PaymentSlipExpiredAlertService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -20,6 +21,7 @@ class SendChargeReminderJob implements ShouldQueue
     public function handle(
         GenerateChargeReminderAlertService $service,
         PaymentSlipExpiredAlertService $expiredAlertService,
+        ClientChargeNotificationService $clientNotifications,
     ): void {
         $charge = CustomerCharge::query()->find($this->chargeId);
 
@@ -36,5 +38,9 @@ class SendChargeReminderJob implements ShouldQueue
         }
 
         $service->handle($charge, $this->reason);
+
+        if ($this->reason === 'upcoming_due') {
+            $clientNotifications->dueReminder($charge);
+        }
     }
 }

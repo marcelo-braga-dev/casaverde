@@ -10,6 +10,7 @@ use App\Models\Users\User;
 use App\Services\Automation\ChargeReminderService;
 use App\Services\Automation\GenerateChargeReminderAlertService;
 use App\Services\Automation\PaymentAutomationService;
+use App\Services\Cliente\ClientChargeNotificationService;
 use App\Services\Cobranca\UpdateCustomerChargeDueDateService;
 use App\Services\Pagamento\GeneratePaymentSlipService;
 use App\Services\Pagamento\PaymentSlipExpiredAlertService;
@@ -116,6 +117,7 @@ describe('Payment slip expiration', function () {
         (new SendChargeReminderJob($charge->id, 'payment_slip_expired'))->handle(
             app(GenerateChargeReminderAlertService::class),
             app(PaymentSlipExpiredAlertService::class),
+            app(ClientChargeNotificationService::class),
         );
 
         expect(expiredAlertFor($charge)->status->value)->toBe('open');
