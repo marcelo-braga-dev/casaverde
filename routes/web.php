@@ -29,6 +29,7 @@ Route::get('/produtor/ativacao/{token}', [ProdutorActivationController::class, '
     ->name('produtor.activation.form');
 
 Route::post('/produtor/ativacao', [ProdutorActivationController::class, 'store'])
+    ->middleware('throttle:6,1')
     ->name('produtor.activation.store');
 
 // Sem "auth": o link é aberto também pelo visualizador em WebView. A assinatura com

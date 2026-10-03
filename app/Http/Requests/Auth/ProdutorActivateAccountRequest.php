@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
 
 class ProdutorActivateAccountRequest extends FormRequest
 {
@@ -16,7 +17,7 @@ class ProdutorActivateAccountRequest extends FormRequest
         return [
             'token' => ['required', 'string'],
             'name' => ['required', 'string', 'max:255'],
-            'password' => ['required', 'string', 'min:6', 'confirmed'],
+            'password' => ['required', 'string', Password::defaults(), 'confirmed'],
         ];
     }
 }

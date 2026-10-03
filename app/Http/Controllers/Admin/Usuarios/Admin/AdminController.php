@@ -58,7 +58,7 @@ class AdminController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'min:2', 'max:120'],
             'email' => ['required', 'email', 'max:200', 'unique:users,email'],
-            'password' => ['required', Password::min(6)->letters()->numbers(), 'confirmed'],
+            'password' => ['required', Password::defaults(), 'confirmed'],
             'status' => ['required', 'string'],
         ], [
             'name.required' => 'O nome é obrigatório.',
@@ -112,7 +112,7 @@ class AdminController extends Controller
         $data = $request->validate([
             'name' => ['required', 'string', 'min:2', 'max:120'],
             'email' => ['required', 'email', 'max:200', "unique:users,email,{$admin->id}"],
-            'password' => ['nullable', Password::min(6)->letters()->numbers(), 'confirmed'],
+            'password' => ['nullable', Password::defaults(), 'confirmed'],
             'status' => ['required', 'string'],
         ], [
             'name.required' => 'O nome é obrigatório.',

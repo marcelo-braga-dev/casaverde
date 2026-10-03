@@ -55,7 +55,7 @@ class PerfilController extends Controller
     public function updatePassword(Request $request)
     {
         $request->validate([
-            'password' => ['required', Password::min(6)->letters()->numbers(), 'confirmed'],
+            'password' => ['required', Password::defaults(), 'confirmed'],
             'password_confirmation' => ['required'],
         ], [
             'password.required' => 'A nova senha é obrigatória.',

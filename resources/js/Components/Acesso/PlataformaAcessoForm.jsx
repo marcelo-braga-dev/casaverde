@@ -189,7 +189,7 @@ export default function PlataformaAcessoForm({
                             value={data.password}
                             onChange={e => setData('password', e.target.value)}
                             error={!!errors.password}
-                            helperText={errors.password ?? (hasAccess ? 'Mínimo 6 caracteres com letras e números.' : undefined)}
+                            helperText={errors.password ?? (hasAccess ? 'Mínimo 8 caracteres com letras e números.' : undefined)}
                             InputProps={{
                                 startAdornment: <InputAdornment position="start"><IconKey size={15} style={{opacity: 0.45}}/></InputAdornment>,
                                 endAdornment: (

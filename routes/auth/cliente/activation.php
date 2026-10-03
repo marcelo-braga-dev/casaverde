@@ -6,4 +6,5 @@ Route::get('/cliente/ativacao/{token}', [ClienteActivationController::class, 'sh
     ->name('cliente.activation.form');
 
 Route::post('/cliente/ativacao', [ClienteActivationController::class, 'store'])
+    ->middleware('throttle:6,1')
     ->name('cliente.activation.store');

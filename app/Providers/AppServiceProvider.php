@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Validation\Rules\Password;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -30,6 +31,12 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Vite::prefetch(concurrency: 3);
+
+        // uncompromised() consulta o Have I Been Pwned: só em produção, para não depender
+        // de rede nos testes e no ambiente local.
+        Password::defaults(fn () => app()->isProduction()
+            ? Password::min(8)->letters()->numbers()->uncompromised()
+            : Password::min(8)->letters()->numbers());
 
         Gate::policy(ClientProfile::class, ClientProfilePolicy::class);
         Gate::policy(CommercialProposal::class, CommercialProposalPolicy::class);

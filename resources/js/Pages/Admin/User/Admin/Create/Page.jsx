@@ -107,7 +107,7 @@ export default function Page() {
                                     value={data.password}
                                     onChange={e => setData('password', e.target.value)}
                                     error={!!errors.password}
-                                    helperText={errors.password ?? 'Mínimo 6 caracteres com letras e números.'}
+                                    helperText={errors.password ?? 'Mínimo 8 caracteres com letras e números.'}
                                     InputProps={{
                                         startAdornment: <InputAdornment position="start"><IconShield size={16} style={{ opacity: 0.45 }} /></InputAdornment>,
                                         endAdornment: <InputAdornment position="end"><IconButton size="small" onClick={() => setShowPwd(s => !s)} tabIndex={-1}>{showPwd ? <IconEyeOff size={16} /> : <IconEye size={16} />}</IconButton></InputAdornment>,

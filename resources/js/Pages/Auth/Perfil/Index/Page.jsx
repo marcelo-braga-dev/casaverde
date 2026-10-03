@@ -359,7 +359,7 @@ export default function Page({ user, extra }) {
                                         {/* Dicas de senha */}
                                         <Box sx={{ bgcolor: 'grey.50', borderRadius: 2, p: 1.5 }}>
                                             <Typography variant="caption" color="text.secondary">
-                                                A senha deve ter <strong>mínimo 6 caracteres</strong>, contendo <strong>letras e números</strong>.
+                                                A senha deve ter <strong>mínimo 8 caracteres</strong>, contendo <strong>letras e números</strong>.
                                             </Typography>
                                         </Box>
 

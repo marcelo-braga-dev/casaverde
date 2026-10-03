@@ -45,8 +45,9 @@ class ProducerAccessInvite extends Model
             return false;
         }
 
+        // Convite sem validade definida não pode virar um link de ativação eterno.
         if (! $this->expires_at) {
-            return true;
+            return false;
         }
 
         return Carbon::now()->lte($this->expires_at);

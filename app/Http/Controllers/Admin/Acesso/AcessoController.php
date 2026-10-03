@@ -32,8 +32,8 @@ class AcessoController extends Controller
             'name' => ['required', 'string', 'min:2', 'max:120'],
             'email' => ['required', 'email', "unique:users,email,{$existingUserId}"],
             'password' => $existingUserId
-                ? ['nullable', Password::min(6)->letters()->numbers()]
-                : ['required', Password::min(6)->letters()->numbers()],
+                ? ['nullable', Password::defaults()]
+                : ['required', Password::defaults()],
         ];
 
         $data = $request->validate($rules, [
@@ -68,8 +68,8 @@ class AcessoController extends Controller
             'name' => ['required', 'string', 'min:2', 'max:120'],
             'email' => ['required', 'email', "unique:users,email,{$existingUserId}"],
             'password' => $existingUserId
-                ? ['nullable', Password::min(6)->letters()->numbers()]
-                : ['required', Password::min(6)->letters()->numbers()],
+                ? ['nullable', Password::defaults()]
+                : ['required', Password::defaults()],
         ]);
 
         $user = $this->service->criarOuAtualizar(

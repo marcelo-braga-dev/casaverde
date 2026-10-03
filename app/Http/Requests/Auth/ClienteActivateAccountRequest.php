@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
 
 class ClienteActivateAccountRequest extends FormRequest
 {
@@ -16,7 +17,7 @@ class ClienteActivateAccountRequest extends FormRequest
         return [
             'token' => ['required', 'string'],
             'name' => ['required', 'string', 'max:255'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => ['required', 'string', Password::defaults(), 'confirmed'],
         ];
     }
 }
