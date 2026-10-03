@@ -1,5 +1,6 @@
 <?php
 
+use App\Services\Proposta\TemporaryPdfStorageService;
 use Illuminate\Support\Facades\Schedule;
 
 // energy-bills:import (pipeline EnergyBill antigo) fora do agendamento: nunca importou
@@ -19,3 +20,6 @@ Schedule::command('casaverde:send-charge-reminders')->dailyAt('08:00')->withoutO
 Schedule::command('casaverde:scan-operational-health')->hourlyAt(30)->withoutOverlapping(60);
 
 Schedule::command('queue:prune-failed', ['--hours' => 24 * 30])->daily();
+Schedule::call(fn () => app(TemporaryPdfStorageService::class)->prune())
+    ->daily()
+    ->name('prune-temporary-pdfs');

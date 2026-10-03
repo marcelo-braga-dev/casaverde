@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\ProdutorActivationController;
+use App\Http\Controllers\Auth\Propostas\ShowTemporaryPdfController;
 use App\Http\Controllers\Webhook\Payments\MercadoPagoWebhookController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -29,3 +30,10 @@ Route::get('/produtor/ativacao/{token}', [ProdutorActivationController::class, '
 
 Route::post('/produtor/ativacao', [ProdutorActivationController::class, 'store'])
     ->name('produtor.activation.store');
+
+// Sem "auth": o link é aberto também pelo visualizador em WebView. A assinatura com
+// validade é o que protege o arquivo.
+Route::get('/pdfs/temporarios/{arquivo}', ShowTemporaryPdfController::class)
+    ->middleware('signed')
+    ->whereUuid('arquivo')
+    ->name('pdfs.temporarios.show');

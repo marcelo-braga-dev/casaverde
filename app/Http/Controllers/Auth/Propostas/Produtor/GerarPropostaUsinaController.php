@@ -3,21 +3,23 @@
 namespace App\Http\Controllers\Auth\Propostas\Produtor;
 
 use App\Http\Controllers\Controller;
+use App\Services\Proposta\TemporaryPdfStorageService;
 use Illuminate\Http\Request;
 
 class GerarPropostaUsinaController extends Controller
 {
+    public function __construct(private TemporaryPdfStorageService $pdfStorage) {}
+
     public function gerarPdf(Request $request)
     {
-        // Vai para o disco público, no mesmo domínio do CRM: um .html/.svg aqui viraria XSS.
         $request->validate([
             'file' => ['nullable', 'file', 'mimes:pdf', 'max:10240'],
         ]);
 
         if ($request->hasFile('file')) {
-            $path = $request->file('file')->store('pdfs', 'public');
+            $url = $this->pdfStorage->store($request->file('file')->get());
 
-            return response()->json(['url' => asset("storage/{$path}")]);
+            return response()->json(['url' => $url]);
         }
 
         return response()->json(['error' => 'Nenhum arquivo recebido'], 400);

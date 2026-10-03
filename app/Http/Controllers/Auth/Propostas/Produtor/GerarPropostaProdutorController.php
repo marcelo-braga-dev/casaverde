@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Auth\Propostas\Produtor;
 
 use App\Http\Controllers\Controller;
+use App\Services\Proposta\TemporaryPdfStorageService;
 use Barryvdh\Snappy\Facades\SnappyPdf as PDF;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class GerarPropostaProdutorController extends Controller
 {
+    public function __construct(private TemporaryPdfStorageService $pdfStorage) {}
+
     public function gerarPdf(Request $request)
     {
         // O PDF é gerado com enable-local-file-access (as imagens de fundo são locais):
@@ -57,16 +58,7 @@ class GerarPropostaProdutorController extends Controller
             ->setOption('margin-top', '0mm')
             ->setOption('margin-bottom', '0mm');
 
-        // Nome do arquivo com identificador único
-        $fileName = 'proposta_'.Str::random(10).'.pdf';
-        $filePath = "pdfs/propostas/$fileName"; // Caminho no armazenamento
-
-        Storage::disk('public')->put($filePath, $pdf->output());
-
-        // URL pública do PDF
-        $pdfUrl = asset("storage/$filePath");
-
-        return response()->json(['urlPdf' => url($pdfUrl)]);
+        return response()->json(['urlPdf' => $this->pdfStorage->store($pdf->output())]);
     }
 
     public function layoutPdf()
