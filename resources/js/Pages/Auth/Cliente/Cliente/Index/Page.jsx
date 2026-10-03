@@ -23,7 +23,6 @@ const Page = () => {
         try {
             const response = await axios.get(route('auth.cliente.api.get', {page}))
             setClientes(response.data.data)
-            console.log(response.data.data)
             setLastPage(response.data.last_page)
         } finally {
             setCarregando(false)

@@ -16,7 +16,6 @@ const Page = () => {
     const getRegistros = async () => {
         const response = await axios.get(route('auth.produtor.proposta.api.get-all'))
         setRegistros(response.data)
-        console.log(response.data)
     }
 
     return (

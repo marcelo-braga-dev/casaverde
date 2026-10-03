@@ -18,7 +18,6 @@ const Page = () => {
         const response = await axios.get(route('auth.produtor.api.get-all'))
             .finally(() => setCarregando(false))
         setProdutores(response.data)
-        console.log(response.data)
     }
 
     return (

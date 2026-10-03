@@ -35,7 +35,7 @@ const DadosPessoais = ({ data, setData, title, completo, verificarUsuarioExisten
             setData("data_fundacao", empresa?.estabelecimento?.data_inicio_atividade ?? "");
         } catch (err) {
             alertError(err?.response?.data?.detalhes || "Erro ao buscar informações do CNPJ.");
-            console.log("Erro ao buscar informações do CNPJ.", err);
+            console.error("Erro ao buscar informações do CNPJ.", err);
         }
     };
 

@@ -9,7 +9,6 @@ import Grid from "@mui/material/Grid2";
 import {IconUserDollar} from "@tabler/icons-react";
 
 const ProducerConsultor = ({profile}) => {
-    console.log(profile);
     return (
         <Card sx={{marginBottom: 4}}>
             <CardHeader

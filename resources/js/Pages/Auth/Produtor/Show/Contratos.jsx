@@ -15,7 +15,6 @@ const Contratos = ({produtorId}) => {
         const response = await axios.get(route('auth.produtor-contratos-api.get-all', produtorId))
 
         setContratos(response.data)
-        console.log(response.data)
     }
 
     return (
