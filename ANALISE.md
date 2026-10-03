@@ -1,5 +1,7 @@
 # Análise Completa — Casa Verde CRM
 
+> ⚠️ **Documento histórico.** Retrato do projeto na data indicada abaixo; números, riscos e pendências aqui citados não refletem o estado atual. A referência atualizada é `CLAUDE.md` (operação e convenções) e `README.md` (visão geral).
+
 > Gerado em: 2026-05-31
 
 ---

@@ -1,5 +1,7 @@
 # Relatório de Erros — Casa Verde CRM
 
+> ⚠️ **Documento histórico.** Retrato do projeto na data indicada abaixo; números, riscos e pendências aqui citados não refletem o estado atual. A referência atualizada é `CLAUDE.md` (operação e convenções) e `README.md` (visão geral).
+
 > Gerado em: 2026-06-20
 > Fonte: `storage/logs/laravel.log` (período 2026-06-17 13:55 a 2026-06-20 10:47)
 > Destinado a: Claude Code (ou outro agente com acesso ao repositório) — corrigir os itens abaixo na ordem de prioridade indicada.

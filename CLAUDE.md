@@ -15,7 +15,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 CRM/ERP para operação de energia solar por compensação/assinatura. Ciclo completo:
 
-> Prospecção → Proposta comercial → Contrato → Vínculo cliente-usina → Importação de faturas (IMAP + upload) → Geração de cobranças → Pagamento via Cora → Relatórios
+> Prospecção → Proposta comercial → Contrato → Vínculo cliente-usina → Importação de faturas (IMAP + upload) → Geração de cobranças → Pagamento (Mercado Pago em produção; Cora suportada) → Relatórios
 
 **4 roles**: Admin · Consultor · Produtor · Cliente
 
@@ -42,9 +42,10 @@ CRM/ERP para operação de energia solar por compensação/assinatura. Ciclo com
 - `jquery-mask-plugin` — máscaras de entrada
 
 ### Banco e infraestrutura
-- MySQL 8.0 (91 migrations, 40+ tabelas)
+- MySQL 8.0 (99 migrations, 40+ tabelas)
 - Testes: Pest PHP + SQLite in-memory (nunca MySQL nos testes)
-- Pagamentos: Cora API (sandbox e produção), webhook de retorno
+- Pagamentos: Mercado Pago Orders API (conta ativa em produção) e Cora API, via `PaymentProviderContract`; webhooks de retorno exigem `webhook_secret`
+- **PHP de produção é 8.3** (php-fpm 8.3; cron usa `php83`). O `php` da linha de comando é 8.4: rode testes e Composer com `php83` (`composer.json` fixa `config.platform.php = 8.3.24`)
 - Email: IMAP para importação automática de faturas de concessionária
 
 ---
@@ -72,7 +73,7 @@ Redirecionamento pós-login (`app/Http/Middleware/RedirectUserByRole.php`):
 - Services injetados via construtor (DI) — **nunca `new Service()` direto**.
 - Repositories em `app/Repositories/` — consultas de listagem/paginação complexas ficam aqui, não nos controllers.
 - DTOs em `app/DTOs/` — único diretório válido. Subpastas: `Endereco/`, `Payments/`, `UsinaSolar/`, `Usuario/`.
-- Policies para autorização (`app/Policies/`). Atualmente: `ClientProfilePolicy`, `CommercialProposalPolicy`, `UsinaSolarPolicy`, `CustomerChargePolicy`, `ProducerProfilePolicy`. Todas seguem o padrão `before()` com bypass para ADMIN e checagem por `consultor_user_id`/`platform_user_id` para as demais roles. Registradas em `AppServiceProvider::boot()` via `Gate::policy()` — não há `AuthServiceProvider` neste Laravel 12, então não há auto-discovery. Demais entidades usam verificação manual — expandir quando possível.
+- Policies para autorização (`app/Policies/`). Atualmente: `ClientProfilePolicy` (view/update/delete), `CommercialProposalPolicy`, `UsinaSolarPolicy`, `CustomerChargePolicy`, `ProducerProfilePolicy`. Todas seguem o padrão `before()` com bypass para ADMIN e checagem por `consultor_user_id`/`platform_user_id` para as demais roles. Registradas em `AppServiceProvider::boot()` via `Gate::policy()` — não há `AuthServiceProvider` neste Laravel 12, então não há auto-discovery. Demais entidades usam verificação manual — expandir quando possível.
 - Scoping de consultor via Query Scopes — nunca filtros manuais repetidos. Exemplo: `scopeSomenteMeusClientes()` em `User`.
 - Nomenclatura: inglês em models/classes; português aceitável em variáveis/comentários.
 - `FormRequest::authorize()` deve validar a role, não só `auth()->check()`.
@@ -117,6 +118,13 @@ Redirecionamento pós-login (`app/Http/Middleware/RedirectUserByRole.php`):
 ### Consultor
 - Vê apenas clientes/produtores da própria carteira (scoping obrigatório nas queries).
 - Vinculado via `users.consultor_id`, `producer_profiles.consultor_user_id`, `producer_leads.consultor_user_id`.
+- Scopes de carteira: `CustomerCharge::somenteMinhasCobrancas()`, `ClientProfile::somenteDoConsultor()`, `User::somenteMeusClientes()`. Toda ação com `{id}` acessível ao consultor checa o dono (policy ou `abort_if`) — coberto por `tests/Feature/Security/AccessIsolationTest.php`.
+
+### Mapa de acesso por role (rotas)
+- `admin/*`: **só admin por padrão** (`routes/admin/index.php`). Consultor entra apenas em cobranças, pagamentos, alertas operacionais e relatórios de clientes/usinas — todos filtrados pela carteira. Faturas de concessionária, dashboard admin, cockpit, configurações, usuários e integrações são exclusivos do admin.
+- `auth/*` (módulo legado de cadastros): só admin, porque os controllers não filtram por carteira; exceções: ferramentas de WhatsApp (admin + consultor), perfil e suporte (todas as roles).
+- `cliente/*` e `produtor/*`: portais próprios, cada `show` confere o dono do registro.
+- Não há cadastro público (`/register` removido): clientes entram por convite (`ClientAccessInvite`); produtores são criados pelo admin.
 
 ---
 
@@ -179,11 +187,19 @@ app/Jobs/
 Serviços de automação recorrente em `app/Services/Automation/`:
 - `ChargeAutomationService` — gera `CustomerCharge` a partir de fatura aprovada.
 - `PaymentAutomationService` — gera pagamento (`PaymentSlip`) para cobranças sem pagamento ativo.
-- `ChargeReminderService` — dispara lembrete de cobrança: pré-vencimento (3 dias antes do `due_date`, uma vez) e pós-vencimento (a cada 5 dias enquanto `status=overdue`). Despacha `SendChargeReminderJob`, que delega para `GenerateChargeReminderAlertService` (cria um `OperationalAlert` com link `wa.me` pronto no `payload`, atribuído ao consultor responsável). Controlado pela coluna `customer_charges.reminder_sent_at`.
+- `ChargeReminderService` — dispara lembrete de cobrança: pré-vencimento (3 dias antes do `due_date`, uma vez), pós-vencimento (a cada 5 dias enquanto `status=overdue`) e boleto vencido sem substituto (a cada 5 dias, via `PaymentSlipExpiredAlertService`; nesses casos o lembrete de vencida comum não é enviado). Despacha `SendChargeReminderJob`, que delega para `GenerateChargeReminderAlertService` (cria um `OperationalAlert` com link `wa.me` pronto no `payload`, atribuído ao consultor responsável). Controlado pela coluna `customer_charges.reminder_sent_at`.
+- `PaymentAutomationService::expireOverdueSlips()` — marca como `expired` o boleto/Pix cuja data (lida do código de barras) passou, sem cancelar no provider; o slip vencido segue sincronizado por 10 dias.
+- `generateMissingPayments()` só roda se houver conta padrão ativa do provider `cora` (hoje não há: a geração de boletos é manual, por decisão de negócio).
 
-Agendamento (`routes/console.php`):
+Agendamento (`routes/console.php`, cron com `php83 artisan schedule:run`):
+- `casaverde:expire-payment-slips` (`ExpireOverduePaymentSlipsCommand`) — `dailyAt('06:00')`.
 - `casaverde:send-charge-reminders` (`SendChargeRemindersCommand`) — `dailyAt('08:00')`.
+- `casaverde:sync-payments` (`SyncPendingPaymentsCommand`) — `everyFiveMinutes()`.
+- `casaverde:mark-overdue-charges` — `everyTenMinutes()`.
 - `casaverde:generate-missing-payments` (`GenerateMissingPaymentsCommand`) — `hourly()`.
+- `energy-bills:import`, `concessionaire-bills:import`, `casaverde:generate-monthly-charges` — `hourly()`.
+
+Worker da fila: serviço systemd `casa-verde-queue` (`Restart=always`), conexão `database`. Após deploy: `php artisan queue:restart`.
 
 Não existe envio automático de WhatsApp (sem credenciais de Business API/Twilio/Z-API) — `WhatsAppLinkService` apenas gera o link `wa.me` para clique humano do consultor a partir do alerta.
 
@@ -194,7 +210,7 @@ Não existe envio automático de WhatsApp (sem credenciais de Business API/Twili
 ```
 routes/
 ├── web.php                    # carrega todos os módulos
-├── admin/                     # auth + role:admin,consultor
+├── admin/                     # auth + role:admin (consultor só nos módulos listados em "Mapa de acesso")
 │   ├── index.php
 │   ├── users/                 # admin.php, produtor.php, vendedor.php
 │   ├── financeiro/
@@ -218,11 +234,18 @@ routes/
 |---------|-----------------|
 | `EnsureUserHasRole.php` | Bloqueia acesso por role (`role:admin,consultor` etc.) |
 | `RedirectUserByRole.php` | Redireciona `/dashboard` para o dashboard correto por role |
-| `HandleInertiaRequests.php` | Compartilha `auth.user` (id, nome, email, role_id, role_name, status, consultor_id), `alert` e `flash` |
+| `HandleInertiaRequests.php` | Compartilha `auth.user` (id, nome, email, role_id, role_name, status, consultor_id), `alert`, `flash` e `navBadges` (inclui `chargesAwaitingNewSlip`) |
+| `SecurityHeaders.php` | X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy e HSTS (em HTTPS) |
+
+`bootstrap/app.php` confia nos proxies (`trustProxies(at: '*')`): a aplicação roda atrás de Cloudflare + nginx, e sem isso o Laravel vê HTTP e o IP do proxy.
 
 ---
 
-## Integração Cora (pagamentos)
+## Integração de pagamentos (Mercado Pago e Cora)
+
+Mercado Pago (`app/Services/Pagamento/Providers/MercadoPago/`) é o provider em produção; guia de configuração e regras operacionais (vencimento, boleto vencido, reemissão, estorno) em `MERCADO_PAGO.md`. Webhook: `MercadoPagoWebhookController` (consulta a API antes de dar baixa). Os dois webhooks recusam tudo quando a conta não tem `webhook_secret`.
+
+### Cora
 
 ```
 app/Services/Pagamento/Providers/Cora/
@@ -281,9 +304,12 @@ Menu construído com base em `auth.user.role_name` — segurança real sempre no
 
 - Framework: Pest PHP
 - Ambiente: SQLite in-memory (`phpunit.xml` define `DB_CONNECTION=sqlite`, `DB_DATABASE=:memory:`)
-- Cobertura atual: 57 arquivos de teste (Feature + Unit)
+- Rodar com `php83 artisan test` (mesma versão de produção).
+- `tests/Pest.php` liga `Http::preventStrayRequests()`: chamada HTTP sem `Http::fake()` falha o teste (nunca sai para Cora/Mercado Pago). `phpunit.xml` manda logs para o canal `null`.
+- Cobertura atual: 89 arquivos de teste (Feature + Unit), 557 testes
 - Áreas cobertas: Auth, Middleware, Dashboard (Admin/Consultor), Services (Cliente, Cobrança, Usina, Fatura, Proposta, Automation), Controllers (ConsumerUnit, ClientUsinaLink, ConcessionariaController, ProducerFeeRule), Policies (UsinaSolar, CustomerCharge, ProducerProfile), Pagamento/Cora (auth, provider, webhook signature, webhook controller, processamento de webhook, geração de boleto/Pix), IMAP (`ImportAutomaticConcessionaireBillService`, com fetcher/extrator/desbloqueio de PDF mockados), WhatsApp (`WhatsAppLinkService`)
-- **Áreas sem cobertura**: geração de PDF (dompdf/snappy)
+- Também cobertos: Mercado Pago (provider, vencimento, estorno, webhook com assinatura), ciclo de vida de boletos vencidos, isolamento de acesso por role/carteira (`tests/Feature/Security/`).
+- **Áreas sem cobertura**: geração de PDF via snappy (propostas legadas)
 
 Preferir testes de integração com SQLite — sem mocks de DB.
 
@@ -293,7 +319,10 @@ Preferir testes de integração com SQLite — sem mocks de DB.
 
 | Problema | Local | Ação |
 |----------|-------|------|
-| `FormRequest::authorize()` retorna só `auth()->check()` | Fatura, Cobranca, Cliente, Produtor, Pagamento Requests (~23 classes) | Validar role explicitamente — pacote dedicado futuro, volume grande |
+| `FormRequest::authorize()` retorna só `auth()->check()` | Requests restantes de Fatura, Produtor, Pagamento | Validar role explicitamente; na edição, checar carteira no `authorize()` (padrão: `StoreClientProfileRequest`) |
+| Módulo legado `auth/*` sem filtro de carteira | `app/Http/Controllers/Auth/**` | Restrito a admin; migrar telas ainda úteis para os módulos novos e remover o resto |
+| Funcionalidades inacabadas | convite de produtor (`ProducerAccessInvite` nunca é criado, sem página de ativação); telas `fatura-import-settings` (só o `update` está ativo) | Concluir ou remover |
+| Status de slip como strings soltas | `app/Services/Pagamento/**` | Migrar para `PaymentSlipStatus` (já tem `REFUNDED`) |
 | Controllers/Services acima de 200 linhas | `ClientReportService`, `ImportAutomaticConcessionaireBillService`, `ScanUsinaOperationalAlertsService`, `ClienteEconomiaRelatorioService`, `AdminDashboardMetricsService`, `ExecutiveCockpitService` | Dividir em classes menores |
 | N+1 potenciais | Services sem eager loading | Adicionar `.with()` onde necessário |
 | Sem cobertura de teste para geração de PDF | dompdf/snappy | Criar testes quando o fluxo for revisado |
@@ -326,7 +355,9 @@ php artisan migrate
 php artisan migrate:fresh --seed
 
 # Automações financeiras (também agendadas via routes/console.php)
+php artisan casaverde:expire-payment-slips
 php artisan casaverde:send-charge-reminders
+php artisan casaverde:sync-payments
 php artisan casaverde:generate-missing-payments
 
 # Seeders disponíveis

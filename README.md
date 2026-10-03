@@ -20,7 +20,7 @@ O **Casa Verde** é uma plataforma de operação comercial e administrativa para
 
 O sistema foi desenhado para controlar o ciclo completo:
 
-> Prospecção → Proposta comercial → Contrato → Vínculo cliente-usina → Importação de faturas (IMAP + upload) → Geração de cobranças → Pagamento via Cora → Relatórios
+> Prospecção → Proposta comercial → Contrato → Vínculo cliente-usina → Importação de faturas (IMAP + upload) → Geração de cobranças → Pagamento (Mercado Pago em produção; Cora suportada) → Relatórios
 
 - usuários internos da operação
 - clientes consumidores finais
@@ -33,7 +33,7 @@ O sistema foi desenhado para controlar o ciclo completo:
 - vinculação entre clientes e usinas (`ClientUsinaLink`), com alocação de energia e desconto
 - contratos formais entre cliente e operação
 - geração automática de cobranças (`CustomerCharge`) a partir das faturas aprovadas
-- pagamento das cobranças via gateway Cora (boleto/Pix), com webhook de retorno
+- pagamento das cobranças via Mercado Pago (boleto ou Pix; Cora também suportada), com webhook de retorno e sincronização automática
 - relatórios financeiros e operacionais
 
 A aplicação combina componentes de **CRM**, **ERP operacional/financeiro** e **portal de acesso** para tipos diferentes de usuário.
@@ -49,7 +49,7 @@ A regra macro de negócio do Casa Verde é:
 3. clientes aderem à energia compensada/assinada via proposta → contrato → vínculo com usina
 4. produtores são os proprietários das usinas ofertadas na operação
 5. o sistema importa as faturas de concessionária do cliente (IMAP automático ou upload manual)
-6. a partir da fatura aprovada, o sistema gera a cobrança do cliente e o pagamento (boleto/Pix via Cora)
+6. a partir da fatura aprovada, o sistema gera a cobrança do cliente e o pagamento (boleto/Pix via Mercado Pago)
 7. o sistema gerencia propostas, vínculos, perfis, dados operacionais, faturas, cobranças e pagamentos
 8. a plataforma oferece relatórios financeiros e operacionais e acompanhamento por consultor
 
@@ -81,7 +81,7 @@ Isso alterou a arquitetura do domínio e a documentação anterior foi atualizad
 ## Banco de dados e testes
 - MySQL 8.0 em produção/dev
 - Testes com Pest PHP + SQLite in-memory (nunca MySQL nos testes)
-- Pagamentos: Cora API (sandbox e produção) + webhook de retorno
+- Pagamentos: Mercado Pago Orders API (produção) e Cora API, via `PaymentProviderContract`; webhooks exigem `webhook_secret` (ver `MERCADO_PAGO.md`)
 - Email: IMAP para importação automática de faturas de concessionária
 
 > Para a lista exaustiva de bibliotecas, ver `package.json` e `composer.json`; para convenções de uso, ver `CLAUDE.md`.
@@ -102,7 +102,7 @@ Principais domínios atuais:
 - **Fatura / Importação** — `ConcessionaireBill`, `ConcessionaireBillIssue`, `ImportedConcessionaireEmail`, `ImportEmailAccount`, `ClientEmailImportSetting` (IMAP)
 - **Propostas** — `CommercialProposal`, `ProducerProposal`
 - **Cobrança** — `CustomerCharge`, `CustomerChargeAdjustment`
-- **Pagamento** — `PaymentSlip`, `PaymentTransaction`, `PaymentProviderAccount`, `PaymentWebhookEvent` (gateway Cora)
+- **Pagamento** — `PaymentSlip`, `PaymentTransaction`, `PaymentProviderAccount`, `PaymentWebhookEvent` (Mercado Pago / Cora)
 - **Relatórios** — services em `app/Services/Admin/Reports/`
 - **Suporte / WhatsApp / Config** — `SupportTicket`, `WhatsAppMessageTemplate`, `SystemSetting`
 
@@ -165,7 +165,7 @@ Na arquitetura atual, **produtor é role oficial do sistema**, com:
 - pré-cadastra clientes e produtores
 - possui carteira de clientes e produtores vinculados via `consultor_id`
 - pode criar e acompanhar usinas sob sua responsabilidade
-- não deve ter visão global irrestrita como admin
+- não deve ter visão global irrestrita como admin: na área `admin/*` acessa só cobranças, pagamentos, alertas e relatórios de clientes/usinas, sempre filtrados pela própria carteira (detalhes em `CLAUDE.md` → "Mapa de acesso por role")
 
 ## 6.3 Cliente
 - é o consumidor final da operação
@@ -245,7 +245,7 @@ O projeto já possui base funcional para:
 - importação de faturas de concessionária via IMAP e upload manual, com fila de revisão/aprovação
 - vínculo cliente-usina (`ClientUsinaLink`) e contratos (`ClientContract`)
 - geração automática de cobrança (`CustomerCharge`) a partir de fatura aprovada
-- pagamento de cobranças via Cora (boleto/Pix) com webhook de retorno e jobs de sincronização de status
+- pagamento de cobranças via Mercado Pago (boleto/Pix) com webhook de retorno, sincronização a cada 5 minutos e tratamento de boleto vencido (alerta ao consultor, reemissão)
 - lembrete automático de cobrança (pré-vencimento e pós-vencimento) via `OperationalAlert` com link de WhatsApp pronto para o consultor
 - relatórios financeiros e operacionais (faturas, com export em Excel/PDF)
 - filtros de busca (incluindo por nome de cliente) nas principais páginas de listagem financeira
@@ -455,8 +455,8 @@ Controller principal:
 - `App\Http\Controllers\Admin\DashboardController`
 
 Regra:
-- admin vê visão global
-- consultor vê visão restrita à própria carteira
+- só admin (visão global da empresa)
+- o consultor usa o próprio dashboard (`consultor.dashboard`), restrito à carteira
 
 ## 10.5 Dashboard do produtor
 Controller principal:
@@ -524,7 +524,7 @@ Arquivo:
 - `routes/admin/index.php`
 
 Responsabilidade:
-- agrupar todas as rotas administrativas/operacionais com `auth` + `role:admin,consultor`
+- agrupar as rotas administrativas: por padrão `auth` + `role:admin`; um grupo separado libera ao consultor cobranças, pagamentos, alertas e relatórios de clientes/usinas (filtrados pela carteira)
 
 ## 12.3 Rotas cliente
 Arquivo:
@@ -581,6 +581,7 @@ Mesmo que o menu esconda itens, a segurança real sempre deve estar no backend.
 - `app/Http/Controllers/Admin/Cobranca/CustomerChargeController.php` + `app/Repositories/Cobranca/CustomerChargeRepository.php`
 - `app/Http/Controllers/Admin/Pagamento/PaymentSlipController.php` + `app/Repositories/Pagamento/PaymentSlipRepository.php`
 - `app/Http/Controllers/Admin/Relatorio/BillReportController.php` + `app/Services/Admin/Reports/BillReportService.php`
+- `app/Services/Pagamento/Providers/MercadoPago/` (integração Mercado Pago, em produção)
 - `app/Services/Pagamento/Providers/Cora/` (integração Cora)
 - `app/Services/Imap/AbstractImapFetcherService.php` (importação de faturas via IMAP)
 
@@ -749,7 +750,7 @@ Se você está assumindo este projeto agora, memorize estes pontos:
 5. consultor é responsável comercial por clientes, produtores e usinas de sua carteira (scoping obrigatório)
 6. proposta de produtor pode criar o produtor inline
 7. `ProducerProfile` é obrigatório para o domínio de produtor ficar consistente
-8. faturas de concessionária são importadas via IMAP/upload, aprovadas e geram `CustomerCharge`, que por sua vez gera pagamento via Cora
+8. faturas de concessionária são importadas via IMAP/upload, aprovadas e geram `CustomerCharge`, que por sua vez gera pagamento via Mercado Pago (boleto/Pix)
 9. o backend é a fonte real de autorização
 10. o frontend usa Inertia + React + MUI
 11. qualquer mudança relevante deve manter coerência entre model, request, controller, repository e página React correspondente

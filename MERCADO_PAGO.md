@@ -100,6 +100,9 @@ Quando for trocar de sandbox para produção:
    **Credenciais de produção** (prefixo `APP_USR-`).
 3. Cadastre a URL de webhook de **produção** (não a de teste) apontando para o domínio real.
 4. Gere a chave secreta de assinatura de produção e atualize `MERCADOPAGO_WEBHOOK_SECRET`.
+   **Obrigatório:** sem `webhook_secret` na conta, o endpoint
+   `/webhooks/payments/mercado-pago` recusa todas as notificações (401). Nesse caso a
+   confirmação de pagamento depende só do sync automático a cada 5 minutos.
 5. Rode o seeder de novo (ou atualize pela tela de Contas de Pagamento).
 
 ## 6. Qual API o sistema usa (importante)
@@ -135,7 +138,7 @@ Reflexos práticos disso:
 
 ## 7. Testando o fluxo completo
 
-1. Abra uma cobrança (`CustomerCharge`) com status `open` ou `waiting_payment`.
+1. Abra uma cobrança (`CustomerCharge`) com status `open`, `waiting_payment` ou `overdue`.
 2. Clique em **Gerar pagamento** → **Mercado Pago — Pix** (ou **Boleto**).
 3. Isso chama `POST /v1/orders` com `transactions.payments[0].payment_method.id = pix`
    (ou `bolbradesco`). O Mercado Pago não permite gerar boleto **e** Pix na mesma order —
@@ -151,3 +154,28 @@ Reflexos práticos disso:
    - **Sincronização manual**: botão **Sincronizar** na tela do pagamento
      (`admin.financeiro.pagamentos.sync`), que chama a mesma consulta sob demanda.
 6. Acompanhe os eventos recebidos em **Financeiro → Webhooks de Pagamento**.
+
+## 8. Regras operacionais (produção)
+
+- **Vencimento do boleto/Pix:** o vencimento da cobrança é enviado em
+  `transactions.payments[].expiration_time` (duração ISO 8601, de 1 a 30 dias; cobrança já
+  vencida recebe 3 dias). Sem isso o Mercado Pago aplica o padrão (boleto: 3 dias úteis;
+  Pix: 24h). O MP joga datas de fim de semana para o próximo dia útil e não devolve a data
+  na resposta, então o sistema grava em `payment_slips.due_date` a data **lida do código de
+  barras** (`App\Support\BoletoDueDate`) — é a que o banco aceita e a que sai no PDF.
+- **Boleto vencido:** pagamento após o vencimento é devolvido pelo MP ao pagador. A rotina
+  `casaverde:expire-payment-slips` (diária, 06:00) marca o slip como `expired`, alerta o
+  consultor ("gere um novo boleto e envie ao cliente", renovado a cada 5 dias) e bloqueia o
+  PDF. O pedido **não** é cancelado no MP: um boleto pago no último dia pode levar até 3
+  dias úteis para compensar. O slip vencido segue sincronizado por 10 dias; se o pagamento
+  cair, a cobrança é baixada e o boleto substituto é cancelado automaticamente.
+- **Mudança de vencimento ou valor da cobrança:** o boleto ativo é cancelado no MP e
+  reemitido com os dados novos. Cancelar ou baixar manualmente a cobrança também cancela o
+  boleto no MP (se o MP recusar porque já foi pago, o pagamento é registrado).
+- **Estorno:** status `refunded` no MP vira `refunded` no slip; a cobrança continua paga e
+  o caso fica no histórico para revisão humana.
+- **Idempotência:** cada tentativa usa `X-Idempotency-Key = charge-{id}-{método}-{n}`; um
+  timeout não registra tentativa, então tentar de novo reaproveita o mesmo pedido.
+- **Credenciais:** `client_secret` (Access Token) e `webhook_secret` ficam criptografados e
+  nunca são enviados ao navegador; só admin acessa **Contas de Pagamento**.
+
