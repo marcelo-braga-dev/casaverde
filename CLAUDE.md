@@ -314,7 +314,7 @@ Preferir testes de integração com SQLite — sem mocks de DB.
 
 | Problema | Local | Ação |
 |----------|-------|------|
-| `FormRequest::authorize()` retorna só `auth()->check()` | Requests restantes de Fatura, Produtor, Pagamento | Validar role explicitamente; na edição, checar carteira no `authorize()` (padrão: `StoreClientProfileRequest`) |
+| `FormRequest::authorize()` valida role, mas não carteira | Requests de edição usados por consultor | Na edição, checar carteira no `authorize()` (padrão: `StoreClientProfileRequest`) |
 | Módulo legado `auth/*` sem filtro de carteira | `app/Http/Controllers/Auth/**` | Restrito a admin; migrar telas ainda úteis para os módulos novos e remover o resto |
 | Funcionalidades inacabadas | convite de produtor (`ProducerAccessInvite` nunca é criado, sem página de ativação); telas `fatura-import-settings` (só o `update` está ativo) | Concluir ou remover |
 | Status de slip como strings soltas | `app/Services/Pagamento/**` | Migrar para `PaymentSlipStatus` (já tem `REFUNDED`) |
