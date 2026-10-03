@@ -199,7 +199,7 @@ Agendamento (`routes/console.php`, cron com `php83 artisan schedule:run`):
 - `casaverde:generate-missing-payments` (`GenerateMissingPaymentsCommand`) — `hourly()`.
 - `energy-bills:import`, `concessionaire-bills:import`, `casaverde:generate-monthly-charges` — `hourly()`.
 
-Worker da fila: serviço systemd `casa-verde-queue` (`Restart=always`), conexão `database`. Após deploy: `php artisan queue:restart`.
+Worker da fila: serviço systemd `casa-verde-queue` (`/usr/bin/php83`, `Restart=always`), conexão `database`. Após deploy: `php artisan queue:restart`.
 
 Não existe envio automático de WhatsApp (sem credenciais de Business API/Twilio/Z-API) — `WhatsAppLinkService` apenas gera o link `wa.me` para clique humano do consultor a partir do alerta.
 
