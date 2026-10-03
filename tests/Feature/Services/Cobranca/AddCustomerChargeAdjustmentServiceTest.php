@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\Cobranca\CustomerCharge;
-use App\Models\Pagamento\PaymentProviderAccount;
 use App\Models\Pagamento\PaymentSlip;
 use App\Models\Users\User;
 use App\Services\Cobranca\AddCustomerChargeAdjustmentService;
@@ -15,12 +14,11 @@ describe('AddCustomerChargeAdjustmentService', function () {
 
     it('recalculates the charge and reissues the active slip with the new amount', function () {
         Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
-            'cora.test/invoices/inv-old' => Http::response([], 204),
-            'cora.test/invoices' => Http::response(['id' => 'inv-new', 'status' => 'OPEN'], 201),
+            'mp.test/v1/orders/inv-old/cancel' => Http::response(mpOrder('inv-old', 'canceled'), 200),
+            'mp.test/v1/orders' => Http::response(mpOrder('inv-new', 'action_required'), 201),
         ]);
 
-        $account = PaymentProviderAccount::factory()->create(['base_url' => 'https://cora.test']);
+        $account = mercadoPagoAccount();
         $charge = CustomerCharge::factory()->create([
             'status' => 'open',
             'original_amount' => 300,

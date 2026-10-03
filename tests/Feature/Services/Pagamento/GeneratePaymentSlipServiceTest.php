@@ -16,29 +16,15 @@ describe('GeneratePaymentSlipService', function () {
     beforeEach(function () {
         $this->service = app(GeneratePaymentSlipService::class);
 
-        PaymentProviderAccount::factory()->create([
-            'provider' => 'cora',
-            'base_url' => 'https://cora.test',
-            'is_active' => true,
-            'is_default' => true,
-        ]);
+        mercadoPagoAccount();
 
         Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
         ]);
     });
 
     it('creates a payment slip for an open charge using the client phone and email from contacts', function () {
         Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
-            'cora.test/invoices' => Http::response([
-                'id' => 'inv-1',
-                'status' => 'OPEN',
-                'payment_options' => [
-                    'bank_slip' => ['barcode' => '123456', 'digitable_line' => '1234.5678'],
-                    'pix' => ['qr_code' => 'qr', 'copy_paste' => 'copy'],
-                ],
-            ], 201),
+            'mp.test/v1/orders' => Http::response(mpOrder('inv-1', 'action_required'), 201),
         ]);
 
         $client = ClientProfile::factory()->create();
@@ -54,7 +40,7 @@ describe('GeneratePaymentSlipService', function () {
 
         expect($slip)->toBeInstanceOf(PaymentSlip::class)
             ->and($slip->status)->toBe('generated')
-            ->and($slip->provider)->toBe('cora')
+            ->and($slip->provider)->toBe('mercado_pago')
             ->and($slip->provider_payment_id)->toBe('inv-1')
             ->and((float) $slip->amount)->toBe(300.0)
             ->and($slip->request_payload['customer']['phone'])->toBe('(41) 9 9999-0000')
@@ -63,8 +49,7 @@ describe('GeneratePaymentSlipService', function () {
 
     it('prefers the client contact email over the platform login email', function () {
         Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
-            'cora.test/invoices' => Http::response(['id' => 'inv-1', 'status' => 'OPEN'], 201),
+            'mp.test/v1/orders' => Http::response(mpOrder('inv-1', 'action_required'), 201),
         ]);
 
         $client = ClientProfile::factory()->create();
@@ -84,8 +69,7 @@ describe('GeneratePaymentSlipService', function () {
 
     it('ignores the synthetic @casaverde.local placeholder login email and falls back to null', function () {
         Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
-            'cora.test/invoices' => Http::response(['id' => 'inv-1', 'status' => 'OPEN'], 201),
+            'mp.test/v1/orders' => Http::response(mpOrder('inv-1', 'action_required'), 201),
         ]);
 
         $client = ClientProfile::factory()->create();
@@ -100,7 +84,7 @@ describe('GeneratePaymentSlipService', function () {
 
         $this->service->handle($charge);
 
-        // O provider (Cora) recebe null e decide seu próprio fallback — o que importa
+        // O provider recebe null e decide seu próprio fallback — o que importa
         // aqui é que o e-mail sintético de login nunca chega até o provider de pagamento.
         expect(PaymentSlip::first()->request_payload['customer']['email'])->toBeNull();
     });
@@ -122,8 +106,7 @@ describe('GeneratePaymentSlipService', function () {
 
     it('records a failed slip with the provider error when the provider call fails', function () {
         Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
-            'cora.test/invoices' => Http::response(['error' => 'invalid'], 422),
+            'mp.test/v1/orders' => Http::response(['error' => 'invalid'], 422),
         ]);
 
         $charge = CustomerCharge::factory()->create(['status' => 'open']);
@@ -135,8 +118,8 @@ describe('GeneratePaymentSlipService', function () {
 
         expect($slip)->not->toBeNull()
             ->and($slip->status)->toBe('failed')
-            ->and($slip->provider)->toBe('cora')
-            ->and($slip->error_message)->toContain('Falha ao gerar pagamento na Cora')
+            ->and($slip->provider)->toBe('mercado_pago')
+            ->and($slip->error_message)->toContain('Falha ao gerar pagamento no Mercado Pago')
             ->and($slip->response_payload)->toBe(['error' => 'invalid']);
     });
 
@@ -172,8 +155,7 @@ describe('GeneratePaymentSlipService', function () {
 
     it('uses the CNPJ when the client CPF is an empty string', function () {
         Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
-            'cora.test/invoices' => Http::response(['id' => 'inv-1', 'status' => 'OPEN'], 201),
+            'mp.test/v1/orders' => Http::response(mpOrder('inv-1', 'action_required'), 201),
         ]);
 
         $client = ClientProfile::factory()->pj()->create();

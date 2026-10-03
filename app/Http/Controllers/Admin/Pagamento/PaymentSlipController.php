@@ -25,8 +25,8 @@ class PaymentSlipController extends Controller
             'payments' => $repository->paginate($filters, 20),
             'filters' => $filters,
             'statuses' => ['pending', 'generated', 'paid', 'cancelled', 'failed', 'expired', 'refunded'],
-            'providers' => ['cora', 'mercado_pago', 'asaas'],
-            'paymentMethods' => ['boleto', 'pix', 'boleto_pix'],
+            'providers' => ['mercado_pago'],
+            'paymentMethods' => ['boleto', 'pix'],
         ]);
     }
 

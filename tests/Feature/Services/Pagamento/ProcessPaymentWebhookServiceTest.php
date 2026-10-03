@@ -3,9 +3,7 @@
 use App\Models\Cobranca\CustomerCharge;
 use App\Models\Pagamento\PaymentProviderAccount;
 use App\Models\Pagamento\PaymentSlip;
-use App\Models\Pagamento\PaymentTransaction;
 use App\Models\Pagamento\PaymentWebhookEvent;
-use App\Services\Pagamento\MarkPaymentAsPaidService;
 use App\Services\Pagamento\ProcessPaymentWebhookService;
 use Illuminate\Support\Facades\Http;
 
@@ -15,143 +13,11 @@ describe('ProcessPaymentWebhookService', function () {
         $this->service = app(ProcessPaymentWebhookService::class);
     });
 
-    it('marks the slip and charge as paid when the webhook reports payment', function () {
-        $charge = CustomerCharge::factory()->create(['status' => 'waiting_payment']);
-        $slip = PaymentSlip::factory()->create([
-            'customer_charge_id' => $charge->id,
-            'provider' => 'cora',
-            'provider_payment_id' => 'inv-1',
-            'status' => 'generated',
-        ]);
-
-        $event = PaymentWebhookEvent::factory()->create([
-            'provider' => 'cora',
-            'provider_payment_id' => 'inv-1',
-            'payload' => [
-                'invoice' => ['id' => 'inv-1', 'status' => 'PAID', 'paid_amount' => 25000, 'paid_at' => '2026-06-22T10:00:00Z'],
-                'transaction' => ['id' => 'txn-1'],
-            ],
-        ]);
-
-        $result = $this->service->handle($event);
-
-        expect($result->status)->toBe('processed')
-            ->and($slip->refresh()->status)->toBe('paid')
-            ->and($charge->refresh()->status)->toBe('paid')
-            ->and(PaymentTransaction::where('payment_slip_id', $slip->id)->count())->toBe(1);
-
-        $this->assertDatabaseHas('customer_charge_histories', [
-            'customer_charge_id' => $charge->id,
-            'action' => 'marked_paid',
-        ]);
-    });
-
-    it('marks the slip as cancelled when the webhook reports cancellation, and reopens an open charge', function () {
-        $charge = CustomerCharge::factory()->create(['status' => 'open']);
-        $slip = PaymentSlip::factory()->create([
-            'customer_charge_id' => $charge->id,
-            'provider' => 'cora',
-            'provider_payment_id' => 'inv-2',
-            'status' => 'generated',
-        ]);
-
-        $event = PaymentWebhookEvent::factory()->create([
-            'provider' => 'cora',
-            'provider_payment_id' => 'inv-2',
-            'payload' => ['invoice' => ['id' => 'inv-2', 'status' => 'CANCELLED']],
-        ]);
-
-        $this->service->handle($event);
-
-        expect($slip->refresh()->status)->toBe('cancelled')
-            ->and($event->refresh()->status)->toBe('processed')
-            ->and($charge->refresh()->status)->toBe('open');
-    });
-
-    it('marks the slip as expired when the webhook reports expiration', function () {
-        $slip = PaymentSlip::factory()->create([
-            'provider' => 'cora',
-            'provider_payment_id' => 'inv-3',
-            'status' => 'generated',
-        ]);
-
-        $event = PaymentWebhookEvent::factory()->create([
-            'provider' => 'cora',
-            'provider_payment_id' => 'inv-3',
-            'payload' => ['invoice' => ['id' => 'inv-3', 'status' => 'EXPIRED']],
-        ]);
-
-        $this->service->handle($event);
-
-        expect($slip->refresh()->status)->toBe('expired')
-            ->and($event->refresh()->status)->toBe('processed');
-    });
-
-    it('reopens an overdue charge when the webhook reports cancellation, unblocking reissue', function () {
-        $charge = CustomerCharge::factory()->create(['status' => 'overdue']);
-        PaymentSlip::factory()->create([
-            'customer_charge_id' => $charge->id,
-            'provider' => 'cora',
-            'provider_payment_id' => 'inv-2b',
-            'status' => 'generated',
-        ]);
-
-        $event = PaymentWebhookEvent::factory()->create([
-            'provider' => 'cora',
-            'provider_payment_id' => 'inv-2b',
-            'payload' => ['invoice' => ['id' => 'inv-2b', 'status' => 'CANCELLED']],
-        ]);
-
-        $this->service->handle($event);
-
-        expect($charge->refresh()->status)->toBe('open');
-    });
-
-    it('reopens an overdue charge when the webhook reports expiration, unblocking reissue', function () {
-        $charge = CustomerCharge::factory()->create(['status' => 'overdue']);
-        PaymentSlip::factory()->create([
-            'customer_charge_id' => $charge->id,
-            'provider' => 'cora',
-            'provider_payment_id' => 'inv-3b',
-            'status' => 'generated',
-        ]);
-
-        $event = PaymentWebhookEvent::factory()->create([
-            'provider' => 'cora',
-            'provider_payment_id' => 'inv-3b',
-            'payload' => ['invoice' => ['id' => 'inv-3b', 'status' => 'EXPIRED']],
-        ]);
-
-        $this->service->handle($event);
-
-        expect($charge->refresh()->status)->toBe('open');
-    });
-
-    it('does not reopen the charge via webhook cancellation when it is already paid', function () {
-        $charge = CustomerCharge::factory()->create(['status' => 'paid']);
-        PaymentSlip::factory()->create([
-            'customer_charge_id' => $charge->id,
-            'provider' => 'cora',
-            'provider_payment_id' => 'inv-2c',
-            'status' => 'generated',
-        ]);
-
-        $event = PaymentWebhookEvent::factory()->create([
-            'provider' => 'cora',
-            'provider_payment_id' => 'inv-2c',
-            'payload' => ['invoice' => ['id' => 'inv-2c', 'status' => 'CANCELLED']],
-        ]);
-
-        $this->service->handle($event);
-
-        expect($charge->refresh()->status)->toBe('paid');
-    });
-
     it('ignores the event without raising an exception when no matching slip exists', function () {
         $event = PaymentWebhookEvent::factory()->create([
-            'provider' => 'cora',
+            'provider' => 'mercado_pago',
             'provider_payment_id' => 'inv-unknown',
-            'payload' => ['invoice' => ['id' => 'inv-unknown', 'status' => 'PAID']],
+            'payload' => ['type' => 'order', 'data' => ['id' => 'inv-unknown']],
         ]);
 
         $result = $this->service->handle($event);
@@ -162,9 +28,9 @@ describe('ProcessPaymentWebhookService', function () {
 
     it('ignores the event when there is no provider payment id in the payload', function () {
         $event = PaymentWebhookEvent::factory()->create([
-            'provider' => 'cora',
+            'provider' => 'mercado_pago',
             'provider_payment_id' => null,
-            'payload' => ['status' => 'PAID'],
+            'payload' => ['type' => 'order'],
         ]);
 
         $result = $this->service->handle($event);
@@ -185,48 +51,78 @@ describe('ProcessPaymentWebhookService', function () {
             ->and($result->attempts)->toBe(1);
     });
 
-    it('marks the event as failed and rethrows when an unexpected error occurs', function () {
-        PaymentSlip::factory()->create([
-            'provider' => 'cora',
-            'provider_payment_id' => 'inv-4',
+    it('marks the slip as cancelled when the API reports cancellation, and reopens an open charge', function () {
+        $account = mercadoPagoAccount();
+        Http::fake(['mp.test/v1/orders/ORD2' => Http::response(mpOrder('ORD2', 'canceled'), 200)]);
+
+        $charge = CustomerCharge::factory()->create(['status' => 'open']);
+        $slip = PaymentSlip::factory()->create([
+            'customer_charge_id' => $charge->id,
+            'payment_provider_account_id' => $account->id,
+            'provider_payment_id' => 'ORD2',
             'status' => 'generated',
         ]);
+        $event = PaymentWebhookEvent::factory()->create(['provider_payment_id' => 'ORD2']);
 
-        $this->mock(MarkPaymentAsPaidService::class, function ($mock) {
-            $mock->shouldReceive('handle')->andThrow(new RuntimeException('Falha simulada.'));
-        });
+        $this->service->handle($event);
 
-        $service = app(ProcessPaymentWebhookService::class);
-
-        $event = PaymentWebhookEvent::factory()->create([
-            'provider' => 'cora',
-            'provider_payment_id' => 'inv-4',
-            'payload' => ['invoice' => ['id' => 'inv-4', 'status' => 'PAID']],
-        ]);
-
-        expect(fn () => $service->handle($event))->toThrow(RuntimeException::class, 'Falha simulada.');
-
-        expect($event->refresh()->status)->toBe('failed')
-            ->and($event->error_message)->toBe('Falha simulada.');
+        expect($slip->refresh()->status)->toBe('cancelled')
+            ->and($event->refresh()->status)->toBe('processed')
+            ->and($charge->refresh()->status)->toBe('open');
     });
 
-    it('ignores the event when the status does not require operational action', function () {
+    it('reopens an overdue charge when the API reports the order expired, unblocking reissue', function () {
+        $account = mercadoPagoAccount();
+        Http::fake(['mp.test/v1/orders/ORD3' => Http::response(mpOrder('ORD3', 'expired'), 200)]);
+
+        $charge = CustomerCharge::factory()->create(['status' => 'overdue']);
         $slip = PaymentSlip::factory()->create([
-            'provider' => 'cora',
-            'provider_payment_id' => 'inv-5',
+            'customer_charge_id' => $charge->id,
+            'payment_provider_account_id' => $account->id,
+            'provider_payment_id' => 'ORD3',
             'status' => 'generated',
         ]);
+        $event = PaymentWebhookEvent::factory()->create(['provider_payment_id' => 'ORD3']);
 
-        $event = PaymentWebhookEvent::factory()->create([
-            'provider' => 'cora',
-            'provider_payment_id' => 'inv-5',
-            'payload' => ['invoice' => ['id' => 'inv-5', 'status' => 'PENDING']],
+        $this->service->handle($event);
+
+        expect($slip->refresh()->status)->toBe('expired')
+            ->and($charge->refresh()->status)->toBe('open');
+    });
+
+    it('does not reopen a paid charge when a later notification reports cancellation', function () {
+        $account = mercadoPagoAccount();
+        Http::fake(['mp.test/v1/orders/ORD4' => Http::response(mpOrder('ORD4', 'canceled'), 200)]);
+
+        $charge = CustomerCharge::factory()->create(['status' => 'paid']);
+        $slip = PaymentSlip::factory()->create([
+            'customer_charge_id' => $charge->id,
+            'payment_provider_account_id' => $account->id,
+            'provider_payment_id' => 'ORD4',
+            'status' => 'generated',
         ]);
+        $event = PaymentWebhookEvent::factory()->create(['provider_payment_id' => 'ORD4']);
 
-        $result = $this->service->handle($event);
+        $this->service->handle($event);
 
-        expect($result->status)->toBe('ignored')
-            ->and($result->error_message)->toBe('Status não exige ação operacional.')
+        expect($charge->refresh()->status)->toBe('paid');
+    });
+
+    it('marks the event as failed and rethrows when the provider API fails', function () {
+        $account = mercadoPagoAccount();
+        Http::fake(['mp.test/v1/orders/ORD5' => Http::response(['message' => 'boom'], 500)]);
+
+        $slip = PaymentSlip::factory()->create([
+            'payment_provider_account_id' => $account->id,
+            'provider_payment_id' => 'ORD5',
+            'status' => 'generated',
+        ]);
+        $event = PaymentWebhookEvent::factory()->create(['provider_payment_id' => 'ORD5']);
+
+        expect(fn () => $this->service->handle($event))->toThrow(RuntimeException::class);
+
+        expect($event->refresh()->status)->toBe('failed')
+            ->and($event->attempts)->toBe(1)
             ->and($slip->refresh()->status)->toBe('generated');
     });
 

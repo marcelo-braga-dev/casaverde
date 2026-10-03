@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Pagamento\PaymentProviderAccount;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
@@ -17,7 +18,7 @@ use Tests\TestCase;
 
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
-    // Services de pagamento falam com APIs reais (Cora/Mercado Pago): uma chamada sem
+    // Services de pagamento falam com a API real do Mercado Pago: uma chamada sem
     // Http::fake() correspondente deve quebrar o teste, nunca sair para a rede.
     ->beforeEach(fn () => Http::preventStrayRequests())
     ->in('Feature');
@@ -51,4 +52,35 @@ expect()->extend('toBeOne', function () {
 function something()
 {
     // ..
+}
+
+/*
+|--------------------------------------------------------------------------
+| Mercado Pago helpers
+|--------------------------------------------------------------------------
+|
+| Conta padrão ativa apontando para https://mp.test (sempre com Http::fake()) e um
+| pedido da Orders API no formato que MercadoPagoPaymentProvider::mapResponse() lê.
+|
+*/
+
+function mercadoPagoAccount(array $attributes = []): PaymentProviderAccount
+{
+    return PaymentProviderAccount::factory()->mercadoPago()->create([
+        'base_url' => 'https://mp.test',
+        'is_active' => true,
+        'is_default' => true,
+        ...$attributes,
+    ]);
+}
+
+function mpOrder(string $id, string $status = 'action_required', array $extra = []): array
+{
+    $statusDetail = match ($status) {
+        'processed' => 'accredited',
+        'action_required' => 'waiting_payment',
+        default => $status,
+    };
+
+    return array_merge(['id' => $id, 'status' => $status, 'status_detail' => $statusDetail], $extra);
 }

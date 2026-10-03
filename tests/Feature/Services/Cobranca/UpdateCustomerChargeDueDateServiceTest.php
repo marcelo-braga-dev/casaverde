@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\Cobranca\CustomerCharge;
-use App\Models\Pagamento\PaymentProviderAccount;
 use App\Models\Pagamento\PaymentSlip;
 use App\Models\Users\User;
 use App\Services\Cobranca\UpdateCustomerChargeDueDateService;
@@ -76,18 +75,17 @@ describe('UpdateCustomerChargeDueDateService', function () {
 
     it('cancels the active slip at the provider and reissues it with the new due date', function () {
         Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
-            'cora.test/invoices/inv-old' => Http::response([], 204),
-            'cora.test/invoices' => Http::response(['id' => 'inv-new', 'status' => 'OPEN'], 201),
+            'mp.test/v1/orders/inv-old/cancel' => Http::response(mpOrder('inv-old', 'canceled'), 200),
+            'mp.test/v1/orders' => Http::response(mpOrder('inv-new', 'action_required'), 201),
         ]);
 
-        $account = PaymentProviderAccount::factory()->create(['base_url' => 'https://cora.test']);
+        $account = mercadoPagoAccount();
         $charge = CustomerCharge::factory()->create(['status' => 'open', 'due_date' => '2026-08-10']);
         $oldSlip = PaymentSlip::factory()->create([
             'customer_charge_id' => $charge->id,
             'payment_provider_account_id' => $account->id,
             'provider_payment_id' => 'inv-old',
-            'payment_method' => 'boleto_pix',
+            'payment_method' => 'pix',
             'status' => 'generated',
         ]);
 
@@ -103,13 +101,11 @@ describe('UpdateCustomerChargeDueDateService', function () {
 
     it('keeps the old due date when the provider refuses to cancel the active slip', function () {
         Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
-            'cora.test/invoices/inv-old' => Http::sequence()
-                ->push(['error' => 'unavailable'], 503)
-                ->push(['id' => 'inv-old', 'status' => 'OPEN'], 200),
+            'mp.test/v1/orders/inv-old/cancel' => Http::response(['error' => 'unavailable'], 503),
+            'mp.test/v1/orders/inv-old' => Http::response(mpOrder('inv-old', 'action_required'), 200),
         ]);
 
-        $account = PaymentProviderAccount::factory()->create(['base_url' => 'https://cora.test']);
+        $account = mercadoPagoAccount();
         $charge = CustomerCharge::factory()->create(['status' => 'open', 'due_date' => '2026-08-10']);
         PaymentSlip::factory()->create([
             'customer_charge_id' => $charge->id,
@@ -126,12 +122,11 @@ describe('UpdateCustomerChargeDueDateService', function () {
 
     it('applies the change and reports it when the new slip cannot be issued', function () {
         Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
-            'cora.test/invoices/inv-old' => Http::response([], 204),
-            'cora.test/invoices' => Http::response(['error' => 'invalid'], 400),
+            'mp.test/v1/orders/inv-old/cancel' => Http::response(mpOrder('inv-old', 'canceled'), 200),
+            'mp.test/v1/orders' => Http::response(['error' => 'invalid'], 400),
         ]);
 
-        $account = PaymentProviderAccount::factory()->create(['base_url' => 'https://cora.test']);
+        $account = mercadoPagoAccount();
         $charge = CustomerCharge::factory()->create(['status' => 'open', 'due_date' => '2026-08-10']);
         PaymentSlip::factory()->create([
             'customer_charge_id' => $charge->id,

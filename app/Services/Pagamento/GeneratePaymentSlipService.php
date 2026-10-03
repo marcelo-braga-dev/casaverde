@@ -22,7 +22,7 @@ class GeneratePaymentSlipService
         private readonly PaymentSlipExpiredAlertService $expiredAlertService,
     ) {}
 
-    public function handle(CustomerCharge $charge, string $provider = 'cora', string $paymentMethod = 'boleto_pix'): PaymentSlip
+    public function handle(CustomerCharge $charge, string $provider = 'mercado_pago', string $paymentMethod = 'pix'): PaymentSlip
     {
         // Dois cliques simultâneos passavam juntos pela checagem de slip ativo abaixo e
         // emitiam dois boletos para a mesma cobrança.

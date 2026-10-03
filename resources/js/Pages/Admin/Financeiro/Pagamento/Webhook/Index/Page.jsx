@@ -32,7 +32,6 @@ const statusColors = {
 };
 
 const providerLabels = {
-    cora: "Cora",
     mercado_pago: "Mercado Pago",
 };
 

@@ -61,24 +61,6 @@ describe('DownloadPaymentSlipPdfController', function () {
         expect($response->headers->get('content-type'))->toContain('application/pdf');
     });
 
-    it('redirects back with a friendly error when the provider is not mercado pago', function () {
-        $admin = User::factory()->admin()->create();
-        $charge = CustomerCharge::factory()->create();
-
-        $slip = PaymentSlip::factory()->create([
-            'customer_charge_id' => $charge->id,
-            'provider' => 'cora',
-            'barcode' => boletoBarcodeDueIn(10),
-            'digitable_line' => str_repeat('1', 47),
-        ]);
-
-        $response = $this->actingAs($admin)
-            ->get(route('admin.financeiro.pagamentos.boleto-pdf', $slip->id));
-
-        $response->assertRedirect();
-        $response->assertSessionHas('error');
-    });
-
     it('redirects back with a friendly error when barcode or digitable line are missing', function () {
         $admin = User::factory()->admin()->create();
         $charge = CustomerCharge::factory()->create();

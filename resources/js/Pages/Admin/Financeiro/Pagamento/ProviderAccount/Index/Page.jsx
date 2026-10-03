@@ -16,9 +16,7 @@ import {
 import Grid from "@mui/material/Grid2";
 
 const providerLabels = {
-    cora: "Cora",
     mercado_pago: "Mercado Pago",
-    asaas: "Asaas",
 };
 
 const environmentLabels = {
@@ -57,7 +55,7 @@ export default function Page({accounts}) {
                                 </Typography>
 
                                 <Typography color="text.secondary">
-                                    Configure provedores como Cora, Mercado Pago e outros.
+                                    Configure a conta do Mercado Pago usada para gerar boletos e Pix.
                                 </Typography>
                             </Grid>
 

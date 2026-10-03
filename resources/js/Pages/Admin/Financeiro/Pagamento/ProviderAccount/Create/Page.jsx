@@ -31,26 +31,7 @@ import { IconExternalLink, IconChevronDown } from "@tabler/icons-react";
 // cada campo genérico do banco (client_id/client_secret servem para credenciais bem
 // diferentes dependendo do provider).
 //
-// Só o Mercado Pago tem o passo a passo detalhado (`walkthrough`) por enquanto — os
-// demais providers usam a lista simples (`steps`) até serem documentados da mesma forma.
 const PROVIDERS = {
-    cora: {
-        label: "Cora",
-        idLabel: "Client ID",
-        secretLabel: "Client Secret",
-        baseUrlByEnvironment: {
-            sandbox: "https://api.stage.cora.com.br",
-            production: "https://api.cora.com.br",
-        },
-        webhookUrl: "/webhooks/payments/cora",
-        panelUrl: "https://developers.cora.com.br",
-        panelLabel: "developers.cora.com.br",
-        steps: [
-            "Crie a integração no painel de desenvolvedores da Cora e gere um Client ID + Client Secret (autenticação OAuth client_credentials).",
-            "Use as credenciais de sandbox primeiro para testar sem mexer com dinheiro real.",
-            "Em Webhooks, cadastre a URL abaixo e copie o segredo de assinatura gerado para o campo \"Webhook Secret\".",
-        ],
-    },
     mercado_pago: {
         label: "Mercado Pago",
         idLabel: "Public Key",
@@ -85,7 +66,7 @@ const PROVIDERS = {
                 items: [
                     "Ainda na aplicação, vá em Webhooks → Configurar notificações.",
                     "Informe a URL de notificação mostrada no chip abaixo (troque pelo seu domínio real).",
-                    "Marque o evento \"Pagamentos\" (payment) — é o único que este sistema processa.",
+                    "Marque o evento \"Order (Mercado Pago)\" — o sistema usa a Orders API e só processa notificações de pedido (type: order).",
                     "Salve e copie a \"Chave secreta de assinatura\" gerada para o campo \"Webhook Secret\" logo abaixo.",
                 ],
             },
@@ -98,13 +79,6 @@ const PROVIDERS = {
             },
         ],
     },
-    asaas: {
-        label: "Asaas",
-        disabled: true,
-        idLabel: "Client ID",
-        secretLabel: "Client Secret",
-        baseUrlByEnvironment: { sandbox: "", production: "" },
-    },
 };
 
 function defaultBaseUrl(provider, environment) {
@@ -113,12 +87,12 @@ function defaultBaseUrl(provider, environment) {
 
 export default function Page() {
     const { data, setData, post, processing, errors } = useForm({
-        provider: "cora",
+        provider: "mercado_pago",
         name: "",
         is_active: true,
         is_default: false,
         environment: "sandbox",
-        base_url: defaultBaseUrl("cora", "sandbox"),
+        base_url: defaultBaseUrl("mercado_pago", "sandbox"),
         client_id: "",
         client_secret: "",
         webhook_secret: "",
@@ -173,11 +147,7 @@ export default function Page() {
                                     helperText={errors.provider}
                                     fullWidth
                                 >
-                                    <MenuItem value="cora">Cora</MenuItem>
                                     <MenuItem value="mercado_pago">Mercado Pago</MenuItem>
-                                    <MenuItem value="asaas" disabled>
-                                        Asaas (em breve)
-                                    </MenuItem>
                                 </TextField>
                             </Grid>
 

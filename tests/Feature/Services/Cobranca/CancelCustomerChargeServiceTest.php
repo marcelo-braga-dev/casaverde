@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\Cobranca\CustomerCharge;
-use App\Models\Pagamento\PaymentProviderAccount;
 use App\Models\Pagamento\PaymentSlip;
 use App\Models\Users\User;
 use App\Services\Cobranca\CancelCustomerChargeService;
@@ -27,14 +26,13 @@ describe('CancelCustomerChargeService', function () {
 
     it('cancels the active payment slips at the provider along with the charge', function () {
         Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
-            'cora.test/invoices/inv-1' => Http::response([], 204),
+            'mp.test/v1/orders/inv-1/cancel' => Http::response(mpOrder('inv-1', 'canceled'), 200),
         ]);
 
         $charge = CustomerCharge::factory()->create(['status' => 'open']);
         $slip = PaymentSlip::factory()->create([
             'customer_charge_id' => $charge->id,
-            'payment_provider_account_id' => PaymentProviderAccount::factory()->create(['base_url' => 'https://cora.test'])->id,
+            'payment_provider_account_id' => mercadoPagoAccount()->id,
             'provider_payment_id' => 'inv-1',
             'status' => 'generated',
         ]);
@@ -42,21 +40,19 @@ describe('CancelCustomerChargeService', function () {
         $this->service->handle($charge);
 
         expect($slip->fresh()->status)->toBe('cancelled');
-        Http::assertSent(fn ($request) => $request->method() === 'DELETE' && str_ends_with($request->url(), '/invoices/inv-1'));
+        Http::assertSent(fn ($request) => $request->method() === 'POST' && str_ends_with($request->url(), '/v1/orders/inv-1/cancel'));
     });
 
     it('keeps the charge active when the provider refuses to cancel a still payable slip', function () {
         Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
-            'cora.test/invoices/inv-2' => Http::sequence()
-                ->push(['error' => 'unavailable'], 503)
-                ->push(['id' => 'inv-2', 'status' => 'OPEN'], 200),
+            'mp.test/v1/orders/inv-2/cancel' => Http::response(['error' => 'unavailable'], 503),
+            'mp.test/v1/orders/inv-2' => Http::response(mpOrder('inv-2', 'action_required'), 200),
         ]);
 
         $charge = CustomerCharge::factory()->create(['status' => 'open']);
         $slip = PaymentSlip::factory()->create([
             'customer_charge_id' => $charge->id,
-            'payment_provider_account_id' => PaymentProviderAccount::factory()->create(['base_url' => 'https://cora.test'])->id,
+            'payment_provider_account_id' => mercadoPagoAccount()->id,
             'provider_payment_id' => 'inv-2',
             'status' => 'generated',
         ]);

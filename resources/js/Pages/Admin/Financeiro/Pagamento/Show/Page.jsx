@@ -53,15 +53,12 @@ const statusConfig = {
 };
 
 const providerLabels = {
-    cora:         "Cora",
     mercado_pago: "Mercado Pago",
-    asaas:        "Asaas",
 };
 
 const paymentMethodLabels = {
     boleto:     "Boleto",
     pix:        "Pix",
-    boleto_pix: "Boleto + Pix",
 };
 
 const transactionStatusConfig = {

@@ -28,7 +28,7 @@ mover dinheiro real.
 
 > O Access Token é a única credencial que a API realmente usa para autenticar as chamadas
 > (`MercadoPagoAuthService` simplesmente devolve esse valor como Bearer token — o Mercado
-> Pago não usa OAuth client_credentials como a Cora). O Public Key não é usado nas chamadas
+> Pago não usa OAuth client_credentials). O Public Key não é usado nas chamadas
 > de backend feitas por este sistema, mas fica salvo para referência/futuro uso em
 > componentes de checkout no frontend.
 
@@ -48,7 +48,7 @@ mover dinheiro real.
    https://SEU-DOMINIO/webhooks/payments/mercado-pago
    ```
    Essa rota já existe no sistema (`routes/web.php`, `MercadoPagoWebhookController`).
-3. Marque o evento **Pagamentos** (`payment`) — é o único evento que este sistema processa.
+3. Marque o evento **Order (Mercado Pago)** — o sistema usa a Orders API e só processa notificações de pedido (`type: order`). Não marque "Pagamentos" (`payment`): essas notificações trazem o id do pagamento, não o do pedido, e são ignoradas.
 4. Salve. O Mercado Pago vai gerar uma **Chave secreta de assinatura** (assinatura webhook /
    `x-signature`). Copie esse valor: ele vai para `PaymentProviderAccount.webhook_secret`.
    - Se você deixar esse campo em branco no sistema, o `MercadoPagoWebhookSignatureValidator`
@@ -142,8 +142,7 @@ Reflexos práticos disso:
 2. Clique em **Gerar pagamento** → **Mercado Pago — Pix** (ou **Boleto**).
 3. Isso chama `POST /v1/orders` com `transactions.payments[0].payment_method.id = pix`
    (ou `bolbradesco`). O Mercado Pago não permite gerar boleto **e** Pix na mesma order —
-   por isso são duas opções separadas no menu, diferente da Cora, que gera as duas formas
-   de uma vez.
+   por isso são duas opções separadas no menu.
 4. Para simular em sandbox, use um pagador de teste (e-mail `@testuser.com`,
    `first_name: APRO` para aprovação automática de Pix) — ver seção 6.
 5. Confirmação de pagamento chega por dois caminhos:

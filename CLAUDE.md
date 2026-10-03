@@ -15,7 +15,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 CRM/ERP para operação de energia solar por compensação/assinatura. Ciclo completo:
 
-> Prospecção → Proposta comercial → Contrato → Vínculo cliente-usina → Importação de faturas (IMAP + upload) → Geração de cobranças → Pagamento (Mercado Pago em produção; Cora suportada) → Relatórios
+> Prospecção → Proposta comercial → Contrato → Vínculo cliente-usina → Importação de faturas (IMAP + upload) → Geração de cobranças → Pagamento (Mercado Pago) → Relatórios
 
 **4 roles**: Admin · Consultor · Produtor · Cliente
 
@@ -44,7 +44,7 @@ CRM/ERP para operação de energia solar por compensação/assinatura. Ciclo com
 ### Banco e infraestrutura
 - MySQL 8.0 (99 migrations, 40+ tabelas)
 - Testes: Pest PHP + SQLite in-memory (nunca MySQL nos testes)
-- Pagamentos: Mercado Pago Orders API (conta ativa em produção) e Cora API, via `PaymentProviderContract`; webhooks de retorno exigem `webhook_secret`
+- Pagamentos: **somente Mercado Pago** (Orders API), via `PaymentProviderContract`/`PaymentProviderManager`; webhook de retorno exige `webhook_secret`. A integração Cora foi removida (2026-10-03) — não reintroduzir sem decisão de negócio
 - **PHP de produção é 8.3** (php-fpm 8.3; cron usa `php83`). O `php` da linha de comando é 8.4: rode testes e Composer com `php83` (`composer.json` fixa `config.platform.php = 8.3.24`)
 - Email: IMAP para importação automática de faturas de concessionária
 
@@ -177,7 +177,6 @@ app/Enums/
 ```
 app/Jobs/
 ├── GenerateChargeFromApprovedBillJob.php
-├── GeneratePaymentForChargeJob.php
 ├── MarkChargeAsOverdueJob.php
 ├── SendChargeReminderJob.php
 ├── SyncPaymentStatusJob.php
@@ -186,17 +185,16 @@ app/Jobs/
 
 Serviços de automação recorrente em `app/Services/Automation/`:
 - `ChargeAutomationService` — gera `CustomerCharge` a partir de fatura aprovada.
-- `PaymentAutomationService` — gera pagamento (`PaymentSlip`) para cobranças sem pagamento ativo.
+- `PaymentAutomationService` — marca cobranças vencidas, sincroniza pagamentos pendentes com o Mercado Pago e expira boletos vencidos.
 - `ChargeReminderService` — dispara lembrete de cobrança: pré-vencimento (3 dias antes do `due_date`, uma vez), pós-vencimento (a cada 5 dias enquanto `status=overdue`) e boleto vencido sem substituto (a cada 5 dias, via `PaymentSlipExpiredAlertService`; nesses casos o lembrete de vencida comum não é enviado). Despacha `SendChargeReminderJob`, que delega para `GenerateChargeReminderAlertService` (cria um `OperationalAlert` com link `wa.me` pronto no `payload`, atribuído ao consultor responsável). Controlado pela coluna `customer_charges.reminder_sent_at`.
 - `PaymentAutomationService::expireOverdueSlips()` — marca como `expired` o boleto/Pix cuja data (lida do código de barras) passou, sem cancelar no provider; o slip vencido segue sincronizado por 10 dias.
-- `generateMissingPayments()` só roda se houver conta padrão ativa do provider `cora` (hoje não há: a geração de boletos é manual, por decisão de negócio).
+- **Não há geração automática de boletos**: o pagamento é sempre gerado manualmente na tela da cobrança (decisão de negócio). O antigo `casaverde:generate-missing-payments`/`GeneratePaymentForChargeJob` foi removido junto com a Cora.
 
 Agendamento (`routes/console.php`, cron com `php83 artisan schedule:run`):
 - `casaverde:expire-payment-slips` (`ExpireOverduePaymentSlipsCommand`) — `dailyAt('06:00')`.
 - `casaverde:send-charge-reminders` (`SendChargeRemindersCommand`) — `dailyAt('08:00')`.
 - `casaverde:sync-payments` (`SyncPendingPaymentsCommand`) — `everyFiveMinutes()`.
 - `casaverde:mark-overdue-charges` — `everyTenMinutes()`.
-- `casaverde:generate-missing-payments` (`GenerateMissingPaymentsCommand`) — `hourly()`.
 - `energy-bills:import`, `concessionaire-bills:import`, `casaverde:generate-monthly-charges` — `hourly()`.
 
 Worker da fila: serviço systemd `casa-verde-queue` (`/usr/bin/php83`, `Restart=always`), conexão `database`. Após deploy: `php artisan queue:restart`.
@@ -241,22 +239,9 @@ routes/
 
 ---
 
-## Integração de pagamentos (Mercado Pago e Cora)
+## Integração de pagamentos (Mercado Pago)
 
-Mercado Pago (`app/Services/Pagamento/Providers/MercadoPago/`) é o provider em produção; guia de configuração e regras operacionais (vencimento, boleto vencido, reemissão, estorno) em `MERCADO_PAGO.md`. Webhook: `MercadoPagoWebhookController` (consulta a API antes de dar baixa). Os dois webhooks recusam tudo quando a conta não tem `webhook_secret`.
-
-### Cora
-
-```
-app/Services/Pagamento/Providers/Cora/
-├── CoraAuthService.php
-├── CoraHttpClient.php
-├── CoraPaymentProvider.php
-├── CoraWebhookPayloadMapper.php
-└── CoraWebhookSignatureValidator.php
-```
-
-Webhook recebido em `app/Http/Controllers/Webhook/Payments/CoraWebhookController.php`.
+Mercado Pago (`app/Services/Pagamento/Providers/MercadoPago/`) é o provider em produção; guia de configuração e regras operacionais (vencimento, boleto vencido, reemissão, estorno) em `MERCADO_PAGO.md`. Webhook: `MercadoPagoWebhookController` (consulta a API antes de dar baixa). O webhook recusa tudo quando a conta não tem `webhook_secret`; no painel do MP o evento a assinar é **Order (Mercado Pago)**. Métodos: `pix` (padrão) ou `boleto` (exige endereço do pagador).
 
 ---
 
@@ -305,9 +290,9 @@ Menu construído com base em `auth.user.role_name` — segurança real sempre no
 - Framework: Pest PHP
 - Ambiente: SQLite in-memory (`phpunit.xml` define `DB_CONNECTION=sqlite`, `DB_DATABASE=:memory:`)
 - Rodar com `php83 artisan test` (mesma versão de produção).
-- `tests/Pest.php` liga `Http::preventStrayRequests()`: chamada HTTP sem `Http::fake()` falha o teste (nunca sai para Cora/Mercado Pago). `phpunit.xml` manda logs para o canal `null`.
-- Cobertura atual: 89 arquivos de teste (Feature + Unit), 557 testes
-- Áreas cobertas: Auth, Middleware, Dashboard (Admin/Consultor), Services (Cliente, Cobrança, Usina, Fatura, Proposta, Automation), Controllers (ConsumerUnit, ClientUsinaLink, ConcessionariaController, ProducerFeeRule), Policies (UsinaSolar, CustomerCharge, ProducerProfile), Pagamento/Cora (auth, provider, webhook signature, webhook controller, processamento de webhook, geração de boleto/Pix), IMAP (`ImportAutomaticConcessionaireBillService`, com fetcher/extrator/desbloqueio de PDF mockados), WhatsApp (`WhatsAppLinkService`)
+- `tests/Pest.php` liga `Http::preventStrayRequests()`: chamada HTTP sem `Http::fake()` falha o teste (nunca sai para o Mercado Pago); helpers `mercadoPagoAccount()` e `mpOrder()` simulam conta e pedido. `phpunit.xml` manda logs para o canal `null`.
+- Cobertura atual: 83 arquivos de teste (Feature + Unit), 523 testes
+- Áreas cobertas: Auth, Middleware, Dashboard (Admin/Consultor), Services (Cliente, Cobrança, Usina, Fatura, Proposta, Automation), Controllers (ConsumerUnit, ClientUsinaLink, ConcessionariaController, ProducerFeeRule), Policies (UsinaSolar, CustomerCharge, ProducerProfile), Pagamento/Mercado Pago (provider, assinatura e controller de webhook, processamento de webhook, geração/cancelamento/sync de boleto e Pix), IMAP (`ImportAutomaticConcessionaireBillService`, com fetcher/extrator/desbloqueio de PDF mockados), WhatsApp (`WhatsAppLinkService`)
 - Também cobertos: Mercado Pago (provider, vencimento, estorno, webhook com assinatura), ciclo de vida de boletos vencidos, isolamento de acesso por role/carteira (`tests/Feature/Security/`).
 - **Áreas sem cobertura**: geração de PDF via snappy (propostas legadas)
 
@@ -358,7 +343,6 @@ php artisan migrate:fresh --seed
 php artisan casaverde:expire-payment-slips
 php artisan casaverde:send-charge-reminders
 php artisan casaverde:sync-payments
-php artisan casaverde:generate-missing-payments
 
 # Seeders disponíveis
 # RolesSeeder, UserSeeder, ConcessionariasSeeder,

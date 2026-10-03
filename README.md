@@ -20,7 +20,7 @@ O **Casa Verde** é uma plataforma de operação comercial e administrativa para
 
 O sistema foi desenhado para controlar o ciclo completo:
 
-> Prospecção → Proposta comercial → Contrato → Vínculo cliente-usina → Importação de faturas (IMAP + upload) → Geração de cobranças → Pagamento (Mercado Pago em produção; Cora suportada) → Relatórios
+> Prospecção → Proposta comercial → Contrato → Vínculo cliente-usina → Importação de faturas (IMAP + upload) → Geração de cobranças → Pagamento (Mercado Pago) → Relatórios
 
 - usuários internos da operação
 - clientes consumidores finais
@@ -33,7 +33,7 @@ O sistema foi desenhado para controlar o ciclo completo:
 - vinculação entre clientes e usinas (`ClientUsinaLink`), com alocação de energia e desconto
 - contratos formais entre cliente e operação
 - geração automática de cobranças (`CustomerCharge`) a partir das faturas aprovadas
-- pagamento das cobranças via Mercado Pago (boleto ou Pix; Cora também suportada), com webhook de retorno e sincronização automática
+- pagamento das cobranças via Mercado Pago (boleto ou Pix), com webhook de retorno e sincronização automática
 - relatórios financeiros e operacionais
 
 A aplicação combina componentes de **CRM**, **ERP operacional/financeiro** e **portal de acesso** para tipos diferentes de usuário.
@@ -81,7 +81,7 @@ Isso alterou a arquitetura do domínio e a documentação anterior foi atualizad
 ## Banco de dados e testes
 - MySQL 8.0 em produção/dev
 - Testes com Pest PHP + SQLite in-memory (nunca MySQL nos testes)
-- Pagamentos: Mercado Pago Orders API (produção) e Cora API, via `PaymentProviderContract`; webhooks exigem `webhook_secret` (ver `MERCADO_PAGO.md`)
+- Pagamentos: somente Mercado Pago (Orders API), via `PaymentProviderContract`; webhook exige `webhook_secret` (ver `MERCADO_PAGO.md`). A integração Cora foi removida
 - Email: IMAP para importação automática de faturas de concessionária
 
 > Para a lista exaustiva de bibliotecas, ver `package.json` e `composer.json`; para convenções de uso, ver `CLAUDE.md`.
@@ -102,7 +102,7 @@ Principais domínios atuais:
 - **Fatura / Importação** — `ConcessionaireBill`, `ConcessionaireBillIssue`, `ImportedConcessionaireEmail`, `ImportEmailAccount`, `ClientEmailImportSetting` (IMAP)
 - **Propostas** — `CommercialProposal`, `ProducerProposal`
 - **Cobrança** — `CustomerCharge`, `CustomerChargeAdjustment`
-- **Pagamento** — `PaymentSlip`, `PaymentTransaction`, `PaymentProviderAccount`, `PaymentWebhookEvent` (Mercado Pago / Cora)
+- **Pagamento** — `PaymentSlip`, `PaymentTransaction`, `PaymentProviderAccount`, `PaymentWebhookEvent` (Mercado Pago)
 - **Relatórios** — services em `app/Services/Admin/Reports/`
 - **Suporte / WhatsApp / Config** — `SupportTicket`, `WhatsAppMessageTemplate`, `SystemSetting`
 
@@ -269,7 +269,7 @@ A arquitetura foi atualizada para comportar corretamente:
 - trilha histórica por competência
 - automações operacionais mais profundas
 - expandir filtro por nome de cliente para demais páginas com filtros, à medida que forem criadas (ver convenção em `CLAUDE.md`)
-- aumentar cobertura de testes em geração de PDF (Cora/pagamentos, IMAP e WhatsApp já têm cobertura)
+- aumentar cobertura de testes em geração de PDF (pagamentos, IMAP e WhatsApp já têm cobertura)
 
 ---
 
@@ -582,7 +582,6 @@ Mesmo que o menu esconda itens, a segurança real sempre deve estar no backend.
 - `app/Http/Controllers/Admin/Pagamento/PaymentSlipController.php` + `app/Repositories/Pagamento/PaymentSlipRepository.php`
 - `app/Http/Controllers/Admin/Relatorio/BillReportController.php` + `app/Services/Admin/Reports/BillReportService.php`
 - `app/Services/Pagamento/Providers/MercadoPago/` (integração Mercado Pago, em produção)
-- `app/Services/Pagamento/Providers/Cora/` (integração Cora)
 - `app/Services/Imap/AbstractImapFetcherService.php` (importação de faturas via IMAP)
 
 ## Frontend
@@ -729,7 +728,7 @@ Ao manter o sistema, priorizar sempre a regra atual documentada aqui.
 ## Médio prazo
 - padronizar services/repositories mais sensíveis (ex.: dividir `ClientReportService`, `ImportAutomaticConcessionaireBillService`)
 - revisar `FormRequest::authorize()` que hoje só checam `auth()->check()` sem validar a role
-- criar testes automatizados para geração de PDF (Cora/pagamentos, IMAP e WhatsApp já cobertos)
+- criar testes automatizados para geração de PDF (pagamentos, IMAP e WhatsApp já cobertos)
 
 ## Longo prazo
 - congelamento por competência

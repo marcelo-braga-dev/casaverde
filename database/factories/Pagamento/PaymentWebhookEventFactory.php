@@ -12,13 +12,13 @@ class PaymentWebhookEventFactory extends Factory
     public function definition(): array
     {
         return [
-            'provider' => 'cora',
+            'provider' => 'mercado_pago',
             'event_id' => 'evt-'.fake()->unique()->numerify('########'),
-            'event_type' => 'invoice.paid',
+            'event_type' => 'order',
             'payment_slip_id' => null,
             'provider_payment_id' => null,
             'headers' => [],
-            'payload' => ['status' => 'PAID'],
+            'payload' => ['type' => 'order', 'data' => ['id' => 'ORD1']],
             'status' => 'received',
             'attempts' => 0,
             'last_attempt_at' => null,

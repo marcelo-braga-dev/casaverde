@@ -21,7 +21,7 @@ import {
     IconSettings,
 } from "@tabler/icons-react";
 
-const PROVIDER_LABELS = { cora: 'Cora', mercado_pago: 'Mercado Pago', asaas: 'Asaas' };
+const PROVIDER_LABELS = { mercado_pago: 'Mercado Pago' };
 const ENV_LABELS = { sandbox: 'Sandbox', production: 'Produção' };
 
 function InfoRow({ label, children }) {

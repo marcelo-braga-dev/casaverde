@@ -4,7 +4,6 @@ use App\Exceptions\Payments\PaymentProviderException;
 use App\Jobs\MarkChargeAsOverdueJob;
 use App\Models\Cobranca\CustomerCharge;
 use App\Models\Fatura\ConcessionaireBill;
-use App\Models\Pagamento\PaymentProviderAccount;
 use App\Models\Pagamento\PaymentSlip;
 use App\Models\Pagamento\PaymentTransaction;
 use App\Models\Pagamento\PaymentWebhookEvent;
@@ -25,16 +24,7 @@ use Illuminate\Support\Facades\Http;
 describe('Charge + Payment lifecycle', function () {
 
     beforeEach(function () {
-        $this->account = PaymentProviderAccount::factory()->create([
-            'provider' => 'cora',
-            'base_url' => 'https://cora.test',
-            'is_active' => true,
-            'is_default' => true,
-        ]);
-
-        Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
-        ]);
+        $this->account = mercadoPagoAccount();
 
         $this->generateCharge = app(GenerateCustomerChargeFromBillService::class);
         $this->approveCharge = app(ApproveCustomerChargeService::class);
@@ -54,12 +44,8 @@ describe('Charge + Payment lifecycle', function () {
         expect($charge->status)->toBe('open');
 
         Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
-            'cora.test/invoices' => Http::response([
-                'id' => 'inv-happy-1',
-                'status' => 'OPEN',
-                'payment_options' => ['bank_slip' => ['barcode' => '123', 'digitable_line' => '456']],
-            ], 201),
+            'mp.test/v1/orders' => Http::response(mpOrder('inv-happy-1', 'action_required'), 201),
+            'mp.test/v1/orders/inv-happy-1' => Http::response(mpOrder('inv-happy-1', 'processed', ['total_paid_amount' => (string) $charge->final_amount]), 200),
         ]);
 
         $slip = $this->generateSlip->handle($charge);
@@ -67,9 +53,9 @@ describe('Charge + Payment lifecycle', function () {
             ->and($charge->refresh()->status)->toBe('open'); // emitir boleto não muda o status da cobrança
 
         $event = PaymentWebhookEvent::factory()->create([
-            'provider' => 'cora',
+            'provider' => 'mercado_pago',
             'provider_payment_id' => 'inv-happy-1',
-            'payload' => ['invoice' => ['id' => 'inv-happy-1', 'status' => 'PAID', 'paid_amount' => (int) ($charge->final_amount * 100)]],
+            'payload' => ['type' => 'order', 'data' => ['id' => 'inv-happy-1']],
         ]);
         $this->processWebhook->handle($event);
 
@@ -86,15 +72,14 @@ describe('Charge + Payment lifecycle', function () {
         $charge = CustomerCharge::factory()->create(['status' => 'open']);
 
         Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
-            // Duas invoices são criadas nesta ordem ao longo do teste (1ª emissão e a
+            // Dois pedidos são criados nesta ordem ao longo do teste (1ª emissão e a
             // reemissão depois do cancelamento) — Http::fake usa a PRIMEIRA resposta
             // registrada para URLs repetidas, então uma sequence é obrigatória aqui.
-            'cora.test/invoices' => Http::sequence()
-                ->push(['id' => 'inv-reissue-1', 'status' => 'OPEN'], 201)
-                ->push(['id' => 'inv-reissue-2', 'status' => 'OPEN'], 201),
-            'cora.test/invoices/inv-reissue-1' => Http::response([], 204),
-            'cora.test/invoices/inv-reissue-2' => Http::response(['id' => 'inv-reissue-2', 'status' => 'PAID', 'paid_amount' => 25000], 200),
+            'mp.test/v1/orders' => Http::sequence()
+                ->push(mpOrder('inv-reissue-1'), 201)
+                ->push(mpOrder('inv-reissue-2'), 201),
+            'mp.test/v1/orders/inv-reissue-1/cancel' => Http::response(mpOrder('inv-reissue-1', 'canceled'), 200),
+            'mp.test/v1/orders/inv-reissue-2' => Http::response(mpOrder('inv-reissue-2', 'processed', ['total_paid_amount' => (string) ((25000) / 100)]), 200),
         ]);
 
         $firstSlip = $this->generateSlip->handle($charge);
@@ -142,8 +127,7 @@ describe('Charge + Payment lifecycle', function () {
         $newCharge = $this->approveCharge->handle($newCharge);
 
         Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
-            'cora.test/invoices' => Http::response(['id' => 'inv-newbill-1', 'status' => 'OPEN'], 201),
+            'mp.test/v1/orders' => Http::response(mpOrder('inv-newbill-1', 'action_required'), 201),
         ]);
         $slip = $this->generateSlip->handle($newCharge);
 
@@ -190,11 +174,11 @@ describe('Charge + Payment lifecycle', function () {
         ]);
 
         Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
-            'cora.test/invoices' => Http::sequence()
-                ->push(['id' => 'inv-overdue-1', 'status' => 'OPEN'], 201)
-                ->push(['id' => 'inv-overdue-2', 'status' => 'OPEN'], 201),
-            'cora.test/invoices/inv-overdue-1' => Http::response(['id' => 'inv-overdue-1', 'status' => 'EXPIRED'], 200),
+            'mp.test/v1/orders' => Http::sequence()
+                ->push(mpOrder('inv-overdue-1'), 201)
+                ->push(mpOrder('inv-overdue-2'), 201),
+            'mp.test/v1/orders/inv-overdue-1' => Http::response(mpOrder('inv-overdue-1', 'expired'), 200),
+            'mp.test/v1/orders/inv-overdue-2' => Http::response(mpOrder('inv-overdue-2', 'processed', ['total_paid_amount' => '250.00']), 200),
         ]);
 
         $slip = $this->generateSlip->handle($charge);
@@ -215,9 +199,9 @@ describe('Charge + Payment lifecycle', function () {
         expect($newSlip->provider_payment_id)->toBe('inv-overdue-2');
 
         $event = PaymentWebhookEvent::factory()->create([
-            'provider' => 'cora',
+            'provider' => 'mercado_pago',
             'provider_payment_id' => 'inv-overdue-2',
-            'payload' => ['invoice' => ['id' => 'inv-overdue-2', 'status' => 'PAID', 'paid_amount' => 25000]],
+            'payload' => ['type' => 'order', 'data' => ['id' => 'inv-overdue-2']],
         ]);
         $this->processWebhook->handle($event);
 
@@ -229,10 +213,9 @@ describe('Charge + Payment lifecycle', function () {
         $charge = CustomerCharge::factory()->create(['status' => 'open']);
 
         Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
-            'cora.test/invoices' => Http::sequence()
+            'mp.test/v1/orders' => Http::sequence()
                 ->push(['error' => 'invalid payload'], 422)
-                ->push(['id' => 'inv-retry-1', 'status' => 'OPEN'], 201),
+                ->push(mpOrder('inv-retry-1'), 201),
         ]);
 
         expect(fn () => $this->generateSlip->handle($charge))

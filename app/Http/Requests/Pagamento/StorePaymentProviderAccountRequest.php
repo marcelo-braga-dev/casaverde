@@ -16,7 +16,7 @@ class StorePaymentProviderAccountRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'provider' => ['required', Rule::in(['cora', 'mercado_pago', 'asaas'])],
+            'provider' => ['required', Rule::in(['mercado_pago'])],
             'name' => ['required', 'string', 'max:255'],
             'is_active' => ['required', 'boolean'],
             'is_default' => ['required', 'boolean'],

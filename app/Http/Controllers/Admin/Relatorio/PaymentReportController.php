@@ -22,7 +22,7 @@ class PaymentReportController extends Controller
             'report' => $service->handle($filters),
             'filters' => $filters,
             'statuses' => ['pending', 'generated', 'paid', 'cancelled', 'failed', 'expired'],
-            'providers' => ['cora', 'mercado_pago', 'asaas'],
+            'providers' => ['mercado_pago'],
         ]);
     }
 }

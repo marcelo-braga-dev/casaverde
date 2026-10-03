@@ -123,10 +123,9 @@ describe('Payment slip expiration', function () {
 
     it('lets an overdue charge get a new boleto, resolving the alert', function () {
         Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
-            'cora.test/invoices' => Http::response(['id' => 'inv-new', 'status' => 'OPEN'], 201),
+            'mp.test/v1/orders' => Http::response(mpOrder('inv-new', 'action_required'), 201),
         ]);
-        PaymentProviderAccount::factory()->create(['base_url' => 'https://cora.test']);
+        mercadoPagoAccount();
 
         $charge = CustomerCharge::factory()->create(['client_profile_id' => $this->client->id, 'status' => 'overdue']);
         PaymentSlip::factory()->create(['customer_charge_id' => $charge->id, 'status' => 'expired']);

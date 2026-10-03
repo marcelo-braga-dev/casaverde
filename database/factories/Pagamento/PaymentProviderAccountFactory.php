@@ -12,14 +12,14 @@ class PaymentProviderAccountFactory extends Factory
     public function definition(): array
     {
         return [
-            'provider' => 'cora',
-            'name' => 'Cora Sandbox',
+            'provider' => 'mercado_pago',
+            'name' => 'Mercado Pago Sandbox',
             'is_active' => true,
             'is_default' => true,
             'environment' => 'sandbox',
-            'base_url' => 'https://matls-clients.api.stage.cora.com.br',
-            'client_id' => 'client-id-'.fake()->uuid(),
-            'client_secret' => 'client-secret-'.fake()->uuid(),
+            'base_url' => 'https://mp.test',
+            'client_id' => 'public-key-'.fake()->uuid(),
+            'client_secret' => 'access-token-'.fake()->uuid(),
             'webhook_secret' => null,
             'settings' => null,
         ];
@@ -35,7 +35,7 @@ class PaymentProviderAccountFactory extends Factory
         return $this->state(fn () => [
             'provider' => 'mercado_pago',
             'name' => 'Mercado Pago Sandbox',
-            'base_url' => 'https://mercadopago.test',
+            'base_url' => 'https://mp.test',
             'client_id' => 'public-key-'.fake()->uuid(),
             'client_secret' => 'access-token-'.fake()->uuid(),
         ]);

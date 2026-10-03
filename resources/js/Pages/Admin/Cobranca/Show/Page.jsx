@@ -130,13 +130,10 @@ const STATUS_CONFIG = {
 const PAYMENT_METHOD_LABELS = {
     boleto: "Boleto",
     pix: "Pix",
-    boleto_pix: "Boleto + Pix",
 };
 
 const PROVIDER_LABELS = {
-    cora: "Cora",
     mercado_pago: "Mercado Pago",
-    asaas: "Asaas",
 };
 
 export default function Page({ charge, aguardandoNovoBoleto = false }) {
@@ -508,9 +505,6 @@ export default function Page({ charge, aguardandoNovoBoleto = false }) {
                                         open={Boolean(paymentMenuAnchor)}
                                         onClose={() => setPaymentMenuAnchor(null)}
                                     >
-                                        <MenuItem onClick={() => generatePayment("cora", "boleto_pix")}>
-                                            Cora — Boleto + Pix
-                                        </MenuItem>
                                         <MenuItem onClick={() => generatePayment("mercado_pago", "pix")}>
                                             Mercado Pago — Pix
                                         </MenuItem>

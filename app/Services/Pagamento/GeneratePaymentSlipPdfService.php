@@ -96,12 +96,6 @@ class GeneratePaymentSlipPdfService
 
     private function guardAgainstMissingBoletoData(PaymentSlip $slip): void
     {
-        if ($slip->provider !== 'mercado_pago') {
-            throw new PaymentSlipPdfUnavailableException(
-                'A emissão de PDF de boleto próprio está disponível apenas para pagamentos gerados via Mercado Pago.'
-            );
-        }
-
         if (! $slip->barcode || ! $slip->digitable_line) {
             throw new PaymentSlipPdfUnavailableException(
                 'Este pagamento não possui código de barras ou linha digitável de boleto disponível para emissão de PDF.'

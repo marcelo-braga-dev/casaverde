@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\Cobranca\CustomerCharge;
-use App\Models\Pagamento\PaymentProviderAccount;
 use App\Models\Pagamento\PaymentSlip;
 use App\Services\Pagamento\CancelPaymentSlipService;
 use App\Services\Pagamento\GeneratePaymentSlipService;
@@ -12,29 +11,22 @@ describe('CancelPaymentSlipService', function () {
     beforeEach(function () {
         $this->service = app(CancelPaymentSlipService::class);
 
-        $this->account = PaymentProviderAccount::factory()->create([
-            'provider' => 'cora',
-            'base_url' => 'https://cora.test',
-            'is_active' => true,
-            'is_default' => true,
-        ]);
+        $this->account = mercadoPagoAccount();
 
         Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
         ]);
     });
 
     it('cancels an active slip and reopens the charge back to open', function () {
         Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
-            'cora.test/invoices/inv-1' => Http::response([], 204),
+            'mp.test/v1/orders/inv-1/cancel' => Http::response(mpOrder('inv-1', 'canceled'), 200),
         ]);
 
         $charge = CustomerCharge::factory()->create(['status' => 'open']);
         $slip = PaymentSlip::factory()->create([
             'customer_charge_id' => $charge->id,
             'payment_provider_account_id' => $this->account->id,
-            'provider' => 'cora',
+            'provider' => 'mercado_pago',
             'provider_payment_id' => 'inv-1',
             'status' => 'generated',
         ]);
@@ -48,15 +40,14 @@ describe('CancelPaymentSlipService', function () {
 
     it('reopens an overdue charge back to open when its active slip is cancelled manually', function () {
         Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
-            'cora.test/invoices/inv-2' => Http::response([], 204),
+            'mp.test/v1/orders/inv-2/cancel' => Http::response(mpOrder('inv-2', 'canceled'), 200),
         ]);
 
         $charge = CustomerCharge::factory()->create(['status' => 'overdue']);
         $slip = PaymentSlip::factory()->create([
             'customer_charge_id' => $charge->id,
             'payment_provider_account_id' => $this->account->id,
-            'provider' => 'cora',
+            'provider' => 'mercado_pago',
             'provider_payment_id' => 'inv-2',
             'status' => 'pending',
         ]);
@@ -68,8 +59,7 @@ describe('CancelPaymentSlipService', function () {
 
     it('does not touch the charge status when the charge is already paid', function () {
         Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
-            'cora.test/invoices/inv-3' => Http::response([], 204),
+            'mp.test/v1/orders/inv-3/cancel' => Http::response(mpOrder('inv-3', 'canceled'), 200),
         ]);
 
         // Estado forçado (não deveria acontecer na prática: um slip "generated" duplicado
@@ -79,7 +69,7 @@ describe('CancelPaymentSlipService', function () {
         $slip = PaymentSlip::factory()->create([
             'customer_charge_id' => $charge->id,
             'payment_provider_account_id' => $this->account->id,
-            'provider' => 'cora',
+            'provider' => 'mercado_pago',
             'provider_payment_id' => 'inv-3',
             'status' => 'generated',
         ]);
@@ -119,15 +109,14 @@ describe('CancelPaymentSlipService', function () {
 
     it('throws when the provider refuses to cancel the payment', function () {
         Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
-            'cora.test/invoices/inv-4' => Http::response(['error' => 'cannot cancel'], 422),
+            'mp.test/v1/orders/inv-4/cancel' => Http::response(['error' => 'cannot cancel'], 422),
         ]);
 
         $charge = CustomerCharge::factory()->create(['status' => 'open']);
         $slip = PaymentSlip::factory()->create([
             'customer_charge_id' => $charge->id,
             'payment_provider_account_id' => $this->account->id,
-            'provider' => 'cora',
+            'provider' => 'mercado_pago',
             'provider_payment_id' => 'inv-4',
             'status' => 'generated',
         ]);
@@ -141,19 +130,15 @@ describe('CancelPaymentSlipService', function () {
 
     it('allows generating a brand new slip for the charge after cancelling the previous one', function () {
         Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
-            'cora.test/invoices/inv-5' => Http::response([], 204),
-            'cora.test/invoices' => Http::response([
-                'id' => 'inv-6',
-                'status' => 'OPEN',
-            ], 201),
+            'mp.test/v1/orders/inv-5/cancel' => Http::response(mpOrder('inv-5', 'canceled'), 200),
+            'mp.test/v1/orders' => Http::response(mpOrder('inv-6', 'action_required'), 201),
         ]);
 
         $charge = CustomerCharge::factory()->create(['status' => 'open']);
         $oldSlip = PaymentSlip::factory()->create([
             'customer_charge_id' => $charge->id,
             'payment_provider_account_id' => $this->account->id,
-            'provider' => 'cora',
+            'provider' => 'mercado_pago',
             'provider_payment_id' => 'inv-5',
             'status' => 'generated',
         ]);

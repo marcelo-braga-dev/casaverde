@@ -13,8 +13,8 @@ function makeSyncSlip(string $providerPaymentId, string $status, string $chargeS
     $charge = CustomerCharge::factory()->create(['status' => $chargeStatus]);
     $slip = PaymentSlip::factory()->create([
         'customer_charge_id' => $charge->id,
-        'payment_provider_account_id' => PaymentProviderAccount::where('provider', 'cora')->first()->id,
-        'provider' => 'cora',
+        'payment_provider_account_id' => PaymentProviderAccount::where('provider', 'mercado_pago')->first()->id,
+        'provider' => 'mercado_pago',
         'provider_payment_id' => $providerPaymentId,
         'status' => $status,
     ]);
@@ -27,22 +27,15 @@ describe('SyncPaymentSlipService', function () {
     beforeEach(function () {
         $this->service = app(SyncPaymentSlipService::class);
 
-        $this->account = PaymentProviderAccount::factory()->create([
-            'provider' => 'cora',
-            'base_url' => 'https://cora.test',
-            'is_active' => true,
-            'is_default' => true,
-        ]);
+        $this->account = mercadoPagoAccount();
 
         Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
         ]);
     });
 
     it('marks the slip and charge as paid on first sync', function () {
         Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
-            'cora.test/invoices/inv-1' => Http::response(['id' => 'inv-1', 'status' => 'PAID', 'paid_amount' => 25000], 200),
+            'mp.test/v1/orders/inv-1' => Http::response(mpOrder('inv-1', 'processed', ['total_paid_amount' => (string) ((25000) / 100)]), 200),
         ]);
 
         [$charge, $slip] = makeSyncSlip('inv-1', 'generated');
@@ -56,8 +49,7 @@ describe('SyncPaymentSlipService', function () {
 
     it('is idempotent when synced twice after being paid (no duplicate transaction)', function () {
         Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
-            'cora.test/invoices/inv-2' => Http::response(['id' => 'inv-2', 'status' => 'PAID', 'paid_amount' => 25000], 200),
+            'mp.test/v1/orders/inv-2' => Http::response(mpOrder('inv-2', 'processed', ['total_paid_amount' => (string) ((25000) / 100)]), 200),
         ]);
 
         [$charge, $slip] = makeSyncSlip('inv-2', 'generated');
@@ -70,8 +62,7 @@ describe('SyncPaymentSlipService', function () {
 
     it('updates the slip to cancelled when the provider reports cancellation, and reopens an open charge', function () {
         Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
-            'cora.test/invoices/inv-3' => Http::response(['id' => 'inv-3', 'status' => 'CANCELLED'], 200),
+            'mp.test/v1/orders/inv-3' => Http::response(mpOrder('inv-3', 'canceled'), 200),
         ]);
 
         [$charge, $slip] = makeSyncSlip('inv-3', 'generated', 'open');
@@ -84,8 +75,7 @@ describe('SyncPaymentSlipService', function () {
 
     it('reopens an overdue charge when its slip is synced as cancelled, unblocking reissue', function () {
         Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
-            'cora.test/invoices/inv-4' => Http::response(['id' => 'inv-4', 'status' => 'CANCELLED'], 200),
+            'mp.test/v1/orders/inv-4' => Http::response(mpOrder('inv-4', 'canceled'), 200),
         ]);
 
         [$charge, $slip] = makeSyncSlip('inv-4', 'generated', 'overdue');
@@ -98,8 +88,7 @@ describe('SyncPaymentSlipService', function () {
         expect($charge->refresh()->status)->toBe('open');
 
         Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
-            'cora.test/invoices' => Http::response(['id' => 'inv-4-b', 'status' => 'OPEN'], 201),
+            'mp.test/v1/orders' => Http::response(mpOrder('inv-4-b', 'action_required'), 201),
         ]);
 
         $newSlip = app(GeneratePaymentSlipService::class)->handle($charge->refresh());
@@ -108,8 +97,7 @@ describe('SyncPaymentSlipService', function () {
 
     it('reopens an overdue charge when its slip is synced as expired, unblocking reissue', function () {
         Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
-            'cora.test/invoices/inv-5' => Http::response(['id' => 'inv-5', 'status' => 'EXPIRED'], 200),
+            'mp.test/v1/orders/inv-5' => Http::response(mpOrder('inv-5', 'expired'), 200),
         ]);
 
         [$charge, $slip] = makeSyncSlip('inv-5', 'generated', 'overdue');
@@ -121,8 +109,7 @@ describe('SyncPaymentSlipService', function () {
 
     it('does not reopen the charge when it is already paid', function () {
         Http::fake([
-            'cora.test/oauth/token' => Http::response(['access_token' => 'token-123'], 200),
-            'cora.test/invoices/inv-6' => Http::response(['id' => 'inv-6', 'status' => 'CANCELLED'], 200),
+            'mp.test/v1/orders/inv-6' => Http::response(mpOrder('inv-6', 'canceled'), 200),
         ]);
 
         [$charge, $slip] = makeSyncSlip('inv-6', 'generated', 'paid');

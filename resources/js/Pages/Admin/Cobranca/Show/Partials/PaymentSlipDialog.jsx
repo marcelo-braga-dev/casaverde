@@ -33,15 +33,12 @@ import {
 } from "@tabler/icons-react";
 
 const providerLabels = {
-    cora: "Cora",
     mercado_pago: "Mercado Pago",
-    asaas: "Asaas",
 };
 
 const paymentMethodLabels = {
     boleto: "Boleto",
     pix: "Pix",
-    boleto_pix: "Boleto + Pix",
 };
 
 export default function PaymentSlipDialog({ open, payment, onClose, whatsapp }) {

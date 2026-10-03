@@ -27,7 +27,7 @@ function stringifySettings(settings) {
 
 export default function Page({ account }) {
     const { data, setData, processing, errors } = useForm({
-        provider: account.provider || "cora",
+        provider: account.provider || "mercado_pago",
         name: account.name || "",
         is_active: Boolean(account.is_active),
         is_default: Boolean(account.is_default),
@@ -67,9 +67,7 @@ export default function Page({ account }) {
                                     helperText={errors.provider}
                                     fullWidth
                                 >
-                                    <MenuItem value="cora">Cora</MenuItem>
                                     <MenuItem value="mercado_pago">Mercado Pago</MenuItem>
-                                    <MenuItem value="asaas">Asaas</MenuItem>
                                 </TextField>
                             </Grid>
 

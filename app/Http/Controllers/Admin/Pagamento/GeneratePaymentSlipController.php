@@ -19,14 +19,14 @@ class GeneratePaymentSlipController extends Controller
         $this->authorize('update', $cobranca);
 
         $validated = $request->validate([
-            'provider' => ['nullable', Rule::in(['cora', 'mercado_pago', 'asaas'])],
-            'payment_method' => ['nullable', Rule::in(['boleto', 'pix', 'boleto_pix'])],
+            'provider' => ['nullable', Rule::in(['mercado_pago'])],
+            'payment_method' => ['nullable', Rule::in(['boleto', 'pix'])],
         ]);
 
-        $provider = $validated['provider'] ?? 'cora';
-        // Mercado Pago não suporta um único pagamento com boleto+pix (diferente da Cora);
-        // sem escolha explícita, o Pix é o padrão por ser mais rápido para o cliente.
-        $paymentMethod = $validated['payment_method'] ?? ($provider === 'mercado_pago' ? 'pix' : 'boleto_pix');
+        $provider = $validated['provider'] ?? 'mercado_pago';
+        // O Mercado Pago não gera boleto e Pix no mesmo pedido; sem escolha explícita, o Pix
+        // é o padrão por ser mais rápido para o cliente.
+        $paymentMethod = $validated['payment_method'] ?? 'pix';
 
         try {
             $slip = $service->handle($cobranca, $provider, $paymentMethod);
