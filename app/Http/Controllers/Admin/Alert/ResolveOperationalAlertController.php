@@ -15,13 +15,7 @@ class ResolveOperationalAlertController extends Controller
         OperationalAlert $alert,
         ResolveOperationalAlertService $service
     ): RedirectResponse {
-        $user = $request->user();
-        abort_if(
-            $user->isConsultor()
-                && (int) $alert->assigned_to_user_id !== (int) $user->id
-                && (int) $alert->clientProfile?->consultor_user_id !== (int) $user->id,
-            403
-        );
+        abort_unless(OperationalAlert::query()->visibleTo($request->user())->whereKey($alert->id)->exists(), 403);
 
         $request->validate([
             'resolution_notes' => ['nullable', 'string', 'max:5000'],

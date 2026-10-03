@@ -52,6 +52,25 @@ class OperationalAlert extends Model
         return $this->belongsTo(UsinaSolar::class, 'usina_id');
     }
 
+    // Admin vê tudo. Consultor vê só alertas da própria carteira (atribuídos a ele ou de
+    // clientes dele) e nunca os de fatura/sistema, que ele não tem acesso para resolver.
+    public function scopeVisibleTo($query, ?User $user)
+    {
+        if (! $user) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        if (! $user->isConsultor()) {
+            return $query;
+        }
+
+        return $query
+            ->whereNotIn('module', ['fatura', 'sistema'])
+            ->where(fn ($q) => $q
+                ->where('assigned_to_user_id', $user->id)
+                ->orWhereHas('clientProfile', fn ($client) => $client->where('consultor_user_id', $user->id)));
+    }
+
     public function clientProfile()
     {
         return $this->belongsTo(ClientProfile::class, 'client_profile_id');

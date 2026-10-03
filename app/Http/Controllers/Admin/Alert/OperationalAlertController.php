@@ -19,11 +19,7 @@ class OperationalAlertController extends Controller
 
         $user = $request->user();
 
-        // Consultor vê só os alertas da própria carteira (atribuídos a ele ou de clientes dele).
-        $visible = fn () => OperationalAlert::query()->when($user?->isConsultor(), fn ($query) => $query->where(
-            fn ($q) => $q->where('assigned_to_user_id', $user->id)
-                ->orWhereHas('clientProfile', fn ($client) => $client->where('consultor_user_id', $user->id))
-        ));
+        $visible = fn () => OperationalAlert::query()->visibleTo($user);
 
         $alerts = $visible()
             ->with(['usina.produtor', 'clientProfile', 'assignedTo'])
@@ -89,6 +85,7 @@ class OperationalAlertController extends Controller
                 ['value' => 'usina', 'label' => 'Usina'],
                 ['value' => 'fatura', 'label' => 'Fatura'],
                 ['value' => 'financeiro', 'label' => 'Financeiro'],
+                ['value' => 'sistema', 'label' => 'Sistema'],
             ],
         ]);
     }

@@ -33,10 +33,10 @@ class PaymentSlipExpiredAlertService
             'severity' => 'error',
             'title' => 'Boleto vencido — gere um novo boleto e envie ao cliente',
             'message' => sprintf(
-                'O boleto da cobrança %s (%s)%s venceu sem pagamento e não pode mais ser pago. Gere um novo boleto e envie ao cliente.',
+                'O boleto da cobrança %s (%s) venceu%s sem pagamento e não pode mais ser pago. Gere um novo boleto e envie ao cliente.',
                 $charge->reference_label,
                 $clientProfile?->nome ?? $clientProfile?->razao_social,
-                $expiredOn ? " venceu em {$expiredOn}," : '',
+                $expiredOn ? " em {$expiredOn}" : '',
             ),
             'usina_id' => $charge->usina_id,
             'assigned_to_user_id' => $clientProfile?->consultor_user_id,

@@ -193,11 +193,21 @@ Serviços de automação recorrente em `app/Services/Automation/`:
 Agendamento (`routes/console.php`, cron com `php83 artisan schedule:run`):
 - `casaverde:expire-payment-slips` (`ExpireOverduePaymentSlipsCommand`) — `dailyAt('06:00')`.
 - `casaverde:send-charge-reminders` (`SendChargeRemindersCommand`) — `dailyAt('08:00')`.
+- `casaverde:scan-operational-health` (`ScanOperationalHealthCommand`) — `hourlyAt(30)`.
 - `casaverde:sync-payments` (`SyncPendingPaymentsCommand`) — `everyFiveMinutes()`.
 - `casaverde:mark-overdue-charges` — `everyTenMinutes()`.
-- `energy-bills:import`, `concessionaire-bills:import`, `casaverde:generate-monthly-charges` — `hourly()`.
+- `concessionaire-bills:import`, `casaverde:generate-monthly-charges` — `hourly()`. (`energy-bills:import`, pipeline `EnergyBill` antigo, está fora do agendamento: nunca importou nada e duplicava a leitura das caixas — candidato a remoção.)
 
 Worker da fila: serviço systemd `casa-verde-queue` (`/usr/bin/php83`, `Restart=always`), conexão `database`. Após deploy: `php artisan queue:restart`.
+
+### Alertas de falha operacional
+
+Toda falha que compromete o faturamento ou a operação contínua vira `OperationalAlert` (tela Alertas Operacionais + sino com contador no cabeçalho) via `App\Services\Alert\OperationalAlertNotifier` — nunca só log. O alerta é único por módulo + tipo + registro, é renovado se a falha se repete e resolvido sozinho quando a operação volta a funcionar.
+- Importação de faturas (`BillImportAlertService`): caixa IMAP inacessível, senha do PDF inválida, fatura ilegível, falha ao gravar, rotina inteira falhando.
+- Pagamentos (`PaymentAlertService`): Mercado Pago recusou gerar (alerta ao consultor), credencial recusada (401/403, crítico), pagamento que não sincroniza, webhook que falha.
+- Sistema (`SystemFailureAlertService`, ouvintes em `AppServiceProvider`): job que esgota tentativas na fila, tarefa agendada que falha.
+- Varredura (`OperationalHealthScanService`): caixas não verificadas há 3h, faturas em revisão há 3 dias, faturas aprovadas sem cobrança, cobranças em rascunho há 2 dias e cobranças vencendo em 5 dias sem boleto/Pix (um alerta por consultor), pagamentos sem sync há 2h, conta Mercado Pago ausente e webhook sem secret. Respeita alertas marcados como "ignorado".
+- Visibilidade (`OperationalAlert::scopeVisibleTo`): admin vê tudo; consultor só alertas `financeiro` da própria carteira (nunca `fatura`/`sistema`).
 
 Não existe envio automático de WhatsApp (sem credenciais de Business API/Twilio/Z-API) — `WhatsAppLinkService` apenas gera o link `wa.me` para clique humano do consultor a partir do alerta.
 

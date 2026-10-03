@@ -12,6 +12,7 @@ class ProcessPaymentWebhookService
     public function __construct(
         private readonly MercadoPagoWebhookPayloadMapper $mercadoPagoMapper,
         private readonly SyncPaymentSlipService $syncPaymentSlipService,
+        private readonly PaymentAlertService $paymentAlerts,
     ) {}
 
     public function handle(PaymentWebhookEvent $event): PaymentWebhookEvent
@@ -34,6 +35,8 @@ class ProcessPaymentWebhookService
                 default => $this->ignore($event, 'Provider de webhook não suportado.'),
             };
 
+            $this->paymentAlerts->webhookOk($event);
+
             return $event->fresh();
         } catch (Throwable $e) {
             $event->update([
@@ -41,6 +44,8 @@ class ProcessPaymentWebhookService
                 'error_message' => $e->getMessage(),
                 'processed_at' => now(),
             ]);
+
+            $this->paymentAlerts->webhookFailed($event, $e);
 
             throw $e;
         }

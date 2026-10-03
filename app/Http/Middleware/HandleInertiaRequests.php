@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Enums\Fatura\BillReviewStatus;
+use App\Models\Alert\OperationalAlert;
 use App\Models\Cobranca\CustomerCharge;
 use App\Models\Fatura\ConcessionaireBill;
 use App\Models\Users\User;
@@ -121,6 +122,11 @@ class HandleInertiaRequests extends Middleware
         return [
             'pendingReviewBills' => $pendingReviewBills,
             'chargesAwaitingNewSlip' => CustomerCharge::query()->somenteMinhasCobrancas()->aguardandoNovoBoleto()->count(),
+            'openAlerts' => OperationalAlert::query()
+                ->visibleTo($user)
+                ->whereIn('status', ['open', 'in_progress'])
+                ->whereIn('severity', ['error', 'critical'])
+                ->count(),
             'newSupportTickets' => $this->supportTicketService->countNew(),
         ];
     }

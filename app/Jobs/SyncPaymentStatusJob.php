@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Exceptions\Payments\PaymentProviderException;
 use App\Models\Pagamento\PaymentSlip;
+use App\Services\Pagamento\PaymentAlertService;
 use App\Services\Pagamento\SyncPaymentSlipService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -18,7 +19,7 @@ class SyncPaymentStatusJob implements ShouldQueue
         public readonly int $paymentId,
     ) {}
 
-    public function handle(SyncPaymentSlipService $service): void
+    public function handle(SyncPaymentSlipService $service, ?PaymentAlertService $alerts = null): void
     {
         $payment = PaymentSlip::query()
             ->with('providerAccount')
@@ -36,12 +37,18 @@ class SyncPaymentStatusJob implements ShouldQueue
             return;
         }
 
+        $alerts ??= app(PaymentAlertService::class);
+
         try {
             $service->handle($payment);
+            $alerts->syncOk($payment);
         } catch (PaymentProviderException $e) {
             // Rate limit (429) e instabilidade (5xx) do provider são transitórios e o
             // casaverde:sync-payments roda a cada 5 min — a próxima rodada já tenta de novo.
+            // Instabilidade prolongada é pega pela varredura de saúde (sync atrasado).
             if (! $this->isTransient($e->httpStatus)) {
+                $alerts->syncFailed($payment, $e);
+
                 throw $e;
             }
 

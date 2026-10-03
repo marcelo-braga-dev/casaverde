@@ -314,6 +314,18 @@ export default function OperationalAlertIndexPage() {
 
                                         <TableCell align="right">
                                             <Stack direction="row" spacing={1} justifyContent="flex-end">
+                                                {alert.payload?.action_url && !alert.payload?.customer_charge_id && (
+                                                    <Button
+                                                        component={Link}
+                                                        href={alert.payload.action_url}
+                                                        size="small"
+                                                        variant="contained"
+                                                        color={['error', 'critical'].includes(alert.severity?.value ?? alert.severity) ? 'error' : 'primary'}
+                                                    >
+                                                        Abrir
+                                                    </Button>
+                                                )}
+
                                                 {alert.payload?.customer_charge_id && (
                                                     <Button
                                                         component={Link}

@@ -1,6 +1,6 @@
 import { Badge, IconButton, Stack, Tooltip } from '@mui/material';
 import { Link, usePage } from '@inertiajs/react';
-import { IconFileInvoice, IconHeadset, IconReceiptOff } from '@tabler/icons-react';
+import { IconAlertTriangle, IconFileInvoice, IconHeadset, IconReceiptOff } from '@tabler/icons-react';
 
 function safeRoute(name) {
     try {
@@ -34,9 +34,26 @@ export default function AppHeaderShortcuts() {
     const suporteHref = safeRoute('support.tickets.index');
     const cobrancasHref = safeRoute('admin.financeiro.cobrancas.index');
     const awaitingNewSlip = navBadges?.chargesAwaitingNewSlip ?? 0;
+    const alertasHref = safeRoute('admin.operational-alerts.index');
+    const openAlerts = navBadges?.openAlerts ?? 0;
 
     return (
         <Stack direction="row" alignItems="center" gap={0.5}>
+            {alertasHref && (
+                <Tooltip title={openAlerts > 0 ? `${openAlerts} alerta(s) que podem comprometer o faturamento ou a operação` : 'Alertas operacionais'}>
+                    <IconButton
+                        component={Link}
+                        href={`${alertasHref}?status=open`}
+                        size="small"
+                        sx={openAlerts > 0 ? { ...iconButtonSx, bgcolor: '#fef2f2', color: 'error.main' } : iconButtonSx}
+                    >
+                        <Badge badgeContent={openAlerts} color="error" max={99}>
+                            <IconAlertTriangle size={20} />
+                        </Badge>
+                    </IconButton>
+                </Tooltip>
+            )}
+
             {cobrancasHref && awaitingNewSlip > 0 && (
                 <Tooltip title={`${awaitingNewSlip} cobrança(s) com boleto vencido — enviar novo boleto ao cliente`}>
                     <IconButton

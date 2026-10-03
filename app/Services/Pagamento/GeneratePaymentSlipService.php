@@ -20,6 +20,7 @@ class GeneratePaymentSlipService
     public function __construct(
         private readonly PaymentProviderManager $providerManager,
         private readonly PaymentSlipExpiredAlertService $expiredAlertService,
+        private readonly PaymentAlertService $paymentAlerts,
     ) {}
 
     public function handle(CustomerCharge $charge, string $provider = 'mercado_pago', string $paymentMethod = 'pix'): PaymentSlip
@@ -157,6 +158,8 @@ class GeneratePaymentSlipService
                 'generated_at' => now(),
             ]);
 
+            $this->paymentAlerts->generationFailed($charge, $e, $account);
+
             throw $e;
         }
 
@@ -182,6 +185,7 @@ class GeneratePaymentSlipService
         ]);
 
         $this->expiredAlertService->resolveFor($charge, "Novo boleto/Pix #{$slip->id} emitido.");
+        $this->paymentAlerts->generationOk($charge, $account);
 
         return $slip;
     }

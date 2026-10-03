@@ -26,6 +26,7 @@ class ImportAutomaticConcessionaireBillService
         private readonly ProtectedPdfResolverService $pdfResolver,
         private readonly ValidateConcessionaireBillService $validator,
         private readonly ResolveConsumerUnitService $consumerUnitResolver,
+        private readonly BillImportAlertService $alerts,
     ) {}
 
     /**
@@ -80,6 +81,7 @@ class ImportAutomaticConcessionaireBillService
                     $result = $this->handle($clientProfile, $setting, $run);
                 } catch (Throwable $e) {
                     Log::error("[ImportRun #{$run->id}] Falha ao processar setting #{$setting->id} (cliente #{$clientProfile->id}): ".$e->getMessage());
+                    $this->alerts->mailboxFailed($setting, $e);
                     $totals['total_failed']++;
 
                     continue;
@@ -92,11 +94,13 @@ class ImportAutomaticConcessionaireBillService
             }
 
             $run->finish($totals);
+            $this->alerts->runOk();
         } catch (Throwable $e) {
             Log::error("[ImportRun #{$run->id}] Erro fatal: ".$e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
             ]);
             $run->finish($totals, $e->getMessage());
+            $this->alerts->runFailed($e->getMessage());
         }
 
         return $run->refresh();
@@ -113,6 +117,7 @@ class ImportAutomaticConcessionaireBillService
         $result = ['processed' => 0, 'imported' => 0, 'skipped' => 0, 'failed' => 0];
 
         $messages = $this->fetcher->fetchMessages($setting);
+        $this->alerts->mailboxOk($setting);
 
         foreach ($messages as $message) {
             foreach ($message['attachments'] as $attachment) {
@@ -288,9 +293,11 @@ class ImportAutomaticConcessionaireBillService
             ]);
 
             $result['imported']++;
+            $this->alerts->attachmentImported($setting);
 
         } catch (Throwable $e) {
             Log::error("[ImportService] Falha na etapa '{$stepFailed}' para cliente #{$clientProfile->id}: ".$e->getMessage());
+            $this->alerts->attachmentFailed($setting, $stepFailed, $attachment['filename'] ?? 'anexo', $e);
 
             $log->update([
                 'status' => 'failed',

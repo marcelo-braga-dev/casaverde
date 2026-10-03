@@ -5,6 +5,7 @@ namespace App\Models\Fatura;
 use App\Models\Cliente\ClientProfile;
 use App\Models\Users\User;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 class ImportRun extends Model
 {
@@ -70,7 +71,9 @@ class ImportRun extends Model
 
     public static function generateCode(): string
     {
-        return 'RUN-'.now()->format('Ymd-His');
+        // Só data/hora colidia quando duas rodadas (agendada + manual) começavam no mesmo
+        // segundo: run_code é único e a segunda rodada quebrava. Cabe nos 30 da coluna.
+        return 'RUN-'.now()->format('Ymd-His').'-'.Str::upper(Str::random(4));
     }
 
     public function getSuccessRateAttribute(): float

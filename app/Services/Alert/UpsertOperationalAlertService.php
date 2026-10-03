@@ -19,10 +19,11 @@ class UpsertOperationalAlertService
             'reference_month' => $data['reference_month'] ?? null,
         ];
 
-        if ($alertable) {
-            $unique['alertable_type'] = $alertable::class;
-            $unique['alertable_id'] = $alertable->getKey();
-        }
+        // Sem registro vinculado, a chave precisa exigir alertable nulo; senão um alerta
+        // geral sobrescreve o alerta de mesmo tipo vinculado a um registro (ex.: o
+        // agregado "sem consultor" engolia o alerta de um consultor).
+        $unique['alertable_type'] = $alertable ? $alertable::class : null;
+        $unique['alertable_id'] = $alertable?->getKey();
 
         $payload = [
             'severity' => $data['severity'] ?? 'info',
