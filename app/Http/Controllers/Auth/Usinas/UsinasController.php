@@ -16,14 +16,4 @@ class UsinasController extends Controller
     {
         return Inertia::render('Auth/Usina/Show/Page', compact('id'));
     }
-
-    public function usinas($id)
-    {
-        //        $usinas = (new UsinaSolar())
-        //            ->with('proprietario')
-        //            ->where('concessionaria_id', $id)
-        //            ->get();
-        //
-        //        return Inertia::render('Auth/Usina/Index/Usinas', compact('usinas'));
-    }
 }

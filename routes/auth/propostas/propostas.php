@@ -1,17 +1,13 @@
 <?php
 
-use App\Http\Controllers\Auth\Propostas\Cliente\ClientePropostaController;
 use App\Http\Controllers\Auth\Propostas\Cliente\GetDadosPropostaClienteController;
 use App\Http\Controllers\Auth\Propostas\Produtor\GerarPropostaProdutorController;
 use App\Http\Controllers\Auth\Propostas\Produtor\GerarPropostaUsinaController;
-use App\Http\Controllers\Auth\Propostas\Produtor\ProdutorPropostaController;
 use Illuminate\Support\Facades\Route;
 
 Route::name('auth.propostas.')
     ->prefix('propostas')
     ->group(function () {
-        Route::resource('cliente', ClientePropostaController::class)->only(['index']);
-        Route::resource('produtor', ProdutorPropostaController::class)->only(['index']);
 
         Route::name('pdf.cliente.')
             ->prefix('pdf-cliente')

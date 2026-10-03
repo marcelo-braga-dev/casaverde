@@ -12,14 +12,14 @@ class AddressController extends Controller
 {
     public function index(AddressRepository $repository)
     {
-        return Inertia::render('Admin/Endereco/Index/Page', [
+        return Inertia::render('Endereco/Index/Page', [
             'addresses' => $repository->paginate(20),
         ]);
     }
 
     public function create()
     {
-        return Inertia::render('Admin/Endereco/Create/Page');
+        return Inertia::render('Endereco/Create/Page');
     }
 
     public function store(StoreAddressRequest $request)
@@ -33,14 +33,14 @@ class AddressController extends Controller
 
     public function show(Address $address)
     {
-        return Inertia::render('Admin/Endereco/Show/Page', [
+        return Inertia::render('Endereco/Show/Page', [
             'address' => $address,
         ]);
     }
 
     public function edit(Address $address)
     {
-        return Inertia::render('Admin/Endereco/Edit/Page', [
+        return Inertia::render('Endereco/Edit/Page', [
             'address' => $address,
         ]);
     }

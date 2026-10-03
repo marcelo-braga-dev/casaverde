@@ -12,12 +12,6 @@ Route::name('auth.')
     ->group(function () {
         Route::resource('usinas', UsinasController::class)->only(['index', 'show']);
 
-        Route::prefix('usinas-concessionaria')
-            ->name('concessionaria.')
-            ->group(function () {
-                Route::get('usinas-concessionaria/{id}', [UsinasController::class, 'usinas'])->name('usinas');
-            });
-
         Route::name('usinas.api.')
             ->prefix('usinas-api')
             ->group(function () {
