@@ -34,11 +34,13 @@ use App\Models\Usina\UsinaBlock;
 use App\Models\Usina\UsinaGenerationRecord;
 use App\Models\Usina\UsinaSolar;
 use App\src\Roles\RoleUser;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * Base de demonstração para marketing: ~18 meses de operação fictícia sobre os dados do
@@ -129,6 +131,7 @@ class MarketingDemoSeeder extends Seeder
             $this->createSupportTickets($consultores);
             $this->createOperationalAlerts($allUsinas, $consultores);
             $this->createAccessLogs();
+            $this->createBillPdfs();
         });
 
         Model::reguard();
@@ -534,7 +537,7 @@ class MarketingDemoSeeder extends Seeder
     {
         $base = (float) $unit->consumo_previsto_kwh_mes;
         // Alguns clientes ficam com atraso no mês anterior ao atual (inadimplência realista).
-        $lateClient = in_array($clientIndex, [3, 11, 19], true);
+        $lateClient = in_array($clientIndex, [6, 11, 19], true);
 
         for ($ref = $since->startOfMonth(); $ref->lte($this->lastRef); $ref = $ref->addMonth()) {
             $isCurrent = $ref->equalTo($this->lastRef);
@@ -989,13 +992,18 @@ class MarketingDemoSeeder extends Seeder
 
     private function createSupportTickets(array $consultores): void
     {
-        $clients = ClientProfile::whereNotNull('platform_user_id')->where('is_active_client', true)->inRandomOrder()->limit(14)->get();
+        // Cliente com mais histórico primeiro: é ele que aparece nos prints do portal.
+        $clients = ClientProfile::whereNotNull('platform_user_id')->where('is_active_client', true)
+            ->orderByDesc(CustomerCharge::selectRaw('count(*)')->whereColumn('client_profile_id', 'client_profiles.id'))
+            ->orderBy('id')
+            ->limit(14)
+            ->get();
 
         $tickets = [
             ['Dúvida sobre o valor da cobrança de agosto', 'financeiro', 'normal', 'resolvido', 'O valor veio diferente do mês anterior, gostaria de entender o cálculo.', 'O consumo de agosto foi maior por causa do inverno; o desconto contratual foi aplicado normalmente.'],
             ['Não recebi o boleto por e-mail', 'financeiro', 'alta', 'resolvido', 'A cobrança aparece no portal, mas o e-mail não chegou.', 'O e-mail estava indo para o spam. O boleto também fica disponível no portal, em Cobranças.'],
             ['Como alterar meu e-mail de contato?', 'acesso', 'baixa', 'fechado', 'Mudei de e-mail e quero receber as cobranças no novo endereço.', 'Atualizamos o e-mail de contato no cadastro.'],
-            ['Fatura da Copel não apareceu este mês', 'fatura', 'normal', 'em_atendimento', 'Minha conta de setembro ainda não está no portal.', 'Estamos verificando a caixa de importação; a Copel atrasou o envio da sua região.'],
+            ['Fatura do mês não apareceu no portal', 'fatura', 'normal', 'em_atendimento', 'Minha conta de setembro ainda não está no portal.', 'Estamos verificando com a concessionária: o envio das faturas da sua região atrasou.'],
             ['Quero incluir mais uma unidade consumidora', 'comercial', 'normal', 'aguardando_cliente', 'Abri uma filial e quero que ela também receba energia da usina.', 'Ótimo! Envie a última conta de luz da filial para prepararmos a proposta.'],
             ['Segunda via do contrato', 'contrato', 'baixa', 'resolvido', 'Preciso da segunda via do contrato assinado.', 'O contrato está disponível no portal, em Contratos.'],
             ['Economia menor que o esperado', 'financeiro', 'alta', 'em_atendimento', 'No relatório de economia o valor ficou abaixo do que foi apresentado na proposta.', null],
@@ -1007,7 +1015,7 @@ class MarketingDemoSeeder extends Seeder
         ];
 
         foreach ($tickets as $i => [$title, $category, $priority, $status, $description, $answer]) {
-            $client = $clients[$i % max($clients->count(), 1)] ?? null;
+            $client = in_array($i, [0, 3], true) ? $clients->first() : ($clients[($i % max($clients->count() - 1, 1)) + 1] ?? null);
             if (! $client) {
                 break;
             }
@@ -1132,6 +1140,56 @@ class MarketingDemoSeeder extends Seeder
                 $this->count('Acessos registrados');
             }
         }
+    }
+
+    // ─── PDFs das faturas ────────────────────────────────────────────────
+
+    // Toda fatura sem arquivo ganha um PDF de demonstração: sem ele a tela de revisão
+    // mostra "PDF inválido", bloqueia a aprovação e o visualizador responde 404.
+    private function createBillPdfs(): void
+    {
+        ConcessionaireBill::with('concessionaria')->orderBy('id')->chunkById(100, function ($bills) {
+            foreach ($bills as $bill) {
+                if ($bill->pdf_path && Storage::disk($bill->pdf_disk ?: 'local')->exists($bill->pdf_path)) {
+                    continue;
+                }
+
+                $path = sprintf('concessionaire-bills/%d/%d/%02d/demo-%d.pdf', $bill->client_profile_id, $bill->reference_year, $bill->reference_month, $bill->id);
+                Storage::disk('local')->put($path, Pdf::loadHTML($this->billPdfHtml($bill))->setPaper('a4')->output());
+
+                $bill->forceFill([
+                    'pdf_disk' => 'local',
+                    'pdf_path' => $path,
+                    'pdf_original_name' => 'fatura-'.$bill->unidade_consumidora.'-'.str_replace('/', '-', $bill->reference_label).'.pdf',
+                ])->saveQuietly();
+                $this->count('PDFs de fatura');
+            }
+        });
+    }
+
+    private function billPdfHtml(ConcessionaireBill $bill): string
+    {
+        $row = fn ($label, $value) => '<tr><td class="l">'.e($label).'</td><td>'.e($value).'</td></tr>';
+        $vencimento = $bill->vencimento ? CarbonImmutable::parse($bill->vencimento)->format('d/m/Y') : '—';
+
+        return '<html><head><meta charset="utf-8"><style>
+            body{font-family:DejaVu Sans,sans-serif;color:#18221A;font-size:12px}
+            .tarja{background:#13326c;color:#fff;padding:10px 14px;font-size:14px;font-weight:bold}
+            .aviso{border:2px dashed #D9971A;padding:10px;margin:14px 0;color:#7a5410;font-weight:bold;text-align:center}
+            table{width:100%;border-collapse:collapse;margin-top:10px}
+            td{border:1px solid #D9E2D6;padding:8px} td.l{background:#EEF3EA;width:40%;font-weight:bold}
+        </style></head><body>
+            <div class="tarja">FATURA DE ENERGIA ELÉTRICA · '.e($bill->concessionaria?->nome ?? 'Concessionária').'</div>
+            <div class="aviso">Documento de demonstração com dados fictícios. Não é uma fatura real.</div>
+            <table>'
+                .$row('Titular', $bill->nome)
+                .$row('Unidade consumidora', $bill->unidade_consumidora)
+                .$row('Número da instalação', $bill->numero_instalacao)
+                .$row('Competência', $bill->reference_label)
+                .$row('Consumo', number_format((float) $bill->consumo_kwh, 1, ',', '.').' kWh')
+                .$row('Vencimento', $vencimento)
+                .$row('Valor total', 'R$ '.number_format((float) $bill->valor_total, 2, ',', '.'))
+            .'</table></body></html>';
     }
 
     // ─── Apoio ───────────────────────────────────────────────────────────
