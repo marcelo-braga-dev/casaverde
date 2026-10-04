@@ -1,0 +1,978 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Material Comercial Casa Verde</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@500;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root {
+  --leaf: #2F7D18;
+  --leaf-deep: #1F5F10;
+  --leaf-ink: #123D0B;
+  --leaf-soft: #E6F2DF;
+  --lime: #7BAA2F;
+  --sun: #D9971A;
+  --sun-soft: #FBF0D9;
+  --bg: #F6F8F4;
+  --surface: #FFFFFF;
+  --surface-2: #EEF3EA;
+  --ink: #18221A;
+  --ink-2: #445047;
+  --ink-3: #6B776D;
+  --line: #D9E2D6;
+  --line-soft: #E7EDE4;
+  --focus: #2F7D18;
+  --font-display: "Familjen Grotesk", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Source Sans 3", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --leaf: #7CC35A;
+    --leaf-deep: #9BD47E;
+    --leaf-ink: #C9EDB6;
+    --leaf-soft: #1C2E18;
+    --lime: #A6CF5E;
+    --sun: #F0B44A;
+    --sun-soft: #2E2615;
+    --bg: #0F1510;
+    --surface: #161E17;
+    --surface-2: #1B261C;
+    --ink: #E6EDE4;
+    --ink-2: #B5C2B3;
+    --ink-3: #8A978A;
+    --line: #2A372B;
+    --line-soft: #222E23;
+    --focus: #9BD47E;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --leaf: #7CC35A;
+  --leaf-deep: #9BD47E;
+  --leaf-ink: #C9EDB6;
+  --leaf-soft: #1C2E18;
+  --lime: #A6CF5E;
+  --sun: #F0B44A;
+  --sun-soft: #2E2615;
+  --bg: #0F1510;
+  --surface: #161E17;
+  --surface-2: #1B261C;
+  --ink: #E6EDE4;
+  --ink-2: #B5C2B3;
+  --ink-3: #8A978A;
+  --line: #2A372B;
+  --line-soft: #222E23;
+  --focus: #9BD47E;
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.6;
+  padding-inline: 16px;
+  padding-block: 0 64px;
+}
+h1, h2, h3, h4 { font-family: var(--font-display); color: var(--ink); text-wrap: balance; margin: 0; line-height: 1.15; }
+h2 { font-size: clamp(1.6rem, 3.2vw, 2.15rem); letter-spacing: -0.02em; }
+h3 { font-size: 1.22rem; letter-spacing: -0.01em; }
+h4 { font-size: 1.02rem; }
+p { margin: 0; }
+a { color: var(--leaf); }
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 3px; }
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+.shell {
+  max-width: 1180px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 56px;
+}
+@media (max-width: 900px) {
+  .shell { grid-template-columns: minmax(0, 1fr); gap: 0; }
+  .toc { display: none; }
+}
+
+/* Índice lateral */
+.toc {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  align-self: start;
+  padding-top: 40px;
+  font-size: 0.9rem;
+}
+.toc-label {
+  font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.12em;
+  color: var(--ink-3); font-weight: 700; margin-bottom: 10px;
+}
+.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.toc a {
+  display: block; padding: 5px 10px; border-radius: 6px;
+  color: var(--ink-2); text-decoration: none;
+}
+.toc a:hover { background: var(--surface-2); color: var(--ink); }
+.toc .toc-part { margin-top: 14px; }
+
+main { min-width: 0; display: grid; gap: 88px; padding-top: 40px; }
+section { scroll-margin-top: 24px; display: grid; gap: 28px; }
+
+.eyebrow {
+  font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.14em;
+  font-weight: 700; color: var(--leaf);
+}
+.lede { font-size: 1.12rem; color: var(--ink-2); max-width: 66ch; }
+.prose { max-width: 66ch; color: var(--ink-2); display: grid; gap: 14px; }
+.prose strong { color: var(--ink); }
+
+/* Capa */
+.cover {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: 40px;
+  align-items: end;
+  padding-bottom: 40px;
+  border-bottom: 1px solid var(--line);
+}
+@media (max-width: 760px) { .cover { grid-template-columns: minmax(0, 1fr); } }
+.cover h1 {
+  font-size: clamp(2.6rem, 6.4vw, 4.6rem);
+  letter-spacing: -0.035em;
+  line-height: 0.98;
+  margin-top: 14px;
+}
+.cover h1 span { color: var(--leaf); }
+.cover .lede { margin-top: 20px; }
+.cover-meta {
+  display: grid; gap: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+  overflow: hidden;
+}
+.cover-meta div {
+  display: flex; justify-content: space-between; gap: 16px;
+  padding: 12px 16px; border-bottom: 1px solid var(--line-soft);
+  font-size: 0.93rem;
+}
+.cover-meta div:last-child { border-bottom: 0; }
+.cover-meta dt { color: var(--ink-3); }
+.cover-meta dd { margin: 0; font-weight: 600; text-align: right; }
+.doc-note {
+  margin-top: 24px; font-size: 0.92rem; color: var(--ink-3);
+  border-left: 3px solid var(--sun); padding-left: 12px; max-width: 62ch;
+}
+
+/* Problema / solução */
+.split {
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px;
+}
+@media (max-width: 760px) { .split { grid-template-columns: minmax(0, 1fr); } }
+.panel {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 10px; padding: 24px; display: grid; gap: 14px; align-content: start;
+}
+.panel.tint { background: var(--leaf-soft); border-color: transparent; }
+.panel ul { margin: 0; padding-left: 20px; display: grid; gap: 8px; color: var(--ink-2); }
+
+/* Ciclo */
+.cycle { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; counter-reset: step; }
+.cycle li {
+  counter-increment: step;
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  gap: 18px;
+  padding-block: 18px;
+  border-top: 1px solid var(--line);
+}
+.cycle li:last-child { border-bottom: 1px solid var(--line); }
+.cycle li::before {
+  content: counter(step, decimal-leading-zero);
+  font-family: var(--font-mono); font-weight: 600;
+  color: var(--leaf); font-size: 0.95rem; padding-top: 3px;
+}
+.cycle h3 { margin-bottom: 4px; }
+.cycle p { color: var(--ink-2); max-width: 70ch; }
+.cycle .who {
+  display: inline-block; margin-top: 8px; font-size: 0.78rem; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3);
+}
+
+/* Exemplo de cálculo */
+.calc {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+  padding: 24px; display: grid; gap: 18px;
+}
+.calc-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 16px; align-items: baseline; }
+.tag {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  background: var(--sun-soft); color: var(--ink); padding: 4px 9px; border-radius: 999px;
+}
+.calc-rows { display: grid; gap: 0; }
+.calc-rows div {
+  display: flex; justify-content: space-between; gap: 16px;
+  padding: 10px 0; border-bottom: 1px dashed var(--line);
+}
+.calc-rows div:last-child { border-bottom: 0; }
+.calc-rows .total { font-weight: 700; color: var(--leaf); font-size: 1.1rem; border-top: 2px solid var(--ink); border-bottom: 0; margin-top: 4px; padding-top: 12px; }
+.calc-rows .neg { color: var(--leaf); }
+.calc-foot { font-size: 0.9rem; color: var(--ink-3); }
+
+/* Perfis */
+.roles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+@media (max-width: 760px) { .roles { grid-template-columns: minmax(0, 1fr); } }
+.role {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+  padding: 24px; display: grid; gap: 14px; align-content: start;
+}
+.role-head { display: flex; align-items: center; gap: 12px; }
+.role-mark {
+  width: 40px; height: 40px; border-radius: 8px; flex-shrink: 0;
+  display: grid; place-items: center;
+  background: var(--leaf-soft); color: var(--leaf);
+}
+.role-mark svg { width: 22px; height: 22px; }
+.role-sub { font-size: 0.92rem; color: var(--ink-3); }
+.role ul { margin: 0; padding-left: 20px; display: grid; gap: 7px; color: var(--ink-2); font-size: 0.97rem; }
+
+/* Módulos */
+.modules { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; border-top: 1px solid var(--line); }
+@media (max-width: 1000px) { .modules { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 600px) { .modules { grid-template-columns: minmax(0, 1fr); } }
+.module {
+  padding: 22px 22px 24px 0; border-bottom: 1px solid var(--line);
+  display: grid; gap: 8px; align-content: start;
+}
+.module p { color: var(--ink-2); font-size: 0.97rem; }
+
+/* Automação */
+.schedule-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 560px; }
+th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+th { font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-3); font-weight: 700; background: var(--surface-2); }
+tr:last-child td { border-bottom: 0; }
+td.when { font-family: var(--font-mono); font-size: 0.9rem; white-space: nowrap; color: var(--leaf); font-weight: 600; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  font-size: 0.9rem; padding: 6px 12px; border-radius: 999px;
+  background: var(--surface); border: 1px solid var(--line); color: var(--ink-2);
+}
+
+/* Benefícios */
+.benefits { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+@media (max-width: 900px) { .benefits { grid-template-columns: minmax(0, 1fr); } }
+.benefit { display: grid; gap: 12px; align-content: start; }
+.benefit h3 { padding-bottom: 10px; border-bottom: 2px solid var(--leaf); }
+.benefit ul { margin: 0; padding-left: 20px; display: grid; gap: 8px; color: var(--ink-2); }
+
+/* Escopo */
+.scope { display: grid; gap: 0; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); overflow: hidden; }
+.scope-row {
+  display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr) minmax(0, 1.4fr);
+  gap: 20px; padding: 16px 20px; border-bottom: 1px solid var(--line-soft);
+}
+.scope-row:last-child { border-bottom: 0; }
+.scope-row.head { background: var(--surface-2); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-3); font-weight: 700; }
+.scope-row .topic { font-weight: 700; }
+.scope-row .yes { color: var(--ink); }
+.scope-row .no { color: var(--ink-2); }
+@media (max-width: 700px) {
+  .scope-row { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .scope-row.head { display: none; }
+  .scope-row .yes::before { content: "Pode dizer: "; font-weight: 700; color: var(--leaf); }
+  .scope-row .no::before { content: "Evite dizer: "; font-weight: 700; color: var(--sun); }
+}
+
+/* Parte 2 — kit do redator */
+.part-divider {
+  display: grid; gap: 12px; padding: 36px 32px; border-radius: 12px;
+  background: var(--leaf-ink); color: #F1F7EE;
+}
+.part-divider h2 { color: #FFFFFF; }
+.part-divider p { color: #CFE3C6; max-width: 64ch; }
+.part-divider .eyebrow { color: var(--lime); }
+:root[data-theme="dark"] .part-divider { background: var(--leaf-soft); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .part-divider { background: var(--leaf-soft); }
+}
+
+.copy-list { display: grid; gap: 12px; }
+.copy {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+  padding: 16px 18px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 16px; align-items: start;
+}
+.copy .label { grid-column: 1 / -1; font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-3); font-weight: 700; }
+.copy .text { color: var(--ink); white-space: pre-line; }
+.copy .text.big { font-family: var(--font-display); font-size: 1.3rem; line-height: 1.25; letter-spacing: -0.01em; }
+.copy-btn {
+  font: inherit; font-size: 0.85rem; font-weight: 600;
+  border: 1px solid var(--line); background: var(--surface-2); color: var(--ink);
+  padding: 6px 12px; border-radius: 6px; cursor: pointer; white-space: nowrap;
+}
+.copy-btn:hover { border-color: var(--leaf); color: var(--leaf); }
+.copy-btn.done { background: var(--leaf); border-color: var(--leaf); color: #FFFFFF; }
+
+.two-col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+@media (max-width: 760px) { .two-col { grid-template-columns: minmax(0, 1fr); } }
+
+.voice { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+@media (max-width: 760px) { .voice { grid-template-columns: minmax(0, 1fr); } }
+.voice ul { margin: 0; padding-left: 20px; display: grid; gap: 8px; color: var(--ink-2); }
+
+.faq { display: grid; gap: 0; border-top: 1px solid var(--line); }
+.faq details { border-bottom: 1px solid var(--line); padding-block: 4px; }
+.faq summary {
+  cursor: pointer; font-family: var(--font-display); font-weight: 600; font-size: 1.06rem;
+  padding: 14px 0; list-style: none; display: flex; justify-content: space-between; gap: 16px;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; color: var(--leaf); font-family: var(--font-mono); }
+.faq details[open] summary::after { content: "–"; }
+.faq details p { color: var(--ink-2); padding-bottom: 16px; max-width: 70ch; }
+
+.glossary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 32px; margin: 0; }
+@media (max-width: 760px) { .glossary { grid-template-columns: minmax(0, 1fr); } }
+.glossary div { padding: 14px 0; border-top: 1px solid var(--line); }
+.glossary dt { font-weight: 700; font-family: var(--font-display); }
+.glossary dd { margin: 4px 0 0; color: var(--ink-2); font-size: 0.97rem; }
+
+.palette { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+@media (max-width: 600px) { .palette { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.swatch { border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--surface); }
+.swatch i { display: block; height: 56px; }
+.swatch div { padding: 8px 10px; font-size: 0.85rem; }
+.swatch .mono { color: var(--ink-3); font-size: 0.8rem; }
+
+footer.endnote { color: var(--ink-3); font-size: 0.88rem; border-top: 1px solid var(--line); padding-top: 20px; max-width: 70ch; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .copy-btn { transition: background-color 0.15s, color 0.15s, border-color 0.15s; }
+}
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <nav class="toc" aria-label="Índice">
+    <div class="toc-label">Parte 1 · O produto</div>
+    <ol>
+      <li><a href="#visao">Visão geral</a></li>
+      <li><a href="#problema">O problema</a></li>
+      <li><a href="#ciclo">Como funciona</a></li>
+      <li><a href="#perfis">Um portal por perfil</a></li>
+      <li><a href="#modulos">Funcionalidades</a></li>
+      <li><a href="#automacao">Automação</a></li>
+      <li><a href="#seguranca">Segurança</a></li>
+      <li><a href="#beneficios">Benefícios</a></li>
+      <li><a href="#escopo">O que prometer</a></li>
+    </ol>
+    <div class="toc-label toc-part">Parte 2 · Kit do redator</div>
+    <ol>
+      <li><a href="#slogans">Slogans</a></li>
+      <li><a href="#pitch">Pitch</a></li>
+      <li><a href="#headlines">Títulos e CTAs</a></li>
+      <li><a href="#site">Estrutura de site</a></li>
+      <li><a href="#tom">Tom de voz</a></li>
+      <li><a href="#faq">Perguntas frequentes</a></li>
+      <li><a href="#glossario">Glossário</a></li>
+      <li><a href="#marca">Cores da marca</a></li>
+    </ol>
+  </nav>
+
+  <main>
+    <!-- CAPA -->
+    <header class="cover" id="visao">
+      <div>
+        <div class="eyebrow">Material de apresentação comercial</div>
+        <h1>Casa Verde: toda a operação de <span>energia solar compartilhada</span> em uma plataforma.</h1>
+        <p class="lede">O Casa Verde reúne CRM, gestão de usinas, leitura de faturas, cobrança e pagamento em um só sistema. Cobre o caminho inteiro: do primeiro contato com o cliente até o Pix confirmado. Atende empresas que oferecem energia por assinatura ou compensação, conectando quem gera energia a quem consome.</p>
+      </div>
+      <dl class="cover-meta">
+        <div><dt>Categoria</dt><dd>CRM + ERP para energia por assinatura</dd></div>
+        <div><dt>Usuários</dt><dd>Admin · Consultor · Cliente · Produtor</dd></div>
+        <div><dt>Acesso</dt><dd>Navegador, computador ou celular</dd></div>
+        <div><dt>Pagamentos</dt><dd>Boleto e Pix via Mercado Pago</dd></div>
+        <div><dt>Faturas</dt><dd>Importação automática por e-mail</dd></div>
+      </dl>
+    </header>
+    <p class="doc-note">A <strong>Parte 1</strong> explica o produto para o time de vendas. A <strong>Parte 2</strong> traz textos prontos para o redator montar o site e as peças de marketing. Antes de publicar qualquer texto, confira a seção <a href="#escopo">O que prometer</a>.</p>
+
+    <!-- PROBLEMA -->
+    <section id="problema">
+      <div>
+        <div class="eyebrow">Para que serve</div>
+        <h2>Energia compartilhada envolve muita gente e muito papel. O Casa Verde organiza tudo.</h2>
+      </div>
+      <div class="prose">
+        <p>Uma empresa de energia por assinatura conecta duas pontas. De um lado, <strong>produtores</strong> donos de usinas solares. Do outro, <strong>clientes</strong> que querem pagar menos na conta de luz. No meio ficam os <strong>consultores</strong> que vendem e acompanham, e a <strong>administração</strong> que fecha a conta todo mês.</p>
+        <p>Todo mês chega uma fatura da concessionária para cada unidade consumidora. Cada fatura precisa ser lida e conferida antes de virar cobrança, e cada cobrança precisa ser paga e baixada. Quando isso é feito em planilhas, e-mails e grupos de WhatsApp, a operação não cresce sem contratar mais gente e sem errar mais.</p>
+      </div>
+      <div class="split">
+        <div class="panel">
+          <h3>Sem o Casa Verde</h3>
+          <ul>
+            <li>Faturas baixadas uma a uma da caixa de e-mail</li>
+            <li>Valores digitados à mão em planilhas</li>
+            <li>Boletos emitidos fora do sistema e conferidos no extrato</li>
+            <li>Cliente sem saber quanto economizou</li>
+            <li>Ninguém percebe quando uma usina está sem saldo de energia</li>
+          </ul>
+        </div>
+        <div class="panel tint">
+          <h3>Com o Casa Verde</h3>
+          <ul>
+            <li>Faturas importadas e lidas automaticamente</li>
+            <li>Cobrança calculada a partir da fatura aprovada, com o desconto do contrato</li>
+            <li>Boleto e Pix emitidos em um clique, com baixa automática</li>
+            <li>Portal do cliente com faturas, cobranças e relatório de economia</li>
+            <li>Alertas avisam a equipe antes que o problema chegue ao cliente</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- CICLO -->
+    <section id="ciclo">
+      <div>
+        <div class="eyebrow">Como funciona</div>
+        <h2>O ciclo completo, em oito etapas</h2>
+      </div>
+      <p class="lede">Cada etapa alimenta a seguinte. Um dado lançado uma vez acompanha o cliente até o relatório final.</p>
+      <ol class="cycle">
+        <li>
+          <div>
+            <h3>Prospecção</h3>
+            <p>Consultores cadastram clientes interessados e produtores com usinas disponíveis. Cada consultor trabalha a própria carteira, e os leads de produtores seguem um funil próprio.</p>
+            <span class="who">Consultor</span>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Proposta comercial</h3>
+            <p>A proposta parte do consumo médio, da conta média, da unidade consumidora, da concessionária, do percentual de desconto e do prazo. O sistema gera a proposta em PDF, pronta para compartilhar com o cliente pelo WhatsApp.</p>
+            <span class="who">Consultor</span>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Contrato e ativação</h3>
+            <p>Com a proposta aceita, o contrato é emitido e registrado. O cliente recebe um convite por e-mail para criar o acesso ao próprio portal.</p>
+            <span class="who">Consultor · Cliente</span>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Vínculo com a usina</h3>
+            <p>Cada unidade consumidora do cliente é ligada a uma usina, com a energia alocada em kWh, o percentual de desconto e o percentual de consumo. Uma mesma unidade pode receber energia de mais de uma usina.</p>
+            <span class="who">Consultor · Admin</span>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Fatura da concessionária</h3>
+            <p>As faturas chegam por e-mail e são importadas sozinhas, inclusive PDFs protegidos por senha. O sistema extrai consumo, energia injetada, valores e vencimento. Também é possível enviar a fatura manualmente. Antes de seguir, a fatura passa por revisão.</p>
+            <span class="who">Automático · Admin</span>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Cobrança</h3>
+            <p>Com a fatura aprovada, o sistema gera a cobrança do cliente já com o desconto contratado. A equipe pode aplicar descontos ou acréscimos, mudar o vencimento e consultar o histórico de cada alteração.</p>
+            <span class="who">Automático · Admin · Consultor</span>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Pagamento</h3>
+            <p>Boleto ou Pix emitidos pelo Mercado Pago em um clique. O cliente recebe por e-mail e vê no portal. Quando ele paga, a cobrança é baixada sozinha. Boleto vencido é expirado e pode ser reemitido.</p>
+            <span class="who">Admin · Consultor · Cliente</span>
+          </div>
+        </li>
+        <li>
+          <div>
+            <h3>Acompanhamento</h3>
+            <p>Lembretes de vencimento, alertas operacionais, painéis por perfil e relatórios financeiros, de clientes, de faturas e de usinas. O cliente vê a economia acumulada mês a mês.</p>
+            <span class="who">Todos os perfis</span>
+          </div>
+        </li>
+      </ol>
+
+      <div class="calc" aria-label="Exemplo ilustrativo de cobrança">
+        <div class="calc-head">
+          <h3>Da fatura à cobrança</h3>
+          <span class="tag">Exemplo ilustrativo · valores fictícios</span>
+        </div>
+        <div class="calc-rows mono">
+          <div><span>Energia compensada na fatura (competência 08/2026)</span><span>R$ 480,00</span></div>
+          <div class="neg"><span>Desconto contratado (15%)</span><span>− R$ 72,00</span></div>
+          <div><span>Ajuste manual</span><span>R$ 0,00</span></div>
+          <div class="total"><span>Valor da cobrança ao cliente</span><span>R$ 408,00</span></div>
+        </div>
+        <p class="calc-foot">O percentual de desconto vem do contrato de cada cliente. O cliente acompanha essa conta no portal e no relatório de economia.</p>
+      </div>
+    </section>
+
+    <!-- PERFIS -->
+    <section id="perfis">
+      <div>
+        <div class="eyebrow">Um portal por perfil</div>
+        <h2>Cada pessoa vê o que precisa, e só o que lhe diz respeito</h2>
+      </div>
+      <div class="roles">
+        <article class="role">
+          <div class="role-head">
+            <div class="role-mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18"/><path d="M6 16V9"/><path d="M11 16V5"/><path d="M16 16v-6"/><path d="M21 16v-9"/></svg>
+            </div>
+            <div><h3>Administração</h3><div class="role-sub">Quem dirige a operação</div></div>
+          </div>
+          <ul>
+            <li>Cockpit executivo com clientes, energia, faturas, finanças e crescimento</li>
+            <li>Gestão de usinas, blocos de usina e saldo de energia em kWh</li>
+            <li>Revisão e aprovação de faturas importadas</li>
+            <li>Cobranças, pagamentos, conciliação e histórico</li>
+            <li>Relatórios: executivo, financeiro, clientes, cobranças, faturas, pagamentos e usinas</li>
+            <li>Usuários, acessos, concessionárias e contas de e-mail para faturas</li>
+            <li>Identidade visual: logotipo, favicon e logotipo do boleto</li>
+          </ul>
+        </article>
+        <article class="role">
+          <div class="role-head">
+            <div class="role-mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7"/><path d="M18.5 14.8c1.6.8 2.6 2.5 3 5.2"/></svg>
+            </div>
+            <div><h3>Consultor</h3><div class="role-sub">Quem vende e acompanha</div></div>
+          </div>
+          <ul>
+            <li>Painel da própria carteira de clientes e produtores</li>
+            <li>Cadastro de clientes, unidades consumidoras, contatos e contratos</li>
+            <li>Propostas comerciais em PDF</li>
+            <li>Leads e perfis de produtores, usinas e blocos</li>
+            <li>Faturas e cobranças dos seus clientes</li>
+            <li>Alertas com a mensagem de WhatsApp pronta para enviar ao cliente</li>
+          </ul>
+        </article>
+        <article class="role">
+          <div class="role-head">
+            <div class="role-mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 9.5V20h13V9.5"/><path d="M12 12.5 10.5 16h3L12 19.5"/></svg>
+            </div>
+            <div><h3>Cliente</h3><div class="role-sub">Quem consome a energia</div></div>
+          </div>
+          <ul>
+            <li>Painel com faturas e cobranças recentes e histórico de consumo</li>
+            <li>Pagamento direto no portal: Pix copia e cola, linha digitável e boleto em PDF</li>
+            <li>Relatório de economia mês a mês, exportável em Excel e PDF</li>
+            <li>Contratos, usina vinculada e histórico de descontos</li>
+            <li>E-mail quando a cobrança fica disponível e lembrete antes do vencimento</li>
+          </ul>
+        </article>
+        <article class="role">
+          <div class="role-head">
+            <div class="role-mark" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="6" r="2.6"/><path d="M12 1.5v1M16.5 6h1M6.5 6h1M15.2 2.8l.7-.7M8.1 2.1l.7.7"/><path d="M4 21l2-8h12l2 8z"/><path d="M5 17h14M10 13l-.8 8M14 13l.8 8"/></svg>
+            </div>
+            <div><h3>Produtor</h3><div class="role-sub">Quem é dono da usina</div></div>
+          </div>
+          <ul>
+            <li>Painel próprio com acesso pela plataforma</li>
+            <li>Lista e detalhe das usinas vinculadas ao seu perfil</li>
+            <li>Cadastro centralizado: a operação cuida do relacionamento com os clientes</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- MÓDULOS -->
+    <section id="modulos">
+      <div>
+        <div class="eyebrow">Funcionalidades</div>
+        <h2>O que o sistema faz, módulo a módulo</h2>
+      </div>
+      <div class="modules">
+        <div class="module"><h3>CRM comercial</h3><p>Clientes pessoa física e jurídica, carteira por consultor, leads de produtores e cadastro completo com documentos, contatos e endereços.</p></div>
+        <div class="module"><h3>Propostas</h3><p>Proposta com consumo médio, desconto e prazo, numerada automaticamente (PC + número) e gerada em PDF para enviar ao cliente.</p></div>
+        <div class="module"><h3>Contratos</h3><p>Emissão e registro de contratos de cliente e de usina, com dados contratuais editáveis e histórico.</p></div>
+        <div class="module"><h3>Usinas e energia</h3><p>Usinas, blocos de usina e registros de geração. Controle de energia disponível, alocada e saldo em kWh.</p></div>
+        <div class="module"><h3>Unidades consumidoras</h3><p>Cada cliente pode ter várias UCs. Não há UCs duplicadas: o código é normalizado e único por concessionária.</p></div>
+        <div class="module"><h3>Leitura de faturas</h3><p>Importação automática pela caixa de e-mail, leitura do PDF (Copel), revisão antes da cobrança e envio manual quando necessário.</p></div>
+        <div class="module"><h3>Cobranças</h3><p>Geração a partir da fatura aprovada, ajustes manuais, mudança de vencimento, cancelamento e histórico completo de alterações.</p></div>
+        <div class="module"><h3>Pagamentos</h3><p>Boleto e Pix pelo Mercado Pago, PDF do boleto com a sua marca, baixa automática, expiração e reemissão de boletos vencidos.</p></div>
+        <div class="module"><h3>Portal do cliente</h3><p>Faturas, cobranças, pagamento, contratos e relatório de economia, acessíveis pelo celular.</p></div>
+        <div class="module"><h3>WhatsApp</h3><p>Dez modelos de mensagem editáveis, como boas-vindas, envio de boleto, lembrete de vencimento e pagamento confirmado. Cada mensagem vira um link pronto que o consultor envia com um clique.</p></div>
+        <div class="module"><h3>Alertas operacionais</h3><p>A plataforma verifica usinas, faturas e cobranças sozinha e avisa o responsável certo quando algo precisa de atenção.</p></div>
+        <div class="module"><h3>Relatórios</h3><p>Visão executiva, financeira, de clientes, cobranças, faturas, pagamentos e usinas, com exportação.</p></div>
+        <div class="module"><h3>E-mails da operação</h3><p>Gestão das contas que recebem faturas e das contas institucionais, com acesso ao webmail pelo próprio painel.</p></div>
+        <div class="module"><h3>Suporte</h3><p>Chamados abertos pelos usuários, com categoria, prioridade e troca de mensagens.</p></div>
+        <div class="module"><h3>Marca própria</h3><p>Logotipo, favicon e logotipo do boleto configuráveis pelo painel.</p></div>
+      </div>
+    </section>
+
+    <!-- AUTOMAÇÃO -->
+    <section id="automacao">
+      <div>
+        <div class="eyebrow">Automação</div>
+        <h2>O sistema trabalha enquanto a equipe cuida do relacionamento</h2>
+      </div>
+      <p class="lede">Rotinas agendadas rodam sozinhas, todos os dias, no horário de Brasília. Se alguma falhar, a equipe recebe um alerta.</p>
+      <div class="schedule-wrap">
+        <table>
+          <thead><tr><th>Quando</th><th>O que acontece</th></tr></thead>
+          <tbody>
+            <tr><td class="when">a cada 5 min</td><td>Confere no Mercado Pago os pagamentos em aberto e baixa as cobranças pagas</td></tr>
+            <tr><td class="when">a cada 10 min</td><td>Marca como vencidas as cobranças que passaram da data</td></tr>
+            <tr><td class="when">a cada hora</td><td>Busca faturas novas nas caixas de e-mail e lê os PDFs</td></tr>
+            <tr><td class="when">a cada hora</td><td>Gera as cobranças das faturas aprovadas</td></tr>
+            <tr><td class="when">a cada hora</td><td>Verifica a saúde da operação e abre alertas</td></tr>
+            <tr><td class="when">06:00</td><td>Expira boletos vencidos que o banco não aceita mais</td></tr>
+            <tr><td class="when">08:00</td><td>Envia ao cliente o lembrete por e-mail 3 dias antes do vencimento e avisa o consultor, a cada 5 dias, sobre cobranças atrasadas</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h3 style="margin-bottom: 12px;">Situações que geram alerta</h3>
+        <div class="chips">
+          <span class="chip">Usina com saldo de energia baixo</span>
+          <span class="chip">Usina sem energia disponível</span>
+          <span class="chip">Energia alocada acima da disponível</span>
+          <span class="chip">Consumo acima do alocado</span>
+          <span class="chip">Usina sem registro de geração</span>
+          <span class="chip">Cliente ativo sem fatura no mês</span>
+          <span class="chip">Fatura aguardando revisão</span>
+          <span class="chip">Cobranças vencidas</span>
+          <span class="chip">Boleto vencido sem reemissão</span>
+          <span class="chip">Falha em rotina automática</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- SEGURANÇA -->
+    <section id="seguranca">
+      <div>
+        <div class="eyebrow">Segurança e confiabilidade</div>
+        <h2>Dados de clientes e dinheiro exigem cuidado</h2>
+      </div>
+      <div class="split">
+        <div class="panel">
+          <h3>Acesso</h3>
+          <ul>
+            <li>Quatro perfis, cada um com permissões próprias</li>
+            <li>O consultor só enxerga a própria carteira</li>
+            <li>O cliente só enxerga os próprios dados e cobranças</li>
+            <li>Senhas fortes e limite de tentativas de login</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>Dados e pagamentos</h3>
+          <ul>
+            <li>Senhas de e-mail e chaves de pagamento guardadas com criptografia</li>
+            <li>Notificações de pagamento com assinatura verificada</li>
+            <li>Proteção contra boleto em duplicidade</li>
+            <li>Links de documentos com prazo de validade</li>
+            <li>Mais de 500 testes automatizados a cada atualização</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- BENEFÍCIOS -->
+    <section id="beneficios">
+      <div>
+        <div class="eyebrow">Benefícios</div>
+        <h2>O que cada público ganha</h2>
+      </div>
+      <div class="benefits">
+        <div class="benefit">
+          <h3>Para a empresa</h3>
+          <ul>
+            <li>Mais clientes atendidos com a mesma equipe</li>
+            <li>Menos erro de digitação e de cálculo</li>
+            <li>Recebimento mais rápido, com baixa automática</li>
+            <li>Visão em tempo real de energia, faturas e caixa</li>
+            <li>Marca própria em todo o atendimento</li>
+          </ul>
+        </div>
+        <div class="benefit">
+          <h3>Para o consultor</h3>
+          <ul>
+            <li>Carteira organizada em um só lugar</li>
+            <li>Proposta em PDF em poucos minutos</li>
+            <li>Mensagens de WhatsApp prontas</li>
+            <li>Sabe na hora qual cliente precisa de contato</li>
+          </ul>
+        </div>
+        <div class="benefit">
+          <h3>Para o cliente</h3>
+          <ul>
+            <li>Paga por Pix ou boleto direto no portal</li>
+            <li>Vê quanto economizou, mês a mês</li>
+            <li>Recebe a cobrança e o lembrete por e-mail</li>
+            <li>Consulta contratos e faturas quando quiser</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ESCOPO -->
+    <section id="escopo">
+      <div>
+        <div class="eyebrow">O que prometer</div>
+        <h2>Capacidades atuais: use isto para não prometer o que o sistema não faz</h2>
+      </div>
+      <p class="lede">Textos comerciais devem descrever o produto como ele é hoje. A coluna da direita mostra afirmações a evitar até que a funcionalidade exista.</p>
+      <div class="scope">
+        <div class="scope-row head"><span>Tema</span><span>Pode dizer</span><span>Evite dizer</span></div>
+        <div class="scope-row"><span class="topic">Leitura de faturas</span><span class="yes">Importação automática por e-mail e leitura de faturas da Copel. Outras concessionárias entram por envio manual.</span><span class="no">"Lê faturas de qualquer concessionária do Brasil"</span></div>
+        <div class="scope-row"><span class="topic">Pagamentos</span><span class="yes">Boleto e Pix pelo Mercado Pago, com baixa automática.</span><span class="no">"Integra com qualquer banco" ou "cartão de crédito"</span></div>
+        <div class="scope-row"><span class="topic">Emissão de boleto</span><span class="yes">Emissão em um clique, a partir da cobrança.</span><span class="no">"Boletos emitidos sozinhos, sem ninguém"</span></div>
+        <div class="scope-row"><span class="topic">WhatsApp</span><span class="yes">Mensagens prontas que o consultor envia com um clique.</span><span class="no">"Disparo automático de WhatsApp" ou "chatbot"</span></div>
+        <div class="scope-row"><span class="topic">E-mails ao cliente</span><span class="yes">Convite de acesso, aviso de cobrança disponível e lembrete antes do vencimento.</span><span class="no">"Régua de cobrança completa por e-mail e SMS"</span></div>
+        <div class="scope-row"><span class="topic">Portal do produtor</span><span class="yes">Painel e visão das usinas do produtor.</span><span class="no">"Extrato de repasses do produtor" (em evolução)</span></div>
+        <div class="scope-row"><span class="topic">Aplicativo</span><span class="yes">Funciona no navegador do computador e do celular.</span><span class="no">"Aplicativo nas lojas Apple e Google"</span></div>
+      </div>
+    </section>
+
+    <!-- PARTE 2 -->
+    <div class="part-divider">
+      <div class="eyebrow">Parte 2</div>
+      <h2>Kit do redator</h2>
+      <p>Textos prontos para adaptar ao site, a apresentações, posts e e-mails de prospecção. Cada bloco tem um botão para copiar.</p>
+    </div>
+
+    <section id="slogans">
+      <div>
+        <div class="eyebrow">Slogans</div>
+        <h2>Frases de assinatura</h2>
+      </div>
+      <div class="copy-list">
+        <div class="copy"><span class="text big">Da fatura ao Pix, sem planilha no meio.</span><button class="copy-btn" type="button">Copiar</button></div>
+        <div class="copy"><span class="text big">Energia compartilhada, operação organizada.</span><button class="copy-btn" type="button">Copiar</button></div>
+        <div class="copy"><span class="text big">Quem gera, quem consome e quem vende, na mesma plataforma.</span><button class="copy-btn" type="button">Copiar</button></div>
+        <div class="copy"><span class="text big">A operação de energia por assinatura, de ponta a ponta.</span><button class="copy-btn" type="button">Copiar</button></div>
+        <div class="copy"><span class="text big">Menos digitação. Mais clientes economizando.</span><button class="copy-btn" type="button">Copiar</button></div>
+      </div>
+    </section>
+
+    <section id="pitch">
+      <div>
+        <div class="eyebrow">Pitch</div>
+        <h2>Apresentação em três tamanhos</h2>
+      </div>
+      <div class="copy-list">
+        <div class="copy">
+          <span class="label">Uma frase</span>
+          <span class="text">O Casa Verde é a plataforma que organiza toda a operação de energia solar por assinatura: CRM, usinas, faturas, cobrança e pagamento em um só lugar.</span>
+          <button class="copy-btn" type="button">Copiar</button>
+        </div>
+        <div class="copy">
+          <span class="label">Um parágrafo · cerca de 30 segundos</span>
+          <span class="text">Empresas de energia por assinatura vivem entre planilhas, faturas em PDF e boletos avulsos. O Casa Verde junta tudo isso. O consultor cadastra o cliente e gera a proposta. A fatura da concessionária chega por e-mail e é lida automaticamente. O sistema calcula a cobrança com o desconto do contrato, emite boleto ou Pix e dá baixa quando o cliente paga. Cada perfil tem o próprio portal: administração, consultor, cliente e produtor.</span>
+          <button class="copy-btn" type="button">Copiar</button>
+        </div>
+        <div class="copy">
+          <span class="label">Versão completa · para "Sobre" ou apresentação</span>
+          <span class="text">O Casa Verde é uma plataforma de gestão feita para empresas que oferecem energia solar por assinatura ou compensação. Ela conecta os produtores donos de usinas, os clientes que consomem a energia e os consultores que fazem a venda.
+
+No comercial, o sistema organiza a carteira de cada consultor, gera propostas em PDF e registra contratos. Na operação, controla usinas, blocos e a energia disponível e alocada em kWh, ligando cada unidade consumidora à sua usina.
+
+Todo mês, as faturas da concessionária são importadas da caixa de e-mail e lidas automaticamente. Depois de revisadas, viram cobranças com o desconto de cada contrato. O boleto ou Pix é emitido pelo Mercado Pago, chega ao cliente por e-mail e é baixado sozinho quando o pagamento cai.
+
+O cliente acompanha tudo em um portal próprio, inclusive quanto economizou. A administração tem painéis, relatórios e alertas que apontam problemas antes que eles cheguem ao cliente.</span>
+          <button class="copy-btn" type="button">Copiar</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="headlines">
+      <div>
+        <div class="eyebrow">Títulos e chamadas</div>
+        <h2>Títulos por público e botões de ação</h2>
+      </div>
+      <div class="two-col">
+        <div class="copy-list">
+          <div class="copy"><span class="label">Para donos e gestores</span><span class="text">Sua operação de energia compartilhada cresce sem crescer a planilha.</span><button class="copy-btn" type="button">Copiar</button></div>
+          <div class="copy"><span class="label">Para o financeiro</span><span class="text">Fatura lida, cobrança calculada, Pix conferido. Todo mês, sem digitação.</span><button class="copy-btn" type="button">Copiar</button></div>
+          <div class="copy"><span class="label">Para o time comercial</span><span class="text">Sua carteira, suas propostas e seus clientes em uma tela só.</span><button class="copy-btn" type="button">Copiar</button></div>
+        </div>
+        <div class="copy-list">
+          <div class="copy"><span class="label">Sobre o cliente final</span><span class="text">Seu cliente paga pelo celular e vê quanto economizou.</span><button class="copy-btn" type="button">Copiar</button></div>
+          <div class="copy"><span class="label">Sobre controle</span><span class="text">Saiba qual usina está ficando sem energia antes do cliente reclamar.</span><button class="copy-btn" type="button">Copiar</button></div>
+          <div class="copy"><span class="label">Botões de ação</span><span class="text">Agende uma demonstração
+Fale com um especialista
+Veja a plataforma funcionando</span><button class="copy-btn" type="button">Copiar</button></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="site">
+      <div>
+        <div class="eyebrow">Estrutura de site</div>
+        <h2>Sugestão de página de divulgação</h2>
+      </div>
+      <div class="schedule-wrap">
+        <table>
+          <thead><tr><th>Seção</th><th>Conteúdo</th><th>Fonte neste documento</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Abertura</strong></td><td>Slogan, frase de apoio e botão "Agende uma demonstração"</td><td><a href="#slogans">Slogans</a>, <a href="#pitch">pitch de uma frase</a></td></tr>
+            <tr><td><strong>O problema</strong></td><td>Comparação entre a operação com planilhas e a operação com o Casa Verde</td><td><a href="#problema">O problema</a></td></tr>
+            <tr><td><strong>Como funciona</strong></td><td>As oito etapas do ciclo, de forma visual</td><td><a href="#ciclo">Como funciona</a></td></tr>
+            <tr><td><strong>Para quem</strong></td><td>Quatro blocos: administração, consultor, cliente e produtor</td><td><a href="#perfis">Um portal por perfil</a></td></tr>
+            <tr><td><strong>Funcionalidades</strong></td><td>Grade com os principais módulos</td><td><a href="#modulos">Funcionalidades</a></td></tr>
+            <tr><td><strong>Automação</strong></td><td>"O sistema trabalha enquanto você atende", com as rotinas</td><td><a href="#automacao">Automação</a></td></tr>
+            <tr><td><strong>Segurança</strong></td><td>Perfis de acesso, criptografia e testes</td><td><a href="#seguranca">Segurança</a></td></tr>
+            <tr><td><strong>Perguntas</strong></td><td>Dúvidas frequentes</td><td><a href="#faq">Perguntas frequentes</a></td></tr>
+            <tr><td><strong>Fechamento</strong></td><td>Chamada final e contato</td><td><a href="#headlines">Botões de ação</a></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="tom">
+      <div>
+        <div class="eyebrow">Tom de voz</div>
+        <h2>Como o Casa Verde fala</h2>
+      </div>
+      <div class="voice">
+        <div class="panel">
+          <h3>Fazer</h3>
+          <ul>
+            <li>Falar de resultado concreto: tempo poupado, erro evitado, dinheiro recebido</li>
+            <li>Usar os termos do setor: fatura, unidade consumidora, kWh, concessionária</li>
+            <li>Frases curtas e diretas, em voz ativa</li>
+            <li>Mostrar o produto funcionando: telas, exemplos, números ilustrativos marcados como tal</li>
+          </ul>
+        </div>
+        <div class="panel">
+          <h3>Evitar</h3>
+          <ul>
+            <li>Promessas de economia em percentual fixo para todo cliente</li>
+            <li>Jargão técnico de software (servidor, API, banco de dados)</li>
+            <li>Superlativos vazios como "revolucionário" ou "o melhor do mercado"</li>
+            <li>Funcionalidades fora da seção <a href="#escopo">O que prometer</a></li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq">
+      <div>
+        <div class="eyebrow">Perguntas frequentes</div>
+        <h2>Respostas para o site e para a conversa de venda</h2>
+      </div>
+      <div class="faq">
+        <details open>
+          <summary>Preciso instalar alguma coisa?</summary>
+          <p>Não. O Casa Verde funciona no navegador do computador e do celular. Cada pessoa entra com o próprio login.</p>
+        </details>
+        <details>
+          <summary>Como as faturas da concessionária entram no sistema?</summary>
+          <p>Pela caixa de e-mail que recebe as faturas: o sistema busca as mensagens novas a cada hora e lê os PDFs automaticamente, inclusive os protegidos por senha. Também é possível enviar uma fatura manualmente. Hoje a leitura automática atende faturas da Copel.</p>
+        </details>
+        <details>
+          <summary>Como meus clientes pagam?</summary>
+          <p>Por boleto ou Pix, emitidos pelo Mercado Pago. O cliente recebe a cobrança por e-mail e também encontra o Pix copia e cola, a linha digitável e o boleto em PDF no portal. Quando o pagamento é feito, a cobrança é baixada sozinha.</p>
+        </details>
+        <details>
+          <summary>O consultor vê os clientes dos outros consultores?</summary>
+          <p>Não. Cada consultor vê apenas a própria carteira. A administração tem a visão completa.</p>
+        </details>
+        <details>
+          <summary>Posso usar a minha marca?</summary>
+          <p>Sim. Logotipo, favicon e o logotipo que sai no boleto são configurados pelo painel administrativo.</p>
+        </details>
+        <details>
+          <summary>O sistema envia mensagens de WhatsApp sozinho?</summary>
+          <p>Não. O sistema prepara a mensagem com os dados do cliente, a partir de modelos editáveis, e o consultor envia com um clique pelo próprio WhatsApp. Assim o contato continua pessoal.</p>
+        </details>
+        <details>
+          <summary>Uma unidade consumidora pode receber energia de mais de uma usina?</summary>
+          <p>Sim. Cada vínculo registra a energia alocada em kWh e o percentual de desconto, e uma mesma unidade pode ter vínculos ativos com usinas diferentes.</p>
+        </details>
+      </div>
+    </section>
+
+    <section id="glossario">
+      <div>
+        <div class="eyebrow">Glossário</div>
+        <h2>Termos do setor, em linguagem simples</h2>
+      </div>
+      <dl class="glossary">
+        <div><dt>Energia por assinatura</dt><dd>Modelo em que o cliente recebe créditos de energia gerada por uma usina de terceiros e paga menos na conta de luz, sem instalar painéis em casa.</dd></div>
+        <div><dt>Compensação de energia</dt><dd>A energia gerada pela usina vira créditos que abatem o consumo do cliente na fatura da concessionária.</dd></div>
+        <div><dt>Concessionária</dt><dd>A distribuidora de energia da região, como a Copel no Paraná, que emite a conta de luz.</dd></div>
+        <div><dt>Unidade consumidora (UC)</dt><dd>O ponto de consumo identificado na conta de luz: uma casa, loja ou empresa. Um cliente pode ter várias.</dd></div>
+        <div><dt>Usina</dt><dd>A instalação solar que gera a energia, pertencente a um produtor.</dd></div>
+        <div><dt>Produtor</dt><dd>O dono da usina que oferece a energia gerada na operação.</dd></div>
+        <div><dt>Energia alocada</dt><dd>A quantidade de energia da usina, em kWh, destinada a um cliente.</dd></div>
+        <div><dt>Competência</dt><dd>O mês e ano a que uma fatura ou cobrança se refere, como 08/2026.</dd></div>
+        <div><dt>Cobrança</dt><dd>O valor que o cliente paga à empresa no mês, calculado a partir da fatura e do desconto contratado.</dd></div>
+        <div><dt>Consultor</dt><dd>O vendedor que prospecta, fecha contratos e acompanha a própria carteira de clientes e produtores.</dd></div>
+      </dl>
+    </section>
+
+    <section id="marca">
+      <div>
+        <div class="eyebrow">Cores da marca</div>
+        <h2>Paleta usada no sistema</h2>
+      </div>
+      <p class="lede">São as cores das telas do produto. Use no site para que divulgação e plataforma pareçam a mesma coisa.</p>
+      <div class="palette">
+        <div class="swatch"><i style="background:#2F7D18"></i><div>Verde principal<br><span class="mono">#2F7D18</span></div></div>
+        <div class="swatch"><i style="background:#1F5F10"></i><div>Verde escuro<br><span class="mono">#1F5F10</span></div></div>
+        <div class="swatch"><i style="background:#7BAA2F"></i><div>Verde-limão (destaque)<br><span class="mono">#7BAA2F</span></div></div>
+        <div class="swatch"><i style="background:#DFF3D8"></i><div>Verde claro (fundos)<br><span class="mono">#DFF3D8</span></div></div>
+        <div class="swatch"><i style="background:#F4F7F4"></i><div>Fundo da interface<br><span class="mono">#F4F7F4</span></div></div>
+        <div class="swatch"><i style="background:#111827"></i><div>Grafite (texto)<br><span class="mono">#111827</span></div></div>
+        <div class="swatch"><i style="background:linear-gradient(135deg,#166534 0%,#15803D 50%,#22C55E 100%)"></i><div>Gradiente principal<br><span class="mono">#166534 → #22C55E</span></div></div>
+        <div class="swatch"><i style="background:linear-gradient(180deg,#14532D 0%,#052e16 100%)"></i><div>Gradiente escuro<br><span class="mono">#14532D → #052E16</span></div></div>
+      </div>
+    </section>
+
+    <footer class="endnote">
+      Documento preparado a partir do sistema em funcionamento, em outubro de 2026. Os valores do exemplo de cobrança são fictícios. Ao lançar novas funcionalidades, atualize a seção <a href="#escopo">O que prometer</a> antes dos textos de marketing.
+    </footer>
+  </main>
+</div>
+
+<script>
+document.querySelectorAll('.copy-btn').forEach(function (btn) {
+  btn.addEventListener('click', function () {
+    var textEl = btn.parentElement.querySelector('.text');
+    var text = textEl ? textEl.innerText.trim() : '';
+    var done = function () {
+      btn.textContent = 'Copiado';
+      btn.classList.add('done');
+      setTimeout(function () { btn.textContent = 'Copiar'; btn.classList.remove('done'); }, 1600);
+    };
+    var fallback = function () {
+      var range = document.createRange();
+      range.selectNodeContents(textEl);
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      btn.textContent = 'Selecionado';
+      setTimeout(function () { btn.textContent = 'Copiar'; }, 1600);
+    };
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, fallback);
+      } else {
+        fallback();
+      }
+    } catch (e) {
+      fallback();
+    }
+  });
+});
+</script>
+</body>
+</html>
