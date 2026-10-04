@@ -249,6 +249,15 @@ routes/
 
 ---
 
+## Modo demonstração (`DEMO_MODE`)
+
+Instância separada (domínio e banco próprios) para interessados testarem a plataforma; guia completo em `DEMO.md`. Desligado por padrão — com `DEMO_MODE=false` nada muda.
+- `/login` vira acesso sem senha (nome + e-mail/telefone + aceite); visitantes gravados em `demo_visitors` (`DemoAccessService`).
+- Barra de troca de perfil (admin/consultor/cliente/produtor) em `Components/Demo/DemoBar.jsx`, montada na raiz (`app.jsx`).
+- Somente leitura garantido no servidor pelo middleware `DemoMode` (bloqueia escrita e rotas `.create`/`.edit`); `resources/js/Demo/demoGuard.js` só esmaece botões e avisa.
+- **Rota POST que apenas lê dados** precisa entrar em `config/demo.php` → `readonly_post_routes`, senão é bloqueada na demonstração.
+- Agendamentos desligados em demonstração (`routes/console.php`). Exportação de visitantes: `php artisan demo:visitantes` ou `/demo/visitantes.csv?token=DEMO_LEADS_TOKEN`.
+
 ## Integração de pagamentos (Mercado Pago)
 
 Mercado Pago (`app/Services/Pagamento/Providers/MercadoPago/`) é o provider em produção; guia de configuração e regras operacionais (vencimento, boleto vencido, reemissão, estorno) em `MERCADO_PAGO.md`. Webhook: `MercadoPagoWebhookController` (consulta a API antes de dar baixa). O webhook recusa tudo quando a conta não tem `webhook_secret`; no painel do MP o evento a assinar é **Order (Mercado Pago)**. Métodos: `pix` (padrão) ou `boleto` (exige endereço do pagador).

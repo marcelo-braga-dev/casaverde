@@ -43,7 +43,7 @@ export default function AppSidebar({ expandedWidth, collapsedWidth }) {
                 transition: 'width 220ms ease',
                 '& .MuiDrawer-paper': {
                     width,
-                    height: '100vh',
+                    height: 'calc(100vh - var(--cv-demo-dock, 0px))',
                     position: 'fixed',
                     top: 0,
                     left: 0,
@@ -67,7 +67,7 @@ export default function AppSidebar({ expandedWidth, collapsedWidth }) {
         >
             <Box
                 sx={{
-                    height: '100vh',
+                    height: 'calc(100vh - var(--cv-demo-dock, 0px))',
                     minHeight: 0,
                     display: 'flex',
                     flexDirection: 'column',

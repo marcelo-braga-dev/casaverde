@@ -9,6 +9,7 @@ use App\Models\Fatura\ConcessionaireBill;
 use App\Models\Users\User;
 use App\Models\WhatsApp\WhatsAppMessageTemplate;
 use App\Services\Config\SystemSettingService;
+use App\Services\Demo\DemoAccessService;
 use App\Services\Support\SupportTicketService;
 use App\src\Roles\RoleUser;
 use Illuminate\Http\Request;
@@ -70,6 +71,7 @@ class HandleInertiaRequests extends Middleware
             'navBadges' => fn () => $this->resolveNavBadges($user),
             'whatsappTemplates' => fn () => $user ? $this->resolveWhatsAppTemplates() : [],
             'brand' => fn () => $this->resolveBrand(),
+            'demo' => fn () => config('demo.enabled') ? app(DemoAccessService::class)->sharedProps($request) : null,
         ];
     }
 

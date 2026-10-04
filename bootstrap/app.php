@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\DemoMode;
 use App\Http\Middleware\EnsureUserHasRole;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\RedirectUserByRole;
@@ -19,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             HandleInertiaRequests::class,
             SecurityHeaders::class,
+            DemoMode::class,
         ]);
 
         // O Roundcube precisa receber seu próprio ID de sessão e o token de

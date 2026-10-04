@@ -13,6 +13,7 @@ require __DIR__.'/produtor/index.php';
 require __DIR__.'/auth.php';
 require __DIR__.'/user/index.php';
 require __DIR__.'/consultor/index.php';
+require __DIR__.'/demo.php';
 
 Route::post('/webhooks/payments/mercado-pago', MercadoPagoWebhookController::class)
     ->name('webhooks.payments.mercado-pago');

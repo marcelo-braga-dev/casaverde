@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth\Authentication;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Demo\DemoAccessController;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -16,8 +17,13 @@ class AuthenticatedSessionController extends Controller
     /**
      * Display the login view.
      */
-    public function create(): Response
+    public function create(Request $request): Response
     {
+        // Modo demonstração: acesso por nome + contato, sem senha.
+        if (config('demo.enabled')) {
+            return app(DemoAccessController::class)->show($request);
+        }
+
         return Inertia::render('Auth/Authentication/Login', [
             'canResetPassword' => Route::has('password.request'),
             'status' => session('status'),
