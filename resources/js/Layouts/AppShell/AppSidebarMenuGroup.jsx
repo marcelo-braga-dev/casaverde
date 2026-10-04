@@ -53,16 +53,14 @@ export default function AppSidebarMenuGroup({ item, collapsed }) {
                     px: collapsed ? 1 : 1.25,
                     borderRadius: 3,
                     cursor: hasSubItems ? 'pointer' : 'default',
-                    color: '#FFFFFF',
-                    bgcolor: isActiveGroup
-                        ? 'rgba(47, 125, 24, 0.22)'
-                        : 'transparent',
+                    color: 'var(--cv-sidebar-fg)',
+                    bgcolor: isActiveGroup ? 'var(--cv-sidebar-group-active-bg)' : 'transparent',
                     border: isActiveGroup
-                        ? '1px solid rgba(79, 154, 42, 0.30)'
+                        ? '1px solid var(--cv-sidebar-group-active-border)'
                         : '1px solid transparent',
                     transition: 'all 160ms ease',
                     '&:hover': {
-                        bgcolor: 'rgba(255,255,255,0.07)',
+                        bgcolor: 'rgba(var(--cv-sidebar-fg-rgb), 0.07)',
                     },
                 }}
             >
@@ -81,10 +79,10 @@ export default function AppSidebarMenuGroup({ item, collapsed }) {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            color: '#FFFFFF',
-                            bgcolor: isActiveGroup
-                                ? 'linear-gradient(135deg, #10B981 0%, #0B7A53 100%)'
-                                : 'rgba(255,255,255,0.06)',
+                            color: isActiveGroup ? 'var(--cv-sidebar-active-fg)' : 'var(--cv-sidebar-fg)',
+                            background: isActiveGroup
+                                ? 'var(--cv-sidebar-icon-active-bg)'
+                                : 'rgba(var(--cv-sidebar-fg-rgb), 0.06)',
                         }}
                     >
                         {icon}
@@ -97,7 +95,7 @@ export default function AppSidebarMenuGroup({ item, collapsed }) {
                             sx={{
                                 fontSize: 14,
                                 fontWeight: isActiveGroup ? 900 : 750,
-                                color: '#FFFFFF',
+                                color: 'var(--cv-sidebar-fg)',
                             }}
                         >
                             {item.title}
@@ -108,7 +106,7 @@ export default function AppSidebarMenuGroup({ item, collapsed }) {
                 {!collapsed && hasSubItems && (
                     <Box
                         sx={{
-                            color: 'rgba(255,255,255,0.52)',
+                            color: 'rgba(var(--cv-sidebar-fg-rgb), 0.52)',
                             display: 'flex',
                             alignItems: 'center',
                         }}
@@ -129,7 +127,7 @@ export default function AppSidebarMenuGroup({ item, collapsed }) {
                             mt: 0.5,
                             ml: 1,
                             pl: 1.7,
-                            borderLeft: '1px solid rgba(255,255,255,0.08)',
+                            borderLeft: '1px solid rgba(var(--cv-sidebar-fg-rgb), 0.08)',
                         }}
                     >
                         {item.subItems.map((subItem) => (

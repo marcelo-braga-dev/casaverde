@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { CssBaseline, GlobalStyles, StyledEngineProvider } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
@@ -6,6 +6,8 @@ import Palette from './palette';
 import Typography from './typography';
 import CustomShadows from './shadows';
 import componentsOverride from './overrides';
+import { SIDEBAR_VARIABLES, sidebarThemeVars } from '@/Utils/Theme/sidebarTheme';
+import { BRAND_VARIABLES, brandThemeVars } from '@/Utils/Theme/brandTheme';
 
 export default function ThemeCustomization({ children, brand = {} }) {
     const mode = 'light';
@@ -14,6 +16,29 @@ export default function ThemeCustomization({ children, brand = {} }) {
         () => Palette(mode, { primary: brand.color_primary, secondary: brand.color_secondary }),
         [mode, brand.color_primary, brand.color_secondary],
     );
+
+    // Telas e menu lateral leem as cores de marca de variáveis CSS; sem nada configurado
+    // em Identidade Visual vale o padrão verde do casa-verde-theme.css.
+    useEffect(() => {
+        const root = document.documentElement.style;
+        const vars = {
+            ...brandThemeVars(brand.color_primary),
+            ...sidebarThemeVars({
+                background: brand.color_sidebar,
+                text: brand.color_sidebar_text,
+                accent: brand.color_sidebar_accent,
+                secondary: brand.color_secondary,
+            }),
+        };
+
+        [...BRAND_VARIABLES, ...SIDEBAR_VARIABLES].forEach((name) => {
+            if (vars[name]) {
+                root.setProperty(name, vars[name]);
+            } else {
+                root.removeProperty(name);
+            }
+        });
+    }, [brand.color_primary, brand.color_secondary, brand.color_sidebar, brand.color_sidebar_text, brand.color_sidebar_accent]);
 
     const themeTypography = useMemo(
         () =>

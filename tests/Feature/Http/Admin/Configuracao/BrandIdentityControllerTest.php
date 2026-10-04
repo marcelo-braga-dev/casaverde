@@ -37,6 +37,72 @@ describe('BrandIdentityController', function () {
             ->and(SystemSetting::where('key', 'brand_color_secondary')->first()->value)->toBe('#445566');
     });
 
+    it('stores the sidebar colors and shares them with every page', function () {
+        $this->actingAs($this->admin)
+            ->post(route('admin.brand-identity.update'), [
+                'name' => 'Solmar Energia',
+                'color_primary' => '#112233',
+                'color_secondary' => '#445566',
+                'color_sidebar' => '#F8FAFC',
+                'color_sidebar_text' => '#1F2937',
+                'color_sidebar_accent' => '#F3981A',
+            ])
+            ->assertRedirect();
+
+        expect(SystemSetting::where('key', 'brand_color_sidebar')->first()->value)->toBe('#F8FAFC')
+            ->and(SystemSetting::where('key', 'brand_color_sidebar_text')->first()->value)->toBe('#1F2937')
+            ->and(SystemSetting::where('key', 'brand_color_sidebar_accent')->first()->value)->toBe('#F3981A');
+
+        // A página da identidade e o prop compartilhado (que pinta o menu em toda tela).
+        $this->get(route('admin.brand-identity.index'))
+            ->assertInertia(fn ($page) => $page
+                ->where('brand.color_sidebar', '#F8FAFC')
+                ->where('brand.color_sidebar_text', '#1F2937')
+                ->where('brand.color_sidebar_accent', '#F3981A')
+            );
+
+        $this->get(route('admin.dashboard'))
+            ->assertInertia(fn ($page) => $page
+                ->where('brand.color_sidebar', '#F8FAFC')
+                ->where('brand.color_sidebar_text', '#1F2937')
+                ->where('brand.color_sidebar_accent', '#F3981A')
+            );
+    });
+
+    it('clears the sidebar colors to fall back to the default menu', function () {
+        SystemSetting::create(['key' => 'brand_color_sidebar', 'value' => '#1E3A8A', 'type' => 'string']);
+        SystemSetting::create(['key' => 'brand_color_sidebar_text', 'value' => '#FFFFFF', 'type' => 'string']);
+        SystemSetting::create(['key' => 'brand_color_sidebar_accent', 'value' => '#F3981A', 'type' => 'string']);
+
+        $this->actingAs($this->admin)
+            ->post(route('admin.brand-identity.update'), [
+                'name' => 'Solmar Energia',
+                'color_primary' => '#112233',
+                'color_secondary' => '#445566',
+                'color_sidebar' => '',
+                'color_sidebar_text' => '',
+                'color_sidebar_accent' => '',
+            ])
+            ->assertRedirect();
+
+        expect(SystemSetting::whereIn('key', [
+            'brand_color_sidebar', 'brand_color_sidebar_text', 'brand_color_sidebar_accent',
+        ])->exists())->toBeFalse();
+    });
+
+    it('rejects an invalid sidebar color', function () {
+        $this->actingAs($this->admin)
+            ->post(route('admin.brand-identity.update'), [
+                'name' => 'Solmar Energia',
+                'color_primary' => '#112233',
+                'color_secondary' => '#445566',
+                'color_sidebar' => 'azul',
+                'color_sidebar_text' => 'branco',
+                'color_sidebar_accent' => '#12',
+            ])
+            ->assertSessionHasErrors(['color_sidebar', 'color_sidebar_text', 'color_sidebar_accent']);
+    });
+
     it('rejects an invalid hex color', function () {
         $this->actingAs($this->admin)
             ->post(route('admin.brand-identity.update'), [

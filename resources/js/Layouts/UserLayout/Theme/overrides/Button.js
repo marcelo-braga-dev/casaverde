@@ -29,11 +29,13 @@ export default function Button(theme) {
                     },
                 },
 
+                // Segue a cor primária da Identidade Visual (--cv-gradient-primary).
                 containedPrimary: {
-                    background: 'linear-gradient(135deg, #166534 0%, #15803D 100%)',
+                    background: 'var(--cv-gradient-primary)',
                     color: '#FFFFFF',
                     '&:hover': {
-                        background: 'linear-gradient(135deg, #14532D 0%, #166534 100%)',
+                        background: 'var(--cv-gradient-primary)',
+                        filter: 'brightness(0.92)',
                     },
                 },
 

@@ -83,6 +83,9 @@ class HandleInertiaRequests extends Middleware
             'name' => $this->systemSettings->get('brand_name', config('app.name', 'Casa Verde')),
             'color_primary' => $this->systemSettings->get('brand_color_primary'),
             'color_secondary' => $this->systemSettings->get('brand_color_secondary'),
+            'color_sidebar' => $this->systemSettings->get('brand_color_sidebar'),
+            'color_sidebar_text' => $this->systemSettings->get('brand_color_sidebar_text'),
+            'color_sidebar_accent' => $this->systemSettings->get('brand_color_sidebar_accent'),
             'logo_url' => $logoPath && Storage::disk('public')->exists($logoPath)
                 ? Storage::disk('public')->url($logoPath)
                 : null,

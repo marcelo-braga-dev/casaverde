@@ -33,9 +33,8 @@ export default function AppMobileDrawer() {
             <Box
                 sx={{
                     height: '100%',
-                    color: '#FFFFFF',
-                    background:
-                        'radial-gradient(circle at 20% 0%, rgba(16,185,129,0.22), transparent 28%), linear-gradient(180deg, #0F172A 0%, #020617 100%)',
+                    color: 'var(--cv-sidebar-fg)',
+                    background: 'var(--cv-gradient-sidebar)',
                     px: 1.5,
                     py: 2,
                     overflowY: 'auto',
@@ -50,8 +49,8 @@ export default function AppMobileDrawer() {
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
-                            background:
-                                'linear-gradient(135deg, #10B981 0%, #0B7A53 100%)',
+                            background: 'var(--cv-sidebar-icon-active-bg)',
+                            color: 'var(--cv-sidebar-active-fg)',
                         }}
                     >
                         <IconLeaf size={24} />
@@ -63,7 +62,7 @@ export default function AppMobileDrawer() {
                         </Typography>
                         <Typography
                             variant="caption"
-                            sx={{ color: 'rgba(255,255,255,0.58)' }}
+                            sx={{ color: 'rgba(var(--cv-sidebar-fg-rgb), 0.58)' }}
                         >
                             CRM / ERP Energia
                         </Typography>

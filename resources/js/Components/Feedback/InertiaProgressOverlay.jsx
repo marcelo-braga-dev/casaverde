@@ -34,7 +34,7 @@ export default function InertiaProgressOverlay() {
                     height: 3,
                     '& .MuiLinearProgress-bar': {
                         background:
-                            'linear-gradient(90deg, #0B7A53, #10B981, #0284C7)',
+                            'linear-gradient(90deg, var(--cv-primary-dark), var(--cv-primary))',
                     },
                 }}
             />

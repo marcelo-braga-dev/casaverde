@@ -20,6 +20,13 @@ class BrandIdentityController extends Controller
 
     private const DEFAULT_COLOR_SECONDARY = '#4F9A2A';
 
+    // Opcionais: vazio = padrão do tema (fundo verde, texto automático, destaque pela cor primária).
+    private const OPTIONAL_COLORS = [
+        'color_sidebar' => 'brand_color_sidebar',
+        'color_sidebar_text' => 'brand_color_sidebar_text',
+        'color_sidebar_accent' => 'brand_color_sidebar_accent',
+    ];
+
     public function index(SystemSettingService $settings): Response
     {
         return Inertia::render('Admin/Configuracao/BrandIdentity/Page', [
@@ -27,6 +34,9 @@ class BrandIdentityController extends Controller
                 'name' => $settings->get('brand_name', self::DEFAULT_NAME),
                 'color_primary' => $settings->get('brand_color_primary', self::DEFAULT_COLOR_PRIMARY),
                 'color_secondary' => $settings->get('brand_color_secondary', self::DEFAULT_COLOR_SECONDARY),
+                'color_sidebar' => $settings->get('brand_color_sidebar'),
+                'color_sidebar_text' => $settings->get('brand_color_sidebar_text'),
+                'color_sidebar_accent' => $settings->get('brand_color_sidebar_accent'),
                 'logo_url' => $this->urlFor($settings->get('brand_logo_path')),
                 'favicon_url' => $this->urlFor($settings->get('brand_favicon_path')),
                 'boleto_logo_url' => $this->urlFor($settings->get('brand_boleto_logo_path')),
@@ -41,6 +51,14 @@ class BrandIdentityController extends Controller
         $settings->set('brand_name', $request->string('name')->toString(), 'string', $userId);
         $settings->set('brand_color_primary', $request->string('color_primary')->toString(), 'string', $userId);
         $settings->set('brand_color_secondary', $request->string('color_secondary')->toString(), 'string', $userId);
+
+        foreach (self::OPTIONAL_COLORS as $field => $key) {
+            if ($request->filled($field)) {
+                $settings->set($key, $request->string($field)->toString(), 'string', $userId);
+            } else {
+                SystemSetting::query()->where('key', $key)->delete();
+            }
+        }
 
         if ($request->hasFile('logo')) {
             $this->replaceFile($settings, 'brand_logo_path', $request->file('logo'), $userId);

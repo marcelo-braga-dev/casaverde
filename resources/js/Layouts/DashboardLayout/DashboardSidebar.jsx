@@ -68,7 +68,7 @@ export default function DashboardSidebar({ drawerWidth }) {
                                 height: 46,
                                 borderRadius: 3,
                                 background:
-                                    'linear-gradient(135deg, #0B7A53 0%, #16A34A 100%)',
+                                    'var(--cv-gradient-primary)',
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',

@@ -71,9 +71,9 @@ export default function AppSidebar({ expandedWidth, collapsedWidth }) {
                     minHeight: 0,
                     display: 'flex',
                     flexDirection: 'column',
-                    color: '#FFFFFF',
+                    color: 'var(--cv-sidebar-fg)',
                     background: 'var(--cv-gradient-sidebar)',
-                    borderRight: '1px solid rgba(255,255,255,0.10)',
+                    borderRight: '1px solid rgba(var(--cv-sidebar-fg-rgb), 0.10)',
                     overflow: 'hidden',
                     position: 'relative',
                 }}
@@ -116,9 +116,9 @@ export default function AppSidebar({ expandedWidth, collapsedWidth }) {
                                 alignItems: 'center',
                                 justifyContent: 'center',
                                 overflow: 'hidden',
-                                background: 'rgba(255,255,255,0.16)',
+                                background: 'rgba(var(--cv-sidebar-fg-rgb), 0.16)',
                                 backdropFilter: 'blur(12px)',
-                                border: '1px solid rgba(255,255,255,0.12)',
+                                border: '1px solid rgba(var(--cv-sidebar-fg-rgb), 0.12)',
                                 boxShadow: '0 10px 30px rgba(0,0,0,0.18)',
                             }}
                         >
@@ -157,10 +157,10 @@ export default function AppSidebar({ expandedWidth, collapsedWidth }) {
                             <IconButton
                                 onClick={toggleCollapsed}
                                 sx={{
-                                    color: 'rgba(255,255,255,0.82)',
-                                    bgcolor: 'rgba(255,255,255,0.12)',
+                                    color: 'rgba(var(--cv-sidebar-fg-rgb), 0.82)',
+                                    bgcolor: 'rgba(var(--cv-sidebar-fg-rgb), 0.12)',
                                     '&:hover': {
-                                        bgcolor: 'rgba(255,255,255,0.20)',
+                                        bgcolor: 'rgba(var(--cv-sidebar-fg-rgb), 0.20)',
                                     },
                                 }}
                             >
@@ -185,10 +185,10 @@ export default function AppSidebar({ expandedWidth, collapsedWidth }) {
                                 onClick={toggleCollapsed}
                                 sx={{
                                     width: '100%',
-                                    color: 'rgba(255,255,255,0.82)',
-                                    bgcolor: 'rgba(255,255,255,0.12)',
+                                    color: 'rgba(var(--cv-sidebar-fg-rgb), 0.82)',
+                                    bgcolor: 'rgba(var(--cv-sidebar-fg-rgb), 0.12)',
                                     '&:hover': {
-                                        bgcolor: 'rgba(255,255,255,0.20)',
+                                        bgcolor: 'rgba(var(--cv-sidebar-fg-rgb), 0.20)',
                                     },
                                 }}
                             >
@@ -216,11 +216,11 @@ export default function AppSidebar({ expandedWidth, collapsedWidth }) {
                             background: 'transparent',
                         },
                         '&::-webkit-scrollbar-thumb': {
-                            background: 'rgba(255,255,255,0.22)',
+                            background: 'rgba(var(--cv-sidebar-fg-rgb), 0.22)',
                             borderRadius: 999,
                         },
                         '&::-webkit-scrollbar-thumb:hover': {
-                            background: 'rgba(255,255,255,0.34)',
+                            background: 'rgba(var(--cv-sidebar-fg-rgb), 0.34)',
                         },
                     }}
                 >

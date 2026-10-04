@@ -26,6 +26,7 @@ const defaultBrand = {
 
     border: '#E2E8F0',
 
+    // Semântico (pago, aprovado): não acompanha a cor primária da Identidade Visual.
     success: '#2F7D18',
     warning: '#D89614',
     error: '#C62828',
@@ -73,8 +74,8 @@ const Palette = (mode = 'light', overrides = {}) => {
 
             success: {
                 main: brand.success,
-                light: brand.primaryLight,
-                dark: brand.primaryDark,
+                light: defaultBrand.primaryLight,
+                dark: defaultBrand.primaryDark,
                 contrastText: brand.white,
             },
 

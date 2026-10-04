@@ -31,7 +31,7 @@ export default function AppSidebarItem({ item, collapsed }) {
                 display: 'block',
                 pointerEvents: exists ? 'auto' : 'none',
                 opacity: exists ? 1 : 0.35,
-                color: '#FFFFFF',
+                color: 'var(--cv-sidebar-fg)',
                 textDecoration: 'none',
                 mb: 0.45,
             }}
@@ -48,12 +48,8 @@ export default function AppSidebarItem({ item, collapsed }) {
                     position: 'relative',
                     overflow: 'hidden',
                     transition: 'all 180ms ease',
-                    background: active
-                        ? 'linear-gradient(135deg, rgba(16,185,129,0.98), rgba(2,132,199,0.86))'
-                        : 'transparent',
-                    boxShadow: active
-                        ? '0 14px 34px rgba(16,185,129,0.18)'
-                        : 'none',
+                    background: active ? 'var(--cv-sidebar-active-bg)' : 'transparent',
+                    boxShadow: active ? 'var(--cv-sidebar-active-shadow)' : 'none',
                     '&:before': active
                         ? {
                             content: '""',
@@ -63,13 +59,13 @@ export default function AppSidebarItem({ item, collapsed }) {
                             bottom: 9,
                             width: 3,
                             borderRadius: 999,
-                            bgcolor: '#FFFFFF',
+                            bgcolor: 'var(--cv-sidebar-active-fg)',
                         }
                         : {},
                     '&:hover': {
                         background: active
-                            ? 'linear-gradient(135deg, rgba(16,185,129,1), rgba(2,132,199,0.92))'
-                            : 'rgba(255,255,255,0.07)',
+                            ? 'var(--cv-sidebar-active-bg-hover)'
+                            : 'rgba(var(--cv-sidebar-fg-rgb), 0.07)',
                         transform: collapsed ? 'none' : 'translateX(2px)',
                     },
                 }}
@@ -82,10 +78,10 @@ export default function AppSidebarItem({ item, collapsed }) {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        color: active ? '#FFFFFF' : 'rgba(255,255,255,0.72)',
+                        color: active ? 'var(--cv-sidebar-active-fg)' : 'rgba(var(--cv-sidebar-fg-rgb), 0.72)',
                         bgcolor: active
-                            ? 'rgba(255,255,255,0.18)'
-                            : 'rgba(255,255,255,0.06)',
+                            ? 'rgba(var(--cv-sidebar-fg-rgb), 0.18)'
+                            : 'rgba(var(--cv-sidebar-fg-rgb), 0.06)',
                     }}
                 >
                     {Icon && <Icon size={20} />}
@@ -97,7 +93,7 @@ export default function AppSidebarItem({ item, collapsed }) {
                         noWrap
                         sx={{
                             fontWeight: active ? 900 : 700,
-                            color: active ? '#FFFFFF' : 'rgba(255,255,255,0.74)',
+                            color: active ? 'var(--cv-sidebar-active-fg)' : 'rgba(var(--cv-sidebar-fg-rgb), 0.74)',
                         }}
                     >
                         {item.title}

@@ -16,12 +16,14 @@ import {
     IconArrowRight,
     IconCheck,
     IconFileText,
+    IconLayoutSidebar,
     IconPalette,
     IconPhoto,
     IconRefresh,
     IconUpload,
 } from '@tabler/icons-react';
 import { useRef, useState } from 'react';
+import { DEFAULT_SIDEBAR_VARS, contrastRatio, contrastText, sidebarThemeVars } from '@/Utils/Theme/sidebarTheme';
 
 function safeRoute(n) { try { return route(n); } catch { return '#'; } }
 
@@ -42,13 +44,13 @@ function SectionCard({ icon: Icon, color, title, description, children }) {
     );
 }
 
-function ColorField({ label, value, onChange, error, helperText }) {
+function ColorField({ label, value, onChange, error, helperText, fallback }) {
     return (
         <Stack direction="row" gap={1.5} alignItems="flex-start">
             <Box
                 component="input"
                 type="color"
-                value={value || '#000000'}
+                value={value || fallback || '#000000'}
                 onChange={e => onChange(e.target.value)}
                 sx={{ width: 48, height: 48, border: '1px solid', borderColor: 'grey.300', borderRadius: 2, p: 0.5, cursor: 'pointer', mt: 0.25 }}
             />
@@ -58,9 +60,88 @@ function ColorField({ label, value, onChange, error, helperText }) {
                 onChange={e => onChange(e.target.value)}
                 error={error}
                 helperText={helperText}
-                placeholder="#2F7D18"
+                placeholder={fallback ? `Automática (${fallback})` : '#2F7D18'}
+                InputLabelProps={fallback ? { shrink: true } : undefined}
             />
         </Stack>
+    );
+}
+
+function SidebarPreview({ colors }) {
+    const vars = { ...DEFAULT_SIDEBAR_VARS, ...sidebarThemeVars(colors) };
+    const fg = (alpha) => `rgba(var(--cv-sidebar-fg-rgb), ${alpha})`;
+
+    return (
+        <Box
+            aria-label="Prévia do menu lateral"
+            style={vars}
+            sx={{
+                width: 220, flexShrink: 0, borderRadius: 3, p: 1.5,
+                background: 'var(--cv-gradient-sidebar)',
+                boxShadow: 'var(--cv-shadow-sidebar)',
+                color: 'var(--cv-sidebar-fg)',
+                display: 'flex', flexDirection: 'column', gap: 0.75,
+            }}
+        >
+            <Typography sx={{ fontSize: 13, fontWeight: 900, px: 0.5, mb: 0.5, color: 'var(--cv-sidebar-fg)' }}>
+                Prévia do menu
+            </Typography>
+
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 1, py: 0.9, borderRadius: 2, background: 'var(--cv-sidebar-active-bg)', boxShadow: 'var(--cv-sidebar-active-shadow)', color: 'var(--cv-sidebar-active-fg)' }}>
+                <IconLayoutSidebar size={16} />
+                <Typography sx={{ fontSize: 12, fontWeight: 900, color: 'inherit' }}>Item ativo</Typography>
+            </Box>
+
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 1, py: 0.9, borderRadius: 2, border: '1px solid var(--cv-sidebar-group-active-border)', bgcolor: 'var(--cv-sidebar-group-active-bg)' }}>
+                <Box sx={{ width: 22, height: 22, borderRadius: 1.5, background: 'var(--cv-sidebar-icon-active-bg)', color: 'var(--cv-sidebar-active-fg)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <IconPalette size={13} />
+                </Box>
+                <Typography sx={{ fontSize: 12, fontWeight: 800, color: 'var(--cv-sidebar-fg)' }}>Grupo aberto</Typography>
+            </Box>
+
+            <Box sx={{ ml: 1.25, pl: 1, borderLeft: `1px solid ${fg(0.12)}`, display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, px: 0.75, py: 0.4, borderRadius: 1, bgcolor: 'var(--cv-sidebar-sub-active-bg)', borderLeft: '2px solid var(--cv-sidebar-sub-active-border)' }}>
+                    <Box sx={{ width: 5, height: 5, borderRadius: '50%', bgcolor: 'var(--cv-sidebar-sub-dot)' }} />
+                    <Typography sx={{ fontSize: 11, fontWeight: 800, color: 'var(--cv-sidebar-fg)' }}>Subitem ativo</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, px: 0.75, py: 0.4 }}>
+                    <Box sx={{ width: 5, height: 5, borderRadius: '50%', bgcolor: fg(0.3) }} />
+                    <Typography sx={{ fontSize: 11, fontWeight: 600, color: fg(0.78) }}>Subitem</Typography>
+                </Box>
+            </Box>
+
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 1, py: 0.9, borderRadius: 2 }}>
+                <Box sx={{ width: 22, height: 22, borderRadius: 1.5, bgcolor: fg(0.06), color: fg(0.72), display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <IconFileText size={13} />
+                </Box>
+                <Typography sx={{ fontSize: 12, fontWeight: 700, color: fg(0.74) }}>Item comum</Typography>
+            </Box>
+        </Box>
+    );
+}
+
+function OptionalColorField({ label, value, onChange, error, emptyHint, filledHint, resetLabel, fallback }) {
+    return (
+        <Box>
+            <ColorField
+                label={label}
+                value={value}
+                onChange={onChange}
+                error={!!error}
+                helperText={error || (value ? filledHint : emptyHint)}
+                fallback={fallback}
+            />
+            {value && (
+                <Button
+                    size="small" variant="text" color="inherit"
+                    startIcon={<IconRefresh size={15} />}
+                    onClick={() => onChange('')}
+                    sx={{ mt: 0.5, ml: 7 }}
+                >
+                    {resetLabel}
+                </Button>
+            )}
+        </Box>
     );
 }
 
@@ -145,6 +226,9 @@ export default function Page({ brand }) {
         name: brand?.name ?? 'Casa Verde',
         color_primary: brand?.color_primary ?? '#2F7D18',
         color_secondary: brand?.color_secondary ?? '#4F9A2A',
+        color_sidebar: brand?.color_sidebar ?? '',
+        color_sidebar_text: brand?.color_sidebar_text ?? '',
+        color_sidebar_accent: brand?.color_sidebar_accent ?? '',
         logo: null,
         favicon: null,
         boleto_logo: null,
@@ -263,8 +347,64 @@ export default function Page({ brand }) {
                         </SectionCard>
 
                         <SectionCard
+                            icon={IconLayoutSidebar}
+                            color="var(--cv-gradient-primary)"
+                            title="Menu lateral"
+                            description="Cores do menu de navegação, no computador e no celular."
+                        >
+                            <Stack direction={{ xs: 'column', md: 'row' }} gap={3} alignItems={{ xs: 'stretch', md: 'flex-start' }}>
+                                <Stack spacing={2.5} sx={{ flex: 1, minWidth: 0 }}>
+                                    <OptionalColorField
+                                        label="Cor de fundo"
+                                        value={data.color_sidebar}
+                                        onChange={v => setData('color_sidebar', v)}
+                                        error={errors.color_sidebar}
+                                        emptyHint="Sem cor definida: o menu usa o verde padrão."
+                                        filledHint="Fundo claro ou escuro: o texto se ajusta sozinho se a cor do texto ficar vazia."
+                                        resetLabel="Usar o fundo padrão"
+                                        fallback="#14532D"
+                                    />
+                                    <OptionalColorField
+                                        label="Cor do texto e ícones"
+                                        value={data.color_sidebar_text}
+                                        onChange={v => setData('color_sidebar_text', v)}
+                                        error={errors.color_sidebar_text}
+                                        emptyHint={data.color_sidebar
+                                            ? `Automática: ${contrastText(data.color_sidebar) === '#FFFFFF' ? 'branca, porque o fundo é escuro' : 'escura, porque o fundo é claro'}.`
+                                            : 'Automática: branca sobre o fundo padrão.'}
+                                        filledHint={(contrastRatio(data.color_sidebar_text, data.color_sidebar || '#14532D') ?? 21) < 4.5
+                                            ? 'Contraste baixo com o fundo: o texto pode ficar difícil de ler. Deixe vazio para a cor automática.'
+                                            : 'Confira na prévia se o texto está legível sobre o fundo.'}
+                                        resetLabel="Usar cor automática"
+                                        fallback={data.color_sidebar ? contrastText(data.color_sidebar) : '#FFFFFF'}
+                                    />
+                                    <OptionalColorField
+                                        label="Cor de destaque"
+                                        value={data.color_sidebar_accent}
+                                        onChange={v => setData('color_sidebar_accent', v)}
+                                        error={errors.color_sidebar_accent}
+                                        emptyHint={data.color_sidebar
+                                            ? 'Item ativo, ícone e marcador do submenu. Sem cor definida: usa a cor secundária.'
+                                            : 'Item ativo, ícone e marcador do submenu. Sem cor definida: verde padrão.'}
+                                        filledHint="Usada no item ativo, no ícone do grupo aberto e no marcador do submenu."
+                                        resetLabel="Usar o destaque padrão"
+                                        fallback={data.color_sidebar ? data.color_secondary : '#10B981'}
+                                    />
+                                </Stack>
+                                <SidebarPreview
+                                    colors={{
+                                        background: data.color_sidebar,
+                                        text: data.color_sidebar_text,
+                                        accent: data.color_sidebar_accent,
+                                        secondary: data.color_secondary,
+                                    }}
+                                />
+                            </Stack>
+                        </SectionCard>
+
+                        <SectionCard
                             icon={IconPhoto}
-                            color="linear-gradient(135deg,#7c3aed,#a855f7)"
+                            color="var(--cv-gradient-primary)"
                             title="Logo e Favicon"
                             description="Imagens exibidas no menu lateral e na aba do navegador."
                         >
@@ -294,7 +434,7 @@ export default function Page({ brand }) {
 
                         <SectionCard
                             icon={IconFileText}
-                            color="#064E3B"
+                            color="var(--cv-gradient-primary)"
                             title="Logo do Boleto"
                             description="Imagem exibida no cabeçalho do PDF de boleto de cobrança enviado ao cliente."
                         >

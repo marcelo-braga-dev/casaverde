@@ -1,6 +1,7 @@
 :root {
     /* ── Cores primárias ──────────────────────────────────── */
     --cv-primary:        #2F7D18;
+    --cv-primary-rgb:    47, 125, 24;
     --cv-primary-dark:   #1F5F10;
     --cv-primary-darker: #123D0B;
     --cv-primary-light:  #DFF3D8;
@@ -48,6 +49,23 @@
                            radial-gradient(ellipse at bottom left, rgba(16,185,129,0.18), transparent 44%),
                            linear-gradient(135deg, #14532D 0%, #052e16 100%);
     --cv-gradient-card:    linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(248,250,252,0.6) 100%);
+
+    /* ── Menu lateral ─────────────────────────────────────────
+       Padrão verde. Identidade Visual pode sobrescrever estas variáveis em tempo de
+       execução (Theme/index.jsx + Utils/Theme/sidebarTheme.js). */
+    --cv-sidebar-fg:                #FFFFFF;
+    --cv-sidebar-fg-rgb:            255, 255, 255;
+    --cv-sidebar-active-bg:         linear-gradient(135deg, rgba(16,185,129,0.98), rgba(2,132,199,0.86));
+    --cv-sidebar-active-bg-hover:   linear-gradient(135deg, rgba(16,185,129,1), rgba(2,132,199,0.92));
+    --cv-sidebar-active-shadow:     0 14px 34px rgba(16,185,129,0.18);
+    --cv-sidebar-active-fg:         #FFFFFF;
+    --cv-sidebar-group-active-bg:   rgba(47, 125, 24, 0.22);
+    --cv-sidebar-group-active-border: rgba(79, 154, 42, 0.30);
+    --cv-sidebar-icon-active-bg:    linear-gradient(135deg, #10B981 0%, #0B7A53 100%);
+    --cv-sidebar-sub-active-bg:     rgba(74,222,128,0.14);
+    --cv-sidebar-sub-active-hover:  rgba(74,222,128,0.18);
+    --cv-sidebar-sub-active-border: rgba(74,222,128,0.80);
+    --cv-sidebar-sub-dot:           #4ade80;
 
     /* ── Sombras — mais suaves e refinadas ────────────────── */
     --cv-shadow-xs:      0 1px 3px rgba(15,23,42,0.06), 0 1px 2px rgba(15,23,42,0.04);

@@ -11,7 +11,7 @@ export default function AppSidebarSection({ section, collapsed }) {
                         display: 'block',
                         px: 1.4,
                         mb: 0.8,
-                        color: 'rgba(255,255,255,0.38)',
+                        color: 'rgba(var(--cv-sidebar-fg-rgb), 0.38)',
                         fontWeight: 900,
                         textTransform: 'uppercase',
                         letterSpacing: '0.09em',

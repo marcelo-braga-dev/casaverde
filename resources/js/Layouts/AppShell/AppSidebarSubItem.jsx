@@ -15,7 +15,7 @@ export default function AppSidebarSubItem({ item }) {
             sx={{
                 display: 'block',
                 textDecoration: 'none',
-                color: '#FFFFFF',
+                color: 'var(--cv-sidebar-fg)',
                 pointerEvents: disabled ? 'none' : 'auto',
                 opacity: disabled ? 0.35 : 1,
                 mb: 0.2,
@@ -30,16 +30,14 @@ export default function AppSidebarSubItem({ item }) {
                     px: 1.2,
                     borderRadius: 2,
                     transition: 'all 140ms cubic-bezier(0.4,0,0.2,1)',
-                    bgcolor: isActive
-                        ? 'rgba(74,222,128,0.14)'
-                        : 'transparent',
+                    bgcolor: isActive ? 'var(--cv-sidebar-sub-active-bg)' : 'transparent',
                     borderLeft: isActive
-                        ? '2px solid rgba(74,222,128,0.80)'
+                        ? '2px solid var(--cv-sidebar-sub-active-border)'
                         : '2px solid transparent',
                     '&:hover': {
                         bgcolor: isActive
-                            ? 'rgba(74,222,128,0.18)'
-                            : 'rgba(255,255,255,0.06)',
+                            ? 'var(--cv-sidebar-sub-active-hover)'
+                            : 'rgba(var(--cv-sidebar-fg-rgb), 0.06)',
                         transform: 'translateX(2px)',
                     },
                 }}
@@ -49,7 +47,7 @@ export default function AppSidebarSubItem({ item }) {
                         width: 5,
                         height: 5,
                         borderRadius: '50%',
-                        bgcolor: isActive ? '#4ade80' : 'rgba(255,255,255,0.30)',
+                        bgcolor: isActive ? 'var(--cv-sidebar-sub-dot)' : 'rgba(var(--cv-sidebar-fg-rgb), 0.30)',
                         flexShrink: 0,
                         transition: 'background-color 140ms ease',
                     }}
@@ -61,7 +59,7 @@ export default function AppSidebarSubItem({ item }) {
                     sx={{
                         fontWeight: isActive ? 800 : 600,
                         fontSize: '0.8125rem',
-                        color: isActive ? '#FFFFFF' : 'rgba(255,255,255,0.78)',
+                        color: isActive ? 'var(--cv-sidebar-fg)' : 'rgba(var(--cv-sidebar-fg-rgb), 0.78)',
                         lineHeight: 1.3,
                     }}
                 >
