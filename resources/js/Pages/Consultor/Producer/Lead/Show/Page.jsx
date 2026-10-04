@@ -11,6 +11,7 @@ import {
     Typography,
 } from "@mui/material";
 import Grid from "@mui/material/Grid2";
+import { getStatusLabel } from '@/Utils/statusLabels';
 import {
     IconBolt,
     IconBuildingFactory2,
@@ -86,7 +87,7 @@ function StatCard({ icon, label, value, color = "primary.main" }) {
                             width: 40,
                             height: 40,
                             borderRadius: 2,
-                            bgcolor: `${color}15`,
+                            bgcolor: `color-mix(in srgb, ${color} 8%, transparent)`,
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
@@ -119,13 +120,14 @@ const statusConfig = {
 
 const Page = ({ lead }) => {
     const getProducerName = () =>
-        lead?.producer_profile?.usina_nome ||
+        lead?.producer_profile?.display_name ||
+            lead?.producer_profile?.usina_nome ||
         lead?.producer_profile?.admin_nome ||
-        lead?.producer_profile?.user?.name ||
+        lead?.producer_profile?.platform_user?.name ||
         "Não informado";
 
     const statusKey = lead?.status;
-    const statusCfg = statusConfig[statusKey] || { label: lead?.status ?? "Sem status", color: "default" };
+    const statusCfg = statusConfig[statusKey] || { label: lead?.status ? getStatusLabel(lead.status) : "Sem status", color: "default" };
 
     return (
         <Layout
@@ -203,19 +205,19 @@ const Page = ({ lead }) => {
                         icon={<IconPercentage size={20} />}
                         label="Taxa de Redução"
                         value={lead?.taxa_reducao ? `${lead.taxa_reducao}%` : "—"}
-                        color="#7c3aed"
+                        color="var(--cv-primary)"
                     />
                     <StatCard
                         icon={<IconCalendarTime size={20} />}
                         label="Prazo de Locação"
                         value={lead?.prazo_locacao ? `${lead.prazo_locacao} meses` : "—"}
-                        color="#0ea5e9"
+                        color="var(--cv-primary)"
                     />
                     <StatCard
                         icon={<IconBolt size={20} />}
                         label="Potência"
                         value={lead?.potencia ? `${lead.potencia} kW` : "—"}
-                        color="#f59e0b"
+                        color="var(--cv-primary)"
                     />
                 </Stack>
 
@@ -229,7 +231,7 @@ const Page = ({ lead }) => {
                                     <InfoRow label="Produtor" value={getProducerName()} />
                                     <InfoRow
                                         label="Usuário vinculado"
-                                        value={lead?.producer_profile?.user?.name ?? "Não vinculado"}
+                                        value={lead?.producer_profile?.platform_user?.name ?? "Não vinculado"}
                                     />
                                     <InfoRow label="Consultor" value={lead?.consultor?.name ?? "Não informado"} />
                                     <InfoRow label="Concessionária" value={lead?.concessionaria?.nome ?? "Não informado"} />

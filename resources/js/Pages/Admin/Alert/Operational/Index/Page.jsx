@@ -282,7 +282,7 @@ export default function OperationalAlertIndexPage() {
                                             </Typography>
 
                                             <Typography variant="caption" color="text.secondary">
-                                                {alert.usina?.produtor?.name || ''}
+                                                {alert.usina?.produtor?.display_name || ''}
                                             </Typography>
 
                                             {alert.client_profile && (

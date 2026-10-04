@@ -31,9 +31,11 @@ class AdminUsinaManagementController extends Controller
                 $query->where(function ($subQuery) use ($search) {
                     $subQuery
                         ->where('uc', 'like', "%{$search}%")
+                        ->orWhere('usina_nome', 'like', "%{$search}%")
                         ->orWhereHas('produtor', function ($producerQuery) use ($search) {
-                            $producerQuery->where('name', 'like', "%{$search}%")
-                                ->orWhere('email', 'like', "%{$search}%");
+                            $producerQuery->where('nome', 'like', "%{$search}%")
+                                ->orWhere('razao_social', 'like', "%{$search}%")
+                                ->orWhere('nome_fantasia', 'like', "%{$search}%");
                         })
                         ->orWhereHas('consultor', function ($consultorQuery) use ($search) {
                             $consultorQuery->where('name', 'like', "%{$search}%");

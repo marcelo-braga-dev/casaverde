@@ -15,14 +15,16 @@ import {
 } from "@mui/material";
 import {IconEye, IconPlus, IconUsers} from "@tabler/icons-react";
 
+import { getStatusLabel } from '@/Utils/statusLabels';
 const Page = ({leads}) => {
     const items = leads?.data ?? [];
 
     const getProducerName = (lead) => {
         return (
+            lead?.producer_profile?.display_name ||
             lead?.producer_profile?.usina_nome ||
             lead?.producer_profile?.admin_nome ||
-            lead?.producer_profile?.user?.name ||
+            lead?.producer_profile?.platform_user?.name ||
             "Não informado"
         );
     };
@@ -37,7 +39,7 @@ const Page = ({leads}) => {
                     avatar={<IconUsers/>}
                     action={
                         <Link href={route("consultor.producer.leads.create")}>
-                            <Button startIcon={<IconPlus/>} color="success">
+                            <Button startIcon={<IconPlus/>}>
                                 Cadastrar Produtor
                             </Button>
                         </Link>
@@ -73,7 +75,7 @@ const Page = ({leads}) => {
                                         <TableCell>{lead?.potencia ?? "Não informado"}</TableCell>
                                         <TableCell>
                                             <Chip
-                                                label={lead?.status ?? "Sem status"}
+                                                label={lead?.status ? getStatusLabel(lead.status) : "Sem status"}
                                                 color={lead?.status === "aprovado" ? "success" : "default"}
                                                 size="small"
                                             />
@@ -98,7 +100,7 @@ const Page = ({leads}) => {
                                 href={link.url ?? "#"}
                                 preserveScroll
                                 className={`px-3 py-2 rounded border ${
-                                    link.active ? "bg-green-600 text-white" : "bg-white text-gray-700"
+                                    link.active ? "bg-[var(--cv-primary)] text-white" : "bg-white text-gray-700"
                                 } ${!link.url ? "opacity-50 pointer-events-none" : ""}`}
                                 dangerouslySetInnerHTML={{__html: link.label}}
                             />

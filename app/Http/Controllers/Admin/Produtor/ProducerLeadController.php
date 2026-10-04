@@ -63,6 +63,7 @@ class ProducerLeadController extends Controller
                 'consultor',
                 'producerProfile.consultor',
                 'producerProfile.contacts',
+                'producerProfile.platformUser',
                 'concessionaria',
             ]),
         ]);
@@ -77,6 +78,7 @@ class ProducerLeadController extends Controller
                 'consultor',
                 'producerProfile.consultor',
                 'producerProfile.contacts',
+                'producerProfile.platformUser',
                 'concessionaria',
             ]),
             'consultores' => User::query()

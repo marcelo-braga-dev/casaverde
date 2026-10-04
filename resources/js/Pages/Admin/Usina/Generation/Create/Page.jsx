@@ -74,7 +74,7 @@ export default function CreateUsinaGenerationRecordPage() {
                                         onChange={(value) => setData('usina_id', value)}
                                         options={usinas.map((usina) => ({
                                             value: usina.id,
-                                            label: `UC ${usina.uc || usina.id} - ${usina.produtor?.name || 'Produtor não informado'}`,
+                                            label: `UC ${usina.uc || usina.id} - ${usina.produtor?.display_name || 'Produtor não informado'}`,
                                         }))}
                                         error={Boolean(errors.usina_id)}
                                         helperText={errors.usina_id}

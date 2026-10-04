@@ -31,7 +31,7 @@ class ProducerProfile extends Model
         'activated_at',
     ];
 
-    protected $appends = ['producer_code'];
+    protected $appends = ['producer_code', 'display_name'];
 
     protected $with = ['contacts'];
 
@@ -49,6 +49,13 @@ class ProducerProfile extends Model
     public function getProducerCodeAttribute(): string
     {
         return "P{$this->id}";
+    }
+
+    public function getDisplayNameAttribute(): string
+    {
+        return $this->tipo_pessoa === 'pj'
+            ? ($this->razao_social ?: ($this->nome_fantasia ?: ($this->nome ?: '-')))
+            : ($this->nome ?: ($this->razao_social ?: '-'));
     }
 
     public function getCpfAttribute(): ?string

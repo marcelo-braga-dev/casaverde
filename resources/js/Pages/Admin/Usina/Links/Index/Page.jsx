@@ -154,7 +154,7 @@ export default function ClientUsinaLinksIndexPage() {
                                             </Typography>
 
                                             <Typography variant="caption" color="text.secondary">
-                                                {link.usina?.produtor?.name || 'Produtor não informado'}
+                                                {link.usina?.produtor?.display_name || 'Produtor não informado'}
                                             </Typography>
                                         </TableCell>
 

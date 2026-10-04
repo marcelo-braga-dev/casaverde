@@ -75,7 +75,7 @@ export default function UsinaGenerationIndexPage() {
                                 { value: '', label: 'Todas' },
                                 ...usinas.map((usina) => ({
                                     value: usina.id,
-                                    label: `UC ${usina.uc || usina.id} - ${usina.produtor?.name || 'Produtor não informado'}`,
+                                    label: `UC ${usina.uc || usina.id} - ${usina.produtor?.display_name || 'Produtor não informado'}`,
                                 })),
                             ]}
                             sx={{ minWidth: 420 }}
@@ -110,7 +110,7 @@ export default function UsinaGenerationIndexPage() {
                                             </Typography>
 
                                             <Typography variant="caption" color="text.secondary">
-                                                {record.usina?.produtor?.name || 'Produtor não informado'}
+                                                {record.usina?.produtor?.display_name || 'Produtor não informado'}
                                             </Typography>
                                         </TableCell>
 

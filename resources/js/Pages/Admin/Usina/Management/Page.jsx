@@ -172,7 +172,7 @@ export default function AdminUsinaManagementPage() {
                                                 </Typography>
 
                                                 <Typography variant="body2" color="text.secondary">
-                                                    Produtor: {usina.produtor?.name || 'Não informado'}
+                                                    Produtor: {usina.produtor?.display_name || 'Não informado'}
                                                 </Typography>
 
                                                 <Typography variant="body2" color="text.secondary">
@@ -230,7 +230,7 @@ export default function AdminUsinaManagementPage() {
                                             <Button
                                                 component={Link}
                                                 href={route('admin.usinas.links.index', {
-                                                    search: usina.uc || usina.produtor?.name || '',
+                                                    search: usina.uc || usina.produtor?.display_name || '',
                                                 })}
                                                 size="small"
                                                 variant="outlined"

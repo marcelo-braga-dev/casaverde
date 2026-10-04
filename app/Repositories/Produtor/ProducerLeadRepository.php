@@ -17,7 +17,7 @@ class ProducerLeadRepository
         $query = ProducerLead::query()
             ->with([
                 'consultor',
-                'producerProfile.user',
+                'producerProfile.platformUser',
                 'concessionaria',
             ])
             ->orderByDesc('id');
