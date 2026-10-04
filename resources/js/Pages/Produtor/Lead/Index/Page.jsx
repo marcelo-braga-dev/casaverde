@@ -2,6 +2,7 @@ import Layout from "@/Layouts/UserLayout/Layout.jsx";
 import { Head, Link } from "@inertiajs/react";
 import { Button, Card, CardContent, Stack, Typography } from "@mui/material";
 
+import { getStatusLabel } from '@/Utils/statusLabels';
 export default function Page({ leads }) {
     return (
         <Layout titlePage="Leads de Produtor" menu="produtores">
@@ -21,7 +22,7 @@ export default function Page({ leads }) {
                                 </Typography>
                                 <Typography>Consultor: {lead.consultor?.name || "-"}</Typography>
                                 <Typography>Concessionária: {lead.concessionaria?.nome || "-"}</Typography>
-                                <Typography>Status: {lead.status}</Typography>
+                                <Typography>Status: {getStatusLabel(lead.status)}</Typography>
                             </CardContent>
                         </Card>
                     </Link>

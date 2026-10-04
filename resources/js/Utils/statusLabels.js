@@ -119,11 +119,78 @@ const STATUS_MAP = {
         bgColor: '#F1F5F9',
         borderColor: '#E2E8F0',
     },
+    em_integracao: {
+        label: 'Em integração',
+        color: '#1E40AF',
+        bgColor: '#DBEAFE',
+        borderColor: '#BFDBFE',
+    },
+    lead: {
+        label: 'Lead',
+        color: '#334155',
+        bgColor: '#F1F5F9',
+        borderColor: '#E2E8F0',
+    },
+    novo: {
+        label: 'Novo',
+        color: '#334155',
+        bgColor: '#F1F5F9',
+        borderColor: '#E2E8F0',
+    },
+    em_analise: {
+        label: 'Em análise',
+        color: '#9A6508',
+        bgColor: '#FFF4D8',
+        borderColor: '#F6D98A',
+    },
+    aprovado: {
+        label: 'Aprovado',
+        color: '#1F5F10',
+        bgColor: '#DFF3D8',
+        borderColor: '#BFE8B6',
+    },
+    em_atendimento: {
+        label: 'Em atendimento',
+        color: '#1E40AF',
+        bgColor: '#DBEAFE',
+        borderColor: '#BFDBFE',
+    },
+    proposta: {
+        label: 'Proposta',
+        color: '#1F5F10',
+        bgColor: '#E8F6E2',
+        borderColor: '#DFF3D8',
+    },
+    reprovado: {
+        label: 'Reprovado',
+        color: '#8E1D1D',
+        bgColor: '#FDE2E2',
+        borderColor: '#F8B4B4',
+    },
+    perdido: {
+        label: 'Perdido',
+        color: '#475569',
+        bgColor: '#F1F5F9',
+        borderColor: '#E2E8F0',
+    },
+    recusado: {
+        label: 'Recusado',
+        color: '#8E1D1D',
+        bgColor: '#FDE2E2',
+        borderColor: '#F8B4B4',
+    },
 };
+
+// Status sem nome cadastrado: mostra o código legível ("em_integracao" → "Em integracao")
+// em vez do valor cru.
+function humanize(status) {
+    const text = String(status).replace(/[_-]+/g, ' ').trim();
+    return text.charAt(0).toUpperCase() + text.slice(1);
+}
 
 export function getStatusMeta(status) {
     return STATUS_MAP[status] || {
-        label: status || 'Não informado',
+        label: status ? humanize(status) : 'Não informado',
         color: '#334155',
         bgColor: '#F1F5F9',
         borderColor: '#E2E8F0',

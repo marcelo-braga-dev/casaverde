@@ -69,7 +69,7 @@ export default function Page({ usina }) {
                 </Button>
 
                 {/* ── Hero ──────────────────────────────────────────────── */}
-                <Card sx={{ background: 'linear-gradient(135deg,#064e3b,#065f46)', color: '#fff', borderRadius: 'var(--cv-radius-xl)' }}>
+                <Card sx={{ background: 'var(--cv-gradient-hero)', color: '#fff', borderRadius: 'var(--cv-radius-xl)' }}>
                     <CardContent>
                         <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} gap={2}>
                             <Stack direction="row" alignItems="center" gap={2}>

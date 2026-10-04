@@ -128,7 +128,7 @@ export default function Page({ settings }) {
                         {/* Taxa do Cliente */}
                         <SectionCard
                             icon={IconUsers}
-                            color="linear-gradient(135deg,#166534,#15803D)"
+                            color="var(--cv-gradient-primary)"
                             title="Taxa de Desconto Padrão — Cliente Consumidor"
                             description="Desconto aplicado automaticamente na fatura de energia do cliente."
                         >

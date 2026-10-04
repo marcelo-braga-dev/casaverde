@@ -107,7 +107,7 @@ const Page = () => {
 
                 <Endereco title="Endereço da Unidade Consumidora" endereco={endereco} setEndereco={setEndereco} required/>
 
-                <Button type="submit" color="success">Cadastrar Proposta</Button>
+                <Button type="submit">Cadastrar Proposta</Button>
             </form>
         </Layout>
     )

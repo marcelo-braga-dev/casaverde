@@ -141,7 +141,6 @@ export default function Page({ admin }) {
                                     <Button
                                         type="submit" variant="contained"
                                         disabled={processing || !data.name || !data.email}
-                                        sx={{ bgcolor: '#f59e0b', '&:hover': { bgcolor: '#d97706' } }}
                                         startIcon={processing ? <CircularProgress size={14} color="inherit" /> : <IconCheck size={16} />}
                                     >
                                         Salvar alterações

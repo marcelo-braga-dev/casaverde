@@ -76,7 +76,7 @@ export default function Page({ producerProfile, usinas = [], leads = [] }) {
 
                 {/* ── Hero ──────────────────────────────────────────────── */}
                 <Card sx={{
-                    background: 'linear-gradient(135deg,#064e3b 0%,#065f46 60%,#047857 100%)',
+                    background: 'var(--cv-gradient-hero)',
                     color: '#fff',
                     borderRadius: 'var(--cv-radius-xl)',
                 }}>

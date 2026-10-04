@@ -142,7 +142,7 @@ export default function Page({ runs, filters = {}, stats = {} }) {
                                     startIcon={triggering ? <CircularProgress size={16} color="inherit" /> : <IconPlayerPlay size={18} />}
                                     onClick={triggerImport}
                                     disabled={triggering}
-                                    sx={{ bgcolor: '#fff', color: '#064e3b', '&:hover': { bgcolor: 'grey.100' }, minWidth: 180 }}
+                                    sx={{ background: '#fff', color: 'var(--cv-primary-darker)', '&:hover': { background: '#F1F5F2' }, minWidth: 180 }}
                                 >
                                     {triggering ? 'Importando...' : 'Importar agora'}
                                 </Button>

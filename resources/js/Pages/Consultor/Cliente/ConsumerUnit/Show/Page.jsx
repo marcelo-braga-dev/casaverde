@@ -391,7 +391,7 @@ export default function Page({ consumerUnit, bills }) {
                                 href={link.url ?? "#"}
                                 preserveScroll
                                 className={`px-3 py-2 rounded border ${
-                                    link.active ? "bg-green-600 text-white" : "bg-white text-gray-700"
+                                    link.active ? "bg-[var(--cv-primary)] text-white" : "bg-white text-gray-700"
                                 } ${!link.url ? "opacity-50 pointer-events-none" : ""}`}
                                 dangerouslySetInnerHTML={{ __html: link.label }}
                             />

@@ -36,7 +36,7 @@ const Page = ({taxaReducaoConta}) => {
                                         />
                                     </Grid>
                                     <Grid size={{xs: 4}}>
-                                        <Button type="submit" color="success">Salvar</Button>
+                                        <Button type="submit">Salvar</Button>
                                     </Grid>
                                 </Grid>
                             </form>

@@ -22,7 +22,7 @@ const Contratos = ({produtorId}) => {
             <Grid container>
                 <Grid marginBottom={4} size={12}>
                     <Link href={route('auth.produtor-contratos.create', {userId: produtorId})}>
-                        <Button color="success">Emitir Contrato</Button>
+                        <Button>Emitir Contrato</Button>
                     </Link>
                 </Grid>
                 <Grid marginBottom={2} size={12}>
@@ -39,7 +39,7 @@ const Contratos = ({produtorId}) => {
                         <Link href={route('auth.produtor-contratos.show', 1)}>
                             <Paper variant="outlined">
                                 <TextInfo text={item.usina_nome} title="Usina"/>
-                                <Button color="success">Abrir</Button>
+                                <Button>Abrir</Button>
                             </Paper>
                         </Link>
                     </Grid>

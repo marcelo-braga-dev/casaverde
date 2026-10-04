@@ -92,7 +92,7 @@ const ClientInfoCard = ({ profile }) => {
                                 Editar dados
                             </Button>
                             <Link href={safeRoute("consultor.user.cliente.edit", profile.id)}>
-                                <Button startIcon={<IconEdit size={16} />} color="success" variant="outlined" size="small">
+                                <Button startIcon={<IconEdit size={16} />} variant="outlined" size="small">
                                     Edição completa
                                 </Button>
                             </Link>

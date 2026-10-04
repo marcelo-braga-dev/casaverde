@@ -58,7 +58,7 @@ const Contratos = ({contratado}) => {
                                 />
                             </Grid>
                             <Grid size={{xs: 12, md: 4}}>
-                                <Button color="success" onClick={handleDownload} startIcon={<IconUpload/>}>Subir Contrato</Button>
+                                <Button onClick={handleDownload} startIcon={<IconUpload/>}>Subir Contrato</Button>
                             </Grid>
                         </Grid>
                     </Grid>

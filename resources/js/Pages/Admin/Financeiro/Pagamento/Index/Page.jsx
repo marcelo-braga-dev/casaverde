@@ -326,7 +326,7 @@ export default function Page({
                                                             variant="contained"
                                                             size="small"
                                                             startIcon={<IconFileText size={16} />}
-                                                            sx={{ bgcolor: "#064E3B", "&:hover": { bgcolor: "#053e2f" } }}
+                                                            sx={{ bgcolor: "var(--cv-primary-darker)", "&:hover": { bgcolor: "var(--cv-primary-darker)", filter: "brightness(0.9)" } }}
                                                         >
                                                             Boleto CV
                                                         </Button>

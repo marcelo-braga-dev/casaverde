@@ -79,7 +79,7 @@ const AttachUsinaForm = ({ profile, usinas = [] }) => {
                 <Stack direction="row" alignItems="center" gap={1.5} mb={2}>
                     <Box sx={{
                         width: 36, height: 36, borderRadius: 2,
-                        background: 'linear-gradient(135deg,#10b981,#059669)',
+                        background: 'var(--cv-gradient-primary)',
                         display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff',
                     }}>
                         <IconLink size={18} />

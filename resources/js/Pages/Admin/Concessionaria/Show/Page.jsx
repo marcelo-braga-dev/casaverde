@@ -87,7 +87,7 @@ function MetricCard({ icon, label, value, color = "#7c3aed" }) {
                             width: 44,
                             height: 44,
                             borderRadius: 2.5,
-                            bgcolor: `${color}18`,
+                            bgcolor: `color-mix(in srgb, ${color} 9%, transparent)`,
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
@@ -201,13 +201,13 @@ export default function Page({ concessionaria }) {
                         icon={<IconMapPin size={22} />}
                         label="Estado"
                         value={concessionaria?.estado ?? "—"}
-                        color="#0ea5e9"
+                        color="var(--cv-primary)"
                     />
                     <MetricCard
                         icon={<IconBolt size={22} />}
                         label="Tarifa GD2"
                         value={concessionaria?.tarifa_gd2 != null ? formatCurrency(concessionaria.tarifa_gd2) : "—"}
-                        color="#f59e0b"
+                        color="var(--cv-primary)"
                     />
                 </Stack>
 

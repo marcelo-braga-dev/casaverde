@@ -134,7 +134,6 @@ export default function Page() {
                                     <Button
                                         type="submit" variant="contained"
                                         disabled={processing || !data.name || !data.email || !data.password}
-                                        sx={{ bgcolor: '#7c3aed', '&:hover': { bgcolor: '#5b21b6' } }}
                                         startIcon={processing ? <CircularProgress size={14} color="inherit" /> : <IconUserCog size={16} />}
                                     >
                                         Criar administrador

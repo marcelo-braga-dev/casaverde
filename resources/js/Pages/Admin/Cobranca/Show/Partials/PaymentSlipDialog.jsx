@@ -163,7 +163,7 @@ export default function PaymentSlipDialog({ open, payment, onClose, whatsapp }) 
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 startIcon={<IconFileText size={16} />}
-                                sx={{ fontWeight: 700, bgcolor: "#064E3B", "&:hover": { bgcolor: "#053e2f" } }}
+                                sx={{ fontWeight: 700, bgcolor: "var(--cv-primary-darker)", "&:hover": { bgcolor: "var(--cv-primary-darker)", filter: "brightness(0.9)" } }}
                             >
                                 Baixar boleto (PDF Casa Verde)
                             </Button>

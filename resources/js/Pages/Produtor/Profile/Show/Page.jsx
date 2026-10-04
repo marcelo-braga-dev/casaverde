@@ -77,7 +77,7 @@ function InfoRow({ label, value }) {
 
 function StatCard({ label, value, unit, color = "#7c3aed" }) {
     return (
-        <Card sx={{ ...cardSx, flex: 1, background: `linear-gradient(135deg, ${color}10, ${color}05)`, border: `1px solid ${color}30` }}>
+        <Card sx={{ ...cardSx, flex: 1, background: `linear-gradient(135deg, color-mix(in srgb, ${color} 6%, transparent), color-mix(in srgb, ${color} 2%, transparent))`, border: `1px solid color-mix(in srgb, ${color} 19%, transparent)` }}>
             <CardContent sx={{ p: 2.5 }}>
                 <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em" }}>
                     {label}
@@ -176,9 +176,9 @@ export default function Page({ producer }) {
 
                 {/* Stat row */}
                 <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
-                    <StatCard label="Potência kW" value={producer.potencia_kw} unit="kW" color="#0ea5e9" />
-                    <StatCard label="Potência kWp" value={producer.potencia_kwp} unit="kWp" color="#7c3aed" />
-                    <StatCard label="Geração Anual" value={producer.geracao_anual} unit="kWh" color="#10b981" />
+                    <StatCard label="Potência kW" value={producer.potencia_kw} unit="kW" color="var(--cv-primary)" />
+                    <StatCard label="Potência kWp" value={producer.potencia_kwp} unit="kWp" color="var(--cv-primary)" />
+                    <StatCard label="Geração Anual" value={producer.geracao_anual} unit="kWh" color="var(--cv-primary)" />
                 </Stack>
 
                 <Grid container spacing={3}>

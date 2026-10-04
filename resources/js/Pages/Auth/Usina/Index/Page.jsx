@@ -73,7 +73,7 @@ const Page = () => {
                                         <TextInfo title="ID da Usina Solar" text={`#${usina.id}`}/>
                                     </Grid>
                                     <Grid size="auto" textAlign="end" alignItems="center">
-                                        <Button size="small" color="success" startIcon={<IconEye/>}>Ver</Button>
+                                        <Button size="small" startIcon={<IconEye/>}>Ver</Button>
                                     </Grid>
                                 </Grid>
                             </Paper>

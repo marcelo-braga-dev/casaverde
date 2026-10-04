@@ -84,7 +84,7 @@ export default function Page({ dashboard }) {
 
                 {/* ── Hero ─────────────────────────────────────────────── */}
                 <Card sx={{
-                    background: 'linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%)',
+                    background: 'var(--cv-gradient-hero)',
                     color: '#fff',
                     borderRadius: 'var(--cv-radius-xl)',
                 }}>
@@ -112,7 +112,7 @@ export default function Page({ dashboard }) {
                                     href={safeRoute('cliente.faturas.index')}
                                     variant="contained"
                                     startIcon={<IconFileInvoice size={17} />}
-                                    sx={{ bgcolor: '#fff', color: '#064e3b', '&:hover': { bgcolor: 'grey.100' } }}
+                                    sx={{ background: '#fff', color: 'var(--cv-primary-darker)', '&:hover': { background: '#F1F5F2' } }}
                                 >
                                     Ver Faturas
                                 </Button>

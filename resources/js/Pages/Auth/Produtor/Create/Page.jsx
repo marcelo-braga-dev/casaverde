@@ -158,7 +158,7 @@ const Page = () => {
                                     </Button>
                                 </Grid>
                                 <Grid>
-                                    <Button type="submit" startIcon={<IconCheck/>} color="success">
+                                    <Button type="submit" startIcon={<IconCheck/>}>
                                         Cadastrar Produtor
                                     </Button>
                                 </Grid>

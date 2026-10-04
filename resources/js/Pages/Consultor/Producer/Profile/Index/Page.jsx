@@ -10,6 +10,7 @@ import { Head, Link, router, useForm } from '@inertiajs/react';
 import { Button, Chip, TableCell, TableRow, Typography } from '@mui/material';
 import { IconEye, IconPlus, IconUserBolt } from '@tabler/icons-react';
 
+import { getStatusLabel } from '@/Utils/statusLabels';
 function safeRoute(n, p) { try { return route(n, p); } catch { return '#'; } }
 
 const STATUS_COLORS = {
@@ -134,7 +135,7 @@ export default function Page({ producers, filters = {} }) {
                             </TableCell>
                             <TableCell>
                                 <Chip
-                                    label={p.status ?? '—'}
+                                    label={p.status ? getStatusLabel(p.status) : '—'}
                                     color={STATUS_COLORS[p.status] ?? 'default'}
                                     size="small"
                                 />

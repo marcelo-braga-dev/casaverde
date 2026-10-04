@@ -286,7 +286,7 @@ const Page = ({contratante}) => {
 
                 <Card marginBottom={4} sx={{marginBottom: 4}}>
                     <CardContent marginBottom={4}>
-                        <Button type="submit" startIcon={<IconArrowRight/>} color="success">Gerar Contrato</Button>
+                        <Button type="submit" startIcon={<IconArrowRight/>}>Gerar Contrato</Button>
                     </CardContent>
                 </Card>
             </form>

@@ -196,7 +196,7 @@ const Page = () => {
                     required
                 />
 
-                <Button type="submit" color="success">
+                <Button type="submit">
                     Cadastrar Proposta
                 </Button>
             </form>

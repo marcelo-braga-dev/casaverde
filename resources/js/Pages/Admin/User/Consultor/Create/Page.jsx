@@ -33,7 +33,7 @@ const Page = () => {
                 <DadosAcesso data={data} setData={setData}/>
 
                 <div className="text-center">
-                    <Button type="submit" startIcon={<IconPlus/>} color="success">Cadastrar Consultor</Button>
+                    <Button type="submit" startIcon={<IconPlus/>}>Cadastrar Consultor</Button>
                 </div>
             </form>
         </Layout>

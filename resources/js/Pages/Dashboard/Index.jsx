@@ -186,10 +186,10 @@ export default function DashboardIndex({
                             <Button
                                 variant="contained"
                                 sx={{
-                                    bgcolor: '#FFFFFF',
-                                    color: '#064E3B',
+                                    background: '#FFFFFF',
+                                    color: 'var(--cv-primary-darker)',
                                     '&:hover': {
-                                        bgcolor: '#F8FAFC',
+                                        background: '#F8FAFC',
                                     },
                                 }}
                             >
@@ -243,7 +243,7 @@ export default function DashboardIndex({
                                             bgcolor: 'rgba(255,255,255,0.16)',
                                             '& .MuiLinearProgress-bar': {
                                                 borderRadius: 999,
-                                                bgcolor: '#10B981',
+                                                bgcolor: 'var(--cv-primary)',
                                             },
                                         }}
                                     />

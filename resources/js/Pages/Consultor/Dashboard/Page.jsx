@@ -81,12 +81,9 @@ const ACTION_ICONS = {
     solar:     IconSolarPanel,
 };
 
-const ACTION_COLORS = {
-    primary: { bg: 'var(--cv-gradient-primary)', border: 'rgba(16,185,129,0.22)' },
-    success: { bg: 'linear-gradient(135deg,#10B981,#0B7A53)', border: 'rgba(16,185,129,0.22)' },
-    info:    { bg: 'linear-gradient(135deg,#3B82F6,#1D4ED8)', border: 'rgba(59,130,246,0.22)' },
-    warning: { bg: 'linear-gradient(135deg,#F59E0B,#D97706)', border: 'rgba(245,158,11,0.22)' },
-};
+// Mesmo padrão para todas as ações: cor primária da Identidade Visual.
+const ACTION_STYLE = { bg: 'var(--cv-gradient-primary)', border: 'rgba(var(--cv-primary-rgb), 0.22)' };
+const ACTION_COLORS = { primary: ACTION_STYLE, success: ACTION_STYLE, info: ACTION_STYLE, warning: ACTION_STYLE };
 
 export default function Page({ dashboard }) {
     const { auth } = usePage().props;
@@ -162,9 +159,9 @@ export default function Page({ dashboard }) {
                                     variant="contained"
                                     startIcon={<IconUserPlus size={17} />}
                                     sx={{
-                                        bgcolor: '#FFFFFF',
+                                        background: '#FFFFFF',
                                         color: 'var(--cv-primary-dark)',
-                                        '&:hover': { bgcolor: 'grey.100' },
+                                        '&:hover': { background: '#F1F5F2' },
                                     }}
                                 >
                                     Novo cliente

@@ -17,6 +17,7 @@ import {
 } from '@mui/material';
 import { IconDownload, IconEye, IconFileInvoice } from '@tabler/icons-react';
 
+import { formatDateOnly } from '@/Utils/Datas/convertData';
 function safeRoute(n, p) { try { return route(n, p); } catch { return '#'; } }
 
 const STATUS_MAP = {
@@ -117,7 +118,7 @@ export default function Page({ faturas, filters = {} }) {
                             </TableCell>
                             <TableCell>
                                 <Typography variant="body2">
-                                    {f.vencimento ? new Date(f.vencimento).toLocaleDateString('pt-BR') : '—'}
+                                    {formatDateOnly(f.vencimento) ?? '—'}
                                 </Typography>
                             </TableCell>
                             <TableCell>

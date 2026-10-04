@@ -157,7 +157,7 @@ export default function Page({ bill, suggestedUsinaId, reviewStatuses = [] }) {
                         <Card sx={{ borderRadius: 'var(--cv-radius-xl)', border: '1px solid var(--cv-border-soft)', boxShadow: 'var(--cv-shadow-md)' }}>
                             <CardContent sx={{ p: 3 }}>
                                 <SectionHeader icon={<IconUser size={18} />} title="Cliente e Contexto"
-                                    gradient="linear-gradient(135deg,#3b82f6,#1d4ed8)" />
+                                    gradient="var(--cv-gradient-primary)" />
                                 <Divider sx={{ mb: 2 }} />
                                 <Stack spacing={0}>
                                     <InfoRow label="Cliente" value={bill.client_profile?.display_name ?? bill.client_profile?.nome ?? bill.client_profile?.razao_social} />
@@ -187,7 +187,7 @@ export default function Page({ bill, suggestedUsinaId, reviewStatuses = [] }) {
                                 <Card sx={{ borderRadius: 'var(--cv-radius-xl)', border: '1px solid var(--cv-border-soft)', boxShadow: 'var(--cv-shadow-md)' }}>
                                     <CardContent sx={{ p: 3 }}>
                                         <SectionHeader icon={<IconAlertTriangle size={18} />} title="Divergências"
-                                            gradient="linear-gradient(135deg,#f59e0b,#d97706)" />
+                                            gradient="var(--cv-gradient-primary)" />
                                         <Divider sx={{ mb: 2 }} />
                                         <Stack spacing={1.5}>
                                             {bill.issues.map(issue => (

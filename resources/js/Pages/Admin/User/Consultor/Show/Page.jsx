@@ -36,6 +36,7 @@ import {
 import AccessHistoryCard from '@/Components/Acesso/AccessHistoryCard.jsx';
 import { useState } from 'react';
 
+import { getStatusLabel } from '@/Utils/statusLabels';
 function safeRoute(n, p) { try { return route(n, p); } catch { return '#'; } }
 
 function initials(name = '') {
@@ -214,16 +215,16 @@ export default function Page({ consultor, stats, clients = [], proposals = [], u
                 {/* ── Stats ─────────────────────────────────────────────── */}
                 <Grid container spacing={2}>
                     <Grid size={{ xs: 6, md: 3 }}>
-                        <StatCard title="Clientes" value={stats?.clients_count} icon={<IconUsers size={22} />} gradient="linear-gradient(135deg,#3b82f6,#1d4ed8)" />
+                        <StatCard title="Clientes" value={stats?.clients_count} icon={<IconUsers size={22} />} gradient="var(--cv-gradient-primary)" />
                     </Grid>
                     <Grid size={{ xs: 6, md: 3 }}>
-                        <StatCard title="Propostas" value={stats?.proposals_count} icon={<IconFileInvoice size={22} />} gradient="linear-gradient(135deg,#10b981,#059669)" />
+                        <StatCard title="Propostas" value={stats?.proposals_count} icon={<IconFileInvoice size={22} />} gradient="var(--cv-gradient-primary)" />
                     </Grid>
                     <Grid size={{ xs: 6, md: 3 }}>
-                        <StatCard title="Usinas" value={stats?.usinas_count} icon={<IconBolt size={22} />} gradient="linear-gradient(135deg,#f59e0b,#d97706)" />
+                        <StatCard title="Usinas" value={stats?.usinas_count} icon={<IconBolt size={22} />} gradient="var(--cv-gradient-primary)" />
                     </Grid>
                     <Grid size={{ xs: 6, md: 3 }}>
-                        <StatCard title="Produtores" value={stats?.producers_count} icon={<IconBuildingFactory size={22} />} gradient="linear-gradient(135deg,#8b5cf6,#6d28d9)" />
+                        <StatCard title="Produtores" value={stats?.producers_count} icon={<IconBuildingFactory size={22} />} gradient="var(--cv-gradient-primary)" />
                     </Grid>
                 </Grid>
 
@@ -235,7 +236,7 @@ export default function Page({ consultor, stats, clients = [], proposals = [], u
                             items={clients}
                             emptyText="Nenhum cliente encontrado."
                             icon={<IconUsers size={18} />}
-                            gradient="linear-gradient(135deg,#3b82f6,#1d4ed8)"
+                            gradient="var(--cv-gradient-primary)"
                             columns={[
                                 { label: 'Cliente', render: i => i.nome ?? i.razao_social ?? '—' },
                                 { label: 'CPF/CNPJ', render: i => i.cpf ?? i.cnpj ?? '—' },
@@ -250,7 +251,7 @@ export default function Page({ consultor, stats, clients = [], proposals = [], u
                             items={proposals}
                             emptyText="Nenhuma proposta encontrada."
                             icon={<IconFileInvoice size={18} />}
-                            gradient="linear-gradient(135deg,#10b981,#059669)"
+                            gradient="var(--cv-gradient-primary)"
                             columns={[
                                 { label: 'Código', render: i => i.proposal_code ?? '—' },
                                 { label: 'Cliente', render: i => i.client_profile?.display_name ?? '—' },
@@ -269,11 +270,11 @@ export default function Page({ consultor, stats, clients = [], proposals = [], u
                             items={usinas}
                             emptyText="Nenhuma usina encontrada."
                             icon={<IconSolarPanel2 size={18} />}
-                            gradient="linear-gradient(135deg,#f59e0b,#d97706)"
+                            gradient="var(--cv-gradient-primary)"
                             columns={[
                                 { label: 'Nome', render: i => i.nome ?? i.usina_nome ?? '—' },
                                 { label: 'UC', render: i => <Typography variant="body2" sx={{ fontFamily: 'monospace' }}>{i.uc ?? '—'}</Typography> },
-                                { label: 'Status', render: i => <Chip label={i.status ?? '—'} size="small" color={i.status === 'ativo' ? 'success' : 'default'} /> },
+                                { label: 'Status', render: i => <Chip label={i.status ? getStatusLabel(i.status) : '—'} size="small" color={i.status === 'ativo' ? 'success' : 'default'} /> },
                             ]}
                             routeName="consultor.producer.usinas.show"
                         />
@@ -284,7 +285,7 @@ export default function Page({ consultor, stats, clients = [], proposals = [], u
                             items={producers}
                             emptyText="Nenhum produtor encontrado."
                             icon={<IconBuildingFactory size={18} />}
-                            gradient="linear-gradient(135deg,#8b5cf6,#6d28d9)"
+                            gradient="var(--cv-gradient-primary)"
                             columns={[
                                 { label: 'Nome', render: i => i.nome ?? '—' },
                                 { label: 'E-mail', render: i => i.email ?? '—' },

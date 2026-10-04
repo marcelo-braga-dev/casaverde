@@ -127,7 +127,7 @@ export default function Page({ account }) {
                         <Card sx={{ borderRadius: 'var(--cv-radius-xl)', border: '1px solid var(--cv-border-soft)', boxShadow: 'var(--cv-shadow-md)' }}>
                             <CardContent sx={{ p: 3 }}>
                                 <SectionHeader icon={<IconSettings size={18} />} title="Dados Gerais"
-                                    gradient="linear-gradient(135deg,#1e3a8a,#1d4ed8)" />
+                                    gradient="var(--cv-gradient-primary)" />
                                 <Divider sx={{ mb: 2 }} />
                                 <Stack spacing={0}>
                                     <InfoRow label="ID">{`#${account.id}`}</InfoRow>
@@ -156,7 +156,7 @@ export default function Page({ account }) {
                         <Card sx={{ borderRadius: 'var(--cv-radius-xl)', border: '1px solid var(--cv-border-soft)', boxShadow: 'var(--cv-shadow-md)' }}>
                             <CardContent sx={{ p: 3 }}>
                                 <SectionHeader icon={<IconKey size={18} />} title="Credenciais de Acesso"
-                                    gradient="linear-gradient(135deg,#64748b,#475569)" />
+                                    gradient="var(--cv-gradient-primary)" />
                                 <Divider sx={{ mb: 2 }} />
                                 <Stack spacing={0}>
                                     <InfoRow label="Base URL">{account.base_url}</InfoRow>
@@ -176,7 +176,7 @@ export default function Page({ account }) {
                 <Card sx={{ borderRadius: 'var(--cv-radius-xl)', border: '1px solid var(--cv-border-soft)', boxShadow: 'var(--cv-shadow-md)' }}>
                     <CardContent sx={{ p: 3 }}>
                         <SectionHeader icon={<IconCode size={18} />} title="Configurações Adicionais"
-                            gradient="linear-gradient(135deg,#64748b,#475569)" />
+                            gradient="var(--cv-gradient-primary)" />
                         <Divider sx={{ mb: 2 }} />
                         <JsonBlock value={account.settings} />
                     </CardContent>

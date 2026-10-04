@@ -236,7 +236,7 @@ export default function Page({ cobranca, pagamento }) {
                                     <SectionHeader
                                         icon={<IconClock size={18} />}
                                         title="Progresso do Pagamento"
-                                        gradient="linear-gradient(135deg,#3b82f6,#1d4ed8)"
+                                        gradient="var(--cv-gradient-primary)"
                                     />
                                     <Divider sx={{ mb: 3 }} />
                                     <StatusTimeline status={cobranca?.status} />
@@ -305,12 +305,12 @@ export default function Page({ cobranca, pagamento }) {
                                     <SectionHeader
                                         icon={<IconCalendar size={18} />}
                                         title="Datas"
-                                        gradient="linear-gradient(135deg,#f59e0b,#d97706)"
+                                        gradient="var(--cv-gradient-primary)"
                                     />
                                     <Divider sx={{ mb: 1 }} />
                                     <Stack spacing={0}>
                                         <InfoRow label="Competência"   value={cobranca?.reference_label} />
-                                        <InfoRow label="Vencimento"    value={cobranca?.due_date ? new Date(cobranca.due_date).toLocaleDateString('pt-BR') : null} />
+                                        <InfoRow label="Vencimento"    value={cobranca?.due_date ?? null} />
                                         {cobranca?.paid_at && (
                                             <InfoRow label="Pago em" value={new Date(cobranca.paid_at).toLocaleDateString('pt-BR')} highlight />
                                         )}
@@ -373,7 +373,7 @@ export default function Page({ cobranca, pagamento }) {
                                         <SectionHeader
                                             icon={<IconFileInvoice size={18} />}
                                             title="Fatura de Origem"
-                                            gradient="linear-gradient(135deg,#3b82f6,#1d4ed8)"
+                                            gradient="var(--cv-gradient-primary)"
                                         />
                                         <Divider sx={{ mb: 1 }} />
                                         <Stack spacing={0}>
@@ -403,7 +403,7 @@ export default function Page({ cobranca, pagamento }) {
                                     <SectionHeader
                                         icon={<IconCash size={18} />}
                                         title="Resumo Rápido"
-                                        gradient="linear-gradient(135deg,#8b5cf6,#6d28d9)"
+                                        gradient="var(--cv-gradient-primary)"
                                     />
                                     <Divider sx={{ mb: 1 }} />
                                     <Grid container spacing={1.5}>

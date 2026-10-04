@@ -178,7 +178,7 @@ export default function Page({ payment }) {
                 {/* ── Hero Card ─────────────────────────────────────── */}
                 <Card
                     sx={{
-                        background: "linear-gradient(135deg,#064e3b 0%,#065f46 50%,#047857 100%)",
+                        background: "var(--cv-gradient-hero)",
                         borderRadius: "var(--cv-radius-xl)",
                         overflow: "hidden",
                     }}
@@ -299,7 +299,7 @@ export default function Page({ payment }) {
                                     <SectionHeader
                                         icon={<IconCreditCard size={18} />}
                                         title="Dados do Pagamento"
-                                        gradient="linear-gradient(135deg,#10b981,#059669)"
+                                        gradient="var(--cv-gradient-primary)"
                                     />
                                     <Divider sx={{ mb: 2 }} />
 
@@ -364,7 +364,7 @@ export default function Page({ payment }) {
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                                 startIcon={<IconFileText size={16} />}
-                                                sx={{ fontWeight: 700, bgcolor: "#064E3B", "&:hover": { bgcolor: "#053e2f" } }}
+                                                sx={{ fontWeight: 700, bgcolor: "var(--cv-primary-darker)", "&:hover": { bgcolor: "var(--cv-primary-darker)", filter: "brightness(0.9)" } }}
                                             >
                                                 Baixar boleto (PDF Casa Verde)
                                             </Button>
@@ -400,7 +400,7 @@ export default function Page({ payment }) {
                                         <SectionHeader
                                             icon={<IconBolt size={18} />}
                                             title="Transações"
-                                            gradient="linear-gradient(135deg,#f59e0b,#d97706)"
+                                            gradient="var(--cv-gradient-primary)"
                                         />
                                         {payment.transactions?.length > 0 && (
                                             <Chip
@@ -491,7 +491,7 @@ export default function Page({ payment }) {
                                     <SectionHeader
                                         icon={<IconBarcode size={18} />}
                                         title="Dados de Pagamento"
-                                        gradient="linear-gradient(135deg,#3b82f6,#1d4ed8)"
+                                        gradient="var(--cv-gradient-primary)"
                                     />
                                     <Divider sx={{ mb: 2.5 }} />
 

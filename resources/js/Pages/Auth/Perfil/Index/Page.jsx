@@ -390,7 +390,6 @@ export default function Page({ user, extra }) {
                                                 variant="contained"
                                                 disabled={pwd.processing || !pwd.data.password || !pwd.data.password_confirmation}
                                                 startIcon={pwd.processing ? <CircularProgress size={14} color="inherit" /> : <IconKey size={16} />}
-                                                sx={{ bgcolor: '#7c3aed', '&:hover': { bgcolor: '#5b21b6' } }}
                                             >
                                                 Alterar senha
                                             </Button>

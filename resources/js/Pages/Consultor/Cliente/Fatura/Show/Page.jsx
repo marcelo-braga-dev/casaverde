@@ -359,7 +359,7 @@ const Page = ({ bill, suggestedUsinaId, energyBreakdown, reviewStatuses = [], us
 
                                 {/* TAB: Dados extraídos */}
                                 <TabPanel value="dados" sx={{ p: 2.5 }}>
-                                    <SectionHeader icon={<IconFileInvoice size={18} color="#fff" />} label="Campos Extraídos do PDF" gradient="linear-gradient(135deg,#f59e0b,#d97706)" />
+                                    <SectionHeader icon={<IconFileInvoice size={18} color="#fff" />} label="Campos Extraídos do PDF" gradient="var(--cv-gradient-primary)" />
                                     <Grid container spacing={1.5}>
                                         {requiredFields.map((field) => (
                                             <ExtractedField key={field.label} label={field.label} value={field.value} validation={field.validation} />
@@ -368,7 +368,7 @@ const Page = ({ bill, suggestedUsinaId, energyBreakdown, reviewStatuses = [], us
 
                                     <Divider sx={{ my: 3 }} />
 
-                                    <SectionHeader icon={<IconCalculator size={18} color="#fff" />} label="Cálculos de Energia Injetada" gradient="linear-gradient(135deg,#8b5cf6,#6d28d9)" />
+                                    <SectionHeader icon={<IconCalculator size={18} color="#fff" />} label="Cálculos de Energia Injetada" gradient="var(--cv-gradient-primary)" />
                                     <Grid container spacing={1.5} mb={2}>
                                         <Grid size={{ xs: 12, sm: 6 }}>
                                             <Paper variant="outlined" sx={{ p: 1.5, borderRadius: 2, height: "100%" }}>
@@ -520,7 +520,7 @@ const Page = ({ bill, suggestedUsinaId, energyBreakdown, reviewStatuses = [], us
 
                                     <Divider sx={{ my: 3 }} />
 
-                                    <SectionHeader icon={<IconReceipt size={18} color="#fff" />} label="Vínculo e Metadados" gradient="linear-gradient(135deg,#64748b,#475569)" />
+                                    <SectionHeader icon={<IconReceipt size={18} color="#fff" />} label="Vínculo e Metadados" gradient="var(--cv-gradient-primary)" />
                                     <Stack spacing={0}>
                                         <InfoRow label="Cliente">{bill.client_profile?.nome || bill.client_profile?.razao_social || "—"}</InfoRow>
                                         <InfoRow label="Unidade Consumidora">
@@ -564,7 +564,7 @@ const Page = ({ bill, suggestedUsinaId, energyBreakdown, reviewStatuses = [], us
 
                                 {/* TAB: Edição Manual */}
                                 <TabPanel value="edicao" sx={{ p: 2.5 }}>
-                                    <SectionHeader icon={<IconPencil size={18} color="#fff" />} label="Correção Manual dos Dados" gradient="linear-gradient(135deg,#3b82f6,#1d4ed8)" />
+                                    <SectionHeader icon={<IconPencil size={18} color="#fff" />} label="Correção Manual dos Dados" gradient="var(--cv-gradient-primary)" />
                                     <form onSubmit={submit}>
                                         <Stack spacing={2}>
                                             <TextField fullWidth label="Nome do titular" value={data.nome} error={Boolean(errors.nome)} helperText={errors.nome} onChange={(e) => setData("nome", e.target.value)} size="small" />
@@ -722,7 +722,7 @@ const Page = ({ bill, suggestedUsinaId, energyBreakdown, reviewStatuses = [], us
                     {/* Resumo técnico */}
                     <Card sx={{ borderRadius: "var(--cv-radius-xl)", border: "1px solid var(--cv-border-soft)", boxShadow: "var(--cv-shadow-md)", mb: 3 }}>
                         <CardContent sx={{ p: 2.5 }}>
-                            <SectionHeader icon={<IconInfoCircle size={18} color="#fff" />} label="Resumo Técnico" gradient="linear-gradient(135deg,#64748b,#475569)" />
+                            <SectionHeader icon={<IconInfoCircle size={18} color="#fff" />} label="Resumo Técnico" gradient="var(--cv-gradient-primary)" />
                             <Stack spacing={0}>
                                 <InfoRow label="Campos analisados">{requiredFields.length}</InfoRow>
                                 <InfoRow label="Campos inválidos">
@@ -749,7 +749,7 @@ const Page = ({ bill, suggestedUsinaId, energyBreakdown, reviewStatuses = [], us
                     {/* PDF viewer */}
                     <Card sx={{ borderRadius: "var(--cv-radius-xl)", border: "1px solid var(--cv-border-soft)", boxShadow: "var(--cv-shadow-md)" }}>
                         <CardContent sx={{ p: 2.5 }}>
-                            <SectionHeader icon={<IconFileInvoice size={18} color="#fff" />} label="PDF da Fatura de Concessionária" gradient="linear-gradient(135deg,#f59e0b,#d97706)" />
+                            <SectionHeader icon={<IconFileInvoice size={18} color="#fff" />} label="PDF da Fatura de Concessionária" gradient="var(--cv-gradient-primary)" />
                             <Box sx={{ border: "1px solid", borderColor: "divider", borderRadius: 2, overflow: "hidden" }}>
                                 <iframe
                                     src={route("consultor.cliente.faturas.pdf", bill.id)}

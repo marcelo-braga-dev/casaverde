@@ -39,7 +39,7 @@ const Page = () => {
                         <Grid container justifyContent="center">
                             <Grid/>
                             <Grid>
-                                <Button type="submit" startIcon={<IconPlus/>} color="success">
+                                <Button type="submit" startIcon={<IconPlus/>}>
                                     Cadastrar Cliente
                                 </Button>
                             </Grid>

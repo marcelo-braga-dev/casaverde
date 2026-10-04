@@ -176,7 +176,8 @@ export default function Page({ charge, aguardandoNovoBoleto = false }) {
     const clientPhone = charge.client_profile?.contacts?.celular;
     const mesReferencia = charge.reference_label || `${charge.reference_month}/${charge.reference_year}`;
     const valorFatura = formatCurrency(charge.final_amount);
-    const dataVencimento = charge.due_date ? new Date(charge.due_date).toLocaleDateString("pt-BR") : "";
+    // due_date já chega como d/m/Y (cast do model); new Date() leria como mês/dia.
+    const dataVencimento = charge.due_date ?? "";
 
     const discountPercent = charge.discount_percent || 0;
     const originalAmt = Number(charge.original_amount || 0);
@@ -365,14 +366,13 @@ export default function Page({ charge, aguardandoNovoBoleto = false }) {
                         <SectionHeader
                             icon={<IconBolt size={18} />}
                             title="Ações Disponíveis"
-                            gradient="linear-gradient(135deg,#3b82f6,#1d4ed8)"
+                            gradient="var(--cv-gradient-primary)"
                         />
                         <Divider sx={{ mb: 2.5 }} />
 
                         <Stack direction="row" spacing={1.5} flexWrap="wrap" useFlexGap>
                             {latestPayment && !aguardandoNovoBoleto && (
                                 <Button
-                                    color="success"
                                     variant="contained"
                                     size="medium"
                                     startIcon={<IconBarcode size={17} />}
@@ -594,27 +594,27 @@ export default function Page({ charge, aguardandoNovoBoleto = false }) {
                         {
                             label: "Consumo Injetado",
                             value: <MoneyText value={charge.original_amount} />,
-                            gradient: "linear-gradient(135deg,#64748b,#475569)",
+                            gradient: "var(--cv-gradient-primary)",
                             icon: <IconReceipt size={20} />,
                         },
                         {
                             label: "Desconto Contratual",
                             value: <MoneyText value={charge.discount_amount} />,
-                            gradient: "linear-gradient(135deg,#10b981,#059669)",
+                            gradient: "var(--cv-gradient-primary)",
                             icon: <IconReceiptRefund size={20} />,
                             sub: `${discountPercent}%`,
                         },
                         {
                             label: "Valor Final",
                             value: <MoneyText value={charge.final_amount} bold />,
-                            gradient: "linear-gradient(135deg,#3b82f6,#1d4ed8)",
+                            gradient: "var(--cv-gradient-primary)",
                             icon: <IconCreditCard size={20} />,
                             highlight: true,
                         },
                         {
                             label: "Economia Total",
                             value: <MoneyText value={savingsAmt} />,
-                            gradient: "linear-gradient(135deg,#f59e0b,#d97706)",
+                            gradient: "var(--cv-gradient-primary)",
                             icon: <IconCheck size={20} />,
                             sub: `${savingsPct}% de desconto`,
                         },
@@ -682,7 +682,7 @@ export default function Page({ charge, aguardandoNovoBoleto = false }) {
                                 <SectionHeader
                                     icon={<IconReceiptRefund size={18} />}
                                     title="Resumo Financeiro"
-                                    gradient="linear-gradient(135deg,#3b82f6,#1d4ed8)"
+                                    gradient="var(--cv-gradient-primary)"
                                 />
                                 <Divider sx={{ mb: 2 }} />
 
@@ -738,7 +738,7 @@ export default function Page({ charge, aguardandoNovoBoleto = false }) {
                                 <SectionHeader
                                     icon={<IconCalendar size={18} />}
                                     title="Dados da Cobrança"
-                                    gradient="linear-gradient(135deg,#f59e0b,#d97706)"
+                                    gradient="var(--cv-gradient-primary)"
                                 />
                                 <Divider sx={{ mb: 2 }} />
 
@@ -793,7 +793,7 @@ export default function Page({ charge, aguardandoNovoBoleto = false }) {
                                     <SectionHeader
                                         icon={<IconFileInvoice size={18} />}
                                         title="Fatura de Concessionária"
-                                        gradient="linear-gradient(135deg,#8b5cf6,#6d28d9)"
+                                        gradient="var(--cv-gradient-primary)"
                                     />
                                     <Divider sx={{ mb: 2 }} />
 
@@ -867,7 +867,7 @@ export default function Page({ charge, aguardandoNovoBoleto = false }) {
                             <SectionHeader
                                 icon={<IconCreditCard size={18} />}
                                 title="Pagamentos Gerados"
-                                gradient="linear-gradient(135deg,#10b981,#059669)"
+                                gradient="var(--cv-gradient-primary)"
                             />
                             {charge.payment_slips?.length > 0 && (
                                 <Chip
@@ -962,7 +962,7 @@ export default function Page({ charge, aguardandoNovoBoleto = false }) {
                                     <SectionHeader
                                         icon={<IconAdjustments size={18} />}
                                         title="Ajustes"
-                                        gradient="linear-gradient(135deg,#8b5cf6,#6d28d9)"
+                                        gradient="var(--cv-gradient-primary)"
                                     />
                                 </Stack>
 
@@ -1018,7 +1018,7 @@ export default function Page({ charge, aguardandoNovoBoleto = false }) {
                                 <SectionHeader
                                     icon={<IconHistory size={18} />}
                                     title="Histórico de Alterações"
-                                    gradient="linear-gradient(135deg,#6366f1,#4338ca)"
+                                    gradient="var(--cv-gradient-primary)"
                                 />
 
                                 <Typography variant="body2" color="text.secondary" mb={2}>

@@ -104,10 +104,10 @@ export default function Page({ dashboard }) {
                                 variant="contained"
                                 startIcon={<IconReportAnalytics size={18} />}
                                 sx={{
-                                    bgcolor: '#FFFFFF',
+                                    background: '#FFFFFF',
                                     color: 'var(--cv-primary-dark)',
                                     '&:hover': {
-                                        bgcolor: 'grey.100',
+                                        background: '#F1F5F2',
                                     },
                                 }}
                             >

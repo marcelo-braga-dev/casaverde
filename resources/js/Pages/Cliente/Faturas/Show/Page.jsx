@@ -13,6 +13,7 @@ import {
     Typography,
 } from '@mui/material';
 import Grid from '@mui/material/Grid2';
+import { formatDateOnly } from '@/Utils/Datas/convertData';
 import {
     IconArrowLeft,
     IconBolt,
@@ -189,7 +190,7 @@ export default function Page({ fatura, charge }) {
                         <Grid container spacing={2} sx={{ mt: 3 }}>
                             {[
                                 { label: 'Consumo', value: `${consumo.toFixed(0)} kWh` },
-                                { label: 'Vencimento', value: fatura?.vencimento ? new Date(fatura.vencimento).toLocaleDateString('pt-BR') : '—' },
+                                { label: 'Vencimento', value: formatDateOnly(fatura?.vencimento) ?? '—' },
                                 { label: 'UC', value: fatura?.unidade_consumidora ?? '—' },
                                 { label: 'Nº Instalação', value: fatura?.numero_instalacao ?? '—' },
                             ].map(item => (
@@ -222,7 +223,7 @@ export default function Page({ fatura, charge }) {
                                         <InfoRow label="Unidade Consumidora" value={fatura?.unidade_consumidora} />
                                         <InfoRow label="Nº Instalação"       value={fatura?.numero_instalacao} />
                                         <InfoRow label="Competência"         value={fatura?.reference_label} />
-                                        <InfoRow label="Vencimento"          value={fatura?.vencimento ? new Date(fatura.vencimento).toLocaleDateString('pt-BR') : null} />
+                                        <InfoRow label="Vencimento"          value={formatDateOnly(fatura?.vencimento)} />
                                         <Divider sx={{ my: 1 }} />
                                         <InfoRow label="Valor total"         value={formatMoney(fatura?.valor_total ?? 0)} highlight />
                                     </Stack>
@@ -235,7 +236,7 @@ export default function Page({ fatura, charge }) {
                                     <SectionHeader
                                         icon={<IconBolt size={18} />}
                                         title="Dados de Energia"
-                                        gradient="linear-gradient(135deg,#f59e0b,#d97706)"
+                                        gradient="var(--cv-gradient-primary)"
                                     />
                                     <Divider sx={{ mb: 2 }} />
                                     <Grid container spacing={1.5} sx={{ mb: 2 }}>
@@ -290,7 +291,7 @@ export default function Page({ fatura, charge }) {
                                     <SectionHeader
                                         icon={<IconBuilding size={18} />}
                                         title="Concessionária"
-                                        gradient="linear-gradient(135deg,#3b82f6,#1d4ed8)"
+                                        gradient="var(--cv-gradient-primary)"
                                     />
                                     <Divider sx={{ mb: 1 }} />
                                     <Box sx={{ textAlign: 'center', py: 2 }}>
@@ -310,7 +311,7 @@ export default function Page({ fatura, charge }) {
                                     <SectionHeader
                                         icon={<IconReceipt size={18} />}
                                         title="Cobrança Vinculada"
-                                        gradient="linear-gradient(135deg,#10b981,#059669)"
+                                        gradient="var(--cv-gradient-primary)"
                                     />
                                     <Divider sx={{ mb: 1.5 }} />
                                     {charge ? (
@@ -325,7 +326,7 @@ export default function Page({ fatura, charge }) {
                                             <InfoRow label="Valor original" value={formatMoney(charge.original_amount ?? 0)} />
                                             <InfoRow label="Desconto"       value={`-${formatMoney(charge.discount_amount ?? 0)}`} />
                                             <InfoRow label="Valor final"    value={formatMoney(charge.final_amount ?? 0)} highlight />
-                                            <InfoRow label="Vencimento"     value={charge.due_date ? new Date(charge.due_date).toLocaleDateString('pt-BR') : null} />
+                                            <InfoRow label="Vencimento"     value={charge.due_date ?? null} />
                                             {charge.paid_at && (
                                                 <InfoRow label="Pago em" value={new Date(charge.paid_at).toLocaleDateString('pt-BR')} />
                                             )}
@@ -365,12 +366,12 @@ export default function Page({ fatura, charge }) {
                                     <SectionHeader
                                         icon={<IconCalendar size={18} />}
                                         title="Vencimento"
-                                        gradient="linear-gradient(135deg,#8b5cf6,#6d28d9)"
+                                        gradient="var(--cv-gradient-primary)"
                                     />
                                     <Divider sx={{ mb: 1 }} />
                                     <Box sx={{ textAlign: 'center', py: 2 }}>
                                         <Typography variant="h4" sx={{ fontWeight: 950, letterSpacing: '-0.04em', color: 'primary.main' }}>
-                                            {fatura?.vencimento ? new Date(fatura.vencimento).toLocaleDateString('pt-BR') : '—'}
+                                            {formatDateOnly(fatura?.vencimento) ?? '—'}
                                         </Typography>
                                         <Typography variant="caption" color="text.secondary">data de vencimento da fatura</Typography>
                                     </Box>

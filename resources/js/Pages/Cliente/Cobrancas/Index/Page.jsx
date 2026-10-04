@@ -154,7 +154,7 @@ export default function Page({ cobrancas, filters = {}, totais = {} }) {
                                 </TableCell>
                                 <TableCell>
                                     <Typography variant="body2">
-                                        {c.due_date ? new Date(c.due_date).toLocaleDateString('pt-BR') : '—'}
+                                        {c.due_date ?? '—'}
                                     </Typography>
                                 </TableCell>
                                 <TableCell>

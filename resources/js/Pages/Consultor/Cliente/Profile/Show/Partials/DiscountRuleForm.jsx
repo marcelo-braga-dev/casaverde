@@ -81,7 +81,7 @@ const DiscountRuleForm = ({ profile }) => {
                         </Grid>
 
                         <Grid size={12}>
-                            <Button type="submit" color="success" disabled={form.processing}>
+                            <Button type="submit" disabled={form.processing}>
                                 Registrar Desconto
                             </Button>
                         </Grid>

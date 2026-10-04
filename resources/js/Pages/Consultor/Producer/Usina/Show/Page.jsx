@@ -100,7 +100,7 @@ const Page = ({ usina }) => {
 
                 {/* ── Hero Card ───────────────────────────────────────── */}
                 <Card sx={{
-                    background: 'linear-gradient(135deg,#064e3b 0%,#065f46 60%,#047857 100%)',
+                    background: 'var(--cv-gradient-hero)',
                     color: '#fff', borderRadius: 'var(--cv-radius-xl)',
                     boxShadow: '0 12px 40px rgba(6,78,59,0.35)',
                     overflow: 'hidden',
@@ -183,10 +183,10 @@ const Page = ({ usina }) => {
                 {/* ── Stats Row ───────────────────────────────────────── */}
                 <Grid container spacing={2}>
                     {[
-                        { label: 'Potência', value: usina?.potencia_usina ? `${usina.potencia_usina} kWp` : '—', gradient: 'linear-gradient(135deg,#3b82f6,#1d4ed8)', icon: <IconBolt size={20} /> },
-                        { label: 'Média de Geração', value: usina?.media_geracao ? `${usina.media_geracao} kWh` : '—', gradient: 'linear-gradient(135deg,#10b981,#059669)', icon: <IconSolarPanel2 size={20} /> },
-                        { label: 'Energia Alocada', value: fmtKwh(alocado), gradient: 'linear-gradient(135deg,#f59e0b,#d97706)', icon: <IconBolt size={20} /> },
-                        { label: 'Clientes Ativos', value: clients.length, gradient: 'linear-gradient(135deg,#8b5cf6,#6d28d9)', icon: <IconUsers size={20} /> },
+                        { label: 'Potência', value: usina?.potencia_usina ? `${usina.potencia_usina} kWp` : '—', gradient: 'var(--cv-gradient-primary)', icon: <IconBolt size={20} /> },
+                        { label: 'Média de Geração', value: usina?.media_geracao ? `${usina.media_geracao} kWh` : '—', gradient: 'var(--cv-gradient-primary)', icon: <IconSolarPanel2 size={20} /> },
+                        { label: 'Energia Alocada', value: fmtKwh(alocado), gradient: 'var(--cv-gradient-primary)', icon: <IconBolt size={20} /> },
+                        { label: 'Clientes Ativos', value: clients.length, gradient: 'var(--cv-gradient-primary)', icon: <IconUsers size={20} /> },
                     ].map(s => (
                         <Grid key={s.label} size={{ xs: 6, md: 3 }}>
                             <Card sx={{ borderRadius: 'var(--cv-radius-xl)', border: '1px solid var(--cv-border-soft)', boxShadow: 'var(--cv-shadow-md)' }}>
@@ -216,7 +216,7 @@ const Page = ({ usina }) => {
                             <Card sx={{ borderRadius: 'var(--cv-radius-xl)', border: '1px solid var(--cv-border-soft)', boxShadow: 'var(--cv-shadow-md)' }}>
                                 <CardContent sx={{ p: 3 }}>
                                     <SectionHeader icon={<IconSolarElectricity size={18} />} title="Dados Técnicos"
-                                        gradient="linear-gradient(135deg,#10b981,#059669)" />
+                                        gradient="var(--cv-gradient-primary)" />
                                     <Divider sx={{ mb: 2 }} />
                                     <Stack spacing={0}>
                                         <InfoRow label="Nome da Usina">{usina?.usina_nome}</InfoRow>
@@ -236,7 +236,7 @@ const Page = ({ usina }) => {
                                 <Card sx={{ borderRadius: 'var(--cv-radius-xl)', border: '1px solid var(--cv-border-soft)', boxShadow: 'var(--cv-shadow-md)' }}>
                                     <CardContent sx={{ p: 3 }}>
                                         <SectionHeader icon={<IconSolarPanel2 size={18} />} title="Equipamentos"
-                                            gradient="linear-gradient(135deg,#3b82f6,#1d4ed8)" />
+                                            gradient="var(--cv-gradient-primary)" />
                                         <Divider sx={{ mb: 2 }} />
                                         <Stack spacing={0}>
                                             {usina?.inversores && <InfoRow label="Inversores">{usina.inversores}</InfoRow>}
@@ -250,7 +250,7 @@ const Page = ({ usina }) => {
                             <Card sx={{ borderRadius: 'var(--cv-radius-xl)', border: '1px solid var(--cv-border-soft)', boxShadow: 'var(--cv-shadow-md)' }}>
                                 <CardContent sx={{ p: 3 }}>
                                     <SectionHeader icon={<IconMapPin size={18} />} title="Localização"
-                                        gradient="linear-gradient(135deg,#f59e0b,#d97706)" />
+                                        gradient="var(--cv-gradient-primary)" />
                                     <Divider sx={{ mb: 2 }} />
                                     {usina?.address ? (
                                         <Stack spacing={0}>
@@ -292,7 +292,7 @@ const Page = ({ usina }) => {
                                 <Card sx={{ borderRadius: 'var(--cv-radius-xl)', border: '1px solid var(--cv-border-soft)', boxShadow: 'var(--cv-shadow-md)' }}>
                                     <CardContent sx={{ p: 3 }}>
                                         <SectionHeader icon={<IconUsers size={18} />} title="Consultor Responsável"
-                                            gradient="linear-gradient(135deg,#64748b,#475569)" />
+                                            gradient="var(--cv-gradient-primary)" />
                                         <Divider sx={{ mb: 2 }} />
                                         <Stack spacing={0}>
                                             <InfoRow label="Nome">{usina.consultor.name}</InfoRow>
@@ -307,7 +307,7 @@ const Page = ({ usina }) => {
                                 <Card sx={{ borderRadius: 'var(--cv-radius-xl)', border: '1px solid #d1fae5', boxShadow: 'var(--cv-shadow-md)', bgcolor: '#f0fdf4' }}>
                                     <CardContent sx={{ p: 3 }}>
                                         <SectionHeader icon={<IconBolt size={18} />} title="Balanço de Energia"
-                                            gradient="linear-gradient(135deg,#10b981,#059669)" />
+                                            gradient="var(--cv-gradient-primary)" />
                                         <Divider sx={{ mb: 2 }} />
                                         <Stack spacing={1.5}>
                                             {[
@@ -341,7 +341,7 @@ const Page = ({ usina }) => {
                     <CardContent sx={{ p: 3 }}>
                         <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
                             <SectionHeader icon={<IconUsers size={18} />} title="Clientes Vinculados"
-                                gradient="linear-gradient(135deg,#8b5cf6,#6d28d9)" />
+                                gradient="var(--cv-gradient-primary)" />
                             <Chip label={`${clients.length} ativo${clients.length !== 1 ? 's' : ''}`}
                                 size="small" color="secondary" variant="outlined" />
                         </Stack>

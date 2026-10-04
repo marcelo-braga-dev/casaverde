@@ -24,15 +24,15 @@ import {
 import TemplateEditDialog from './Partials/TemplateEditDialog';
 
 const CATEGORY_META = {
-    Cliente: { icon: IconUserHeart, color: 'linear-gradient(135deg,#166534,#15803D)' },
-    Cadastro: { icon: IconUserPlus, color: 'linear-gradient(135deg,#1e3a5f,#1e40af)' },
-    Proposta: { icon: IconClipboardText, color: 'linear-gradient(135deg,#7c3aed,#5b21b6)' },
-    Financeiro: { icon: IconReceipt2, color: 'linear-gradient(135deg,#b45309,#92400e)' },
-    Contrato: { icon: IconContract, color: 'linear-gradient(135deg,#0f766e,#115e59)' },
+    Cliente: { icon: IconUserHeart, color: 'var(--cv-gradient-primary)' },
+    Cadastro: { icon: IconUserPlus, color: 'var(--cv-gradient-primary)' },
+    Proposta: { icon: IconClipboardText, color: 'var(--cv-gradient-primary)' },
+    Financeiro: { icon: IconReceipt2, color: 'var(--cv-gradient-primary)' },
+    Contrato: { icon: IconContract, color: 'var(--cv-gradient-primary)' },
 };
 
 function CategorySection({ category, items, onEdit }) {
-    const meta = CATEGORY_META[category] ?? { icon: IconClipboardText, color: 'linear-gradient(135deg,#374151,#1f2937)' };
+    const meta = CATEGORY_META[category] ?? { icon: IconClipboardText, color: 'var(--cv-gradient-primary)' };
     const Icon = meta.icon;
 
     return (

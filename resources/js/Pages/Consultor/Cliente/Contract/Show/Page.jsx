@@ -148,7 +148,7 @@ const Page = ({ contract }) => {
                     {/* Dados do contrato */}
                     <Card sx={{ mb: 3, borderRadius: "var(--cv-radius-xl)", border: "1px solid var(--cv-border-soft)", boxShadow: "var(--cv-shadow-md)" }}>
                         <CardContent sx={{ p: 2.5 }}>
-                            <SectionHeader icon={<IconFileCertificate size={18} color="#fff" />} label="Dados do Contrato" gradient="linear-gradient(135deg,#3b82f6,#1d4ed8)" />
+                            <SectionHeader icon={<IconFileCertificate size={18} color="#fff" />} label="Dados do Contrato" gradient="var(--cv-gradient-primary)" />
                             <Stack spacing={0}>
                                 <InfoRow label="Código do contrato">{show(contract?.contract_code)}</InfoRow>
                                 <InfoRow label="Cliente">{show(client?.display_name ?? client?.nome ?? client?.razao_social)}</InfoRow>
@@ -168,7 +168,7 @@ const Page = ({ contract }) => {
                     {/* Dados da proposta */}
                     <Card sx={{ mb: 3, borderRadius: "var(--cv-radius-xl)", border: "1px solid var(--cv-border-soft)", boxShadow: "var(--cv-shadow-md)" }}>
                         <CardContent sx={{ p: 2.5 }}>
-                            <SectionHeader icon={<IconFileText size={18} color="#fff" />} label="Informações da Proposta" gradient="linear-gradient(135deg,#10b981,#059669)" />
+                            <SectionHeader icon={<IconFileText size={18} color="#fff" />} label="Informações da Proposta" gradient="var(--cv-gradient-primary)" />
                             <Stack spacing={0}>
                                 <InfoRow label="Concessionária">{show(proposal?.concessionaria?.nome)}</InfoRow>
                                 <InfoRow label="Unidade Consumidora">{show(proposal?.unidade_consumidora)}</InfoRow>
@@ -184,7 +184,7 @@ const Page = ({ contract }) => {
                     {/* Endereço */}
                     <Card sx={{ borderRadius: "var(--cv-radius-xl)", border: "1px solid var(--cv-border-soft)", boxShadow: "var(--cv-shadow-md)" }}>
                         <CardContent sx={{ p: 2.5 }}>
-                            <SectionHeader icon={<IconMapPin size={18} color="#fff" />} label="Endereço da Unidade Consumidora" gradient="linear-gradient(135deg,#f59e0b,#d97706)" />
+                            <SectionHeader icon={<IconMapPin size={18} color="#fff" />} label="Endereço da Unidade Consumidora" gradient="var(--cv-gradient-primary)" />
                             <Box sx={{ p: 1.5, mb: 2, borderRadius: 2, bgcolor: "action.hover" }}>
                                 <Typography variant="body2" fontWeight={700}>{formatAddress(contractAddress)}</Typography>
                             </Box>
@@ -241,7 +241,7 @@ const Page = ({ contract }) => {
                     {/* Address card for mobile (home icon) */}
                     <Card sx={{ mt: 3, borderRadius: "var(--cv-radius-xl)", border: "1px solid var(--cv-border-soft)", boxShadow: "var(--cv-shadow-md)" }}>
                         <CardContent sx={{ p: 2.5 }}>
-                            <SectionHeader icon={<IconHome size={18} color="#fff" />} label="Ações" gradient="linear-gradient(135deg,#64748b,#475569)" />
+                            <SectionHeader icon={<IconHome size={18} color="#fff" />} label="Ações" gradient="var(--cv-gradient-primary)" />
                             <Stack spacing={1.5}>
                                 <Link href={route("consultor.cliente.contratos.edit", contract.id)} style={{ textDecoration: "none" }}>
                                     <Button fullWidth variant="contained" color="warning" startIcon={<IconEdit size={18} />} sx={{ fontWeight: 700, py: 1.2 }}>

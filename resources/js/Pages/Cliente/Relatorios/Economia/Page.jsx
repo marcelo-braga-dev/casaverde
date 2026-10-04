@@ -195,7 +195,7 @@ export default function Page({ report }) {
 
                 {/* ── Banner do cliente ──────────────────────────────────── */}
                 {profile && (
-                    <Card sx={{ background: 'linear-gradient(135deg,#064e3b,#065f46)', color: '#fff', borderRadius: 'var(--cv-radius-xl)' }}>
+                    <Card sx={{ background: 'var(--cv-gradient-hero)', color: '#fff', borderRadius: 'var(--cv-radius-xl)' }}>
                         <CardContent>
                             <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} gap={2}>
                                 <Stack direction="row" alignItems="center" gap={2}>
@@ -561,7 +561,7 @@ export default function Page({ report }) {
 
                                 {/* Totais */}
                                 {hasData && (
-                                    <Box sx={{ mt: 2, p: 2, bgcolor: '#064e3b', borderRadius: 2, color: '#fff' }}>
+                                    <Box sx={{ mt: 2, p: 2, bgcolor: 'var(--cv-primary-darker)', borderRadius: 2, color: '#fff' }}>
                                         <Grid container spacing={2}>
                                             {[
                                                 { label: 'Total concessionária', value: formatMoney(summary.total_original_amount ?? 0), highlight: false },
@@ -582,7 +582,7 @@ export default function Page({ report }) {
 
                         {/* ── Histórico geral + call to action ─────────── */}
                         {allTime.total_charges > 0 && (
-                            <Card sx={{ background: 'linear-gradient(135deg,#064e3b,#065f46)', color: '#fff', borderRadius: 'var(--cv-radius-xl)' }}>
+                            <Card sx={{ background: 'var(--cv-gradient-hero)', color: '#fff', borderRadius: 'var(--cv-radius-xl)' }}>
                                 <CardContent>
                                     <Stack direction={{ xs: 'column', md: 'row' }} justifyContent="space-between" alignItems="center" gap={3}>
                                         <Box>
@@ -603,7 +603,7 @@ export default function Page({ report }) {
                                                 href={`${safeRoute('cliente.relatorios.economia.pdf')}?year=${data.year}`}
                                                 variant="contained"
                                                 startIcon={<IconFileExport size={17} />}
-                                                sx={{ bgcolor: '#fff', color: '#064e3b', '&:hover': { bgcolor: 'grey.100' } }}
+                                                sx={{ background: '#fff', color: 'var(--cv-primary-darker)', '&:hover': { background: '#F1F5F2' } }}
                                             >
                                                 Exportar PDF
                                             </Button>

@@ -9,6 +9,7 @@ import { Head, Link, router, useForm } from '@inertiajs/react';
 import { Button, Chip, TableCell, TableRow, Typography } from '@mui/material';
 import { IconEye, IconPlus, IconSolarPanel2 } from '@tabler/icons-react';
 
+import { getStatusLabel } from '@/Utils/statusLabels';
 function safeRoute(n, p) { try { return route(n, p); } catch { return '#'; } }
 
 export default function Page({ usinas, filters = {} }) {
@@ -118,7 +119,7 @@ export default function Page({ usinas, filters = {} }) {
                         </TableCell>
                         <TableCell>
                             <Chip
-                                label={u.status ?? '—'}
+                                label={u.status ? getStatusLabel(u.status) : '—'}
                                 color={u.status === 'ativo' ? 'success' : 'default'}
                                 size="small"
                             />

@@ -150,7 +150,7 @@ export default function Page({ event }) {
                         <Card sx={{ borderRadius: 'var(--cv-radius-xl)', border: '1px solid var(--cv-border-soft)', boxShadow: 'var(--cv-shadow-md)' }}>
                             <CardContent sx={{ p: 3 }}>
                                 <SectionHeader icon={<IconWebhook size={18} />} title="Dados do Evento"
-                                    gradient="linear-gradient(135deg,#312e81,#1e1b4b)" />
+                                    gradient="var(--cv-gradient-primary)" />
                                 <Divider sx={{ mb: 2 }} />
                                 <Stack spacing={0}>
                                     <InfoRow label="ID interno" value={`#${event.id}`} mono />
@@ -183,7 +183,7 @@ export default function Page({ event }) {
                         <Card sx={{ borderRadius: 'var(--cv-radius-xl)', border: '1px solid var(--cv-border-soft)', boxShadow: 'var(--cv-shadow-md)' }}>
                             <CardContent sx={{ p: 3 }}>
                                 <SectionHeader icon={<IconBolt size={18} />} title="Cobrança Associada"
-                                    gradient="linear-gradient(135deg,#3b82f6,#1d4ed8)" />
+                                    gradient="var(--cv-gradient-primary)" />
                                 <Divider sx={{ mb: 2 }} />
                                 {charge ? (
                                     <Stack spacing={0}>
@@ -213,7 +213,7 @@ export default function Page({ event }) {
                         <Card sx={{ borderRadius: 'var(--cv-radius-xl)', border: '1px solid var(--cv-border-soft)', boxShadow: 'var(--cv-shadow-md)' }}>
                             <CardContent sx={{ p: 3 }}>
                                 <SectionHeader icon={<IconCode size={18} />} title="Headers"
-                                    gradient="linear-gradient(135deg,#64748b,#475569)" />
+                                    gradient="var(--cv-gradient-primary)" />
                                 <Divider sx={{ mb: 2 }} />
                                 <JsonBlock value={event.headers} />
                             </CardContent>
@@ -223,7 +223,7 @@ export default function Page({ event }) {
                         <Card sx={{ borderRadius: 'var(--cv-radius-xl)', border: '1px solid var(--cv-border-soft)', boxShadow: 'var(--cv-shadow-md)' }}>
                             <CardContent sx={{ p: 3 }}>
                                 <SectionHeader icon={<IconCode size={18} />} title="Payload"
-                                    gradient="linear-gradient(135deg,#64748b,#475569)" />
+                                    gradient="var(--cv-gradient-primary)" />
                                 <Divider sx={{ mb: 2 }} />
                                 <JsonBlock value={event.payload} />
                             </CardContent>

@@ -55,7 +55,7 @@ export default function Page({ profile, usina, link, historico = [] }) {
                 <Stack spacing={3}>
 
                     {/* Hero da usina */}
-                    <Card sx={{ background: 'linear-gradient(135deg,#064e3b,#065f46,#047857)', color: '#fff', borderRadius: 'var(--cv-radius-xl)' }}>
+                    <Card sx={{ background: 'var(--cv-gradient-hero)', color: '#fff', borderRadius: 'var(--cv-radius-xl)' }}>
                         <CardContent>
                             <Stack direction={{ xs: 'column', sm: 'row' }} alignItems={{ xs: 'flex-start', sm: 'center' }} justifyContent="space-between" gap={2}>
                                 <Stack direction="row" alignItems="center" gap={2}>

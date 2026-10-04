@@ -2,6 +2,7 @@ import Layout from "@/Layouts/UserLayout/Layout.jsx";
 import { Head, Link } from "@inertiajs/react";
 import { Button, Card, CardContent, Stack, Typography } from "@mui/material";
 
+import { getStatusLabel } from '@/Utils/statusLabels';
 export default function Page({ producers }) {
     return (
         <Layout titlePage="Perfis de Produtor" menu="produtores">
@@ -21,7 +22,7 @@ export default function Page({ producers }) {
                                 </Typography>
                                 <Typography>Administrador: {producer.admin_nome || "-"}</Typography>
                                 <Typography>UC: {producer.unidade_consumidora || "-"}</Typography>
-                                <Typography>Status: {producer.status}</Typography>
+                                <Typography>Status: {getStatusLabel(producer.status)}</Typography>
                             </CardContent>
                         </Card>
                     </Link>
