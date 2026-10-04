@@ -6,16 +6,22 @@ import {pdf} from '@react-pdf/renderer';
 import VisualizadorPDF from './VisualizadorPDF';
 import {IconDownload, IconEdit} from "@tabler/icons-react";
 import DescontosGrafico from "@/Pages/Auth/Cliente/Proposta/Show/Graficos/DescontosGrafico.jsx";
-import {Link} from "@inertiajs/react";
+import {Link, usePage} from "@inertiajs/react";
 
 function PropostaBaixar({idProposta, dadosProposta}) {
     const [urlPdf, setUrlPdf] = useState()
     const [imagemGrafico, setImagemGrafico] = useState(null);
     const [dados, setDados] = useState([])
+    // Na demonstração a prévia é o PDF do servidor (modelo novo), não o modelo Casa Verde gerado no navegador.
+    const isDemo = Boolean(usePage().props.demo?.enabled)
 
     useEffect(() => {
+        if (isDemo) {
+            setUrlPdf(route('consultor.propostas.cliente.pdf', idProposta))
+            return
+        }
         fethcDadosProposta()
-    }, [imagemGrafico]);
+    }, [imagemGrafico, isDemo]);
 
     const gerarPdfEEnviar = async (info) => {
         const blob = await pdf(<PropostaPdf dados={dadosProposta} idProposta={idProposta} imagemGrafico={imagemGrafico} />).toBlob();
@@ -83,9 +89,11 @@ function PropostaBaixar({idProposta, dadosProposta}) {
                 </div>
             )}
 
-            <div style={{marginTop: 50}}>
-                <DescontosGrafico onExport={setImagemGrafico} idProposta={idProposta} dados={dadosProposta}/>
-            </div>
+            {!isDemo && (
+                <div style={{marginTop: 50}}>
+                    <DescontosGrafico onExport={setImagemGrafico} idProposta={idProposta} dados={dadosProposta}/>
+                </div>
+            )}
         </div>
     );
 }

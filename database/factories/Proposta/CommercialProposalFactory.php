@@ -4,6 +4,7 @@ namespace Database\Factories\Proposta;
 
 use App\Models\Cliente\ClientProfile;
 use App\Models\Proposta\CommercialProposal;
+use App\Models\Users\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class CommercialProposalFactory extends Factory
@@ -14,7 +15,7 @@ class CommercialProposalFactory extends Factory
     {
         return [
             'client_profile_id' => ClientProfile::factory(),
-            'consultor_user_id' => null,
+            'consultor_user_id' => User::factory()->consultor(),
             'concessionaria_id' => null,
             'address_id' => null,
             'status' => 'emitida',
