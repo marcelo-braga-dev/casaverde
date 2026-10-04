@@ -34,13 +34,12 @@ use App\Models\Usina\UsinaBlock;
 use App\Models\Usina\UsinaGenerationRecord;
 use App\Models\Usina\UsinaSolar;
 use App\src\Roles\RoleUser;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\CarbonImmutable;
+use Database\Seeders\Support\DemoPix;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 
 /**
  * Base de demonstração para marketing: ~18 meses de operação fictícia sobre os dados do
@@ -131,12 +130,14 @@ class MarketingDemoSeeder extends Seeder
             $this->createSupportTickets($consultores);
             $this->createOperationalAlerts($allUsinas, $consultores);
             $this->createAccessLogs();
-            $this->createBillPdfs();
         });
 
         Model::reguard();
 
         $this->call(MarketingImportHistorySeeder::class);
+        $this->call(DemoTariffSeeder::class);
+        // Por último: marca tudo como fictício e gera os PDFs das faturas com os nomes finais.
+        $this->call(MarkFictitiousDataSeeder::class);
 
         $this->command->info('Base de marketing criada:');
         foreach ($this->stats as $label => $count) {
@@ -276,7 +277,7 @@ class MarketingDemoSeeder extends Seeder
                 'issued_at' => $this->today->subMonths($months + 3)->toDateString(),
                 'valid_until' => $this->today->subMonths($months + 2)->toDateString(),
                 'fill_percent' => mt_rand(80, 95),
-                'prazo_contrato' => 20,
+                'prazo_contrato' => [120, 180, 240][$profile->id % 3], // meses
                 'media_geracao' => $geracao,
                 'potencia_usina' => $kwp,
                 'valor_investimento' => round($kwp * 3900, -3),
@@ -701,7 +702,7 @@ class MarketingDemoSeeder extends Seeder
             'due_date' => $due->toDateString(),
             'barcode' => $method === 'boleto' ? '34191'.$factor.str_pad((string) round($amount * 100), 10, '0', STR_PAD_LEFT).str_repeat('1', 25) : null,
             'digitable_line' => $method === 'boleto' ? '34191790010104351004791020150008'.$factor.str_pad((string) round($amount * 100), 10, '0', STR_PAD_LEFT) : null,
-            'pix_copy_paste' => '00020126580014br.gov.bcb.pix0136demo-'.$charge->id.'-0000-0000-0000000000005204000053039865406'.number_format($amount, 2, '.', '').'5802BR5910CASA VERDE6008CURITIBA62070503***6304DEMO',
+            'pix_copy_paste' => DemoPix::copyPaste($charge->id, $amount),
             'generated_at' => $generated,
             'created_at' => $generated,
             'updated_at' => $generated,
@@ -946,7 +947,7 @@ class MarketingDemoSeeder extends Seeder
                 'issued_at' => $this->today->subDays(12)->toDateString(),
                 'valid_until' => $this->today->addDays(18)->toDateString(),
                 'fill_percent' => 88,
-                'prazo_contrato' => 20,
+                'prazo_contrato' => 180, // meses
                 'media_geracao' => 18000,
                 'potencia_usina' => 150,
                 'valor_investimento' => 585000,
@@ -1140,56 +1141,6 @@ class MarketingDemoSeeder extends Seeder
                 $this->count('Acessos registrados');
             }
         }
-    }
-
-    // ─── PDFs das faturas ────────────────────────────────────────────────
-
-    // Toda fatura sem arquivo ganha um PDF de demonstração: sem ele a tela de revisão
-    // mostra "PDF inválido", bloqueia a aprovação e o visualizador responde 404.
-    private function createBillPdfs(): void
-    {
-        ConcessionaireBill::with('concessionaria')->orderBy('id')->chunkById(100, function ($bills) {
-            foreach ($bills as $bill) {
-                if ($bill->pdf_path && Storage::disk($bill->pdf_disk ?: 'local')->exists($bill->pdf_path)) {
-                    continue;
-                }
-
-                $path = sprintf('concessionaire-bills/%d/%d/%02d/demo-%d.pdf', $bill->client_profile_id, $bill->reference_year, $bill->reference_month, $bill->id);
-                Storage::disk('local')->put($path, Pdf::loadHTML($this->billPdfHtml($bill))->setPaper('a4')->output());
-
-                $bill->forceFill([
-                    'pdf_disk' => 'local',
-                    'pdf_path' => $path,
-                    'pdf_original_name' => 'fatura-'.$bill->unidade_consumidora.'-'.str_replace('/', '-', $bill->reference_label).'.pdf',
-                ])->saveQuietly();
-                $this->count('PDFs de fatura');
-            }
-        });
-    }
-
-    private function billPdfHtml(ConcessionaireBill $bill): string
-    {
-        $row = fn ($label, $value) => '<tr><td class="l">'.e($label).'</td><td>'.e($value).'</td></tr>';
-        $vencimento = $bill->vencimento ? CarbonImmutable::parse($bill->vencimento)->format('d/m/Y') : '—';
-
-        return '<html><head><meta charset="utf-8"><style>
-            body{font-family:DejaVu Sans,sans-serif;color:#18221A;font-size:12px}
-            .tarja{background:#13326c;color:#fff;padding:10px 14px;font-size:14px;font-weight:bold}
-            .aviso{border:2px dashed #D9971A;padding:10px;margin:14px 0;color:#7a5410;font-weight:bold;text-align:center}
-            table{width:100%;border-collapse:collapse;margin-top:10px}
-            td{border:1px solid #D9E2D6;padding:8px} td.l{background:#EEF3EA;width:40%;font-weight:bold}
-        </style></head><body>
-            <div class="tarja">FATURA DE ENERGIA ELÉTRICA · '.e($bill->concessionaria?->nome ?? 'Concessionária').'</div>
-            <div class="aviso">Documento de demonstração com dados fictícios. Não é uma fatura real.</div>
-            <table>'
-                .$row('Titular', $bill->nome)
-                .$row('Unidade consumidora', $bill->unidade_consumidora)
-                .$row('Número da instalação', $bill->numero_instalacao)
-                .$row('Competência', $bill->reference_label)
-                .$row('Consumo', number_format((float) $bill->consumo_kwh, 1, ',', '.').' kWh')
-                .$row('Vencimento', $vencimento)
-                .$row('Valor total', 'R$ '.number_format((float) $bill->valor_total, 2, ',', '.'))
-            .'</table></body></html>';
     }
 
     // ─── Apoio ───────────────────────────────────────────────────────────

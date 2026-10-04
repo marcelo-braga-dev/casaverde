@@ -624,7 +624,7 @@ class DemoDataSeeder extends Seeder
                 'issued_at' => now()->subMonths(14)->toDateString(),
                 'valid_until' => now()->subMonths(8)->toDateString(),
                 'fill_percent' => 85.00,
-                'prazo_contrato' => 20,
+                'prazo_contrato' => [180, 240, 120][$i] ?? 180, // meses
                 'media_geracao' => [8500, 14000, 6000][$i] ?? 8000,
                 'potencia_usina' => [75, 120, 50][$i] ?? 60,
                 'valor_investimento' => [380000, 620000, 250000][$i] ?? 300000,
