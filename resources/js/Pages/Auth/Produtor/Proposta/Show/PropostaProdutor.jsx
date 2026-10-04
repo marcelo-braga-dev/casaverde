@@ -3,16 +3,23 @@ import Grid from "@mui/material/Grid2";
 import {IconDownload} from "@tabler/icons-react";
 import {useEffect, useRef, useState} from "react";
 import PropostaClientePage from "./DadosProposta.jsx";
+import {usePage} from "@inertiajs/react";
 
 const PropostaProdutor = ({proposal, investmentSummary}) => {
     const [layout, setLayout] = useState([])
     const [urlPdf, setUrlPdf] = useState(null)
     const [pdfError, setPdfError] = useState(false)
     const proposalRef = useRef(null);
+    // Na demonstração o PDF vem pronto do servidor (modelo novo), sem o modelo antigo montado no navegador.
+    const isDemo = Boolean(usePage().props.demo?.enabled)
 
     useEffect(() => {
+        if (isDemo) {
+            setUrlPdf(route('consultor.propostas.produtor.pdf', proposal.id))
+            return
+        }
         fethcLayout()
-    }, []);
+    }, [isDemo]);
 
     useEffect(() => {
         if (layout.capa) {

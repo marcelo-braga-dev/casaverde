@@ -13,7 +13,7 @@ use App\Models\Usina\Concessionaria;
 use App\Repositories\Proposta\ProposalProducerRepository;
 use App\Services\Proposta\CalculateProducerProposalInvestmentService;
 use App\Services\Proposta\CreateProducerProposalService;
-use App\Services\Proposta\GenerateCommercialProposalPdfService;
+use App\Services\Proposta\GenerateProducerProposalPdfService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
@@ -158,9 +158,10 @@ class ProducerProposalController extends Controller
             ->with('success', 'Proposta atualizada com sucesso.');
     }
 
-    public function pdf(CommercialProposal $proposal, GenerateCommercialProposalPdfService $service)
+    public function pdf(ProducerProposal $proposal, GenerateProducerProposalPdfService $service)
     {
-        $this->authorize('view', $proposal);
+        $user = auth()->user();
+        abort_if($user->isConsultor() && (int) $proposal->consultor_user_id !== (int) $user->id, 403);
 
         return $service->stream($proposal);
     }

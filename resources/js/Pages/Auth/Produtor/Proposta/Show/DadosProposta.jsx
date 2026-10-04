@@ -1,4 +1,5 @@
 import React from 'react';
+import { usePage } from '@inertiajs/react';
 
 const fmtMoney = (v, opts = {}) => v != null
     ? `R$ ${Number(v).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2, ...opts })}`
@@ -20,6 +21,8 @@ const fmtDate = v => {
 };
 
 const DadosProposta = ({proposal, investmentSummary}) => {
+    const { demo, brand } = usePage().props;
+    const empresa = demo?.enabled ? (brand?.name || 'A empresa') : 'A Casa Verde';
     const producer = proposal?.producer_profile;
     const contacts = producer?.contacts;
 
@@ -92,7 +95,7 @@ const DadosProposta = ({proposal, investmentSummary}) => {
                             Os valores apresentados nesta proposta são uma simulação aproximada, baseada nas
                             informações e parâmetros disponíveis no momento da emissão. Eles não constituem garantia
                             de resultado e podem variar de acordo com a geração real de energia, tarifas vigentes,
-                            condições contratuais e outros fatores. A Casa Verde não se responsabiliza caso os
+                            condições contratuais e outros fatores. {empresa} não se responsabiliza caso os
                             valores efetivamente alcançados sejam diferentes dos valores simulados.
                         </p>
 
