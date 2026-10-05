@@ -190,6 +190,9 @@ class MarkFictitiousDataSeeder extends Seeder
 
     private function regenerateBillPdfs(bool $onlyMissing): void
     {
+        // O dompdf não devolve toda a memória entre PDFs; ~400 faturas estouram os 128M padrão do CLI.
+        ini_set('memory_limit', '1G');
+
         ConcessionaireBill::with('concessionaria')->orderBy('id')->chunkById(100, function ($bills) use ($onlyMissing) {
             foreach ($bills as $bill) {
                 if ($onlyMissing && $bill->pdf_path && Storage::disk($bill->pdf_disk ?: 'local')->exists($bill->pdf_path)) {
