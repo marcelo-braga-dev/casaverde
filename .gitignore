@@ -21,3 +21,7 @@ yarn-error.log
 /.zed
 /public/.user.ini
 /public/.well-known/
+# Gerados pelo aaPanel no servidor (open_basedir, regras do painel, validação de SSL)
+/.user.ini
+/.htaccess
+/.well-known/
