@@ -42,7 +42,7 @@ const Page = ({usuario, tab}) => {
                             <DataUser dataUser={usuario}/>
                         </TabPanel>
                         <TabPanel value="usinas">
-                            <Usina/>
+                            <Usina produtorId={usuario?.id}/>
                         </TabPanel>
                         <TabPanel value="propostas">
                             <Propostas dataUser={usuario}/>

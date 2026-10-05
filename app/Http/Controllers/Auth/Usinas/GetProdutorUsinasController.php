@@ -9,7 +9,10 @@ class GetProdutorUsinasController extends Controller
 {
     public function __invoke($id)
     {
-        $usinas = (new UsinaSolar)->where('user_id', $id)->get();
+        // $id é o usuário do produtor; usina_solars.user_id não existe mais (migration 2026_05_19).
+        $usinas = UsinaSolar::query()
+            ->whereHas('produtor', fn ($q) => $q->where('platform_user_id', $id))
+            ->get();
 
         return response()->json($usinas);
     }

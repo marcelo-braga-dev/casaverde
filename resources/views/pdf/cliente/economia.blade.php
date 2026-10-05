@@ -279,7 +279,7 @@
         <div class="header-client-name">{{ $report['profile']['display_name'] }}</div>
         <div class="header-client-meta">
             Código: {{ $report['profile']['client_code'] ?? '—' }}
-            @if($report['profile']['usina_nome'])
+            @if(! empty($report['profile']['usina_nome']))
                 &nbsp;·&nbsp; Usina: {{ $report['profile']['usina_nome'] }}
             @endif
         </div>

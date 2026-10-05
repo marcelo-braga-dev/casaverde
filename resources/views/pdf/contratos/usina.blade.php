@@ -58,8 +58,10 @@
 <body>
 <div class="container">
     <div style="text-align: center">
-        <?php $base64Image = 'data:image/png;base64,' . base64_encode(file_get_contents(public_path('logo.png'))); ?>
-        <img src="{{ $base64Image }}" alt="Logo" class="logo" style="width: 300px">
+        @php $pdfBrand = app(\App\Services\Proposta\ProposalPdfBrand::class)->toArray(); @endphp
+        @if($pdfBrand['logo'])
+            <img src="{{ $pdfBrand['logo'] }}" alt="{{ $pdfBrand['name'] }}" class="logo" style="width: 300px">
+        @endif
     </div>
 
     <h3>Contrato de Locação de Usina Solar e Gestão de Créditos de Energia</h3>

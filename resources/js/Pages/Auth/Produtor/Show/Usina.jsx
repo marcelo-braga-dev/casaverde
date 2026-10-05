@@ -5,14 +5,14 @@ import {convertMesesParaAnos} from "@/Utils/Datas/convertMesesParaAnos.js";
 import {formatarEndereco} from "@/Utils/Datas/formatarEndereco.js";
 import {useEffect, useState} from "react";
 
-const Usina = () => {
+const Usina = ({produtorId}) => {
     const [usinas, setUsinas] = useState([])
 
     useEffect(() => {
         getUsinasProdutor()
-    }, []);
+    }, [produtorId]);
     const getUsinasProdutor = async () => {
-        const response = await axios.get(route('auth.usinas.api.get-produtor', 80))
+        const response = await axios.get(route('auth.usinas.api.get-produtor', produtorId))
         setUsinas(response.data)
     }
 
