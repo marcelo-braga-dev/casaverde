@@ -256,12 +256,13 @@
     </style>
 </head>
 <body>
+@php $brandName = app(\App\Services\Config\SystemSettingService::class)->brandName(); @endphp
 
 {{-- HEADER --}}
 <div class="header">
     <div class="header-top">
         <div>
-            <div class="brand">Casa <span>Verde</span></div>
+            <div class="brand">{{ $brandName }}</div>
             <div style="font-size:9px; opacity:0.65; margin-top:2px;">Energia Solar por Assinatura</div>
         </div>
         <div>
@@ -296,14 +297,14 @@
 <div class="hero">
     <div class="hero-grid">
         <div class="hero-card concessionaria">
-            <div class="hero-card-label">Sem Casa Verde pagaria</div>
+            <div class="hero-card-label">Sem {{ $brandName }} pagaria</div>
             <div class="hero-card-value">R$ {{ number_format($s['total_original_amount'] ?? 0, 2, ',', '.') }}</div>
             <div class="hero-card-sub">Valor cheio das faturas</div>
         </div>
         <div class="hero-card casaverde">
-            <div class="hero-card-label">Com Casa Verde você paga</div>
+            <div class="hero-card-label">Com {{ $brandName }} você paga</div>
             <div class="hero-card-value">R$ {{ number_format($s['total_final_amount'] ?? 0, 2, ',', '.') }}</div>
-            <div class="hero-card-sub">Valor com desconto Casa Verde</div>
+            <div class="hero-card-sub">Valor com desconto {{ $brandName }}</div>
         </div>
         <div class="hero-card savings">
             <div class="hero-card-label">Economizou no período</div>
@@ -317,7 +318,7 @@
 <div class="message-box">
     <p>
         <strong>Você economizou R$ {{ number_format($s['total_savings'] ?? 0, 2, ',', '.') }}</strong>
-        em {{ $report['filters']['year'] ?? date('Y') }} sendo cliente da Casa Verde,
+        em {{ $report['filters']['year'] ?? date('Y') }} sendo cliente da {{ $brandName }},
         comparado ao valor que pagaria à concessionária.
         @if(($s['avg_savings_month'] ?? 0) > 0)
             Em média, você economiza <strong>R$ {{ number_format($s['avg_savings_month'], 2, ',', '.') }} por mês</strong>.
@@ -354,7 +355,7 @@
 
 {{-- TABELA MENSAL --}}
 <div class="section">
-    <div class="section-title">Detalhamento Mensal — Concessionária × Casa Verde</div>
+    <div class="section-title">Detalhamento Mensal — Concessionária × {{ $brandName }}</div>
 
     @php $rows = array_filter($report['monthly'] ?? [], fn($m) => $m['has_data']); @endphp
 
@@ -368,7 +369,7 @@
                 <th>kWh</th>
                 <th>Fatura Concessionária</th>
                 <th>Desconto R$</th>
-                <th>Valor Casa Verde</th>
+                <th>Valor {{ $brandName }}</th>
                 <th>Economia</th>
                 <th>Status</th>
             </tr>
@@ -446,7 +447,7 @@
 @endif
 
 <div class="footer">
-    Casa Verde Energia Solar &nbsp;·&nbsp;
+    {{ $brandName }} &nbsp;·&nbsp;
     Relatório gerado em {{ now()->format('d/m/Y \à\s H:i') }} &nbsp;·&nbsp;
     Este documento é confidencial e destinado exclusivamente ao cliente identificado acima.
 </div>

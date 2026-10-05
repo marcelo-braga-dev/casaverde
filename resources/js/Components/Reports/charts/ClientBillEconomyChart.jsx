@@ -11,8 +11,10 @@ import {
 } from 'recharts';
 import ReportEmptyChart from '../ReportEmptyChart';
 import { formatMoney } from '../utils/chartFormatters';
+import useBrandName from '@/Hooks/useBrandName';
 
 export default function ClientBillEconomyChart({ data = [] }) {
+    const brandName = useBrandName();
     if (!data.length) {
         return <ReportEmptyChart />;
     }
@@ -43,7 +45,7 @@ export default function ClientBillEconomyChart({ data = [] }) {
 
                 <Bar
                     dataKey="final_amount"
-                    name="Valor a pagar Casa Verde"
+                    name={`Valor a pagar ${brandName}`}
                     fill="#2F7D18"
                     radius={[10, 10, 0, 0]}
                 />

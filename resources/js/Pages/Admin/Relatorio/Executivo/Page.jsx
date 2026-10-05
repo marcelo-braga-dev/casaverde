@@ -16,8 +16,10 @@ import MultiLineChart from '@/Components/Reports/charts/MultiLineChart';
 import StatusDonutChart from '@/Components/Reports/charts/StatusDonutChart';
 import HorizontalRankingChart from '@/Components/Reports/charts/HorizontalRankingChart';
 import { formatMoney } from '@/Components/Reports/utils/chartFormatters';
+import useBrandName from '@/Hooks/useBrandName';
 
 export default function Page({ report, filters = {} }) {
+    const brandName = useBrandName();
     const { data, setData, get, processing } = useForm({
         start_date: filters.start_date || report?.range?.start_date || '',
         end_date: filters.end_date || report?.range?.end_date || '',
@@ -61,7 +63,7 @@ export default function Page({ report, filters = {} }) {
                 >
                     <CardContent>
                         <Typography variant="h4" sx={{ fontWeight: 950 }}>
-                            Central de Inteligência Casa Verde
+                            Central de Inteligência {brandName}
                         </Typography>
 
                         <Typography sx={{ mt: 0.6, color: 'rgba(255,255,255,0.72)' }}>

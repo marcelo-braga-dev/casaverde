@@ -19,6 +19,7 @@ import {
 } from '@mui/material';
 
 import UserLayout from '@/Layouts/UserLayout/Layout.jsx';
+import useBrandName from '@/Hooks/useBrandName';
 
 function Money({ value }) {
     return Number(value || 0).toLocaleString('pt-BR', {
@@ -71,6 +72,7 @@ function getYearOptions() {
 }
 
 export default function BillingManagementPage() {
+    const brandName = useBrandName();
     const { props } = usePage();
     const { billing, filters } = props;
 
@@ -110,7 +112,7 @@ export default function BillingManagementPage() {
                         </Typography>
 
                         <Typography color="text.secondary">
-                            Controle financeiro gerencial das cobranças da Casa Verde.
+                            Controle financeiro gerencial das cobranças da {brandName}.
                         </Typography>
                     </Box>
 

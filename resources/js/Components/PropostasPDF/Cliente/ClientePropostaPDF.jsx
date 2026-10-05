@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
     },
 });
 
-const PropostaModelo = ({dados}) => {
+const PropostaModelo = ({dados, brandName = ''}) => {
 
     const taxaReducao = Number(
         dados?.proposal?.discount_percent ||
@@ -275,7 +275,7 @@ const PropostaModelo = ({dados}) => {
 
                 <View style={styles.hero}>
                     <Text style={styles.logo}>
-                        CASA VERDE
+                        {brandName.toUpperCase()}
                     </Text>
                     <Text style={styles.heroTitle}>
                         Proposta Comercial

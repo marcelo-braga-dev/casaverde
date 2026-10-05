@@ -14,8 +14,6 @@ use Inertia\Response;
 
 class BrandIdentityController extends Controller
 {
-    private const DEFAULT_NAME = 'Casa Verde';
-
     private const DEFAULT_COLOR_PRIMARY = '#2F7D18';
 
     private const DEFAULT_COLOR_SECONDARY = '#4F9A2A';
@@ -31,7 +29,7 @@ class BrandIdentityController extends Controller
     {
         return Inertia::render('Admin/Configuracao/BrandIdentity/Page', [
             'brand' => [
-                'name' => $settings->get('brand_name', self::DEFAULT_NAME),
+                'name' => $settings->brandName(),
                 'color_primary' => $settings->get('brand_color_primary', self::DEFAULT_COLOR_PRIMARY),
                 'color_secondary' => $settings->get('brand_color_secondary', self::DEFAULT_COLOR_SECONDARY),
                 'color_sidebar' => $settings->get('brand_color_sidebar'),

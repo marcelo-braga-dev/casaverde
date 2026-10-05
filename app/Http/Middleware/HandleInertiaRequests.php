@@ -82,7 +82,7 @@ class HandleInertiaRequests extends Middleware
         $faviconPath = $this->systemSettings->get('brand_favicon_path');
 
         return [
-            'name' => $this->systemSettings->get('brand_name', config('app.name', 'Casa Verde')),
+            'name' => $this->systemSettings->brandName(),
             'color_primary' => $this->systemSettings->get('brand_color_primary'),
             'color_secondary' => $this->systemSettings->get('brand_color_secondary'),
             'color_sidebar' => $this->systemSettings->get('brand_color_sidebar'),

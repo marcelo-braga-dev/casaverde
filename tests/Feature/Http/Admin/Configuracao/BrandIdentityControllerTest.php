@@ -18,7 +18,7 @@ describe('BrandIdentityController', function () {
             ->assertOk()
             ->assertInertia(fn ($page) => $page
                 ->component('Admin/Configuracao/BrandIdentity/Page')
-                ->where('brand.name', 'Casa Verde')
+                ->where('brand.name', config('app.name'))
                 ->where('brand.color_primary', '#2F7D18')
             );
     });

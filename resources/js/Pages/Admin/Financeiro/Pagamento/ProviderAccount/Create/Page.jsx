@@ -49,7 +49,7 @@ const PROVIDERS = {
                 items: [
                     "Acesse o link abaixo e faça login com a conta Mercado Pago da cooperativa (ou crie uma conta).",
                     "Vá em Suas integrações → Criar aplicação.",
-                    "Dê um nome (ex.: Casa Verde CRM) e selecione o produto \"Pagamentos online\" → \"CheckoutAPI / Pagamentos\".",
+                    "Dê um nome (ex.: CRM da empresa) e selecione o produto \"Pagamentos online\" → \"CheckoutAPI / Pagamentos\".",
                 ],
             },
             {

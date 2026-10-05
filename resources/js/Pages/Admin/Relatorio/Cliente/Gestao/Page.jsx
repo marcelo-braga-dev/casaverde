@@ -32,8 +32,10 @@ import {
     IconFileInvoice,
     IconLeaf,
 } from '@tabler/icons-react';
+import useBrandName from '@/Hooks/useBrandName';
 
 export default function Page({ report, filters = {} }) {
+    const brandName = useBrandName();
     const { data, setData, get, processing } = useForm({
         client_id: filters.client_id || report?.selectedClient?.id || '',
         start_date: filters.start_date || '',
@@ -85,7 +87,7 @@ export default function Page({ report, filters = {} }) {
                         </Typography>
 
                         <Typography sx={{ mt: 0.7, color: 'rgba(255,255,255,0.74)' }}>
-                            Compare a fatura cheia da concessionária com o valor pago usando Casa Verde.
+                            Compare a fatura cheia da concessionária com o valor pago usando {brandName}.
                         </Typography>
                     </CardContent>
                 </Card>
@@ -195,7 +197,7 @@ export default function Page({ report, filters = {} }) {
 
                     <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                         <ReportMetricCard
-                            title="Economia Casa Verde"
+                            title={`Economia ${brandName}`}
                             value={formatMoney(summary.net_savings)}
                             helper={`${formatPercent(summary.average_discount_percent)} de economia média`}
                             icon={IconDiscount}
@@ -207,7 +209,7 @@ export default function Page({ report, filters = {} }) {
                         <ReportMetricCard
                             title="Valor pago"
                             value={formatMoney(summary.final_amount)}
-                            helper="Total cobrado pela Casa Verde"
+                            helper={`Total cobrado pela ${brandName}`}
                             icon={IconCash}
                             color="primary.main"
                         />
@@ -257,8 +259,8 @@ export default function Page({ report, filters = {} }) {
                 <Grid container spacing={3}>
                     <Grid size={{ xs: 12, lg: 8 }}>
                         <ReportChartCard
-                            title="Fatura cheia x Casa Verde"
-                            subtitle="Mostra quanto o cliente pagaria para a concessionária, o valor com Casa Verde e a economia obtida."
+                            title={`Fatura cheia x ${brandName}`}
+                            subtitle={`Mostra quanto o cliente pagaria para a concessionária, o valor com ${brandName} e a economia obtida.`}
                             height={390}
                         >
                             <ClientBillEconomyChart data={report?.billEconomyEvolution || []} />
@@ -302,7 +304,7 @@ export default function Page({ report, filters = {} }) {
                                     <TableCell>Referência</TableCell>
                                     <TableCell>Fatura cheia</TableCell>
                                     <TableCell>Desconto</TableCell>
-                                    <TableCell>Valor Casa Verde</TableCell>
+                                    <TableCell>Valor {brandName}</TableCell>
                                     <TableCell>Status</TableCell>
                                     <TableCell>Vencimento</TableCell>
                                 </TableRow>

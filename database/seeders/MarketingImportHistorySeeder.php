@@ -40,7 +40,7 @@ class MarketingImportHistorySeeder extends Seeder
         $today = CarbonImmutable::today();
         $since = $today->subDays(self::DAYS);
         $adminId = User::where('role_id', RoleUser::$ADMIN)->orderBy('id')->value('id');
-        $imapHost = app(SystemSettingService::class)->get('imap_default_host') ?: 'mail.casaverde.com.br';
+        $imapHost = app(SystemSettingService::class)->get('imap_default_host') ?: 'mail.suaempresa.com.br';
 
         DB::transaction(function () use ($today, $since, $adminId, $imapHost) {
             $settings = $this->ensureMailboxes($adminId, $imapHost, $today);
@@ -141,7 +141,7 @@ class MarketingImportHistorySeeder extends Seeder
                 continue;
             }
 
-            $email = 'faturas.'.strtolower($client->client_code).'@casaverde.demo';
+            $email = 'faturas.'.strtolower($client->client_code).'@faturas.demo';
             $account = ImportEmailAccount::create([
                 'email' => $email,
                 'label' => 'Faturas · '.$client->display_name,

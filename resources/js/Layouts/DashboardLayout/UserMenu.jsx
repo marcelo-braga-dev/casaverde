@@ -1,8 +1,10 @@
 import { Avatar, Box, Menu, MenuItem, Stack, Typography } from '@mui/material';
 import { router } from '@inertiajs/react';
 import { useState } from 'react';
+import useBrandName from '@/Hooks/useBrandName';
 
 export default function UserMenu({ user }) {
+    const brandName = useBrandName();
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
 
@@ -57,7 +59,7 @@ export default function UserMenu({ user }) {
                         {user?.name || 'Usuário'}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
-                        Casa Verde
+                        {brandName}
                     </Typography>
                 </Box>
             </Stack>

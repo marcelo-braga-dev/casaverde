@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 
 import Layout from '@/Layouts/UserLayout/Layout.jsx';
+import useBrandName from '@/Hooks/useBrandName';
 
 function MetricCard({ title, value, subtitle }) {
     return (
@@ -40,6 +41,7 @@ function MetricCard({ title, value, subtitle }) {
 }
 
 export default function ExecutiveCockpitPage() {
+    const brandName = useBrandName();
     const { props } = usePage();
     const { cockpit } = props;
 
@@ -65,7 +67,7 @@ export default function ExecutiveCockpitPage() {
                         </Typography>
 
                         <Typography color="text.secondary">
-                            Visão estratégica, operacional e financeira da Casa Verde.
+                            Visão estratégica, operacional e financeira da {brandName}.
                         </Typography>
                     </Box>
 

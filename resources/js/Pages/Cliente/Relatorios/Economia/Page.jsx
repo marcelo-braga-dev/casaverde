@@ -38,6 +38,7 @@ import {
     IconTableExport,
     IconTrendingUp,
 } from '@tabler/icons-react';
+import useBrandName from '@/Hooks/useBrandName';
 
 function safeRoute(n, p) { try { return route(n, p); } catch { return '#'; } }
 
@@ -79,6 +80,7 @@ function MonthSelector({ value, onChange }) {
 }
 
 export default function Page({ report }) {
+    const brandName = useBrandName();
     const { data, setData } = useForm({
         year:  report?.filters?.year  ?? new Date().getFullYear(),
         month: report?.filters?.month ?? '',
@@ -116,7 +118,7 @@ export default function Page({ report }) {
             titlePage="Relatório de Economia"
             menu="cliente-relatorios"
             subMenu="cliente-relatorio-economia"
-            subtitle="Compare o que pagaria à concessionária com o que paga com a Casa Verde."
+            subtitle={`Compare o que pagaria à concessionária com o que paga com a ${brandName}.`}
             breadcrumbs={[
                 { label: 'Cliente' },
                 { label: 'Relatórios' },
@@ -239,7 +241,7 @@ export default function Page({ report }) {
                         <Grid container spacing={2}>
                             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                                 <ReportMetricCard
-                                    title="Sem Casa Verde pagaria"
+                                    title={`Sem ${brandName} pagaria`}
                                     value={formatMoney(summary.total_original_amount ?? 0)}
                                     helper="Valor cheio das faturas"
                                     icon={IconFileInvoice}
@@ -248,9 +250,9 @@ export default function Page({ report }) {
                             </Grid>
                             <Grid size={{ xs: 12, sm: 6, md: 3 }}>
                                 <ReportMetricCard
-                                    title="Com Casa Verde você paga"
+                                    title={`Com ${brandName} você paga`}
                                     value={formatMoney(summary.total_final_amount ?? 0)}
-                                    helper="Valor com desconto Casa Verde"
+                                    helper={`Valor com desconto ${brandName}`}
                                     icon={IconLeaf}
                                     color="primary.main"
                                 />
@@ -279,7 +281,7 @@ export default function Page({ report }) {
                         <Grid container spacing={3}>
                             <Grid size={{ xs: 12 }}>
                                 <ReportChartCard
-                                    title="Comparativo Mensal: Concessionária × Casa Verde"
+                                    title={`Comparativo Mensal: Concessionária × ${brandName}`}
                                     subtitle="Barras: valor original e valor com desconto. Linha: sua economia."
                                     height={320}
                                 >
@@ -341,7 +343,7 @@ export default function Page({ report }) {
                                                     <Stack direction="row" justifyContent="space-between" alignItems="center">
                                                         <Stack>
                                                             <Typography variant="body2" sx={{ fontWeight: 700, color: 'success.main' }}>
-                                                                Desconto Casa Verde
+                                                                Desconto {brandName}
                                                             </Typography>
                                                             <Typography variant="caption" color="text.secondary">Desconto contratual</Typography>
                                                         </Stack>
@@ -361,7 +363,7 @@ export default function Page({ report }) {
 
                                                     <Stack direction="row" justifyContent="space-between" alignItems="center">
                                                         <Stack>
-                                                            <Typography variant="subtitle2" sx={{ fontWeight: 900 }}>Valor Casa Verde</Typography>
+                                                            <Typography variant="subtitle2" sx={{ fontWeight: 900 }}>Valor {brandName}</Typography>
                                                             <Typography variant="caption" color="text.secondary">O que você paga</Typography>
                                                         </Stack>
                                                         <Typography variant="h6" sx={{ fontWeight: 950, color: 'primary.main', letterSpacing: '-0.04em' }}>
@@ -487,7 +489,7 @@ export default function Page({ report }) {
                                                 <TableCell align="right">kWh</TableCell>
                                                 <TableCell align="right" sx={{ color: 'warning.dark', fontWeight: 700 }}>Fatura Concessionária</TableCell>
                                                 <TableCell align="right">Desconto</TableCell>
-                                                <TableCell align="right" sx={{ color: 'primary.main', fontWeight: 700 }}>Valor Casa Verde</TableCell>
+                                                <TableCell align="right" sx={{ color: 'primary.main', fontWeight: 700 }}>Valor {brandName}</TableCell>
                                                 <TableCell align="right" sx={{ color: 'success.main', fontWeight: 700 }}>Economia</TableCell>
                                                 <TableCell>Status</TableCell>
                                                 <TableCell align="right" />
@@ -565,7 +567,7 @@ export default function Page({ report }) {
                                         <Grid container spacing={2}>
                                             {[
                                                 { label: 'Total concessionária', value: formatMoney(summary.total_original_amount ?? 0), highlight: false },
-                                                { label: 'Total Casa Verde', value: formatMoney(summary.total_final_amount ?? 0), highlight: true },
+                                                { label: `Total ${brandName}`, value: formatMoney(summary.total_final_amount ?? 0), highlight: true },
                                                 { label: 'Total economizado', value: formatMoney(summary.total_savings ?? 0), highlight: true },
                                                 { label: 'Economia média/mês', value: formatMoney(summary.avg_savings_month ?? 0), highlight: false },
                                             ].map(item => (
@@ -590,7 +592,7 @@ export default function Page({ report }) {
                                                 {formatMoney(allTime.total_savings ?? 0)}
                                             </Typography>
                                             <Typography sx={{ color: 'rgba(255,255,255,0.72)', mt: 0.4 }}>
-                                                Economizados no total desde que você é cliente Casa Verde
+                                                Economizados no total desde que você é cliente {brandName}
                                             </Typography>
                                             <Typography sx={{ color: '#6ee7b7', fontWeight: 700, mt: 1, fontSize: 14 }}>
                                                 Comparado aos {formatMoney(allTime.total_original ?? 0)} que você pagaria à concessionária.

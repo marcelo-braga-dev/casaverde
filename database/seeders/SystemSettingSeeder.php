@@ -21,7 +21,7 @@ class SystemSettingSeeder extends Seeder
         $service->set('producer_proposal_consumer_discount_percentage', 20, 'float');
 
         // Configurações IMAP padrão para importação de faturas
-        $service->set('imap_default_host', 'mail.casaverde.com.br', 'string');
+        $service->set('imap_default_host', 'mail.suaempresa.com.br', 'string');
         $service->set('imap_default_port', 993, 'integer');
         $service->set('imap_default_encryption', 'ssl', 'string');
     }

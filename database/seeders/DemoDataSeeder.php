@@ -22,6 +22,7 @@ use App\Models\Users\UserContact;
 use App\Models\Usina\UsinaBlock;
 use App\Models\Usina\UsinaGenerationRecord;
 use App\Models\Usina\UsinaSolar;
+use App\Services\Config\SystemSettingService;
 use App\src\Roles\RoleUser;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
@@ -433,7 +434,7 @@ class DemoDataSeeder extends Seeder
                 'allocated_energy_kwh' => $link['kwh'],
                 'discount_percentage' => $link['desc'],
                 'status' => ClientUsinaLinkStatus::Active->value,
-                'notes' => 'Vínculo ativo via contrato Casa Verde',
+                'notes' => 'Vínculo ativo via contrato '.app(SystemSettingService::class)->brandName(),
             ]);
 
             // Atualiza energia alocada na usina

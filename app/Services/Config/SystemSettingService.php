@@ -28,6 +28,12 @@ class SystemSettingService
         };
     }
 
+    // Nome exibido em telas, PDFs e mensagens: o da Identidade Visual, senão o APP_NAME.
+    public function brandName(): string
+    {
+        return (string) ($this->get('brand_name') ?: config('app.name', 'Casa Verde'));
+    }
+
     public function set(
         string $key,
         mixed $value,

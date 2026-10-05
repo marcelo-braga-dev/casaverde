@@ -7,8 +7,10 @@ import consultorMenu from '@/Components/Navigation/consultorMenu';
 import clienteMenu from '@/Components/Navigation/clienteMenu';
 import produtorMenu from '@/Components/Navigation/produtorMenu';
 import AppSidebarMenuGroup from './AppSidebarMenuGroup';
+import useBrandName from '@/Hooks/useBrandName';
 
 export default function AppMobileDrawer() {
+    const brandName = useBrandName();
     const { mobileOpen, closeMobileDrawer } = useMenuDrawer();
     const { auth } = usePage().props;
     const roleId = auth?.user?.role_id;
@@ -58,7 +60,7 @@ export default function AppMobileDrawer() {
 
                     <Box>
                         <Typography variant="h6" sx={{ fontWeight: 950, lineHeight: 1 }}>
-                            Casa Verde
+                            {brandName}
                         </Typography>
                         <Typography
                             variant="caption"

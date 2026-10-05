@@ -2,9 +2,10 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Cobrança Casa Verde</title>
+    <title>Cobrança {{ app(\App\Services\Config\SystemSettingService::class)->brandName() }}</title>
 </head>
 <body style="font-family: Arial, sans-serif; color: #222; line-height: 1.5;">
+@php $brandName = app(\App\Services\Config\SystemSettingService::class)->brandName(); @endphp
     <h2>
         @if ($kind === 'reminder')
             Sua cobrança vence em breve
@@ -56,7 +57,7 @@
     @endif
 
     <p style="color: #666; font-size: 13px;">
-        Se o pagamento já foi feito, desconsidere este e-mail. Em caso de dúvida, fale com seu consultor Casa Verde.
+        Se o pagamento já foi feito, desconsidere este e-mail. Em caso de dúvida, fale com seu consultor {{ $brandName }}.
     </p>
 </body>
 </html>

@@ -52,6 +52,7 @@ import {
     IconX,
 } from "@tabler/icons-react";
 import onlyDigits from "@/Utils/onlyDigits";
+import useBrandName from '@/Hooks/useBrandName';
 
 /* ─── helpers ─────────────────────────────────────────────────────────── */
 const isInvalid = (v) => v === null || v === undefined || String(v).trim() === "" || v === "-";
@@ -158,6 +159,7 @@ const BreakdownTable = ({ title, description, items, kwhTotal, amountTotal, show
 
 /* ─── Page ────────────────────────────────────────────────────────────── */
 const Page = ({ bill, suggestedUsinaId, energyBreakdown, reviewStatuses = [], usinas = [], consumerUnits = [] }) => {
+    const brandName = useBrandName();
     const { flash } = usePage().props;
     const [tab, setTab] = useState("dados");
     const [deleteOpen, setDeleteOpen] = useState(false);
@@ -435,7 +437,7 @@ const Page = ({ bill, suggestedUsinaId, energyBreakdown, reviewStatuses = [], us
                                     <Box sx={{ mb: 1 }}>
                                         <Typography variant="body2" fontWeight={800} sx={{ mb: 0.25 }}>Como chegamos no Valor da Fatura ao Cliente</Typography>
                                         <Typography variant="caption" color="text.secondary" sx={{ display: "block", mb: 1 }}>
-                                            A margem de desconto é a <strong>comissão da Casa Verde</strong> e é sempre <strong>subtraída</strong> do Consumo Injetado — nunca somada — para chegar no valor cobrado do cliente.
+                                            A margem de desconto é a <strong>comissão da {brandName}</strong> e é sempre <strong>subtraída</strong> do Consumo Injetado — nunca somada — para chegar no valor cobrado do cliente.
                                         </Typography>
                                         <Paper variant="outlined" sx={{ p: 1.5, borderRadius: 2 }}>
                                             <Stack direction="row" alignItems="center" justifyContent="center" spacing={1.5} flexWrap="wrap" sx={{ mb: 1.5 }}>

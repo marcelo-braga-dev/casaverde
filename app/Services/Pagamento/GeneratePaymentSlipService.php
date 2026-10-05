@@ -11,6 +11,7 @@ use App\Models\Pagamento\PaymentSlip;
 use App\Models\Users\UserAddress;
 use App\Services\Cliente\ClientChargeNotificationService;
 use App\Services\Cliente\ClientContactEmailResolver;
+use App\Services\Config\SystemSettingService;
 use App\Support\DocumentValidator;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Cache;
@@ -25,6 +26,7 @@ class GeneratePaymentSlipService
         private readonly PaymentAlertService $paymentAlerts,
         private readonly ClientContactEmailResolver $emailResolver,
         private readonly ClientChargeNotificationService $clientNotifications,
+        private readonly SystemSettingService $settings,
     ) {}
 
     public function handle(CustomerCharge $charge, string $provider = 'mercado_pago', string $paymentMethod = 'pix'): PaymentSlip
@@ -104,7 +106,7 @@ class GeneratePaymentSlipService
             externalId: 'charge-'.$charge->id,
             amount: (float) $charge->final_amount,
             dueDate: $charge->due_date?->format('Y-m-d'),
-            description: 'Cobrança Casa Verde '.($charge->reference_label ?? '#'.$charge->id),
+            description: 'Cobrança '.$this->settings->brandName().' '.($charge->reference_label ?? '#'.$charge->id),
             paymentMethod: $paymentMethod,
             customer: $customer,
             metadata: [

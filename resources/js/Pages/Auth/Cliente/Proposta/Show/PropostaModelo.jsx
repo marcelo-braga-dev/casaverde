@@ -9,7 +9,7 @@ import {
 import convertFloatToMoney from "@/Utils/Datas/convertFloatToMoney.js";
 
 // Componente do PDF
-const PropostaModelo = ({dados, imagemGrafico}) => {
+const PropostaModelo = ({dados, imagemGrafico, brandName}) => {
 
     const valorConsorcio = (valor) => {
         return valor * (1 - dados?.discount_percent / 100)
@@ -110,7 +110,7 @@ const PropostaModelo = ({dados, imagemGrafico}) => {
                     <View style={styles.tableRow}>
                         <Text style={styles.tableColHeader}></Text>
                         <Text style={styles.tableColHeader}>Na Concessionária</Text>
-                        <Text style={styles.tableColHeader}>Na Casa Verde</Text>
+                        <Text style={styles.tableColHeader}>Na {brandName}</Text>
                         <Text style={styles.tableColHeader}>Desconto Total</Text>
                     </View>
                     <View style={styles.tableRow}>

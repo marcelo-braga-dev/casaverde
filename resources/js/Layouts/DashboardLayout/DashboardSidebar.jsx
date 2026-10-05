@@ -7,8 +7,10 @@ import {
 import { usePage } from '@inertiajs/react';
 import menuItems from '@/Components/Navigation/menuItems';
 import SidebarSection from './SidebarSection';
+import useBrandName from '@/Hooks/useBrandName';
 
 export default function DashboardSidebar({ drawerWidth }) {
+    const brandName = useBrandName();
     const { auth } = usePage().props;
     const roleId = Number(auth?.user?.role_id);
 
@@ -82,7 +84,7 @@ export default function DashboardSidebar({ drawerWidth }) {
 
                         <Box>
                             <Typography variant="h6" sx={{ fontWeight: 900, lineHeight: 1 }}>
-                                Casa Verde
+                                {brandName}
                             </Typography>
                             <Typography
                                 variant="caption"

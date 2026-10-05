@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\WhatsApp\WhatsAppMessageTemplate;
+use App\Services\Config\SystemSettingService;
 use Illuminate\Database\Seeder;
 
 class WhatsAppMessageTemplateSeeder extends Seeder
@@ -19,6 +20,8 @@ class WhatsAppMessageTemplateSeeder extends Seeder
 
     private function templates(): array
     {
+        $brand = app(SystemSettingService::class)->brandName();
+
         return [
             [
                 'key' => 'falar_consultor',
@@ -32,7 +35,7 @@ class WhatsAppMessageTemplateSeeder extends Seeder
                 'key' => 'convite_ativacao',
                 'name' => 'Convite de ativação de cadastro',
                 'category' => 'Cadastro',
-                'message' => "Olá {{nome}}! 👋 Seu acesso à plataforma Casa Verde está pronto.\n\nPara criar sua senha e acessar sua área exclusiva, é só clicar no link abaixo:\n{{link_ativacao}}\n\nQualquer dúvida, estou à disposição!",
+                'message' => "Olá {{nome}}! 👋 Seu acesso à plataforma {$brand} está pronto.\n\nPara criar sua senha e acessar sua área exclusiva, é só clicar no link abaixo:\n{{link_ativacao}}\n\nQualquer dúvida, estou à disposição!",
                 'available_variables' => ['nome', 'link_ativacao'],
                 'is_active' => true,
             ],
@@ -80,7 +83,7 @@ class WhatsAppMessageTemplateSeeder extends Seeder
                 'key' => 'boas_vindas',
                 'name' => 'Boas-vindas / ativação de cadastro',
                 'category' => 'Cadastro',
-                'message' => "Olá {{nome}}! 🎉 Seja muito bem-vindo(a) à Casa Verde!\n\nSeu cadastro foi realizado com sucesso e agora você já pode acompanhar suas faturas, sua economia e muito mais direto pela plataforma.\n\nQualquer dúvida, conte com {{consultor_nome}} para te ajudar!",
+                'message' => "Olá {{nome}}! 🎉 Seja muito bem-vindo(a) à {$brand}!\n\nSeu cadastro foi realizado com sucesso e agora você já pode acompanhar suas faturas, sua economia e muito mais direto pela plataforma.\n\nQualquer dúvida, conte com {{consultor_nome}} para te ajudar!",
                 'available_variables' => ['nome', 'consultor_nome'],
                 'is_active' => true,
             ],

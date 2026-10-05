@@ -23,6 +23,7 @@ import {
     IconSolarPanel,
     IconUsers,
 } from '@tabler/icons-react';
+import useBrandName from '@/Hooks/useBrandName';
 
 function safeRoute(routeName) {
     try {
@@ -37,6 +38,7 @@ function safeRoute(routeName) {
 }
 
 export default function Page({ dashboard }) {
+    const brandName = useBrandName();
     const summary = dashboard?.summary || {};
     const quickReports = dashboard?.quickReports || [];
 
@@ -52,7 +54,7 @@ export default function Page({ dashboard }) {
             titlePage="Dashboard Admin"
             menu="dashboard"
             subMenu="admin-dashboard"
-            subtitle="Resumo rápido da operação Casa Verde."
+            subtitle={`Resumo rápido da operação ${brandName}.`}
             breadcrumbs={[
                 { label: 'Admin' },
                 { label: 'Dashboard' },
@@ -83,7 +85,7 @@ export default function Page({ dashboard }) {
                                         letterSpacing: '-0.05em',
                                     }}
                                 >
-                                    Visão Geral da Casa Verde
+                                    Visão Geral da {brandName}
                                 </Typography>
 
                                 <Typography

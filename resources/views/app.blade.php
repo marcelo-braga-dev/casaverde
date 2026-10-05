@@ -6,7 +6,7 @@
 
         @php
             $brandSettings = app(\App\Services\Config\SystemSettingService::class);
-            $brandName = $brandSettings->get('brand_name', config('app.name', 'Laravel'));
+            $brandName = $brandSettings->brandName();
             $brandFaviconPath = $brandSettings->get('brand_favicon_path');
             $brandFaviconUrl = $brandFaviconPath && \Illuminate\Support\Facades\Storage::disk('public')->exists($brandFaviconPath)
                 ? \Illuminate\Support\Facades\Storage::disk('public')->url($brandFaviconPath)

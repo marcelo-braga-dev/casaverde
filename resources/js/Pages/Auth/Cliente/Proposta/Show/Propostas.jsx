@@ -7,12 +7,14 @@ import VisualizadorPDF from './VisualizadorPDF';
 import {IconDownload, IconEdit} from "@tabler/icons-react";
 import DescontosGrafico from "@/Pages/Auth/Cliente/Proposta/Show/Graficos/DescontosGrafico.jsx";
 import {Link, usePage} from "@inertiajs/react";
+import useBrandName from '@/Hooks/useBrandName';
 
 function PropostaBaixar({idProposta, dadosProposta}) {
+    const brandName = useBrandName();
     const [urlPdf, setUrlPdf] = useState()
     const [imagemGrafico, setImagemGrafico] = useState(null);
     const [dados, setDados] = useState([])
-    // Na demonstração a prévia é o PDF do servidor (modelo novo), não o modelo Casa Verde gerado no navegador.
+    // Na demonstração a prévia é o PDF do servidor (modelo novo), não o modelo antigo gerado no navegador.
     const isDemo = Boolean(usePage().props.demo?.enabled)
 
     useEffect(() => {
@@ -24,7 +26,7 @@ function PropostaBaixar({idProposta, dadosProposta}) {
     }, [imagemGrafico, isDemo]);
 
     const gerarPdfEEnviar = async (info) => {
-        const blob = await pdf(<PropostaPdf dados={dadosProposta} idProposta={idProposta} imagemGrafico={imagemGrafico} />).toBlob();
+        const blob = await pdf(<PropostaPdf dados={dadosProposta} idProposta={idProposta} imagemGrafico={imagemGrafico} brandName={brandName} />).toBlob();
 
         const formData = new FormData();
         formData.append('file', blob, 'proposta.pdf');

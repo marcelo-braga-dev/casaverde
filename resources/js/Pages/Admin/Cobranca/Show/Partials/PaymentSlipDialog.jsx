@@ -31,6 +31,7 @@ import {
     IconQrcode,
     IconX,
 } from "@tabler/icons-react";
+import useBrandName from '@/Hooks/useBrandName';
 
 const providerLabels = {
     mercado_pago: "Mercado Pago",
@@ -42,6 +43,7 @@ const paymentMethodLabels = {
 };
 
 export default function PaymentSlipDialog({ open, payment, onClose, whatsapp }) {
+    const brandName = useBrandName();
     if (!payment) return null;
 
     const expired = isSlipExpired(payment);
@@ -165,7 +167,7 @@ export default function PaymentSlipDialog({ open, payment, onClose, whatsapp }) 
                                 startIcon={<IconFileText size={16} />}
                                 sx={{ fontWeight: 700, bgcolor: "var(--cv-primary-darker)", "&:hover": { bgcolor: "var(--cv-primary-darker)", filter: "brightness(0.9)" } }}
                             >
-                                Baixar boleto (PDF Casa Verde)
+                                Baixar boleto (PDF {brandName})
                             </Button>
                         )}
 

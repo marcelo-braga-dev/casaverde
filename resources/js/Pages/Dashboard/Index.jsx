@@ -23,6 +23,7 @@ import RevenueAreaChart from '@/Components/Charts/RevenueAreaChart';
 import ProposalStatusChart from '@/Components/Charts/ProposalStatusChart';
 import EnergyGenerationChart from '@/Components/Charts/EnergyGenerationChart';
 import formatCurrency from '@/Utils/formatCurrency';
+import useBrandName from '@/Hooks/useBrandName';
 
 export default function DashboardIndex({
                                            metrics = {},
@@ -31,6 +32,7 @@ export default function DashboardIndex({
                                            energyChart = [],
                                            recentBills = [],
                                        }) {
+    const brandName = useBrandName();
     const cards = [
         {
             title: 'Clientes ativos',
@@ -88,9 +90,9 @@ export default function DashboardIndex({
     return (
         <AppShell
             title="Dashboard"
-            subtitle="Visão executiva da operação Casa Verde."
+            subtitle={`Visão executiva da operação ${brandName}.`}
             breadcrumbs={[
-                { label: 'Casa Verde' },
+                { label: brandName },
                 { label: 'Dashboard' },
             ]}
             actions={
@@ -155,7 +157,7 @@ export default function DashboardIndex({
                                     color: 'rgba(255,255,255,0.72)',
                                 }}
                             >
-                                Casa Verde OS
+                                {brandName} OS
                             </Typography>
                         </Stack>
 

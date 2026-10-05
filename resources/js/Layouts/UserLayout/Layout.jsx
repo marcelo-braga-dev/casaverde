@@ -3,6 +3,7 @@ import { Head } from '@inertiajs/react';
 import { SnackbarProvider } from '@/Contexts/Alerts/SnackbarProvider.jsx';
 import { useMenuDrawer } from '@/Contexts/Drawer/DrawerContext.jsx';
 import AppShell from '@/Layouts/AppShell/AppShell';
+import useBrandName from '@/Hooks/useBrandName';
 
 const Layout = ({
                     titlePage,
@@ -13,6 +14,7 @@ const Layout = ({
                     actions,
                     breadcrumbs = [],
                 }) => {
+    const brandName = useBrandName();
 
     const { setMenuDrawer } = useMenuDrawer();
 
@@ -39,7 +41,7 @@ const Layout = ({
                     breadcrumbs.length
                         ? breadcrumbs
                         : [
-                            { label: capitalizeWords(menu || 'Casa Verde') },
+                            { label: capitalizeWords(menu || brandName) },
                             { label: capitalizeWords(titlePage || 'Página') },
                         ]
                 }

@@ -3,6 +3,7 @@
 namespace App\Exports\Cliente;
 
 use App\Services\Cliente\Relatorio\ClienteEconomiaRelatorioService;
+use App\Services\Config\SystemSettingService;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -29,7 +30,7 @@ class ClienteEconomiaExport implements FromArray, ShouldAutoSize, WithHeadings, 
             'Consumo (kWh)',
             'Fatura Concessionária (R$)',
             'Desconto (R$)',
-            'Valor Casa Verde (R$)',
+            'Valor '.app(SystemSettingService::class)->brandName().' (R$)',
             'Economia no Mês (R$)',
             'Status',
             'Pago em',

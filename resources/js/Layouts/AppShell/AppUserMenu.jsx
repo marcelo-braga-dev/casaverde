@@ -2,10 +2,12 @@ import { Avatar, Box, Divider, ListItemIcon, Menu, MenuItem, Stack, Typography }
 import { Link, router } from '@inertiajs/react';
 import { IconLogout, IconSettings, IconUser } from '@tabler/icons-react';
 import { useState } from 'react';
+import useBrandName from '@/Hooks/useBrandName';
 
 function safeRoute(n) { try { return route(n); } catch { return '#'; } }
 
 export default function AppUserMenu({ user }) {
+    const brandName = useBrandName();
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
 
@@ -56,7 +58,7 @@ export default function AppUserMenu({ user }) {
                         {user?.name || 'Usuário'}
                     </Typography>
                     <Typography variant="caption" color="text.secondary" sx={{ lineHeight: 1 }}>
-                        {user?.role_name || 'Casa Verde'}
+                        {user?.role_name || brandName}
                     </Typography>
                 </Box>
             </Stack>

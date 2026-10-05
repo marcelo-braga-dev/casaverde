@@ -195,7 +195,7 @@ function EmailFormDialog({ open, onClose, editTarget }) {
                     <TextField
                         fullWidth size="small" label="Domínio do Webmail (Roundcube)"
                         value={form.data.webmail_url} onChange={e => form.setData('webmail_url', e.target.value)}
-                        placeholder="webmail.casaverde.com.br"
+                        placeholder="webmail.suaempresa.com.br"
                         helperText="Usado pelo botão 'Abrir Roundcube' na tabela de emails."
                     />
 
@@ -615,8 +615,8 @@ export default function Page({ settings, emails = [], institutionalEmails = [], 
                                                 value={imapForm.data.imap_default_host}
                                                 onChange={e => imapForm.setData('imap_default_host', e.target.value)}
                                                 error={!!imapForm.errors.imap_default_host}
-                                                helperText={imapForm.errors.imap_default_host ?? 'Ex: mail.casaverde.com.br'}
-                                                placeholder="mail.casaverde.com.br"
+                                                helperText={imapForm.errors.imap_default_host ?? 'Ex: mail.suaempresa.com.br'}
+                                                placeholder="mail.suaempresa.com.br"
                                             />
                                             <Stack direction="row" gap={1.5}>
                                                 <TextField
@@ -700,8 +700,8 @@ export default function Page({ settings, emails = [], institutionalEmails = [], 
                                                 value={cpanelForm.data.cpanel_email_domain}
                                                 onChange={e => cpanelForm.setData('cpanel_email_domain', e.target.value)}
                                                 error={!!cpanelForm.errors.cpanel_email_domain}
-                                                helperText={cpanelForm.errors.cpanel_email_domain ?? 'Domínio usado para criar as contas de email via API (Ex: casaverde.com.br)'}
-                                                placeholder="casaverde.com.br"
+                                                helperText={cpanelForm.errors.cpanel_email_domain ?? 'Domínio usado para criar as contas de email via API (Ex: suaempresa.com.br)'}
+                                                placeholder="suaempresa.com.br"
                                             />
 
                                             <TextField
@@ -718,7 +718,7 @@ export default function Page({ settings, emails = [], institutionalEmails = [], 
                                                 onChange={e => cpanelForm.setData('cpanel_webmail_domain', e.target.value)}
                                                 error={!!cpanelForm.errors.cpanel_webmail_domain}
                                                 helperText={cpanelForm.errors.cpanel_webmail_domain ?? "Usado pelo botão 'Abrir Roundcube' nas contas criadas via cPanel."}
-                                                placeholder="webmail.casaverde.com.br"
+                                                placeholder="webmail.suaempresa.com.br"
                                             />
 
                                             <PasswordField

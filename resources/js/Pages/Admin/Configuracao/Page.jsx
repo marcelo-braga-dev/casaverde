@@ -23,6 +23,7 @@ import {
     IconSolarPanel,
     IconUsers,
 } from '@tabler/icons-react';
+import useBrandName from '@/Hooks/useBrandName';
 
 function safeRoute(n) { try { return route(n); } catch { return '#'; } }
 
@@ -70,6 +71,7 @@ function SectionCard({ icon: Icon, color, title, description, children }) {
 }
 
 export default function Page({ settings }) {
+    const brandName = useBrandName();
     const { flash } = usePage().props;
 
     const { data, setData, put, processing, errors } = useForm({
@@ -210,7 +212,7 @@ export default function Page({ settings }) {
                                             </Typography>
                                             <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.65 }}>
                                                 Ao cadastrar um novo produtor, o sistema cria automaticamente uma regra de taxa de administração com este percentual.
-                                                Esta taxa representa a remuneração da Casa Verde pela gestão e operação da energia gerada.
+                                                Esta taxa representa a remuneração da {brandName} pela gestão e operação da energia gerada.
                                             </Typography>
                                             <Typography variant="body2" sx={{ mt: 1, color: 'primary.main', fontWeight: 700 }}>
                                                 Taxa atual: {data.default_producer_fee_percentage}% sobre o valor operado

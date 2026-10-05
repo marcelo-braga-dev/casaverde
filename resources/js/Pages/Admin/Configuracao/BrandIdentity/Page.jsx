@@ -223,7 +223,7 @@ export default function Page({ brand }) {
     const { flash } = usePage().props;
 
     const { data, setData, post, processing, errors } = useForm({
-        name: brand?.name ?? 'Casa Verde',
+        name: brand?.name ?? '',
         color_primary: brand?.color_primary ?? '#2F7D18',
         color_secondary: brand?.color_secondary ?? '#4F9A2A',
         color_sidebar: brand?.color_sidebar ?? '',

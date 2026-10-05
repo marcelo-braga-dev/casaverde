@@ -33,6 +33,7 @@ use App\Models\Users\UserContact;
 use App\Models\Usina\UsinaBlock;
 use App\Models\Usina\UsinaGenerationRecord;
 use App\Models\Usina\UsinaSolar;
+use App\Services\Config\SystemSettingService;
 use App\src\Roles\RoleUser;
 use Carbon\CarbonImmutable;
 use Database\Seeders\Support\DemoPix;
@@ -1010,7 +1011,7 @@ class MarketingDemoSeeder extends Seeder
             ['Economia menor que o esperado', 'financeiro', 'alta', 'em_atendimento', 'No relatório de economia o valor ficou abaixo do que foi apresentado na proposta.', null],
             ['Erro ao acessar o portal pelo celular', 'tecnico', 'urgente', 'novo', 'A página fica em branco ao abrir pelo celular.', null],
             ['Pix não foi reconhecido', 'financeiro', 'urgente', 'resolvido', 'Paguei pelo Pix ontem e a cobrança ainda aparece em aberto.', 'O pagamento foi confirmado pelo banco hoje cedo e a cobrança já consta como paga.'],
-            ['Mudança de titularidade da conta', 'contrato', 'normal', 'novo', 'Vendi o imóvel e o novo proprietário quer continuar com a Casa Verde.', null],
+            ['Mudança de titularidade da conta', 'contrato', 'normal', 'novo', 'Vendi o imóvel e o novo proprietário quer continuar com a '.app(SystemSettingService::class)->brandName().'.', null],
             ['Informações sobre a usina', 'usina', 'baixa', 'fechado', 'Gostaria de saber onde fica a usina que gera minha energia.', 'Sua energia vem da Usina Solar Bela Vista, em Castro (PR).'],
             ['Desconto não aplicado na cobrança', 'financeiro', 'alta', 'resolvido', 'Acho que o desconto de 20% não entrou na última cobrança.', 'Conferimos: o desconto foi aplicado sobre o consumo compensado. Enviamos o detalhamento.'],
         ];

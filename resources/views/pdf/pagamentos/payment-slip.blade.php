@@ -420,6 +420,7 @@
 </head>
 
 <body>
+@php $brandName = app(\App\Services\Config\SystemSettingService::class)->brandName(); @endphp
 
 @php
     $statusMap = [
@@ -442,11 +443,11 @@
         <div class="hero-top">
             @if(! empty($logoImage))
                 <span class="brand-logo-wrap">
-                    <img src="{{ $logoImage }}" alt="Casa Verde Energia" class="brand-logo">
+                    <img src="{{ $logoImage }}" alt="{{ $brandName }}" class="brand-logo">
                 </span>
-                <span class="wordmark logo-caption">Casa<span>Verde</span></span>
+                <span class="wordmark logo-caption">{{ $brandName }}</span>
             @else
-                <span class="wordmark">Casa<span>Verde</span> Energia</span>
+                <span class="wordmark">{{ $brandName }}</span>
             @endif
             <span class="status-pill" style="background: {{ $statusInfo['bg'] }}; color: {{ $statusInfo['color'] }};">
                 {{ $statusInfo['label'] }}
@@ -553,13 +554,13 @@
 
     <div class="footer">
         <div class="footer-note">
-            Este documento é um recibo de cobrança emitido pela Casa Verde Energia com base nos dados oficiais
+            Este documento é um recibo de cobrança emitido pela {{ $brandName }} com base nos dados oficiais
             fornecidos pelo Mercado Pago (arranjo bancário Bradesco). Não substitui a ficha de compensação bancária
             oficial; em caso de qualquer divergência, prevalecem o código de barras e a linha digitável acima.
         </div>
         <div class="footer-meta">
             <span class="footer-meta-col">Emitido em {{ now()->format('d/m/Y \à\s H:i') }}</span>
-            <span class="footer-meta-col right">Casa Verde Energia · suporte@casaverde.coop.br</span>
+            <span class="footer-meta-col right">{{ $brandName }}@unless(config('demo.enabled')) · suporte@casaverde.coop.br @endunless</span>
         </div>
     </div>
 

@@ -406,6 +406,7 @@
 </head>
 
 <body>
+@php $brandName = app(\App\Services\Config\SystemSettingService::class)->brandName(); @endphp
 
 @php
 
@@ -446,7 +447,7 @@
 
             <div class="proposal-subtitle">
                 Proposta personalizada de redução de custos
-                com energia elétrica através da Casa Verde Energia.
+                com energia elétrica através da {{ $brandName }}.
             </div>
 
         </div>
@@ -629,7 +630,7 @@
 
                 <div class="highlight-description">
                     Economia projetada anual com energia solar
-                    através da Casa Verde Energia.
+                    através da {{ $brandName }}.
                 </div>
 
             </div>
@@ -652,7 +653,7 @@
                 <tr>
                     <th>Período</th>
                     <th>Concessionária</th>
-                    <th>Casa Verde</th>
+                    <th>{{ $brandName }}</th>
                     <th>Economia</th>
                 </tr>
                 </thead>
@@ -718,7 +719,7 @@
     <div class="footer">
 
         <strong>
-            Casa Verde Energia
+            {{ $brandName }}
         </strong>
 
         <br>
@@ -755,7 +756,7 @@
         >
 
             <div class="signature-line">
-                Casa Verde Energia
+                {{ $brandName }}
             </div>
 
             <div class="text-muted">

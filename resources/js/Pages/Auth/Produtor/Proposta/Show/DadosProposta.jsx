@@ -22,7 +22,7 @@ const fmtDate = v => {
 
 const DadosProposta = ({proposal, investmentSummary}) => {
     const { demo, brand } = usePage().props;
-    const empresa = demo?.enabled ? (brand?.name || 'A empresa') : 'A Casa Verde';
+    const empresa = brand?.name ? `A ${brand.name}` : 'A empresa';
     const producer = proposal?.producer_profile;
     const contacts = producer?.contacts;
 

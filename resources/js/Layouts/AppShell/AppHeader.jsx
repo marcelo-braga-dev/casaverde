@@ -5,8 +5,10 @@ import { useMenuDrawer } from '@/Contexts/Drawer/DrawerContext';
 import AppUserMenu from './AppUserMenu';
 import AppBreadcrumbs from './AppBreadcrumbs';
 import AppHeaderShortcuts from './AppHeaderShortcuts';
+import useBrandName from '@/Hooks/useBrandName';
 
 export default function AppHeader({ title, subtitle, actions, breadcrumbs = [] }) {
+    const brandName = useBrandName();
     const { auth } = usePage().props;
     const { toggleMobileDrawer } = useMenuDrawer();
 
@@ -65,7 +67,7 @@ export default function AppHeader({ title, subtitle, actions, breadcrumbs = [] }
                                     lineHeight: 1.25,
                                 }}
                             >
-                                {title || 'Casa Verde'}
+                                {title || brandName}
                             </Typography>
 
                             {subtitle && (

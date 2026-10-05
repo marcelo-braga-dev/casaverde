@@ -3,8 +3,14 @@ import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid2";
 import {IconDownload, IconFileCheck} from "@tabler/icons-react";
 import {useRef, useState} from "react";
+import {usePage} from "@inertiajs/react";
 
 const ContratoUsina = () => {
+    const {demo, brand} = usePage().props;
+    // Na demonstração, a contratante é a marca configurada com dados fictícios (nunca a razão social real).
+    const locatario = demo?.enabled
+        ? {nome: `Consórcio de geração distribuída ${brand?.name ?? ''} (fictício)`, cnpj: '00.000.000/0001-00', sede: 'Rua Fictícia, 100 - sala 01, Centro, no Município de Demonstração, estado Paraná'}
+        : {nome: 'Consórcio de geração distribuída Casa Verde', cnpj: '59.960.782-001-53', sede: 'Av. Mandacaru, 4943 - sala 03, Jardim Munique, no Município de Maringá, estado Paraná'};
     const [contratado, setContratado] = useState({})
 
     const proposalRef = useRef(null);
@@ -60,9 +66,7 @@ const ContratoUsina = () => {
                         E, de outro lado:
                     </Typography>
                     <Typography marginBottom={2} marginInlineStart={4}>
-                        <b>Consórcio de geração distribuída Casa Verde</b>, regularmente inscrita no CNPJ/ME sob o n° 59.960.782-001-53, com sede na Av. Mandacaru, 4943 -
-                        sala
-                        03, Jardim Munique, no Município de Maringá, estado Paraná, neste ato representado nos termos do seu ato constitutivo <b>(“LOCATÁRIO”)</b>
+                        <b>{locatario.nome}</b>, regularmente inscrita no CNPJ/ME sob o n° {locatario.cnpj}, com sede na {locatario.sede}, neste ato representado nos termos do seu ato constitutivo <b>(“LOCATÁRIO”)</b>
                     </Typography>
                     <Typography marginBottom={2}>
                         <b>LOCADOR</b> e <b>LOCATÁRIO</b> doravante referidos isoladamente como “Parte” e, em conjunto, como “Partes”;
@@ -1084,7 +1088,7 @@ const ContratoUsina = () => {
                     </Typography>
                     <Typography marginBottom={4}>
                         ________________________________________________________________________________________________<br/>
-                        CONSÓRCIO DE GERAÇÃO DISTRIBUIDA CASA VERDE
+                        {locatario.nome.toUpperCase()}
                     </Typography>
                     <Typography marginBottom={2}>
                         <b>Testemunhas:</b>

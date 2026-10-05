@@ -45,6 +45,7 @@ import {
 } from '@tabler/icons-react';
 
 import { Head, router, useForm } from '@inertiajs/react';
+import useBrandName from '@/Hooks/useBrandName';
 
 const money = (value) =>
     Number(value || 0).toLocaleString('pt-BR', {
@@ -56,6 +57,7 @@ const number = (value) =>
     Number(value || 0).toLocaleString('pt-BR');
 
 export default function Page({ report, filters }) {
+    const brandName = useBrandName();
     const { data, setData, get, processing } = useForm({
         client_id: filters?.client_id || '',
         start_date: filters?.start_date || '',
@@ -207,7 +209,7 @@ export default function Page({ report, filters }) {
 
                     <Grid size={{ xs: 12, md: 3 }}>
                         <MetricCard
-                            title="Valor Casa Verde"
+                            title={`Valor ${brandName}`}
                             value={money(
                                 general.summary.final_amount
                             )}
@@ -261,7 +263,7 @@ export default function Page({ report, filters }) {
                                     <Bar
                                         dataKey="final_amount"
                                         fill="#2F7D18"
-                                        name="Casa Verde"
+                                        name={brandName}
                                     />
                                 </BarChart>
                             </ResponsiveContainer>
@@ -391,7 +393,7 @@ export default function Page({ report, filters }) {
                         </Grid>
 
                         <ChartCard
-                            title="Fatura Cheia x Casa Verde"
+                            title={`Fatura Cheia x ${brandName}`}
                             height={420}
                         >
                             <ResponsiveContainer>
@@ -425,7 +427,7 @@ export default function Page({ report, filters }) {
                                         dataKey="final_amount"
                                         fill="#2F7D1833"
                                         stroke="#2F7D18"
-                                        name="Casa Verde"
+                                        name={brandName}
                                     />
                                 </AreaChart>
                             </ResponsiveContainer>

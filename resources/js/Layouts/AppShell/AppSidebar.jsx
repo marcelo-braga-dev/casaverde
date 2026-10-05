@@ -10,6 +10,7 @@ import {
     IconChevronLeft,
     IconChevronRight,
     IconLeaf,
+    IconSolarPanel,
 } from '@tabler/icons-react';
 import { usePage } from '@inertiajs/react';
 import { useMenuDrawer } from '@/Contexts/Drawer/DrawerContext';
@@ -18,13 +19,14 @@ import consultorMenu from '@/Components/Navigation/consultorMenu';
 import clienteMenu from '@/Components/Navigation/clienteMenu';
 import produtorMenu from '@/Components/Navigation/produtorMenu';
 import AppSidebarMenuGroup from './AppSidebarMenuGroup';
+import useBrandName from '@/Hooks/useBrandName';
 
 export default function AppSidebar({ expandedWidth, collapsedWidth }) {
     const { collapsed, toggleCollapsed } = useMenuDrawer();
     const { auth, brand } = usePage().props;
     const roleId = auth?.user?.role_id;
-    const brandName = brand?.name || 'Casa Verde';
-    const brandLogoUrl = brand?.logo_url || '/storage/app/logotipo_casaverde.png';
+    const brandName = useBrandName();
+    const brandLogoUrl = brand?.logo_url || null;
     const menuItems =
         roleId === 2 ? consultorMenu :
         roleId === 3 ? produtorMenu  :
@@ -122,17 +124,21 @@ export default function AppSidebar({ expandedWidth, collapsedWidth }) {
                                 boxShadow: '0 10px 30px rgba(0,0,0,0.18)',
                             }}
                         >
-                            <Box
-                                component="img"
-                                src={brandLogoUrl}
-                                alt={brandName}
-                                sx={{
-                                    width: '100%',
-                                    height: '100%',
-                                    objectFit: 'cover',
-                                    borderRadius: '50%',
-                                }}
-                            />
+                            {brandLogoUrl ? (
+                                <Box
+                                    component="img"
+                                    src={brandLogoUrl}
+                                    alt={brandName}
+                                    sx={{
+                                        width: '100%',
+                                        height: '100%',
+                                        objectFit: 'cover',
+                                        borderRadius: '50%',
+                                    }}
+                                />
+                            ) : (
+                                <IconSolarPanel size={22} color="var(--cv-sidebar-fg)" />
+                            )}
                         </Box>
 
                         {!collapsed && (

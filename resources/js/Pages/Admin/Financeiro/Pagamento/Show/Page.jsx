@@ -41,6 +41,7 @@ import {
     IconRefresh,
     IconX,
 } from "@tabler/icons-react";
+import useBrandName from '@/Hooks/useBrandName';
 
 const statusConfig = {
     pending:   { label: "Pendente",   color: "warning",  bg: "#fffbeb", border: "#fde68a" },
@@ -150,6 +151,7 @@ function JsonBlock({ value, title }) {
 }
 
 export default function Page({ payment }) {
+    const brandName = useBrandName();
     const stCfg = statusConfig[payment.status] ?? { label: payment.status, color: "default", bg: "#f9fafb", border: "#e5e7eb" };
     const clientName = getClientName(payment);
     const methodLabel = paymentMethodLabels[payment.payment_method] || payment.payment_method || "—";
@@ -366,7 +368,7 @@ export default function Page({ payment }) {
                                                 startIcon={<IconFileText size={16} />}
                                                 sx={{ fontWeight: 700, bgcolor: "var(--cv-primary-darker)", "&:hover": { bgcolor: "var(--cv-primary-darker)", filter: "brightness(0.9)" } }}
                                             >
-                                                Baixar boleto (PDF Casa Verde)
+                                                Baixar boleto (PDF {brandName})
                                             </Button>
                                         )}
 

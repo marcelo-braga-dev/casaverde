@@ -5,12 +5,13 @@
     <title>Ativação de acesso</title>
 </head>
 <body style="font-family: Arial, sans-serif; color: #222; line-height: 1.5;">
-    <h2>Ative seu acesso à plataforma Casa Verde</h2>
+@php $brandName = app(\App\Services\Config\SystemSettingService::class)->brandName(); @endphp
+    <h2>Ative seu acesso à plataforma {{ $brandName }}</h2>
 
     <p>Olá, {{ $invite->clientProfile->display_name }}.</p>
 
     <p>
-        Seu acesso à plataforma Casa Verde foi liberado.
+        Seu acesso à plataforma {{ $brandName }} foi liberado.
         Para criar sua conta, clique no botão abaixo:
     </p>
 
