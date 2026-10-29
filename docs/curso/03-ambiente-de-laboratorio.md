@@ -61,6 +61,26 @@ Uma instância comum por turma, sem `DEMO_MODE`:
 
 Itens 6 e 7 são os que mais melhoram a aula: sem eles, pagamento e vencimento ficam só demonstrados.
 
+## Mapa de menus (perfil Administrador)
+
+Referência para os roteiros — os laboratórios citam estes caminhos:
+
+| Grupo | Itens |
+|-------|-------|
+| Cliente Consumidor | Clientes · Propostas · Contratos · Unidades Consumidoras |
+| Produtores Solar | Produtores · Propostas |
+| Usinas Solar | Usinas · Blocos de Usinas · Gestão de Energia · Geração Mensal |
+| Financeiro | Faturas de Concessionárias · Cobranças de Faturas · Gestão de Cobranças · Pagamentos · Bancos |
+| Relatórios | Relatório Geral · Alertas Operacionais · Clientes · Financeiro · Cobranças · Pagamentos · Usinas · Executivo |
+| Usuários | Consultores Cadastrados · Administradores |
+| Whatsapp | Templates de Mensagens · Whatsapp App · Respostas Automáticas |
+| Suporte | Todos os Chamados |
+| Configurações | Configurações Padrão · Concessionárias · Identidade Visual |
+| Integrações | Configurações de Integração · Histórico de Importação |
+
+Fora do menu: Cockpit executivo (`/admin/cockpit`) e Kanban de produtores (módulo legado `auth/*`, só admin) — **[CONFERIR]** antes de gravar o M4 e o M10; se continuarem fora do menu, incluir no menu ou acessar pela URL na gravação.
+Portal do cliente: Visão Geral · Minhas Faturas · Minhas Cobranças · Meus Contratos · Relatório de Economia · Meu Perfil · Suporte.
+
 ## Dados-padrão do curso (o "caso contínuo")
 
 Todos os alunos começam com a mesma base para que as gravações de tela batam com o que o aluno vê:
