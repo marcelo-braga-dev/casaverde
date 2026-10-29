@@ -49,7 +49,7 @@ Macro-regra de negócio:
 8. lembretes, vencimentos, falhas e inconsistências viram alertas operacionais;
 9. relatórios financeiros, de economia e executivos acompanham a operação.
 
-Combina **CRM** (propostas, leads, Kanban de produtor), **ERP operacional/financeiro** (faturas, cobranças, pagamentos, alocação de energia) e **portais** para cliente e produtor.
+Combina **CRM** (propostas, leads, onboarding de usinas), **ERP operacional/financeiro** (faturas, cobranças, pagamentos, alocação de energia) e **portais** para cliente e produtor.
 
 ---
 

@@ -79,7 +79,7 @@ Referência para os roteiros — os laboratórios citam estes caminhos:
 | Configurações | Configurações Padrão · Concessionárias · Identidade Visual |
 | Integrações | Configurações de Integração · Histórico de Importação |
 
-Fora do menu: Cockpit executivo (`/admin/cockpit`) e Kanban de produtores (módulo legado `auth/*`, só admin) — **[CONFERIR]** antes de gravar o M4 e o M10; se continuarem fora do menu, incluir no menu ou acessar pela URL na gravação.
+O Cockpit executivo é o item **Relatórios → Relatório Geral**. O Kanban de produtores do módulo legado (`auth/produtor/kanban`) está quebrado — depende do antigo `UsinaSolar.user_id` e de status que as usinas não usam mais — e não está no menu; o M4 aula 4 foi escrito sem depender dele (ver `08-decisoes-pendentes.md`, item 12).
 Portal do cliente: Visão Geral · Minhas Faturas · Minhas Cobranças · Meus Contratos · Relatório de Economia · Meu Perfil · Suporte.
 
 ## Dados-padrão do curso (o "caso contínuo")

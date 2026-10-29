@@ -357,6 +357,7 @@ Preferir testes de integração com SQLite — sem mocks de DB.
 |----------|-------|------|
 | `FormRequest::authorize()` valida role, mas não carteira | Requests de edição usados por consultor | Na edição, checar carteira no `authorize()` (padrão: `StoreClientProfileRequest`) |
 | Módulo legado `auth/*` sem filtro de carteira | `app/Http/Controllers/Auth/**` | Restrito a admin; migrar telas ainda úteis para os módulos novos e remover o resto |
+| Kanban de produtores quebrado | `auth/produtor/kanban` (`KanbanProdutorController`, `Pages/Auth/Produtor/Kanban`, `GetAllUsinasController`) lê `proprietario` (antigo `UsinaSolar.user_id`) e status que as usinas não usam; fora do menu | Reconstruir no módulo novo (etapa de onboarding na usina) e remover o legado — decisão em `docs/curso/08-decisoes-pendentes.md` (item 12) |
 | Funcionalidades inacabadas | convite de produtor (`ProducerAccessInvite` nunca é criado, sem página de ativação); telas `fatura-import-settings` (só o `update` está ativo) | Concluir ou remover |
 | Status de slip como strings soltas | `app/Services/Pagamento/**` | Migrar para `PaymentSlipStatus` (já tem `REFUNDED`) |
 | Instanciação direta (`new XService`/`new XRepository`) | ~32 ocorrências em `app/` (ex.: `Admin/Config/ConfigController.php`, `Contratos/Usina/ContratoUsinaController.php`) | Injetar via construtor |

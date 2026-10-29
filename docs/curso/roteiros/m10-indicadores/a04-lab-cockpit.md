@@ -6,7 +6,7 @@
 | Duração alvo | 12 min (~1.250 palavras) |
 | Objetivo | Ler o dashboard do administrador e o cockpit executivo e decidir a partir deles |
 | Pré-requisito | M9 aula 5 (meses 1 e 2 fechados) |
-| Referências | Plataforma (Administrador): Dashboard; Cockpit Executivo (`/admin/cockpit` **[CONFERIR acesso pelo menu]**) |
+| Referências | Plataforma (Administrador): Dashboard; Cockpit Executivo (menu Relatórios → Relatório Geral) |
 
 ## Cena 1 — Abertura (0:00–0:40)
 **Visual:** APRESENTADOR.
@@ -24,7 +24,7 @@ Comece pelo dashboard do administrador. Ele é o painel do dia a dia: clientes a
 **Visual:** TELA — Cockpit Executivo: Energia disponível, Energia alocada, Saldo energético; Usinas críticas (saldo ≤ 0) e com saldo baixo; Clientes sem usina; Vínculos ativos.
 **Texto na tela:** "Cockpit: energia disponível × alocada × saldo · usinas críticas · clientes sem usina"
 **Narração:**
-Agora, o cockpit executivo. Ele é o painel do dono. No topo, a energia da frota inteira: disponível, alocada e o saldo. Abaixo, as usinas críticas, sem saldo, e as com saldo baixo. E um número que vale dinheiro: clientes sem usina — gente que assinou e ainda não está recebendo créditos. Cada cliente nessa lista é receita atrasada e um risco de cancelamento. Na sua empresa do laboratório, quantos clientes estão sem usina? Por quê?
+Agora, o cockpit executivo, no menu Relatórios, Relatório Geral. Ele é o painel do dono. No topo, a energia da frota inteira: disponível, alocada e o saldo. Abaixo, as usinas críticas, sem saldo, e as com saldo baixo. E um número que vale dinheiro: clientes sem usina — gente que assinou e ainda não está recebendo créditos. Cada cliente nessa lista é receita atrasada e um risco de cancelamento. Na sua empresa do laboratório, quantos clientes estão sem usina? Por quê?
 
 ## Cena 4 — O cockpit executivo: operação e pessoas (6:40–9:40)
 **Visual:** TELA — funil de revisão de faturas (Faturas de Concessionárias por revisão), Alertas abertos, Ranking de Consultores, crescimento mês a mês, Ações Pendentes com links.
