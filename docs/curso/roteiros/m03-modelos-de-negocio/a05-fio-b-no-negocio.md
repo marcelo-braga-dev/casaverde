@@ -1,0 +1,66 @@
+# M3 · Aula 5 — O Fio B na conta do negócio (2026–2029)
+
+| Campo | Valor |
+|-------|-------|
+| Tipo | 🎥 expositiva |
+| Duração alvo | 13 min (~1.700 palavras) |
+| Objetivo | Simular o impacto da transição do Fio B e escolher a política de desconto e de remuneração do produtor |
+| Pré-requisito | M2 aula 5; M3 aula 4 |
+| Referências | Lei 14.300/2022 (transição); valoração de 2029 em diante **[CONFERIR situação regulatória ao gravar]** |
+
+## Cena 1 — Abertura (0:00–0:40)
+**Visual:** APRESENTADOR.
+**Texto na tela:** "O crédito encolhe. Quem paga a conta?"
+**Narração:**
+Você já sabe que, para usinas novas, o valor do crédito cai a cada ano até 2028, por causa do Fio B. Nesta aula, vamos colocar isso na conta da sua empresa e decidir, de forma consciente, quem absorve essa queda: o cliente, o produtor, a sua empresa — ou todos.
+
+## Cena 2 — O efeito na divisão percentual (0:40–3:30)
+**Visual:** SLIDE com tabela.
+**Texto na tela:**
+| Ano | Crédito | Economia cliente (20%) | Gestora (15%) | Produtor (65%) |
+|---|---|---|---|---|
+| 2026 | 0,68 | 0,136 | 0,102 | 0,442 |
+| 2027 | 0,65 | 0,130 | 0,098 | 0,423 |
+| 2028 | 0,62 | 0,124 | 0,093 | 0,403 |
+"Tarifa constante (sem reajuste) — cenário de estresse"
+**Narração:**
+Primeiro, o efeito com a política que usamos até aqui: desconto e taxa como percentuais do crédito. Mantendo a tarifa constante, o crédito cai de sessenta e oito para sessenta e dois centavos entre 2026 e 2028, uma queda de quase nove por cento. E todo mundo perde junto, na mesma proporção: a economia do cliente cai de treze vírgula seis para doze vírgula quatro centavos, a taxa da gestora de dez vírgula dois para nove vírgula três, e o repasse do produtor de quarenta e quatro vírgula dois para quarenta vírgula três. É uma divisão justa do impacto: ninguém é surpreendido sozinho. Repare que eu chamei de cenário de estresse: na vida real, a tarifa costuma ser reajustada todo ano, normalmente para cima, o que compensa parte dessa queda. Mas planeje pelo cenário conservador.
+
+## Cena 3 — Três políticas de desconto (3:30–7:30)
+**Visual:** SLIDE com três colunas.
+**Texto na tela:**
+"A) % sobre o crédito — todos dividem o impacto"
+"B) Preço fixo por kWh ao cliente — cliente perde economia; risco de churn"
+"C) Economia garantida sobre a conta total — gestora e produtor absorvem tudo"
+**Narração:**
+Existem três políticas principais. A primeira, que acabamos de ver, é o desconto percentual sobre o crédito. O impacto é dividido entre todos, e a economia do cliente continua existindo, embora menor. A segunda é cobrar do cliente um preço fixo por quilowatt-hora, por exemplo cinquenta e quatro centavos, independentemente do valor do crédito. Parece seguro para a empresa, mas, quando o crédito cai para sessenta e dois, a economia do cliente despenca de treze para oito centavos, e ele começa a se perguntar se vale a pena — e cancela. A terceira é garantir ao cliente uma economia fixa sobre a conta total, por exemplo quinze por cento. Comercialmente, é a promessa mais forte, mas toda a queda do crédito é absorvida pela gestora e pelo produtor, e, se a regra mudar em 2029, a empresa pode ficar com margem negativa. A minha recomendação, para a maioria das empresas, é a política A, com contrato transparente que explica que a economia acompanha as regras e a tarifa da distribuidora.
+
+## Cena 4 — E o produtor? Aluguel fixo ou variável (7:30–9:40)
+**Visual:** SLIDE com duas colunas.
+**Texto na tela:**
+"Aluguel fixo (R$/mês): produtor sem risco; gestora assume vacância, inadimplência e Fio B"
+"Aluguel variável (% do rendimento): risco compartilhado; gestora protegida"
+**Narração:**
+O mesmo raciocínio vale para o produtor. Se a entidade paga ao produtor um aluguel fixo por mês, ele fica protegido de tudo: da queda do crédito, da usina meio vazia, da inadimplência. Quem assume esses riscos é a gestora. Se o aluguel é variável, um percentual do que a usina rende, o risco é compartilhado. Produtores preferem fixo; gestoras saudáveis preferem variável, ou um modelo misto, com um mínimo garantido baixo e uma parte variável. Se você assumir aluguel fixo, sua margem precisa ser bem maior, porque você está vendendo um seguro ao produtor.
+
+## Cena 5 — 2029 em diante: cenários (9:40–11:40)
+**Visual:** QUADRO com três cenários de crédito em 2029: otimista 0,62 · base 0,60 · pessimista 0,55.
+**Texto na tela:** "Planeje 2029+ com cenários · Cláusula de reequilíbrio regulatório nos contratos [CONFERIR com advogado]"
+**Narração:**
+E depois de 2028? A lei prevê que a regra passa a seguir a valoração dos custos e benefícios da geração distribuída, conduzida pela ANEEL. Até que isso esteja definido, ninguém sabe exatamente quanto vai valer o crédito. A atitude profissional é trabalhar com cenários. Um otimista, em que o crédito fica parecido com 2028. Um base, um pouco abaixo. E um pessimista, com uma queda mais forte. Rode a sua calculadora nos três e veja em qual deles a empresa ainda para de pé. E proteja os contratos: com o cliente, com o produtor e com a entidade, inclua cláusulas de reequilíbrio em caso de mudança regulatória, revisadas pelo seu advogado. Empresas que travaram promessas fixas por dez anos sem essas cláusulas são as primeiras a ter problemas.
+
+## Cena 6 — E as usinas GD I? (11:40–12:30)
+**Visual:** SLIDE.
+**Texto na tela:** "Usina GD I: crédito sem a transição até 2045 → margem maior · atenção às condições do direito adquirido"
+**Narração:**
+Uma observação: se você conseguir usinas enquadradas no GD um, a conta muda bastante, porque o crédito não sofre a transição. Isso dá espaço para um desconto maior ao cliente, uma remuneração maior ao produtor ou uma margem maior para você. Por isso, essas usinas são disputadas — e é por isso que a verificação do enquadramento é obrigatória antes de fechar qualquer negócio.
+
+## Cena 7 — Resumo (12:30–13:00)
+**Visual:** APRESENTADOR.
+**Texto na tela:** "Desconto % sobre o crédito · aluguel variável ou misto · cenários 2029 · cláusula de reequilíbrio"
+**Narração:**
+Resumindo: o crédito encolhe até 2028, e a política de desconto define quem absorve isso. A recomendação é desconto percentual sobre o crédito, remuneração do produtor variável ou mista, cenários para 2029 e contratos com cláusula de reequilíbrio. No laboratório a seguir, você vai configurar esses parâmetros na plataforma e fechar a conta do seu negócio.
+
+## Materiais da aula
+- Calculadora do curso, aba "Cenários Fio B".
+- Exercício 3 do módulo.
