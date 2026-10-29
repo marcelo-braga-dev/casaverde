@@ -2,7 +2,9 @@
 
 Todos os materiais citados nos roteiros ("Materiais da aula"), consolidados. Prioridade: **A** = necessário para gravar/lançar · **B** = necessário para a turma piloto · **C** = melhoria.
 
-## Calculadora do curso (planilha única, várias abas) — Prioridade A
+## Calculadora do curso (planilha única, várias abas) — Prioridade A · ✅ pronta
+
+Arquivo: `docs/curso/materiais/calculadora-do-curso.xlsx` (fórmulas vivas, premissas na aba "Premissas", valores iniciais = exemplos do curso). Para regerar após mudar o layout: `php83 docs/curso/materiais/gerar-calculadora.php vendor/autoload.php docs/curso/materiais/calculadora-do-curso.xlsx` (usa o PhpSpreadsheet do projeto e acusa qualquer erro de fórmula).
 
 | Aba | Usada em | Conteúdo |
 |-----|----------|----------|

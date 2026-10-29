@@ -32,11 +32,11 @@ Com o histórico, calcule a média de doze meses. A clínica do nosso exemplo te
 ## Cena 4 — Estimando a economia real (5:40–9:20)
 **Visual:** QUADRO com duas colunas, "Hoje" e "Com assinatura".
 **Texto na tela:**
-"Hoje: 4.000 kWh × R$ 1,04 ≈ R$ 4.160/mês"
-"Com assinatura: distribuidora ≈ R$ 307 (295 kWh fora da cota) + R$ 577 (Fio B não compensado) = R$ 884 · sua cobrança ≈ R$ 2.618"
-"Total ≈ R$ 3.502 → economia ≈ R$ 658/mês ≈ R$ 7.900/ano (≈ 16% da conta)"
+"Hoje: 4.000 kWh × R$ 1,039 ≈ R$ 4.156/mês"
+"Com assinatura: distribuidora ≈ R$ 306 (295 kWh fora da cota) + R$ 577 (Fio B não compensado) = R$ 884 · sua cobrança ≈ R$ 2.618"
+"Total ≈ R$ 3.501 → economia ≈ R$ 654/mês ≈ R$ 7.850/ano (≈ 16% da conta)"
 **Narração:**
-Agora, a economia — na conta total, como aprendemos no módulo 3. Hoje, a clínica paga perto de quatro mil, cento e sessenta reais por mês. Com a assinatura, ela vai pagar duas coisas. Para a distribuidora: o consumo que ficou fora da cota — duzentos e noventa e cinco quilowatts-hora, o que já cobre o mínimo trifásico — e a parcela do Fio B que não é compensada sobre os quilowatts-hora compensados. E, para a sua empresa, o valor da energia compensada com o desconto. A calculadora do curso faz essa conta com os valores da sua distribuidora; aqui, com os números ilustrativos, a distribuidora fica em uns oitocentos e oitenta reais, a sua cobrança em uns dois mil, seiscentos e vinte, e a soma em torno de três mil e quinhentos reais: uma economia de uns seiscentos e sessenta reais por mês, quase oito mil reais por ano, cerca de dezesseis por cento da conta. Para um dono de clínica, "quase oito mil reais por ano, sem investir nada e sem obra" é uma frase muito mais forte do que "vinte por cento de desconto". Use sempre o valor em reais, por mês e por ano. E nunca arredonde para cima: prometa o que a conta mostra.
+Agora, a economia — na conta total, como aprendemos no módulo 3. Hoje, a clínica paga perto de quatro mil, cento e cinquenta e seis reais por mês. Com a assinatura, ela vai pagar duas coisas. Para a distribuidora: o consumo que ficou fora da cota — duzentos e noventa e cinco quilowatts-hora, o que já cobre o mínimo trifásico — e a parcela do Fio B que não é compensada sobre os quilowatts-hora compensados. E, para a sua empresa, o valor da energia compensada com o desconto. A calculadora do curso faz essa conta com os valores da sua distribuidora; aqui, com os números ilustrativos, a distribuidora fica em uns oitocentos e oitenta reais, a sua cobrança em uns dois mil, seiscentos e vinte, e a soma em torno de três mil e quinhentos reais: uma economia de uns seiscentos e cinquenta reais por mês, quase sete mil e novecentos reais por ano, cerca de dezesseis por cento da conta. Para um dono de clínica, "quase oito mil reais por ano, sem investir nada e sem obra" é uma frase muito mais forte do que "vinte por cento de desconto". Use sempre o valor em reais, por mês e por ano. E nunca arredonde para cima: prometa o que a conta mostra.
 
 ## Cena 5 — Casos especiais (9:20–11:20)
 **Visual:** SLIDE com três casos.
@@ -57,4 +57,4 @@ Resumindo: peça a conta, pegue o histórico de doze meses, calcule a cota com m
 - Calculadora do curso, aba "Cota e economia".
 - Exercícios 1 e 2 do módulo.
 
-> Nota de produção: conferir os números da cena 4 na calculadora com os valores ilustrativos do curso antes de gravar e ajustar o "Texto na tela" para os valores exatos da planilha.
+> Os números da cena 4 são os da aba "Cota e economia" da calculadora (`docs/curso/materiais/calculadora-do-curso.xlsx`) com os valores iniciais.
