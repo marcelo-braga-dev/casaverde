@@ -6,7 +6,7 @@
 | Duração alvo | 12 min (~1.300 palavras) |
 | Objetivo | Localizar na plataforma uma fatura da distribuidora, abrir o PDF e reconhecer os dados extraídos |
 | Pré-requisito | M1 aulas 5–7 |
-| Referências | Tela de fatura de concessionária (perfil Administrador ou Consultor) |
+| Referências | Tela de fatura de concessionária (perfil Administrador — faturas são exclusivas do admin) |
 
 > Gravar com os dados-padrão do curso: cliente-exemplo "Padaria", fatura do mês mais recente.
 

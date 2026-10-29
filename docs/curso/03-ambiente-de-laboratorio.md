@@ -13,14 +13,14 @@ O aluno usa a própria plataforma (GD Solar ERP) durante as aulas. Este document
 |-----------------------|------------------------|
 | Cadastrar clientes, UCs, propostas, contratos, vínculos | Consultor (carteira própria) ou admin |
 | Cadastrar produtor, proposta de produtor e usina | Consultor ou admin |
-| Upload, revisão e aprovação de fatura | Consultor (carteira própria) ou admin |
+| Upload, revisão e aprovação de fatura | **Só admin** |
 | Gerar cobrança, ajustar, emitir Pix/boleto | Consultor (carteira própria) ou admin |
 | Registrar geração da usina, Kanban de onboarding da usina | **Só admin** |
 | Concessionárias e tarifa GD, configurações (desconto padrão, taxa de administração) | **Só admin** |
 | Cockpit executivo, alertas de sistema, Identidade Visual, integrações | **Só admin** |
 | Ver o portal do cliente e do produtor | Cliente / Produtor |
 
-Conclusão: o aluno precisa ser **admin da própria empresa** e conseguir **trocar de perfil** (como na demonstração) para ver o portal do cliente e do produtor.
+Conclusão (o consultor cobre cerca de metade dos laboratórios; faturas, geração e configurações são só do admin): o aluno precisa ser **admin da própria empresa** e conseguir **trocar de perfil** (como na demonstração) para ver o portal do cliente e do produtor.
 
 ## Arquitetura recomendada: `LAB_MODE` com uma empresa por aluno
 
@@ -40,8 +40,8 @@ Por que essa opção:
 ### Alternativa para a turma piloto (sem desenvolvimento)
 
 Uma instância comum por turma, sem `DEMO_MODE`:
-- cada aluno recebe um usuário **Consultor** (o isolamento de carteira já existe e é testado em `tests/Feature/Security/AccessIsolationTest.php`) — cobre ~75% dos laboratórios;
-- as partes só de admin (tarifa GD, configurações, geração da usina, Kanban, cockpit, Identidade Visual) são **demonstradas pelo instrutor** nas gravações e no ao vivo;
+- cada aluno recebe um usuário **Consultor** (o isolamento de carteira já existe e é testado em `tests/Feature/Security/AccessIsolationTest.php`) — cobre os laboratórios de produtor, usina, cliente, proposta, contrato, vínculo e cobrança;
+- as partes só de admin (tarifa GD, configurações, geração da usina, faturas de concessionária, Kanban, cockpit, Identidade Visual) são **demonstradas pelo instrutor** nas gravações e no ao vivo;
 - reset da instância ao fim da turma.
 
 ## Backlog de desenvolvimento do `LAB_MODE`
