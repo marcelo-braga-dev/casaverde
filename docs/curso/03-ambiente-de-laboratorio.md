@@ -57,8 +57,8 @@ Uma instância comum por turma, sem `DEMO_MODE`:
 | 7 | **Avançar o tempo**: comando/botão "avançar N dias" para o laboratório de vencimento e boleto vencido (M8 aula 7) e fechamento do mês (M9) — roda as rotinas de vencida, expiração e lembretes com a data simulada | Média |
 | 8 | Botão "reiniciar meu laboratório" (recria o banco do aluno) e "carregar checkpoint do módulo X" (dados prontos até o módulo anterior, para quem chega atrasado) | Média |
 | 9 | Banner fixo "Ambiente de aula — dados fictícios" e bloqueio de envio externo (WhatsApp segue como link) | Baixa |
-| 11 | PDFs de proposta no modelo novo (`commercial-proposal-modern`/`producer-proposal-modern`) também no `LAB_MODE` — hoje o modelo novo de proposta de cliente só é usado com `DEMO_MODE` | Alta |
 | 10 | Expiração automática do laboratório no fim do acesso e exportação do projeto final (PDF dos relatórios) | Baixa |
+| 11 | PDFs de proposta no modelo novo (`commercial-proposal-modern`/`producer-proposal-modern`) também no `LAB_MODE` — hoje o modelo novo de proposta de cliente só é usado com `DEMO_MODE` | Alta |
 
 Itens 6 e 7 são os que mais melhoram a aula: sem eles, pagamento e vencimento ficam só demonstrados.
 
