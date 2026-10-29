@@ -1,9 +1,10 @@
 # Integração Mercado Pago — Tutorial de configuração
 
-Este guia explica onde conseguir as credenciais do Mercado Pago e como configurá-las no
-Casa Verde CRM. A implementação já está pronta no código (veja
-`app/Services/Pagamento/Providers/MercadoPago/`); este documento cobre só a parte de
-cadastro/chaves no painel do Mercado Pago e o `.env`.
+Este guia explica onde conseguir as credenciais do Mercado Pago, como configurá-las na
+plataforma e quais regras operacionais o sistema aplica aos pagamentos. A implementação
+está em `app/Services/Pagamento/Providers/MercadoPago/` (provider) e
+`app/Services/Pagamento/` (geração, cancelamento, sincronização e expiração). O Mercado
+Pago é o **único** provider: a integração Cora foi removida em 2026-10-03.
 
 ---
 
@@ -12,7 +13,7 @@ cadastro/chaves no painel do Mercado Pago e o `.env`.
 1. Acesse https://www.mercadopago.com.br/developers/panel e faça login com a conta
    Mercado Pago da cooperativa (ou crie uma conta caso ainda não exista).
 2. No menu lateral, vá em **Suas integrações** → **Criar aplicação**.
-3. Dê um nome (ex.: `Casa Verde CRM`) e selecione o produto **Pagamentos online**.
+3. Dê um nome (ex.: o nome da plataforma) e selecione o produto **Pagamentos online**.
 4. Confirme a criação. Você cairá na tela de detalhes da aplicação, onde ficam as chaves.
 
 ## 2. Pegar as credenciais (Public Key e Access Token)
@@ -51,9 +52,9 @@ mover dinheiro real.
 3. Marque o evento **Order (Mercado Pago)** — o sistema usa a Orders API e só processa notificações de pedido (`type: order`). Não marque "Pagamentos" (`payment`): essas notificações trazem o id do pagamento, não o do pedido, e são ignoradas.
 4. Salve. O Mercado Pago vai gerar uma **Chave secreta de assinatura** (assinatura webhook /
    `x-signature`). Copie esse valor: ele vai para `PaymentProviderAccount.webhook_secret`.
-   - Se você deixar esse campo em branco no sistema, o `MercadoPagoWebhookSignatureValidator`
-     aceita qualquer webhook sem validar assinatura (use isso só em ambiente local de
-     desenvolvimento, nunca em produção).
+   - **Obrigatório em qualquer ambiente:** sem `webhook_secret` o
+     `MercadoPagoWebhookSignatureValidator` recusa todas as notificações (401) — não há
+     modo "sem assinatura". A varredura operacional abre alerta para conta sem secret.
 
 ### Testando o webhook localmente
 
@@ -79,7 +80,7 @@ Depois de preencher, rode o seeder para criar/atualizar o registro em
 `payment_provider_accounts`:
 
 ```bash
-php artisan db:seed --class=PaymentProviderAccountSeeder
+php83 artisan db:seed --class=PaymentProviderAccountSeeder
 ```
 
 Isso cria a conta com `provider=mercado_pago`, `is_active=true`, `is_default=true` — é essa
@@ -138,6 +139,10 @@ Reflexos práticos disso:
 
 ## 7. Testando o fluxo completo
 
+> O pagamento **nunca é gerado automaticamente** (decisão de negócio): é sempre o
+> consultor/admin que clica em gerar na tela da cobrança. A varredura operacional avisa o
+> consultor sobre cobranças que vencem em 5 dias sem boleto/Pix.
+
 1. Abra uma cobrança (`CustomerCharge`) com status `open`, `waiting_payment` ou `overdue`.
 2. Clique em **Gerar pagamento** → **Mercado Pago — Pix** (ou **Boleto**).
 3. Isso chama `POST /v1/orders` com `transactions.payments[0].payment_method.id = pix`
@@ -152,7 +157,14 @@ Reflexos práticos disso:
      status, só o id da order).
    - **Sincronização manual**: botão **Sincronizar** na tela do pagamento
      (`admin.financeiro.pagamentos.sync`), que chama a mesma consulta sob demanda.
-6. Acompanhe os eventos recebidos em **Financeiro → Webhooks de Pagamento**.
+6. Acompanhe os eventos recebidos em **Financeiro → Webhooks de Pagamento** (só admin;
+   permite reprocessar um evento). O webhook grava o evento (dedup por `event_id`) e o
+   processa na fila (`ProcessPaymentWebhookJob`) — sem worker ativo, os eventos ficam em
+   `received`.
+7. Ao gerar o pagamento, o cliente recebe o e-mail `ChargePaymentMail` (pela fila, para o
+   e-mail real de contato, nunca o sintético `@casaverde.local`) e passa a ver Pix copia e
+   cola, linha digitável e PDF no portal (**Cobranças → detalhe**). Três dias antes do
+   vencimento, se o boleto ainda estiver pagável, recebe o lembrete por e-mail.
 
 ## 8. Regras operacionais (produção)
 
@@ -175,6 +187,12 @@ Reflexos práticos disso:
   o caso fica no histórico para revisão humana.
 - **Idempotência:** cada tentativa usa `X-Idempotency-Key = charge-{id}-{método}-{n}`; um
   timeout não registra tentativa, então tentar de novo reaproveita o mesmo pedido.
+- **Falhas viram alertas** (`PaymentAlertService`): recusa ao gerar (alerta ao consultor),
+  credencial recusada (401/403, crítico), pagamento que não sincroniza há 2h, webhook que
+  falha, conta Mercado Pago ausente e conta sem `webhook_secret`. Os alertas se resolvem
+  sozinhos quando a operação volta a funcionar.
+- **Status do slip** (`PaymentSlipStatus`): `pending`, `generated`, `paid`, `cancelled`,
+  `expired`, `failed`, `refunded`.
 - **Credenciais:** `client_secret` (Access Token) e `webhook_secret` ficam criptografados e
   nunca são enviados ao navegador; só admin acessa **Contas de Pagamento**.
 

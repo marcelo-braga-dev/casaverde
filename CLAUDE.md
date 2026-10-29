@@ -42,11 +42,15 @@ CRM/ERP para operação de energia solar por compensação/assinatura. Ciclo com
 - `jquery-mask-plugin` — máscaras de entrada
 
 ### Banco e infraestrutura
-- MySQL 8.0 (99 migrations, 40+ tabelas)
+- MySQL 8.0 (100 migrations, 40+ tabelas)
 - Testes: Pest PHP + SQLite in-memory (nunca MySQL nos testes)
 - Pagamentos: **somente Mercado Pago** (Orders API), via `PaymentProviderContract`/`PaymentProviderManager`; webhook de retorno exige `webhook_secret`. A integração Cora foi removida (2026-10-03) — não reintroduzir sem decisão de negócio
 - **PHP de produção é 8.3** (php-fpm 8.3; cron usa `php83`). O `php` da linha de comando é 8.4: rode testes e Composer com `php83` (`composer.json` fixa `config.platform.php = 8.3.24`)
-- Email: IMAP para importação automática de faturas de concessionária
+- Email: IMAP para importação automática de faturas de concessionária; SMTP (fila) para os e-mails ao cliente
+
+### Instâncias no servidor
+- **Produção** (Casa Verde): `/www/wwwroot/casa_verde/crm` — cron `php83 artisan schedule:run` e worker `casa-verde-queue`.
+- **Demonstração** (`gdsolar.rexar.com.br`, `DEMO_MODE=true`): `/www/wwwroot/rexar/gdsolar` — instalada com `composer install --no-dev` (Pest/Pint não ficam disponíveis; rode testes numa cópia de desenvolvimento ou no CI, `.github/workflows/ci.yml`).
 
 ---
 
@@ -106,9 +110,10 @@ Redirecionamento pós-login (`app/Http/Middleware/RedirectUserByRole.php`):
 
 ### Produtor
 - Produtor é **role oficial** com dashboard próprio, rotas próprias e `ProducerProfile` obrigatório.
-- `ProducerProfile.platform_user_id` = FK para `users` do produtor (quando ativado na plataforma).
-- Fluxo de criação inline (via proposta): `User` → `UserData` → `UserContact` → `ProducerProfile`.
-- Não duplicar produtor por CPF/CNPJ: buscar primeiro em `UserData`.
+- `ProducerProfile` guarda o documento e o nome diretamente (`tipo_pessoa`, `cpf`, `cnpj`, `nome`, `razao_social`, `nome_fantasia`), como o `ClientProfile`; contato via `contacts_id` → `UserContact`; consultor em `consultor_user_id`.
+- `ProducerProfile.platform_user_id` = FK para `users` do produtor (quando ativado na plataforma). As colunas antigas `user_id`/`created_by_user_id` não são mais usadas pelo model.
+- Criação inline (proposta de produtor do consultor, `consultor.propostas.produtor.*`): `CreateOrFindProducerProfileService` busca por CPF/CNPJ em `ProducerProfile`; se não existir, cria `UserContact` → `ProducerProfile` (status `prospect`) e a regra de taxa de administração padrão (`default_producer_fee_percentage`).
+- Não duplicar produtor por CPF/CNPJ: buscar primeiro em `ProducerProfile`. (O módulo legado `auth/*` — `ProdutorPropostaRepository` — ainda busca em `UserData` e cria `User`/`UserData`; não replicar esse caminho em código novo.)
 - Ao excluir `ProducerProfile` (soft delete), CPF e CNPJ são zerados no evento `deleting`.
 
 ### Cliente
@@ -133,7 +138,8 @@ Redirecionamento pós-login (`app/Http/Middleware/RedirectUserByRole.php`):
 
 ```
 app/Models/
-├── Users/       User, UserData, UserContact, Admin, Produtor, Vendedor, Roles
+├── Users/       User, UserData, UserContact, UserAddress, Admin, Produtor, Vendedor, Roles
+├── Acesso/      UserAccessLog            (login/logout e ações de acesso)
 ├── Cliente/     ClientProfile, ClienteProposta, ClientContract, ClientUsinaLink,
 │                ClientDiscountRule, ClientAccessInvite, ClientePropostaAddress,
 │                ConsumerUnit
@@ -142,19 +148,25 @@ app/Models/
 │                ProdutorPropostasEnderecos
 ├── Usina/       UsinaSolar, UsinaBlock, UsinaGenerationRecord, Concessionaria, UsinaAddress
 ├── Proposta/    CommercialProposal, ProducerProposal
-├── Energia/     EnergyBill
-├── Fatura/      ConcessionaireBill, ConcessionaireBillIssue, ImportedConcessionaireEmail
-├── Cobranca/    CustomerCharge, CustomerChargeAdjustment
+├── Energia/     EnergyBill               (pipeline antigo, fora do agendamento)
+├── Fatura/      ConcessionaireBill, ConcessionaireBillIssue, ImportedConcessionaireEmail,
+│                ImportRun                (histórico de execuções da importação)
+├── Cobranca/    CustomerCharge, CustomerChargeAdjustment, CustomerChargeHistory
 ├── Pagamento/   PaymentSlip, PaymentTransaction, PaymentProviderAccount, PaymentWebhookEvent
 ├── Alert/       OperationalAlert
-├── Importacao/  ClientEmailImportSetting, ImportEmailAccount, ImportedEnergyBillEmail
+├── Importacao/  ClientEmailImportSetting, ImportEmailAccount, ImportedEnergyBillEmail,
+│                InstitutionalEmailAccount (caixas institucionais, tela Integração)
 ├── Config/      SystemSetting
+├── Demo/        DemoVisitor              (visitantes do modo demonstração)
 ├── Support/     SupportTicket, SupportTicketMessage
 ├── WhatsApp/    WhatsAppMessageTemplate
-└── Endereco/    Address, UserAddress, UsinaAddress
+├── Endereco/    Address
+└── (raiz)       BaseModel, Concessionarias, Config, Enderecos — legado; não usar em código novo
 ```
 
 Models com SoftDeletes: `User`, `ClientProfile`, `ProducerProfile`, `UsinaSolar`, `UsinaBlock`, `Concessionaria`, `SupportTicket`.
+
+`CustomerChargeHistory` registra toda alteração da cobrança (vencimento, valor, status, boleto) e aparece no detalhe da cobrança — é a única trilha de auditoria do sistema.
 
 ---
 
@@ -198,8 +210,21 @@ Agendamento (`routes/console.php`, cron com `php83 artisan schedule:run`):
 - `casaverde:sync-payments` (`SyncPendingPaymentsCommand`) — `everyFiveMinutes()`.
 - `casaverde:mark-overdue-charges` — `everyTenMinutes()`.
 - `concessionaire-bills:import`, `casaverde:generate-monthly-charges` — `hourly()`. (`energy-bills:import`, pipeline `EnergyBill` antigo, está fora do agendamento: nunca importou nada e duplicava a leitura das caixas — candidato a remoção.)
+- `queue:prune-failed --hours=720` — `daily()`.
+- `prune-temporary-pdfs` (`TemporaryPdfStorageService::prune()`) — `daily()`; único agendamento que roda também em `DEMO_MODE`.
+- Todos os comandos usam `withoutOverlapping()`. Em `DEMO_MODE` só a limpeza de PDFs temporários é agendada.
 
-Worker da fila: serviço systemd `casa-verde-queue` (`/usr/bin/php83`, `Restart=always`), conexão `database`. Após deploy: `php artisan queue:restart`.
+Comandos manuais (não agendados): `concessionaire-bills:reprocess {--id=}` (reprocessa o parser de faturas já importadas), `usinas:scan-alerts` (alertas de energia por usina), `energy-bills:import`, `demo:visitantes`.
+
+Worker da fila: serviço systemd `casa-verde-queue` (`/usr/bin/php83 artisan queue:work --tries=3 --max-time=3600`, `Restart=always`), conexão `database`. Após deploy: `php83 artisan queue:restart`.
+
+### E-mails ao cliente
+
+`ChargePaymentMail` (fila, `afterCommit`) é enviado pelo `ClientChargeNotificationService` ao gerar boleto/Pix (`GeneratePaymentSlipService`) e no lembrete de 3 dias antes do vencimento (`SendChargeReminderJob`, só se houver boleto pagável). O destinatário vem do `ClientContactEmailResolver` — nunca o e-mail sintético `@casaverde.local`. Único outro e-mail: `ClientActivationInviteMail`.
+
+### PDFs temporários de proposta
+
+`TemporaryPdfStorageService` grava os PDFs de proposta no disco `local` (`storage/app/pdfs-temporarios/`) e entrega por link assinado de 2h (`pdfs.temporarios.show`); apagados após 1 dia. Nunca gravar documentos com dados pessoais no disco `public`.
 
 ### Alertas de falha operacional
 
@@ -218,7 +243,10 @@ Não existe envio automático de WhatsApp (sem credenciais de Business API/Twili
 
 ```
 routes/
-├── web.php                    # carrega todos os módulos
+├── web.php                    # carrega todos os módulos + webhook do Mercado Pago
+├── auth.php                   # login, senha, verificação de e-mail (Breeze)
+├── demo.php                   # acesso/troca de perfil/CSV do modo demonstração (404 fora dele)
+├── console.php                # agendamentos
 ├── admin/                     # auth + role:admin (consultor só nos módulos listados em "Mapa de acesso")
 │   ├── index.php
 │   ├── users/                 # admin.php, produtor.php, vendedor.php
@@ -243,8 +271,9 @@ routes/
 |---------|-----------------|
 | `EnsureUserHasRole.php` | Bloqueia acesso por role (`role:admin,consultor` etc.) |
 | `RedirectUserByRole.php` | Redireciona `/dashboard` para o dashboard correto por role |
-| `HandleInertiaRequests.php` | Compartilha `auth.user` (id, nome, email, role_id, role_name, status, consultor_id), `alert`, `flash` e `navBadges` (inclui `chargesAwaitingNewSlip`) |
+| `HandleInertiaRequests.php` | Compartilha `auth.user` (id, name, nome, email, role_id, role_name, status, consultor_id, dados_acesso), `alert`, `flash`, `navBadges` (inclui `chargesAwaitingNewSlip`), `whatsappTemplates`, `brand` (Identidade Visual: nome, cores, logotipo) e `demo` (só com `DEMO_MODE`) |
 | `SecurityHeaders.php` | X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy e HSTS (em HTTPS) |
+| `DemoMode.php` | Em `DEMO_MODE`, recusa escrita e rotas `.create`/`.edit` e conta as telas vistas pelo visitante |
 
 `bootstrap/app.php` confia nos proxies (`trustProxies(at: '*')`): a aplicação roda atrás de Cloudflare + nginx, e sem isso o Laravel vê HTTP e o IP do proxy.
 
@@ -296,7 +325,8 @@ resources/js/
 ├── Hooks/
 │   ├── useAuthUser.js    — dados do usuário autenticado via Inertia
 │   ├── useCanAccess.js   — verificação de permissões no frontend
-│   └── useInputMask.js   — máscara CPF, CNPJ, telefone etc.
+│   ├── useInputMask.js   — máscara CPF, CNPJ, telefone etc.
+│   └── useBrandName.js   — nome da marca (Identidade Visual)
 ├── Utils/        (formatCurrency, statusLabels, buscarCepUtil, permissions...)
 └── Contexts/
 ```
@@ -309,11 +339,12 @@ Menu construído com base em `auth.user.role_name` — segurança real sempre no
 
 - Framework: Pest PHP
 - Ambiente: SQLite in-memory (`phpunit.xml` define `DB_CONNECTION=sqlite`, `DB_DATABASE=:memory:`)
-- Rodar com `php83 artisan test` (mesma versão de produção).
+- Rodar com `php83 artisan test` (mesma versão de produção). Exige as dependências de desenvolvimento do Composer — na instância de demonstração elas não estão instaladas.
 - `tests/Pest.php` liga `Http::preventStrayRequests()`: chamada HTTP sem `Http::fake()` falha o teste (nunca sai para o Mercado Pago); helpers `mercadoPagoAccount()` e `mpOrder()` simulam conta e pedido. `phpunit.xml` manda logs para o canal `null`.
-- Cobertura atual: 83 arquivos de teste (Feature + Unit), 523 testes
+- Cobertura atual: 94 arquivos de teste (Feature + Unit), ~558 casos `it()`/`test()` (contagem de 2026-10-29)
+- CI: `.github/workflows/ci.yml` roda Pint, testes (PHP 8.3) e `npm ci && npm run build` (Node 22) a cada push/PR
 - Áreas cobertas: Auth, Middleware, Dashboard (Admin/Consultor), Services (Cliente, Cobrança, Usina, Fatura, Proposta, Automation), Controllers (ConsumerUnit, ClientUsinaLink, ConcessionariaController, ProducerFeeRule), Policies (UsinaSolar, CustomerCharge, ProducerProfile), Pagamento/Mercado Pago (provider, assinatura e controller de webhook, processamento de webhook, geração/cancelamento/sync de boleto e Pix), IMAP (`ImportAutomaticConcessionaireBillService`, com fetcher/extrator/desbloqueio de PDF mockados), WhatsApp (`WhatsAppLinkService`)
-- Também cobertos: Mercado Pago (provider, vencimento, estorno, webhook com assinatura), ciclo de vida de boletos vencidos, isolamento de acesso por role/carteira (`tests/Feature/Security/`).
+- Também cobertos: Mercado Pago (provider, vencimento, estorno, webhook com assinatura), ciclo de vida de boletos vencidos, isolamento de acesso por role/carteira (`tests/Feature/Security/`), alertas operacionais, e-mails ao cliente, PDFs temporários por link assinado, portal do cliente (pagamento), modo demonstração e nome da marca (`tests/Feature/Demo/`).
 - **Áreas sem cobertura**: geração de PDF via snappy (propostas legadas)
 
 Preferir testes de integração com SQLite — sem mocks de DB.
@@ -328,7 +359,10 @@ Preferir testes de integração com SQLite — sem mocks de DB.
 | Módulo legado `auth/*` sem filtro de carteira | `app/Http/Controllers/Auth/**` | Restrito a admin; migrar telas ainda úteis para os módulos novos e remover o resto |
 | Funcionalidades inacabadas | convite de produtor (`ProducerAccessInvite` nunca é criado, sem página de ativação); telas `fatura-import-settings` (só o `update` está ativo) | Concluir ou remover |
 | Status de slip como strings soltas | `app/Services/Pagamento/**` | Migrar para `PaymentSlipStatus` (já tem `REFUNDED`) |
-| Controllers/Services acima de 200 linhas | `ClientReportService`, `ImportAutomaticConcessionaireBillService`, `ScanUsinaOperationalAlertsService`, `ClienteEconomiaRelatorioService`, `AdminDashboardMetricsService`, `ExecutiveCockpitService` | Dividir em classes menores |
+| Instanciação direta (`new XService`/`new XRepository`) | ~32 ocorrências em `app/` (ex.: `Admin/Config/ConfigController.php`, `Contratos/Usina/ContratoUsinaController.php`) | Injetar via construtor |
+| Models legados na raiz | `app/Models/{BaseModel,Concessionarias,Config,Enderecos}.php` | Migrar usos para os models de domínio e remover |
+| Telas JSX acima de 1000 linhas | `Auth/Contratos/Usinas/Contrato/ContratoUsina.jsx`, `Admin/Cobranca/Show/Page.jsx`, `Admin/Integracao/Page.jsx` | Extrair componentes em `Partials/` |
+| Controllers/Services acima de 200 linhas | `ClientReportService`, `ImportAutomaticConcessionaireBillService`, `ClientProposalController`, `ScanUsinaOperationalAlertsService`, `OperationalHealthScanService`, `ClienteEconomiaRelatorioService`, `AdminDashboardMetricsService`, `ExecutiveCockpitService` | Dividir em classes menores |
 | N+1 potenciais | Services sem eager loading | Adicionar `.with()` onde necessário |
 | Sem cobertura de teste para geração de PDF | dompdf/snappy | Criar testes quando o fluxo for revisado |
 
@@ -347,26 +381,34 @@ Preferir testes de integração com SQLite — sem mocks de DB.
 ## Comandos úteis
 
 ```bash
-# Testes
-php artisan test
-php artisan test --filter=NomeDoTeste
+# Testes (php83 = versão de produção)
+php83 artisan test
+php83 artisan test --filter=NomeDoTeste
 
 # Frontend
 npm run dev
 npm run build
 
 # Migrations
-php artisan migrate
-php artisan migrate:fresh --seed
+php83 artisan migrate
+php83 artisan migrate:fresh --seed
 
 # Automações financeiras (também agendadas via routes/console.php)
-php artisan casaverde:expire-payment-slips
-php artisan casaverde:send-charge-reminders
-php artisan casaverde:sync-payments
+php83 artisan casaverde:expire-payment-slips
+php83 artisan casaverde:send-charge-reminders
+php83 artisan casaverde:sync-payments
+php83 artisan schedule:list
 
-# Seeders disponíveis
-# RolesSeeder, UserSeeder, ConcessionariasSeeder,
-# SystemSettingSeeder, PaymentProviderAccountSeeder, DemoDataSeeder
+# Faturas
+php83 artisan concessionaire-bills:import [--client_profile_id=]
+php83 artisan concessionaire-bills:reprocess [--id=]
+
+# Seeders
+# DatabaseSeeder → RolesSeeder, UserSeeder, ConcessionariasSeeder, SystemSettingSeeder,
+#                  WhatsAppMessageTemplateSeeder, DemoDataSeeder
+# Avulsos: PaymentProviderAccountSeeder (lê MERCADOPAGO_* do .env)
+# Demonstração: MarketingDemoSeeder (chama MarketingImportHistorySeeder, DemoTariffSeeder
+#               e MarkFictitiousDataSeeder) — ver DEMO.md
 
 # Lint / format
 ./vendor/bin/pint
@@ -383,8 +425,25 @@ sudo apt install -y wkhtmltopdf
 composer install
 npm install
 cp .env.example .env
-php artisan key:generate
-php artisan migrate --seed
+php83 artisan key:generate
+php83 artisan migrate --seed
 npm run dev
-php artisan serve
+php83 artisan serve
 ```
+
+Deploy em produção e checklist operacional: `LANCAMENTO.md`. Mercado Pago: `MERCADO_PAGO.md`. Demonstração: `DEMO.md`.
+
+## Mapa da documentação
+
+| Arquivo | Conteúdo | Situação |
+|---------|----------|----------|
+| `CLAUDE.md` | Referência operacional: convenções, regras de domínio, automações, comandos | Viva |
+| `README.md` | Visão geral, arquitetura, fluxos e onboarding de equipe | Viva |
+| `MERCADO_PAGO.md` | Credenciais, webhook e regras operacionais de pagamento | Viva |
+| `DEMO.md` | Instância de demonstração (`DEMO_MODE`) | Viva |
+| `LANCAMENTO.md` | Prontidão para lançamento e checklist de deploy | Viva |
+| `GD_SOLAR_ERP_RELATORIO_VENDAS.md` | Material de vendas B2B do produto (GD Solar ERP) | Viva |
+| `landpage-wordpress-briefing.md` | Briefing da landing page B2C de um cliente (outro site) | Referência externa |
+| `ANALISE.md`, `RELATORIO_ERROS.md` | Retratos de 2026-05/06 | Históricos — não atualizar |
+
+Ao mudar algo estrutural (model, rota, automação, integração), atualize `CLAUDE.md` e o documento específico no mesmo commit.

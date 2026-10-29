@@ -1,6 +1,6 @@
 # Análise Completa — Casa Verde CRM
 
-> ⚠️ **Documento histórico.** Retrato do projeto na data indicada abaixo; números, riscos e pendências aqui citados não refletem o estado atual. A referência atualizada é `CLAUDE.md` (operação e convenções) e `README.md` (visão geral).
+> ⚠️ **Documento histórico — não atualizar.** Retrato do projeto na data indicada abaixo; números, riscos e pendências aqui citados não refletem o estado atual (ex.: a integração Cora foi removida em 2026-10-03 e o Mercado Pago é o único provider; a suíte passou de ~11 para ~560 testes). Referências atualizadas: `CLAUDE.md` (operação e convenções), `README.md` (visão geral), `LANCAMENTO.md` (pendências e deploy) e `MERCADO_PAGO.md` (pagamentos).
 
 > Gerado em: 2026-05-31
 

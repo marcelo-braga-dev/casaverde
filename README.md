@@ -1,763 +1,411 @@
-# Casa Verde CRM
+# Casa Verde CRM / GD Solar ERP
 
-Sistema CRM/ERP desenvolvido em **Laravel + Inertia + React** para operação comercial, cadastro, propostas, usinas, produtores, clientes, importação de faturas de energia, geração de cobrança e pagamento em uma empresa de energia por assinatura/compensação.
+Sistema CRM/ERP em **Laravel 12 + Inertia + React** para empresas de energia solar por compensação/assinatura (geração distribuída compartilhada, Lei 14.300): prospecção, propostas, contratos, usinas, produtores, clientes, importação de faturas de concessionária, cobrança, pagamento (Mercado Pago) e relatórios.
 
-> Este README foi escrito para servir como **documentação técnica de visão geral e histórico de decisões** do projeto, orientado para **novas equipes**, **manutenção evolutiva** e também para **IAs de programação**.
-> O objetivo é que qualquer pessoa consiga entender:
-> - o propósito do sistema
-> - a arquitetura atual
-> - as regras de negócio
-> - a organização do código
-> - como atualizar o projeto sem quebrar fluxos existentes
->
-> Para o **dia a dia de desenvolvimento** (lista completa e atualizada de models, enums, jobs, convenções de código, dívida técnica e comandos), a referência operacional é **`CLAUDE.md`** — mantenha os dois em sincronia ao introduzir mudanças estruturais.
+O mesmo código roda a operação real da Casa Verde e é oferecido a outras empresas como **GD Solar ERP** (há uma instância de demonstração aberta — ver `DEMO.md`). O nome exibido nas telas, PDFs e e-mails vem da **Identidade Visual** configurada no painel; nunca escreva o nome da marca fixo no código.
+
+> Este README é a **visão geral e o guia de onboarding** (propósito, arquitetura, regras de negócio, fluxos).
+> A **referência operacional do dia a dia** — lista completa de models, enums, jobs, agendamentos, convenções, dívida técnica e comandos — é o **`CLAUDE.md`**. Mantenha os dois em sincronia ao fazer mudanças estruturais.
+
+---
+
+## Sumário
+
+1. [Visão geral](#1-visão-geral)
+2. [Documentação do projeto](#2-documentação-do-projeto)
+3. [Stack](#3-stack)
+4. [Perfis de acesso](#4-perfis-de-acesso)
+5. [Arquitetura e domínios](#5-arquitetura-e-domínios)
+6. [Regras de negócio](#6-regras-de-negócio)
+7. [Fluxos principais](#7-fluxos-principais)
+8. [Automações e alertas](#8-automações-e-alertas)
+9. [Segurança e autorização](#9-segurança-e-autorização)
+10. [Frontend](#10-frontend)
+11. [Instalação e execução](#11-instalação-e-execução)
+12. [Testes e qualidade](#12-testes-e-qualidade)
+13. [Diretrizes de manutenção](#13-diretrizes-de-manutenção)
+14. [Arquivos-chave](#14-arquivos-chave)
+15. [Histórico de decisões](#15-histórico-de-decisões)
+16. [Próximos passos](#16-próximos-passos)
+17. [Resumo para nova equipe](#17-resumo-para-nova-equipe)
 
 ---
 
 # 1. Visão geral
 
-O **Casa Verde** é uma plataforma de operação comercial e administrativa para uma empresa que atua com geração/compensação de energia elétrica.
+Ciclo completo coberto pelo sistema:
 
-O sistema foi desenhado para controlar o ciclo completo:
+> Prospecção → Proposta comercial → Contrato → Vínculo cliente-usina → Importação de faturas (IMAP + upload) → Geração de cobranças → Pagamento (Mercado Pago, Pix ou boleto) → Relatórios
 
-> Prospecção → Proposta comercial → Contrato → Vínculo cliente-usina → Importação de faturas (IMAP + upload) → Geração de cobranças → Pagamento (Mercado Pago) → Relatórios
+Macro-regra de negócio:
 
-- usuários internos da operação
-- clientes consumidores finais
-- produtores/proprietários de usinas
-- usinas e blocos de usina
-- propostas comerciais
-- leads e perfis de produtor
-- endereços
-- importação e leitura de faturas de concessionária (IMAP + upload manual)
-- vinculação entre clientes e usinas (`ClientUsinaLink`), com alocação de energia e desconto
-- contratos formais entre cliente e operação
-- geração automática de cobranças (`CustomerCharge`) a partir das faturas aprovadas
-- pagamento das cobranças via Mercado Pago (boleto ou Pix), com webhook de retorno e sincronização automática
-- relatórios financeiros e operacionais
+1. a empresa opera/intermedeia energia de usinas solares por compensação/assinatura;
+2. **produtores** são os proprietários das usinas;
+3. **consultores** fazem a prospecção e cuidam de uma carteira de clientes, produtores e usinas;
+4. **clientes** aderem via proposta → contrato → vínculo com uma ou mais usinas (por unidade consumidora);
+5. o sistema importa as faturas de concessionária do cliente (e-mail IMAP ou upload), um humano revisa e aprova;
+6. a fatura aprovada gera a cobrança do cliente (`CustomerCharge`) com o desconto contratado;
+7. o pagamento (Pix ou boleto Mercado Pago) é gerado **manualmente** na tela da cobrança e baixado automaticamente por webhook/sincronização;
+8. lembretes, vencimentos, falhas e inconsistências viram alertas operacionais;
+9. relatórios financeiros, de economia e executivos acompanham a operação.
 
-A aplicação combina componentes de **CRM**, **ERP operacional/financeiro** e **portal de acesso** para tipos diferentes de usuário.
+Combina **CRM** (propostas, leads, Kanban de produtor), **ERP operacional/financeiro** (faturas, cobranças, pagamentos, alocação de energia) e **portais** para cliente e produtor.
 
 ---
 
-# 2. Objetivo de negócio
+# 2. Documentação do projeto
 
-A regra macro de negócio do Casa Verde é:
-
-1. a empresa opera ou intermedeia energia proveniente de usinas, por compensação/assinatura
-2. consultores realizam prospecção e operação comercial
-3. clientes aderem à energia compensada/assinada via proposta → contrato → vínculo com usina
-4. produtores são os proprietários das usinas ofertadas na operação
-5. o sistema importa as faturas de concessionária do cliente (IMAP automático ou upload manual)
-6. a partir da fatura aprovada, o sistema gera a cobrança do cliente e o pagamento (boleto/Pix via Mercado Pago)
-7. o sistema gerencia propostas, vínculos, perfis, dados operacionais, faturas, cobranças e pagamentos
-8. a plataforma oferece relatórios financeiros e operacionais e acompanhamento por consultor
-
-A partir da evolução mais recente do projeto, o sistema passou a tratar formalmente quatro tipos principais de usuário:
-
-- **admin**
-- **consultor**
-- **cliente**
-- **produtor**
-
-Isso alterou a arquitetura do domínio e a documentação anterior foi atualizada para refletir o estado atual real do código.
+| Arquivo | Para quê | Situação |
+|---------|----------|----------|
+| `README.md` | Visão geral, arquitetura, fluxos, onboarding | Viva |
+| `CLAUDE.md` | Referência operacional: convenções, regras de domínio, automações, comandos, dívida técnica | Viva |
+| `MERCADO_PAGO.md` | Credenciais, webhook e regras operacionais de pagamento | Viva |
+| `DEMO.md` | Instância de demonstração (`DEMO_MODE`) | Viva |
+| `LANCAMENTO.md` | Prontidão para lançamento, pendências e checklist de deploy | Viva |
+| `GD_SOLAR_ERP_RELATORIO_VENDAS.md` | Material de vendas B2B do GD Solar ERP | Viva |
+| `landpage-wordpress-briefing.md` | Briefing de landing page B2C de um cliente (outro site, não é do sistema) | Referência externa |
+| `ANALISE.md`, `RELATORIO_ERROS.md` | Retratos de maio/junho de 2026 | Históricos — não refletem o estado atual |
 
 ---
 
-# 3. Stack técnica
+# 3. Stack
 
 ## Backend
-- PHP 8.2+, Laravel 12, Eloquent ORM
-- Inertia.js (adapter)
-- `barryvdh/laravel-dompdf` e `barryvdh/laravel-snappy` (+ wkhtmltopdf) — geração de PDF
+- PHP 8.2+ (produção em **PHP 8.3**: php-fpm 8.3 e `php83` no cron/worker; `composer.json` fixa `config.platform.php = 8.3.24`)
+- Laravel 12, Eloquent, Inertia.js (adapter), Sanctum, Ziggy
+- `barryvdh/laravel-dompdf` (PDFs de boleto, relatórios, propostas novas) e `barryvdh/laravel-snappy` + wkhtmltopdf (propostas legadas)
 - `maatwebsite/excel` — exportações Excel
-- `laravel/sanctum` — autenticação API
-- `tightenco/ziggy` — rotas Laravel no frontend
+- Extensão `imap` (importação de faturas) e binários `qpdf`/`pdftotext` (desbloqueio e leitura de PDF de fatura) — exigem `exec` liberado no PHP
 
 ## Frontend
 - React 18 + Inertia.js + MUI 6 + Tailwind 3.2 + Vite 5
-- `@react-pdf/renderer`, `@dnd-kit/core`/`sortable`, `chart.js`/`recharts`, `framer-motion`, `@tabler/icons-react`
+- `@react-pdf/renderer`, `@dnd-kit` (Kanban), `chart.js`/`recharts`, `framer-motion`, `@tabler/icons-react`, `date-fns`, `lodash`, `numeral`
 
-## Banco de dados e testes
-- MySQL 8.0 em produção/dev
-- Testes com Pest PHP + SQLite in-memory (nunca MySQL nos testes)
-- Pagamentos: somente Mercado Pago (Orders API), via `PaymentProviderContract`; webhook exige `webhook_secret` (ver `MERCADO_PAGO.md`). A integração Cora foi removida
-- Email: IMAP para importação automática de faturas de concessionária
-
-> Para a lista exaustiva de bibliotecas, ver `package.json` e `composer.json`; para convenções de uso, ver `CLAUDE.md`.
-
----
-
-# 4. Arquitetura por domínio
-
-O projeto está organizado por **domínio de negócio**, e não apenas por camada técnica. Isso é essencial para manter a evolução controlada.
-
-Principais domínios atuais:
-
-- **Users** — `User`, `UserData`, `UserContact`, `Admin`, `Produtor`, `Vendedor`, `Roles`
-- **Cliente** — `ClientProfile`, `ClientContract`, `ClientUsinaLink`, `ClientDiscountRule`, `ConsumerUnit`, `ClientAccessInvite`
-- **Produtor** — `ProducerProfile`, `ProducerLead`, `ProdutorPropostas`, `ProdutorContratos`, `ProducerAdministrationFeeRules`
-- **Usina** — `UsinaSolar`, `UsinaBlock`, `UsinaGenerationRecord`, `Concessionaria`, `UsinaAddress`
-- **Endereco** — `Address`, `UserAddress`, `UsinaAddress`
-- **Fatura / Importação** — `ConcessionaireBill`, `ConcessionaireBillIssue`, `ImportedConcessionaireEmail`, `ImportEmailAccount`, `ClientEmailImportSetting` (IMAP)
-- **Propostas** — `CommercialProposal`, `ProducerProposal`
-- **Cobrança** — `CustomerCharge`, `CustomerChargeAdjustment`
-- **Pagamento** — `PaymentSlip`, `PaymentTransaction`, `PaymentProviderAccount`, `PaymentWebhookEvent` (Mercado Pago)
-- **Relatórios** — services em `app/Services/Admin/Reports/`
-- **Suporte / WhatsApp / Config** — `SupportTicket`, `WhatsAppMessageTemplate`, `SystemSetting`
-
-> A lista completa e continuamente atualizada de models, enums, jobs e convenções de código está em **`CLAUDE.md`** — este README cobre a visão geral e o histórico de decisões; `CLAUDE.md` é a referência operacional do dia a dia.
-
-Essa organização melhora:
-
-- clareza de responsabilidade
-- manutenção
-- desacoplamento
-- leitura por novas equipes
-- orientação para automações/IA
+## Banco, fila e integrações
+- MySQL 8.0 (100 migrations); testes em SQLite in-memory
+- Fila `database`, worker systemd; agendador via cron (`php83 artisan schedule:run`)
+- Pagamentos: **somente Mercado Pago** (Orders API) — a integração Cora foi removida em 2026-10-03
+- E-mail: IMAP para importar faturas; SMTP (pela fila) para avisar o cliente sobre boleto/Pix
+- WhatsApp: apenas links `wa.me` para clique humano (sem envio automático)
 
 ---
 
-# 5. Perfis de acesso oficiais
+# 4. Perfis de acesso
 
-Os perfis oficiais do sistema são definidos em `App\src\Roles\RoleUser`.
+Definidos em `app/src/Roles/RoleUser.php` (`ADMIN = 1`, `CONSULTOR = 2`, `PRODUTOR = 3`, `CLIENTE = 4`, com helpers `nameById()`, `idByName()`, `ids()`, `names()`).
 
-## Roles oficiais
-- `admin`
-- `consultor`
-- `produtor`
-- `cliente`
+| Perfil | O que faz | Onde entra |
+|--------|-----------|------------|
+| **Admin** | Acesso total: usuários, usinas, faturas, configurações, integrações, cockpit | `admin/*`, `auth/*` (legado), tudo |
+| **Consultor** | Propostas, clientes, produtores, usinas e cobranças **da própria carteira** | `consultor/*`; em `admin/*` só cobranças, pagamentos, alertas e relatórios de clientes/usinas (filtrados pela carteira) |
+| **Cliente** | Consumidor final: faturas, cobranças (com Pix/boleto para pagar), contratos, perfil, relatório de economia | `cliente/*` |
+| **Produtor** | Dono de usina: dashboard e usinas próprias (com histórico de geração) | `produtor/*` |
 
-## Implementação atual
-Arquivo central:
-- `app/src/Roles/RoleUser.php`
+Após o login, `/dashboard` redireciona pela role (`RedirectUserByRole`): `admin.dashboard`, `consultor.dashboard`, `cliente.dashboard`, `produtor.dashboard`.
 
-Mapeamento atual:
-- `ADMIN = 1`
-- `CONSULTOR = 2`
-- `PRODUTOR = 3`
-- `CLIENTE = 4`
-
-## Observação importante
-**Produtor não é mais tratado como apenas entidade paralela/legado.**
-Na arquitetura atual, **produtor é role oficial do sistema**, com:
-
-- autenticação própria
-- dashboard próprio
-- rotas próprias
-- vínculo com consultor
-- vínculo com propostas
-- vínculo com `ProducerProfile`
-- vínculo obrigatório com usinas
+Não há cadastro público: clientes entram por convite por e-mail (`ClientAccessInvite` → `ClientActivationInviteMail`); produtores e usuários internos são criados pelo admin.
 
 ---
 
-# 6. Regras de negócio consolidadas
+# 5. Arquitetura e domínios
 
-## 6.1 Admin
-- possui acesso total
-- acessa dashboard administrativo
-- gerencia usuários, produtores, usinas, perfis, leads, configurações e operação global
+Organização por **domínio de negócio**:
 
-## 6.2 Consultor
-- atua na operação comercial
-- cria e acompanha propostas
-- pré-cadastra clientes e produtores
-- possui carteira de clientes e produtores vinculados via `consultor_id`
-- pode criar e acompanhar usinas sob sua responsabilidade
-- não deve ter visão global irrestrita como admin: na área `admin/*` acessa só cobranças, pagamentos, alertas e relatórios de clientes/usinas, sempre filtrados pela própria carteira (detalhes em `CLAUDE.md` → "Mapa de acesso por role")
+| Domínio | Models principais |
+|---------|-------------------|
+| Usuários | `User`, `UserData`, `UserContact`, `UserAddress`, `Roles`; log de acesso `UserAccessLog` |
+| Cliente | `ClientProfile`, `ConsumerUnit`, `ClientContract`, `ClientUsinaLink`, `ClientDiscountRule`, `ClientAccessInvite`, `ClienteProposta` |
+| Produtor | `ProducerProfile`, `ProducerLead`, `ProducerAdministrationFeeRules`, `ProdutorPropostas`, `ProdutorContratos`, `ProducerAccessInvite` |
+| Usina | `UsinaSolar`, `UsinaBlock`, `UsinaGenerationRecord`, `Concessionaria`, `UsinaAddress` |
+| Propostas | `CommercialProposal` (cliente), `ProducerProposal` (produtor) |
+| Faturas / Importação | `ConcessionaireBill`, `ConcessionaireBillIssue`, `ImportedConcessionaireEmail`, `ImportRun`, `ImportEmailAccount`, `ClientEmailImportSetting`, `InstitutionalEmailAccount` |
+| Cobrança | `CustomerCharge`, `CustomerChargeAdjustment`, `CustomerChargeHistory` |
+| Pagamento | `PaymentSlip`, `PaymentTransaction`, `PaymentProviderAccount`, `PaymentWebhookEvent` |
+| Operação | `OperationalAlert`, `SupportTicket`/`SupportTicketMessage`, `WhatsAppMessageTemplate`, `SystemSetting`, `DemoVisitor` |
 
-## 6.3 Cliente
-- é o consumidor final da operação
-- possui dashboard e portal próprios
-- pode ter perfil operacional e faturas vinculadas
-- acessa somente os próprios dados
+Camadas:
 
-## 6.4 Produtor
-- é o proprietário da usina
-- tecnicamente participa do fluxo comercial de forma semelhante ao cliente em vários pontos
-- possui perfil próprio, propostas, dashboard e vínculo com consultor
-- é criado/reaproveitado no fluxo de proposta de produtor
-- pode ser integrado formalmente à plataforma
+- **Controllers finos**; lógica em **Services** (`app/Services/<Domínio>/`), injetados por construtor.
+- **Repositories** (`app/Repositories/`) para listagens/paginação com filtros.
+- **DTOs** em `app/DTOs/` (`Endereco/`, `Payments/`, `UsinaSolar/`, `Usuario/`).
+- **FormRequests** validam dados e a role (e a carteira, na edição).
+- **Policies** (`ClientProfile`, `CommercialProposal`, `UsinaSolar`, `CustomerCharge`, `ProducerProfile`) registradas em `AppServiceProvider::boot()` via `Gate::policy()`.
+- **Enums** em `app/Enums/` para status (cobrança, boleto, fatura, vínculo, contrato, alerta, suporte, usina).
+- Pagamentos atrás de `PaymentProviderContract`/`PaymentProviderManager` (hoje só Mercado Pago).
 
-## 6.5 Regra central de usina
-**Toda usina precisa estar vinculada a um produtor.**
-
-Na arquitetura atual:
-- `UsinaSolar.producer_profile_id` representa o **produtor proprietário** (referência ao `ProducerProfile`)
-- `UsinaSolar.consultor_user_id` representa o **consultor responsável**
-
-> ⚠️ **`UsinaSolar.user_id` não existe mais** — a coluna foi removida na migration `2026_05_19`. O método `user()` ainda presente no model é código legado sem coluna correspondente; não usar, e remover ao tocar o arquivo.
-
-Essa é uma das regras mais importantes de manutenção do projeto.
-
-## 6.6 Regra central de proposta de produtor
-Ao gerar uma proposta de produtor:
-- o sistema pode selecionar um produtor já existente
-- ou criar um novo produtor inline
-- o produtor é identificado por CPF ou CNPJ
-- se já existir `UserData` com o documento, o usuário é reaproveitado
-- se não existir, o sistema cria:
-  - `User`
-  - `UserData`
-  - `UserContact`
-  - `ProducerProfile`
-- em seguida cria a `ProdutorPropostas`
-- e cria também `ProdutorPropostasEnderecos`
-
-## 6.7 ProducerProfile
-`ProducerProfile` representa o perfil formal do produtor/proprietário dentro do domínio do sistema.
-
-Esse perfil pode nascer:
-- manualmente
-- ou automaticamente a partir da proposta de produtor
-
-Depois ele é sincronizado com dados da usina formalizada.
-
-## 6.8 Vínculo consultor ↔ produtor
-Todo produtor relevante para a operação deve estar vinculado a um consultor por meio de:
-- `users.consultor_id`
-- `producer_profiles.created_by_user_id`
-- `producer_leads.consultor_user_id`
-- `usina_solars.consultor_user_id`
+> Lista completa e atualizada de models, enums, jobs e comandos: `CLAUDE.md`.
 
 ---
 
-# 7. Estado funcional atual
+# 6. Regras de negócio
 
-## 7.1 Já implementado
-O projeto já possui base funcional para:
+## 6.1 Usina
+- `UsinaSolar.producer_profile_id` = **produtor proprietário** (obrigatório).
+- `UsinaSolar.consultor_user_id` = **consultor responsável** (obrigatório).
+- `UsinaSolar.user_id` **não existe** (removido na migration `2026_05_19`; o método `user()` também foi removido). Não recriar.
+- Energia: `energia_disponivel_kwh`, `energia_alocada_kwh`, `energia_saldo_kwh`; status operacional em `operational_status` (`UsinaOperationalStatus`).
+- Alocar mais do que a usina gera dispara alerta crítico (`allocated_energy_exceeds_available`, via `usinas:scan-alerts`).
 
-- autenticação
-- roles oficiais
-- redirecionamento por role
-- dashboards separados
-- usuários internos
-- clientes
-- produtores
-- propostas de produtor
-- perfis de produtor
-- leads de produtor
-- usinas
-- blocos de usina
-- endereços
-- contatos
-- importação de faturas de concessionária via IMAP e upload manual, com fila de revisão/aprovação
-- vínculo cliente-usina (`ClientUsinaLink`) e contratos (`ClientContract`)
-- geração automática de cobrança (`CustomerCharge`) a partir de fatura aprovada
-- pagamento de cobranças via Mercado Pago (boleto/Pix) com webhook de retorno, sincronização a cada 5 minutos e tratamento de boleto vencido (alerta ao consultor, reemissão)
-- lembrete automático de cobrança (pré-vencimento e pós-vencimento) via `OperationalAlert` com link de WhatsApp pronto para o consultor
-- relatórios financeiros e operacionais (faturas, com export em Excel/PDF)
-- filtros de busca (incluindo por nome de cliente) nas principais páginas de listagem financeira
-- Policies de autorização por registro para `UsinaSolar`, `CustomerCharge` e `ProducerProfile` (consultor só acessa sua própria carteira)
+## 6.2 Produtor
+- Role oficial, com dashboard, rotas e `ProducerProfile` obrigatório.
+- `ProducerProfile` guarda documento e nome diretamente (`tipo_pessoa`, `cpf`, `cnpj`, `nome`, `razao_social`, `nome_fantasia`), contato em `UserContact` (`contacts_id`), consultor em `consultor_user_id` e o usuário da plataforma, quando ativado, em `platform_user_id`.
+- **Nunca duplicar por CPF/CNPJ**: procurar primeiro em `ProducerProfile` (`CreateOrFindProducerProfileService`).
+- Taxa de administração do produtor em `ProducerAdministrationFeeRules` (padrão do sistema: `default_producer_fee_percentage`).
+- Soft delete zera CPF/CNPJ (evento `deleting`), permitindo recadastro.
 
-## 7.2 Fluxos já alinhados recentemente
-A arquitetura foi atualizada para comportar corretamente:
+## 6.3 Cliente e unidade consumidora
+- `ClientProfile` guarda CPF/CNPJ diretamente (validação de dígitos verificadores); soft delete zera os documentos.
+- `ConsumerUnit` pertence a um cliente e a uma concessionária; `uc_code` é normalizado para dígitos e `uc_code + concessionaria_id` é único.
+- `ConcessionaireBill.consumer_unit_id` associa a fatura à UC.
 
-- `produtor` como role oficial
-- middleware de role
-- middleware de redirecionamento por role
-- dashboards separados por tipo de usuário
-- proposta de produtor com criação inline de produtor
-- `ProducerProfile` garantido no fluxo
-- criação e edição de usina obrigando produtor
-- sincronização de `ProducerProfile` com `UsinaSolar`
+## 6.4 Vínculo cliente-usina (`ClientUsinaLink`)
+- Campos: `allocated_energy_kwh`, `discount_percentage`, `consumption_percentage`; status em `ClientUsinaLinkStatus`.
+- Com `consumer_unit_id`: encerra só o vínculo ativo da mesma UC + usina (uma UC pode ter vínculos ativos com usinas diferentes).
+- Sem `consumer_unit_id`: encerra todos os vínculos ativos do cliente (legado).
 
-## 7.3 Próximas evoluções naturais
-- refinar dashboards finais no frontend
-- refinar menus por role
-- trilha histórica por competência
-- automações operacionais mais profundas
-- expandir filtro por nome de cliente para demais páginas com filtros, à medida que forem criadas (ver convenção em `CLAUDE.md`)
-- aumentar cobertura de testes em geração de PDF (pagamentos, IMAP e WhatsApp já têm cobertura)
+## 6.5 Consultor e carteira
+- Carteira via `users.consultor_id`, `client_profiles`/`producer_profiles.consultor_user_id`, `producer_leads.consultor_user_id`, `usina_solars.consultor_user_id`.
+- Scoping sempre por **query scopes** (`CustomerCharge::somenteMinhasCobrancas()`, `ClientProfile::somenteDoConsultor()`, `User::somenteMeusClientes()`), nunca por filtro manual repetido.
+- Toda ação com `{id}` acessível ao consultor confere o dono (policy ou `abort_if`).
+
+## 6.6 Cobrança e pagamento
+- Fatura aprovada → `CustomerCharge` (automático: `GenerateChargeFromApprovedBillJob` / `casaverde:generate-monthly-charges`). Uma fatura pode originar mais de uma cobrança.
+- Status da cobrança: `draft`, `open`, `waiting_payment`, `paid`, `overdue`, `cancelled`.
+- **O pagamento nunca é gerado automaticamente**: o consultor/admin escolhe Pix ou boleto na tela da cobrança. Pix e boleto não podem estar na mesma order do Mercado Pago.
+- Status do boleto/Pix (`PaymentSlipStatus`): `pending`, `generated`, `paid`, `cancelled`, `expired`, `failed`, `refunded`.
+- Alterar vencimento ou valor cancela e reemite o boleto; toda alteração fica em `CustomerChargeHistory`.
+- Detalhes (vencimento, boleto vencido, estorno, idempotência): `MERCADO_PAGO.md`.
+
+## 6.7 Marca
+- Nome da plataforma, cores e logotipos vêm da **Identidade Visual** (`SystemSettingService::brandName()` no backend, `useBrandName()` no frontend). Nunca escrever "Casa Verde" fixo em texto visível.
 
 ---
 
-# 8. Estrutura atual de domínio (visão conceitual)
+# 7. Fluxos principais
 
-## 8.1 Usuário
-Tabela/model principal:
-- `users`
+## 7.1 Proposta de cliente
+`consultor.propostas.cliente.*` → `Admin\Proposta\ClientProposalController` + `CommercialProposalPolicy`. Pode criar o cliente inline (sem duplicar CPF/CNPJ), aplica o desconto padrão configurado e gera PDF (modelo novo `commercial-proposal-modern.blade.php` na demonstração; modelo original fora dela). O PDF é entregue por link assinado temporário (`TemporaryPdfStorageService`).
 
-Campos principais:
-- `id`
-- `name`
-- `email`
-- `password`
-- `role_id`
-- `consultor_id`
-- `status`
+## 7.2 Proposta de produtor
+`consultor.propostas.produtor.*` → `Admin\Proposta\ProducerProposalController` + `CreateProducerProposalService`:
+1. o consultor escolhe um produtor existente ou informa um novo;
+2. `CreateOrFindProducerProfileService` busca por CPF/CNPJ em `ProducerProfile`; se não houver, cria `UserContact` + `ProducerProfile` (status `prospect`) + regra de taxa de administração padrão;
+3. grava a `ProducerProposal` e gera o PDF (`producer-proposal-modern.blade.php`, rota `consultor.propostas.produtor.pdf`).
 
-Relacionamentos principais:
-- `userData()`
-- `contatos()`
-- `consultor()`
-- `clientes()`
-- `produtores()`
-- `producerProfile()`
-- `usinas()`
-- `usinasComoConsultor()`
+> O fluxo legado em `auth/*` (`Auth\Produtor\ProdutorPropostasController` + `ProdutorPropostaRepository` → `User`/`UserData`/`UserContact`/`ProducerProfile`) é restrito ao admin e não deve ser usado como modelo para código novo.
 
-## 8.2 UserData
-Dados pessoais/documentais do usuário:
-- CPF/CNPJ
-- nome/razão social
-- tipo de pessoa
-- dados cadastrais complementares
+## 7.3 Cadastro de usina
+`Admin\Usina\UsinaSolarController` + `StoreUsinaSolarRequest` (admin ou consultor): exige `producer_profile_id` existente e `consultor_user_id` com role consultor; telas em `Consultor/Producer/Usina/{Create,Edit}`.
 
-Regra importante:
-- CPF/CNPJ são usados para identificar duplicidade e reaproveitamento de produtor no fluxo de proposta
+## 7.4 Faturas de concessionária
+1. `concessionaire-bills:import` (de hora em hora) lê as caixas IMAP (`ImportEmailAccount`, uma por cliente via `ClientEmailImportSetting`), desbloqueia o PDF com a senha cadastrada e extrai os dados (parser por concessionária, ex.: `CopelBillParserService`); também há upload manual.
+2. Cada execução fica em `ImportRun` (tela de histórico de importação, com disparo manual).
+3. A fatura entra em revisão (`BillReviewStatus`); o consultor/admin confere, corrige e aprova.
+4. A aprovação gera a cobrança.
+5. `concessionaire-bills:reprocess` reprocessa o parser de faturas já importadas.
 
-## 8.3 UserContact
-Tabela/model para contatos do usuário:
-- email
-- celular
-- celular_2
-- telefone
+## 7.5 Pagamento
+1. Na cobrança: **Gerar pagamento → Mercado Pago Pix ou Boleto** (`GeneratePaymentSlipService`, com `Cache::lock` e `X-Idempotency-Key`).
+2. O cliente recebe e-mail (`ChargePaymentMail`) e vê Pix copia e cola, linha digitável e PDF no portal (`cliente.cobrancas.show`).
+3. Baixa por webhook (`/webhooks/payments/mercado-pago`, assinatura obrigatória, processado em fila) ou pela sincronização a cada 5 min.
+4. Boleto vencido vira `expired`, alerta o consultor e continua sendo sincronizado por 10 dias.
 
-## 8.4 ProducerProfile
-Perfil estruturado do produtor/proprietário:
-- `user_id`
-- `created_by_user_id`
-- dados administrativos
-- dados da usina
-- potência, geração, prazo etc.
-
-## 8.5 ProducerLead
-Lead comercial do produtor:
-- consultor responsável
-- perfil de produtor
-- status comercial
-- observações e dados de negociação
-
-## 8.6 ProdutorPropostas
-Entidade de proposta comercial do produtor:
-- `produtor_id`
-- `consultor_id`
-- `potencia`
-- `geracao_media`
-- `valor_investimento`
-- `prazo_locacao`
-- `taxa_reducao`
-
-## 8.7 ProdutorPropostasEnderecos
-Endereço do local da usina vinculado à proposta do produtor.
-
-## 8.8 UsinaSolar
-Entidade formal da usina:
-- `producer_profile_id` = produtor proprietário (FK para `ProducerProfile`)
-- `consultor_user_id` = consultor responsável
-- `concessionaria_id`
-- `usina_block_id`
-- `address_id`
-- `status`
-- `uc`
-- `media_geracao`
-- `prazo_locacao`
-- `potencia_usina`
-- `taxa_comissao`
-- `inversores`
-- `modulos`
-- `energia_disponivel_kwh`, `energia_alocada_kwh`, `energia_saldo_kwh`
+## 7.6 Dashboards
+| Perfil | Controller | Conteúdo |
+|--------|-----------|----------|
+| Admin | `Admin\Dashboard\AdminDashboardController` (+ cockpit executivo em `admin/cockpit`) | Visão global: clientes, propostas, faturas em revisão, cobranças, receita, falhas de pagamento/webhook |
+| Consultor | `Consultor\Dashboard\ConsultorDashboardController` | Carteira própria |
+| Cliente | `Cliente\DashboardController` | Faturas, consumo, cobranças, economia acumulada |
+| Produtor | `Produtor\DashboardController` | Perfil, usinas e leads relacionados |
 
 ---
 
-# 9. Regras importantes de manutenção
+# 8. Automações e alertas
 
-## 9.1 Nunca tratar produtor como cliente comum no código novo
-Embora existam semelhanças de fluxo, **produtor é role própria**.
-Não criar lógica nova assumindo que produtor é apenas uma variação informal de cliente.
+Agendamentos (`routes/console.php`, todos com `withoutOverlapping()`; desligados em `DEMO_MODE`):
 
-## 9.2 `UsinaSolar.producer_profile_id` significa produtor
-Em toda evolução futura, lembrar:
-- `producer_profile_id` de usina = produtor proprietário
-- `UsinaSolar.user_id` **não existe mais** (removido); ignorar o método legado `user()` no model
-- não usar esse campo para outro tipo de usuário
+| Comando | Frequência | O que faz |
+|---------|-----------|-----------|
+| `concessionaire-bills:import` | de hora em hora | Importa faturas por IMAP |
+| `casaverde:generate-monthly-charges` | de hora em hora | Gera cobranças de faturas aprovadas |
+| `casaverde:mark-overdue-charges` | 10 min | Marca cobranças vencidas |
+| `casaverde:sync-payments` | 5 min | Sincroniza pagamentos pendentes com o Mercado Pago |
+| `casaverde:expire-payment-slips` | 06:00 | Expira boletos/Pix vencidos |
+| `casaverde:send-charge-reminders` | 08:00 | Lembretes pré e pós-vencimento (alerta + link WhatsApp; e-mail ao cliente 3 dias antes) |
+| `casaverde:scan-operational-health` | hora:30 | Varredura de saúde operacional |
+| `queue:prune-failed` | diário | Limpa jobs falhos com mais de 30 dias |
+| `prune-temporary-pdfs` | diário | Apaga PDFs temporários (roda também na demonstração) |
 
-## 9.3 Não duplicar produtor por CPF/CNPJ
-O fluxo correto é:
-- buscar em `UserData`
-- reutilizar o usuário existente
-- garantir `ProducerProfile`
-- continuar o fluxo
-
-## 9.4 Sempre validar role no backend
-Não confiar apenas no frontend.
-
-Exemplo:
-- `StoreUsinaSolarRequest` valida que `user_id` é produtor
-- `StoreUsinaSolarRequest` valida que `consultor_user_id` é consultor
-
-## 9.5 Ao criar produtor inline, garantir a cadeia completa
-Quando houver criação inline via proposta, garantir:
-- `User`
-- `UserData`
-- `UserContact`
-- `ProducerProfile`
-
-## 9.6 Não acoplar regras de menu ao backend
-O backend controla acesso por middleware/rotas/request.
-O frontend deve exibir menu conforme `auth.user.role_name`, mas isso não substitui autorização backend.
+**Alertas operacionais** (`OperationalAlert`, tela Alertas Operacionais + sino no cabeçalho): toda falha que compromete faturamento ou operação — caixa IMAP inacessível, PDF ilegível, Mercado Pago recusando, credencial inválida, webhook falhando, job que esgota tentativas, tarefa agendada que falha, faturas paradas em revisão, cobranças sem boleto perto do vencimento etc. O alerta é único por módulo + tipo + registro, é renovado se a falha se repete e se resolve sozinho. Admin vê tudo; consultor vê só alertas financeiros da própria carteira. Detalhes em `CLAUDE.md`.
 
 ---
 
-# 10. Fluxos principais
+# 9. Segurança e autorização
 
-## 10.1 Login e redirecionamento
-Arquivo-chave:
-- `app/Http/Middleware/RedirectUserByRole.php`
-
-Fluxo:
-- acesso em `/dashboard`
-- middleware detecta `role_id`
-- redireciona para:
-  - `admin.dashboard`
-  - `cliente.dashboard`
-  - `produtor.dashboard`
-
-## 10.2 Proposta de produtor
-Controller principal:
-- `App\Http\Controllers\Auth\Produtor\ProdutorPropostasController`
-
-Request principal:
-- `App\Http\Requests\Produtor\StoreProdutorPropostaRequest`
-
-Repository principal:
-- `App\Repositories\Produtor\ProdutorPropostaRepository`
-
-Fluxo:
-1. consultor abre formulário
-2. escolhe produtor existente ou novo
-3. informa dados da proposta
-4. informa endereço
-5. request valida dados
-6. repository cria/reaproveita produtor
-7. cria proposta
-8. cria endereço da proposta
-9. garante `ProducerProfile`
-
-## 10.3 Cadastro de usina
-Controller principal:
-- `App\Http\Controllers\Admin\Usina\UsinaSolarController`
-
-Request principal:
-- `App\Http\Requests\Usina\StoreUsinaSolarRequest`
-
-Fluxo:
-1. selecionar produtor proprietário
-2. selecionar consultor responsável
-3. preencher dados operacionais da usina
-4. salvar `UsinaSolar`
-5. sincronizar `ProducerProfile`
-
-## 10.4 Dashboard administrativo
-Controller principal:
-- `App\Http\Controllers\Admin\DashboardController`
-
-Regra:
-- só admin (visão global da empresa)
-- o consultor usa o próprio dashboard (`consultor.dashboard`), restrito à carteira
-
-## 10.5 Dashboard do produtor
-Controller principal:
-- `App\Http\Controllers\Produtor\DashboardController`
-
-Mostra:
-- perfil do produtor
-- usinas do produtor
-- leads relacionados ao produtor
-
-## 10.6 Dashboard do cliente
-Controller principal:
-- `App\Http\Controllers\Cliente\DashboardController`
-
-Mostra:
-- perfil do cliente
-- faturas do cliente
+- `EnsureUserHasRole` (`role:admin,consultor` etc.) nos grupos de rota; Policies e `abort_if` por registro; FormRequests validam a role.
+- `admin/*` é só admin, exceto o grupo de cobranças, pagamentos, alertas e relatórios (admin + consultor, filtrado pela carteira). Webhooks de pagamento, contas de pagamento, integrações, configurações e cockpit são só admin.
+- `auth/*` (módulo legado) é só admin, porque os controllers não filtram por carteira.
+- Portais de cliente e produtor filtram por `platform_user_id`.
+- Senhas: `Password::defaults()` (8+ caracteres, letras e números; em produção também `uncompromised()`); rate limit no login, recuperação de senha e ativações.
+- Segredos (`client_secret`, `webhook_secret`, senhas IMAP e de PDF) com cast `encrypted` e `$hidden`.
+- `SecurityHeaders` (X-Frame-Options, nosniff, Referrer-Policy, Permissions-Policy, HSTS); `trustProxies(at: '*')` porque a aplicação roda atrás de Cloudflare + nginx.
+- Faturas e PDFs de proposta ficam no disco `local`, servidos por controller autenticado ou link assinado.
+- Isolamento entre roles e carteiras coberto por `tests/Feature/Security/AccessIsolationTest.php`.
 
 ---
 
-# 11. Middlewares e permissões
+# 10. Frontend
 
-## 11.1 EnsureUserHasRole
-Arquivo:
-- `app/Http/Middleware/EnsureUserHasRole.php`
-
-Responsabilidade:
-- permitir acesso apenas para roles autorizadas em uma rota/grupo
-
-Uso:
-- `role:admin,consultor`
-- `role:cliente`
-- `role:produtor`
-
-## 11.2 RedirectUserByRole
-Arquivo:
-- `app/Http/Middleware/RedirectUserByRole.php`
-
-Responsabilidade:
-- redirecionar o usuário logado do `/dashboard` para o dashboard certo conforme role
-
-## 11.3 HandleInertiaRequests
-Arquivo:
-- `app/Http/Middleware/HandleInertiaRequests.php`
-
-Responsabilidade:
-- compartilhar `auth.user` com o frontend
-- fornecer `role_name`, `status`, `consultor_id` etc.
+- Páginas Inertia + React em `resources/js/Pages/<Área>/<Entidade>/<Ação>/Page.jsx`; componentes compartilhados em `resources/js/Components/`; layout em `Layouts/AppShell/`.
+- Menu montado por `auth.user.role_name` — apenas conveniência; a segurança é sempre do backend.
+- Props globais (`HandleInertiaRequests`): `auth.user`, `alert`, `flash`, `navBadges`, `whatsappTemplates`, `brand` (Identidade Visual) e `demo`.
+- Hooks: `useAuthUser`, `useCanAccess`, `useInputMask`, `useBrandName`.
+- Toda listagem com filtros cuja entidade se relaciona com `ClientProfile` tem filtro `client_name` (nome, razão social, nome fantasia).
 
 ---
 
-# 12. Rotas principais
-
-## 12.1 Rotas web
-Arquivo:
-- `routes/web.php`
-
-Responsabilidade:
-- carregar módulos de rota
-- registrar dashboard com redirecionamento por role
-- registrar fluxos de ativação
-
-## 12.2 Rotas admin
-Arquivo:
-- `routes/admin/index.php`
-
-Responsabilidade:
-- agrupar as rotas administrativas: por padrão `auth` + `role:admin`; um grupo separado libera ao consultor cobranças, pagamentos, alertas e relatórios de clientes/usinas (filtrados pela carteira)
-
-## 12.3 Rotas cliente
-Arquivo:
-- `routes/cliente/index.php`
-
-## 12.4 Rotas produtor
-Arquivo:
-- `routes/produtor/index.php`
-
----
-
-# 13. Frontend e navegação
-
-## 13.1 Inertia + React
-Todas as páginas usam Inertia + React, com `useForm` para formulários e MUI para interface.
-
-## 13.2 Regra de menu
-O frontend deve construir o menu conforme:
-- `auth.user.role_name`
-
-Padrão recomendado:
-- admin/consultor → menu administrativo
-- cliente → menu do cliente
-- produtor → menu do produtor
-
-## 13.3 Regra de exibição
-Mesmo que o menu esconda itens, a segurança real sempre deve estar no backend.
-
----
-
-# 14. Arquivos-chave do projeto
-
-## Backend
-- `app/src/Roles/RoleUser.php`
-- `app/Http/Middleware/EnsureUserHasRole.php`
-- `app/Http/Middleware/RedirectUserByRole.php`
-- `app/Http/Middleware/HandleInertiaRequests.php`
-- `app/Http/Controllers/Admin/DashboardController.php`
-- `app/Http/Controllers/Cliente/DashboardController.php`
-- `app/Http/Controllers/Produtor/DashboardController.php`
-- `app/Http/Controllers/Auth/Produtor/ProdutorPropostasController.php`
-- `app/Http/Controllers/Admin/Usina/UsinaSolarController.php`
-- `app/Http/Requests/Produtor/StoreProdutorPropostaRequest.php`
-- `app/Http/Requests/Usina/StoreUsinaSolarRequest.php`
-- `app/Repositories/Produtor/ProdutorPropostaRepository.php`
-- `app/Models/Users/User.php`
-- `app/Models/Users/UserData.php`
-- `app/Models/Users/UserContact.php`
-- `app/Models/Produtor/ProducerProfile.php`
-- `app/Models/Produtor/ProducerLead.php`
-- `app/Models/Produtor/ProdutorPropostas.php`
-- `app/Models/Produtor/ProdutorPropostasEnderecos.php`
-- `app/Models/Usina/UsinaSolar.php`
-- `app/Http/Controllers/Admin/Cobranca/CustomerChargeController.php` + `app/Repositories/Cobranca/CustomerChargeRepository.php`
-- `app/Http/Controllers/Admin/Pagamento/PaymentSlipController.php` + `app/Repositories/Pagamento/PaymentSlipRepository.php`
-- `app/Http/Controllers/Admin/Relatorio/BillReportController.php` + `app/Services/Admin/Reports/BillReportService.php`
-- `app/Services/Pagamento/Providers/MercadoPago/` (integração Mercado Pago, em produção)
-- `app/Services/Imap/AbstractImapFetcherService.php` (importação de faturas via IMAP)
-
-## Frontend
-- `resources/js/Pages/Auth/Produtor/Proposta/Create/Page.jsx`
-- `resources/js/Pages/Auth/Produtor/Proposta/Create/ConsumoDados.jsx`
-- `resources/js/Pages/Auth/Produtor/Proposta/Create/PropostaCard.jsx`
-- `resources/js/Components/UserData/DadosPessoais.jsx`
-- `resources/js/Components/UserData/Contato.jsx`
-- `resources/js/Components/UserData/Endereco.jsx`
-- `resources/js/Pages/Consultor/Producer/Usina/Create/Page.jsx`
-- `resources/js/Pages/Consultor/Producer/Usina/Edit/Page.jsx`
-- `resources/js/Pages/Admin/Cobranca/Index/Page.jsx`
-- `resources/js/Pages/Admin/Financeiro/Pagamento/Index/Page.jsx`
-- `resources/js/Pages/Admin/Relatorio/Fatura/Page.jsx`
-
----
-
-# 15. Como subir o projeto
+# 11. Instalação e execução
 
 ## Requisitos
-- PHP 8.2+
-- Composer
-- Node.js
-- NPM ou PNPM
-- banco configurado
+- PHP 8.3 (extensões `imap`, `pdo_mysql`, `pdo_sqlite` para testes), Composer
+- Node.js 22 + npm
+- MySQL 8.0
+- `wkhtmltopdf`, `qpdf` e `poppler-utils` (`pdftotext`)
 
-## Instalação
+## Desenvolvimento
 ```bash
 composer install
 npm install
 cp .env.example .env
-php artisan key:generate
-php artisan migrate
+php83 artisan key:generate
+php83 artisan migrate --seed
 npm run dev
-php artisan serve
+php83 artisan serve
 ```
 
-## Em ambiente Sail
+O `DatabaseSeeder` cria roles, usuários iniciais (admin `admin@teste.com` / `1020` — troque em qualquer ambiente acessível), concessionárias, configurações, modelos de WhatsApp e dados de exemplo. Para a conta do Mercado Pago: preencha `MERCADOPAGO_*` no `.env` e rode `php83 artisan db:seed --class=PaymentProviderAccountSeeder` (ou cadastre em **Financeiro → Contas de Pagamento**).
+
+## Laravel Sail
 ```bash
 ./vendor/bin/sail up -d
 ./vendor/bin/sail composer install
 ./vendor/bin/sail npm install
 ./vendor/bin/sail artisan key:generate
-./vendor/bin/sail artisan migrate
+./vendor/bin/sail artisan migrate --seed
 ./vendor/bin/sail npm run dev
 ```
+A imagem do Sail já instala o `wkhtmltopdf`.
 
----
-
-# 16. Dependências de PDF
-
-## wkhtmltopdf
-Em algumas partes do projeto, pode ser necessário:
-
-### Ubuntu
+## wkhtmltopdf fora do Sail (Ubuntu)
 ```bash
 sudo apt update -y
-sudo apt install -y wkhtmltopdf
+sudo apt install -y wkhtmltopdf qpdf poppler-utils
 ```
 
-### Laravel Sail
-```bash
-sail root-shell
-apt update
-apt install -y software-properties-common
-add-apt-repository ppa:savoirfairelinux/wkhtmltopdf
-apt update
-apt install -y wkhtmltopdf
-which wkhtmltopdf
-```
+## Produção
+Cron (`* * * * * cd /caminho && php83 artisan schedule:run`), worker permanente (`php83 artisan queue:work --tries=3 --max-time=3600`, systemd com reinício automático), `.env` de produção e checklist de deploy: ver **`LANCAMENTO.md`**. Configuração do Mercado Pago: **`MERCADO_PAGO.md`**. Instância de demonstração: **`DEMO.md`**.
 
 ---
 
-# 17. Diretrizes para manutenção
+# 12. Testes e qualidade
 
-## 17.1 Antes de alterar uma entidade, localizar todos os pontos de impacto
-Exemplo: alterar `UsinaSolar` pode impactar:
-- request
-- controller
-- frontend create/edit
-- `ProducerProfile`
-- dashboards
-- filtros por consultor
-
-## 17.2 Manter coerência entre backend e frontend
-Toda alteração em campo/formulário deve ser refletida em:
-- migration/model
-- request
-- controller/repository/service
-- página React/Inertia correspondente
-
-## 17.3 Não remover regras de domínio silenciosamente
-Se um campo estiver aparentemente redundante, primeiro verificar se ele não está sendo usado em:
-- dashboard
-- PDF
-- filtros
-- sincronização com perfil
-- automações futuras
-
-## 17.4 Preferir centralização de regra de domínio
-Exemplos:
-- validação em `FormRequest`
-- criação composta em `Repository`/`Service`
-- autorização em middleware e backend
-
-## 17.5 Para novas equipes
-Começar sempre por esta ordem:
-1. ler este README por completo
-2. ler `CLAUDE.md` (referência operacional atualizada: models, enums, jobs, dívida técnica)
-3. revisar `RoleUser`
-4. revisar `User`, `ProducerProfile`, `UsinaSolar`, `ClientProfile`
-5. revisar middlewares
-6. revisar rotas
-7. revisar requests
-8. revisar controllers e repositories principais
-9. só depois alterar frontend
+- Pest PHP + SQLite in-memory (`phpunit.xml`); nunca MySQL nos testes.
+- `php83 artisan test` — 94 arquivos, ~558 casos (out/2026). Requer as dependências de desenvolvimento do Composer.
+- `Http::preventStrayRequests()` em `tests/Pest.php`: nenhuma chamada sai para o Mercado Pago; helpers `mercadoPagoAccount()` e `mpOrder()`.
+- `./vendor/bin/pint` para formatação.
+- CI em `.github/workflows/ci.yml`: Pint, testes (PHP 8.3) e build do frontend (Node 22).
+- Sem cobertura: geração de PDF via snappy (propostas legadas).
 
 ---
 
-# 18. Pontos de atenção históricos
+# 13. Diretrizes de manutenção
 
-## 18.1 README antigo desatualizado
-Versões anteriores desta documentação tratavam `produtor` como legado transitório.
-Isso não representa mais o estado atual do código.
+1. **Antes de alterar uma entidade, localize todos os pontos de impacto** — migration/model, FormRequest, controller/service/repository, página React, PDFs, filtros por consultor, dashboards, testes.
+2. **Produtor não é variação de cliente** — role e domínio próprios.
+3. **`producer_profile_id` na usina é o dono**; não reutilizar o campo para outro tipo de usuário.
+4. **Não duplicar cadastros por documento** (cliente em `ClientProfile`, produtor em `ProducerProfile`).
+5. **Autorização no backend**: role no grupo de rotas + policy/`abort_if` por registro + `FormRequest::authorize()` validando role (e carteira na edição).
+6. **Toda falha que afeta faturamento vira `OperationalAlert`** (via `OperationalAlertNotifier`), não só log.
+7. **Rota POST que só lê dados** precisa entrar em `config/demo.php` → `readonly_post_routes`.
+8. **Nada de nome de marca fixo** em telas, PDFs, e-mails ou seeders.
+9. **Não remover campos "redundantes" sem checar** PDFs, filtros, sincronizações e relatórios.
+10. **Documentação no mesmo commit**: mudou estrutura, atualize `CLAUDE.md` (e o documento específico).
 
-## 18.2 Campos com significado implícito
-`UsinaSolar.producer_profile_id` significa **produtor proprietário**.
-Isso deve ser lembrado por qualquer nova equipe.
-(Histórico: antes da migration `2026_05_19` essa referência era feita por `UsinaSolar.user_id`, coluna hoje removida.)
-
-## 18.3 Fluxos híbridos em evolução
-O projeto passou por evolução incremental. Por isso, em algumas áreas pode existir nomenclatura antiga convivendo com a nova.
-Ao manter o sistema, priorizar sempre a regra atual documentada aqui.
-
----
-
-# 19. Próximas recomendações arquiteturais
-
-## Curto prazo
-- consolidar menus finais por role no frontend
-- revisar dashboards React para cada perfil
-- padronizar nomenclatura de campos compartilhados
-
-## Médio prazo
-- padronizar services/repositories mais sensíveis (ex.: dividir `ClientReportService`, `ImportAutomaticConcessionaireBillService`)
-- revisar `FormRequest::authorize()` que hoje só checam `auth()->check()` sem validar a role
-- criar testes automatizados para geração de PDF (pagamentos, IMAP e WhatsApp já cobertos)
-
-## Longo prazo
-- congelamento por competência
-- auditoria operacional
-- relatórios estratégicos
-- integração financeira aprofundada
+Ordem de leitura sugerida para quem chega: este README → `CLAUDE.md` → `RoleUser` → models `User`, `ClientProfile`, `ProducerProfile`, `UsinaSolar`, `CustomerCharge` → middlewares → `routes/` → FormRequests e Policies → Services do domínio que vai mexer → páginas React.
 
 ---
 
-# 20. Resumo executivo para nova equipe
+# 14. Arquivos-chave
 
-Se você está assumindo este projeto agora, memorize estes pontos:
+## Backend
+- `app/src/Roles/RoleUser.php`
+- `app/Http/Middleware/{EnsureUserHasRole,RedirectUserByRole,HandleInertiaRequests,SecurityHeaders,DemoMode}.php`
+- `app/Providers/AppServiceProvider.php` (policies, `Password::defaults()`, ouvintes de falha de job/agendamento)
+- `app/Models/Usina/UsinaSolar.php`, `app/Models/Produtor/ProducerProfile.php`, `app/Models/Cliente/ClientProfile.php`, `app/Models/Cobranca/CustomerCharge.php`
+- `app/Http/Controllers/Admin/Proposta/{ClientProposalController,ProducerProposalController}.php`
+- `app/Services/Produtor/CreateOrFindProducerProfileService.php`
+- `app/Http/Controllers/Admin/Usina/UsinaSolarController.php` + `app/Http/Requests/Usina/StoreUsinaSolarRequest.php`
+- `app/Http/Controllers/Admin/Cobranca/CustomerChargeController.php` + `app/Repositories/Cobranca/CustomerChargeRepository.php`
+- `app/Http/Controllers/Admin/Pagamento/PaymentSlipController.php` + `app/Repositories/Pagamento/PaymentSlipRepository.php`
+- `app/Services/Pagamento/GeneratePaymentSlipService.php` e `app/Services/Pagamento/Providers/MercadoPago/`
+- `app/Http/Controllers/Webhook/Payments/MercadoPagoWebhookController.php`
+- `app/Services/Fatura/ImportAutomaticConcessionaireBillService.php` e `app/Services/Imap/AbstractImapFetcherService.php`
+- `app/Services/Automation/` (cobrança, pagamento, lembretes) e `app/Services/Alert/` (alertas)
+- `app/Http/Controllers/Admin/Relatorio/BillReportController.php` + `app/Services/Admin/Reports/`
+- `routes/console.php` (agendamentos), `config/demo.php`
 
-1. o sistema é um CRM/ERP de operação de energia por compensação/assinatura, com ciclo completo até cobrança e pagamento
-2. existem quatro roles oficiais: admin, consultor, cliente e produtor
-3. produtor é role oficial e também entidade de domínio
-4. toda usina pertence a um produtor via `producer_profile_id` (não existe mais `UsinaSolar.user_id`)
-5. consultor é responsável comercial por clientes, produtores e usinas de sua carteira (scoping obrigatório)
-6. proposta de produtor pode criar o produtor inline
-7. `ProducerProfile` é obrigatório para o domínio de produtor ficar consistente
-8. faturas de concessionária são importadas via IMAP/upload, aprovadas e geram `CustomerCharge`, que por sua vez gera pagamento via Mercado Pago (boleto/Pix)
-9. o backend é a fonte real de autorização
-10. o frontend usa Inertia + React + MUI
-11. qualquer mudança relevante deve manter coerência entre model, request, controller, repository e página React correspondente
-12. para detalhes operacionais atualizados (models, enums, jobs, dívida técnica, comandos), consultar `CLAUDE.md`
+## Frontend
+- `resources/js/Layouts/AppShell/` (sidebar, header, breadcrumbs)
+- `resources/js/Pages/Admin/Cobranca/{Index,Show}/Page.jsx`
+- `resources/js/Pages/Admin/Financeiro/Pagamento/{Index,Show}/Page.jsx`
+- `resources/js/Pages/Consultor/Cliente/Fatura/Show/Page.jsx` (revisão de fatura)
+- `resources/js/Pages/Consultor/Producer/Usina/{Create,Edit}/Page.jsx`
+- `resources/js/Pages/Cliente/Cobrancas/Show/` (pagamento pelo portal)
+- `resources/js/Pages/Admin/Relatorio/Fatura/Page.jsx`
+- `resources/js/Components/Demo/DemoBar.jsx`, `resources/js/Demo/demoGuard.js`
 
 ---
 
-# 21. Licença / observações finais
+# 15. Histórico de decisões
 
-Projeto interno.
-Documentação mantida para facilitar continuidade, manutenção, onboarding técnico e uso com IAs de programação.
+| Data | Decisão |
+|------|---------|
+| 2026-05 | Produtor deixa de ser legado e vira role oficial com `ProducerProfile` obrigatório. |
+| 2026-05-19 | `UsinaSolar.user_id` removido; dono da usina passa a ser `producer_profile_id`. |
+| 2026-06 | Lembretes de cobrança via alerta + link WhatsApp; Policies de usina, cobrança e produtor. |
+| 2026-07 | Integração Mercado Pago (Orders API). |
+| 2026-08 | Histórico de alterações da cobrança, PDF do boleto com código de barras, várias cobranças por fatura. |
+| 2026-10-02/03 | Endurecimento do Mercado Pago (webhook com assinatura obrigatória, boleto vencido); isolamento de dados entre roles; **Cora removida**; alertas operacionais para toda falha de faturamento; pagamento pelo portal do cliente e e-mails ao cliente; PDFs de proposta por link assinado; política de senha; CI. |
+| 2026-10-04/05 | Identidade Visual controla nome/cores/logos (nada de marca fixa); **modo demonstração** (`DEMO_MODE`) com dados fictícios e PDFs de proposta novos. |
+
+Documentos antigos (`ANALISE.md`, `RELATORIO_ERROS.md`) tratam produtor como legado e citam a Cora — não representam o estado atual.
+
+---
+
+# 16. Próximos passos
+
+Pendências de lançamento, itens adiados e dívida técnica estão priorizados em **`LANCAMENTO.md`** e na tabela de dívida técnica do **`CLAUDE.md`**. Em resumo:
+
+- **Operação:** backup externo do banco e de `storage/app` (com o `APP_KEY` guardado em cofre), monitoramento de erros e disponibilidade.
+- **Produto:** LGPD (política, termos, aceite), portal do produtor mais completo (repasses, contratos), trilha de auditoria além das cobranças, 2FA para admins.
+- **Código:** concluir ou remover convite de produtor e telas `fatura-import-settings`; migrar e remover o módulo legado `auth/*`; dividir services/telas grandes; injetar dependências em vez de `new`; testes de PDF; reduzir o bundle do frontend.
+
+---
+
+# 17. Resumo para nova equipe
+
+1. CRM/ERP de energia solar por compensação/assinatura, da proposta ao pagamento.
+2. Quatro roles: admin, consultor, cliente, produtor — consultor sempre restrito à carteira.
+3. Toda usina tem dono (`producer_profile_id`) e consultor (`consultor_user_id`); não existe `UsinaSolar.user_id`.
+4. Cliente e produtor guardam CPF/CNPJ no próprio perfil; nunca duplicar por documento.
+5. Fatura importada → revisada → aprovada → cobrança → Pix/boleto (manual) → baixa automática.
+6. Pagamentos só pelo Mercado Pago; webhook exige `webhook_secret`.
+7. Falhas viram alertas operacionais, não só log.
+8. Backend é a fonte de autorização; frontend é Inertia + React + MUI.
+9. Marca vem da Identidade Visual; existe um modo demonstração somente leitura.
+10. Produção roda PHP 8.3 (`php83`); testes em SQLite.
+11. Referência operacional: `CLAUDE.md`.
+
+---
+
+Projeto interno. Documentação mantida para continuidade, onboarding técnico e uso com IAs de programação.

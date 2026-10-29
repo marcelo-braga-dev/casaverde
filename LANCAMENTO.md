@@ -4,6 +4,7 @@
 > Destinado a: equipe de desenvolvimento e operação (ou agente com acesso ao repositório).
 > Ao concluir um item, marque o checkbox e anote a data/commit.
 > **Atualizado em 2026-10-03:** itens 1, 2, 4 (parte de código), 6, 9, 10, 11 e 17 implementados; 8 já estava coberto; 16 descartado (ver justificativa). Suíte: 561 testes passando. Ao corrigir código, seguir as convenções de `CLAUDE.md`.
+> **Atualizado em 2026-10-29:** itens 4 e 5 conferidos no servidor de produção (`/www/wwwroot/casa_verde/crm`): `.env` com os valores de produção, cron `php83 artisan schedule:run` e worker `casa-verde-queue` ativos. **Todos os bloqueadores estão resolvidos.** Atenção: a produção está no commit `30b6e0d` (2026-10-04) e ainda não recebeu os commits seguintes de `main` (Identidade Visual sem "Casa Verde" fixo, correção de três telas com erro 500, modo demonstração) — fazer o deploy pelo checklist do fim deste documento.
 
 ---
 
@@ -28,7 +29,7 @@ O sistema está em bom estado técnico. O que falta para o lançamento é sobret
 
 ### Ordem de execução sugerida
 
-Pendentes para o lançamento: **4** (`.env` do servidor) e **5** (cron + worker). Itens 3, 7, 12, 13, 14 e 15 ficaram fora do escopo do lançamento por decisão de 2026-10-03.
+Nenhum bloqueador pendente (4 e 5 concluídos em produção). Itens 3, 7, 12, 13, 14 e 15 ficaram fora do escopo do lançamento por decisão de 2026-10-03 — recomenda-se retomar o **3 (backup)** antes de qualquer outro, por ser o único cujo risco é perda irreversível de dados.
 
 ---
 
@@ -71,7 +72,7 @@ Pendentes para o lançamento: **4** (`.env` do servidor) e **5** (cron + worker)
 
 ### 4. `.env` de produção
 
-- [ ] Concluído — `.env.example` corrigido em 2026-10-03 (fuso, locale, log diário, `SESSION_SECURE_COOKIE`, nota de produção). **Falta:** configurar o `.env` do servidor.
+- [x] Concluído — `.env.example` corrigido em 2026-10-03 (fuso, locale, log diário, `SESSION_SECURE_COOKIE`, nota de produção); `.env` de produção conferido em 2026-10-29 (`APP_ENV=production`, `APP_DEBUG=false`, `APP_TIMEZONE=America/Sao_Paulo`, `APP_LOCALE=pt_BR`, `LOG_STACK=daily`, `LOG_LEVEL=warning`, `SESSION_SECURE_COOKIE=true`, `MAIL_MAILER=smtp`).
 - **Problema:** `.env.example` traz valores de desenvolvimento que, copiados para produção, causam erros silenciosos:
   - `APP_TIMEZONE=UTC` sobrescreve o padrão `America/Sao_Paulo` de `config/app.php` → os agendamentos rodam 3h adiantados (lembrete das 08:00 sai às 05:00; expiração de boletos às 03:00).
   - `APP_DEBUG=true` expõe stack traces e variáveis de ambiente.
@@ -89,16 +90,16 @@ Pendentes para o lançamento: **4** (`.env` do servidor) e **5** (cron + worker)
   SESSION_SECURE_COOKIE=true
   ```
   Mais as credenciais de produção do Mercado Pago, incluindo `MERCADOPAGO_WEBHOOK_SECRET` (ver `MERCADO_PAGO.md`, seção 5).
-- **Após configurar:** `php artisan config:cache && php artisan route:cache && php artisan view:cache`.
+- **Após configurar:** `php83 artisan config:cache && php83 artisan route:cache && php83 artisan view:cache`.
 
 ### 5. Processos de infraestrutura
 
-- [ ] Concluído
+- [x] Concluído — conferido em 2026-10-29: cron do root roda `php83 artisan schedule:run` a cada minuto como usuário `www`; serviço systemd `casa-verde-queue` ativo (`/usr/bin/php83 artisan queue:work --sleep=3 --tries=3 --max-time=3600`, `Restart=always`).
 - **Problema:** o sistema depende de agendador e fila para funcionar.
 - **Ação:**
-  - Cron do agendador (a cada minuto): `* * * * * cd /caminho && php artisan schedule:run >> /dev/null 2>&1`.
-  - Worker da fila permanente via Supervisor/systemd: `php artisan queue:work --tries=3 --max-time=3600`, com reinício automático.
-  - Incluir `php artisan queue:restart` no processo de deploy.
+  - Cron do agendador (a cada minuto): `* * * * * cd /caminho && php83 artisan schedule:run >> /dev/null 2>&1`.
+  - Worker da fila permanente via Supervisor/systemd: `php83 artisan queue:work --tries=3 --max-time=3600`, com reinício automático.
+  - Incluir `php83 artisan queue:restart` no processo de deploy.
 - **Impacto se faltar:** sem worker, webhooks de pagamento ficam em `received` e nunca baixam cobranças; sem cron, não há importação de faturas, cobranças mensais, marcação de vencidas nem lembretes.
 
 ---
@@ -203,7 +204,9 @@ Pendentes para o lançamento: **4** (`.env` do servidor) e **5** (cron + worker)
 |------|-----------|------|
 | Instanciação direta de Services/Repositories | 32 ocorrências de `new XService`/`new XRepository` em `app/` (ex.: `Admin/Config/ConfigController.php`, `GetProdutorApiController.php`, `Contratos/Usina/ContratoUsinaController.php`) | Injetar via construtor (convenção do `CLAUDE.md`) |
 | Arquivos PHP grandes | `ClientReportService` (342), `ImportAutomaticConcessionaireBillService` (340), `ClientProposalController` (335), `ScanUsinaOperationalAlertsService` (283), `OperationalHealthScanService` (277) | Dividir em classes menores |
-| Telas JSX grandes | `Auth/Contratos/Usinas/Contrato/ContratoUsina.jsx` (1120), `Admin/Cobranca/Show/Page.jsx` (1091), `Admin/Integracao/Page.jsx` (1068) | Extrair componentes em `Partials/` |
+| Telas JSX grandes | `Auth/Contratos/Usinas/Contrato/ContratoUsina.jsx` (1124), `Admin/Cobranca/Show/Page.jsx` (1091), `Admin/Integracao/Page.jsx` (1068) | Extrair componentes em `Partials/` |
+| Models legados na raiz de `app/Models` | `BaseModel`, `Concessionarias`, `Config`, `Enderecos` | Migrar usos para os models de domínio e remover |
+| Retentativas nos jobs do Mercado Pago | `SyncPaymentStatusJob` sem `$tries`/`$backoff` (item 8) | Definir quando houver falhas transitórias recorrentes |
 | Módulo legado `auth/*` | `app/Http/Controllers/Auth/**`, `routes/auth/**` | Migrar telas úteis para os módulos novos e remover o resto |
 | Funcionalidades inacabadas | convite de produtor; telas `fatura-import-settings` | Concluir ou remover (ver `CLAUDE.md`) |
 | Sem testes de PDF | dompdf/snappy | Criar testes quando o fluxo for revisado |
@@ -214,14 +217,15 @@ Pendentes para o lançamento: **4** (`.env` do servidor) e **5** (cron + worker)
 
 1. Backup do banco **antes** de qualquer migration.
 2. `git pull` no servidor.
-3. `composer install --no-dev --optimize-autoloader`
+3. `composer install --no-dev --optimize-autoloader` (com o PHP 8.3; `composer.json` já fixa a plataforma em 8.3.24)
 4. `npm ci && npm run build`
-5. `php artisan migrate --force`
-6. `php artisan config:cache && php artisan route:cache && php artisan view:cache`
-7. `php artisan storage:link` (primeiro deploy)
-8. `php artisan queue:restart`
+5. `php83 artisan migrate --force`
+6. `php83 artisan config:cache && php83 artisan route:cache && php83 artisan view:cache`
+7. `php83 artisan storage:link` (primeiro deploy)
+8. `php83 artisan queue:restart`
 9. Primeiro deploy após 2026-10-03: `rm -rf storage/app/public/pdfs/` (PDFs de proposta que ficaram públicos).
-10. Conferir: `/up` responde 200, worker ativo, `php artisan schedule:list` com horários em BRT, webhook do MP cadastrado com URL de produção.
+10. Conferir: `/up` responde 200, worker ativo (`systemctl status casa-verde-queue`), `php83 artisan schedule:list` com horários em BRT, webhook do MP cadastrado com URL de produção e `webhook_secret` preenchido (sem ele o webhook recusa tudo).
+11. Depois do deploy de `a5c804d` em diante: conferir na tela **Identidade Visual** que o nome da marca está preenchido — é ele que aparece nas telas, PDFs e e-mails (sem ele, vale o `APP_NAME`).
 
 ### Observação sobre o ambiente local
 

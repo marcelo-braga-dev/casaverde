@@ -11,9 +11,10 @@ Versão aberta da plataforma para interessados em comprar: o visitante informa n
 | Login (`/login`) | Pede nome, e-mail ou telefone, empresa (opcional) e aceite de contato. Sem senha. |
 | Primeiro acesso | Entra como administrador (`DEMO_INITIAL_ROLE`). |
 | Troca de perfil | Barra fixa no rodapé: Administrador, Consultor, Cliente e Produtor. |
-| Somente leitura | O servidor recusa qualquer POST/PUT/PATCH/DELETE e as telas de cadastro/edição (middleware `DemoMode`). A tela esmaece os botões de ação e mostra o aviso "Acesso de teste". |
+| Somente leitura | O servidor recusa qualquer POST/PUT/PATCH/DELETE (exceto logout, rotas `demo.*` e as de `readonly_post_routes`) e as telas `.create`/`.edit` (middleware `DemoMode`). A tela esmaece os botões de ação e mostra o aviso "Acesso de teste". |
 | Recuperação de senha | Desativada; volta para o acesso de demonstração. |
-| Rotinas agendadas | Desativadas (sem importar e-mails, consultar o Mercado Pago, gerar alertas ou lembretes). Só a limpeza de PDFs temporários continua. |
+| Rotinas agendadas | Desativadas (sem importar e-mails, consultar o Mercado Pago, gerar alertas ou lembretes). Só a limpeza diária de PDFs temporários (`prune-temporary-pdfs`) continua. |
+| Marca | Nome, cores e logotipo vêm da Identidade Visual — a demonstração usa outra marca (GD Solar ERP), por isso nenhum texto pode trazer "Casa Verde" fixo. |
 | Visitantes | Gravados em `demo_visitors`: nome, e-mail, telefone, empresa, origem (UTM), visitas, telas vistas, perfis usados, primeiro e último acesso. |
 
 Links com `?utm_source=...&utm_medium=...&utm_campaign=...` registram a origem do visitante (ex.: `https://demo.seudominio.com.br/login?utm_source=linkedin&utm_campaign=lancamento`).
@@ -56,23 +57,36 @@ A proposta de produtor também tem modelo novo (`producer-proposal-modern.blade.
    Sem credenciais reais de Mercado Pago, IMAP ou SMTP.
 4. Criar e popular o banco:
    ```bash
-   php artisan migrate --seed --force
-   php artisan db:seed --class=MarketingDemoSeeder --force
+   php83 artisan migrate --seed --force
+   php83 artisan db:seed --class=MarketingDemoSeeder --force
    ```
-   O `DatabaseSeeder` cria a base inicial (admin, consultores, clientes de demonstração) e o `MarketingDemoSeeder` acrescenta ~18 meses de operação fictícia em vários estados.
+   O `DatabaseSeeder` cria a base inicial (admin, consultores, clientes de demonstração) e o `MarketingDemoSeeder` acrescenta ~18 meses de operação fictícia em vários estados. Ele chama, em sequência, o `MarketingImportHistorySeeder` (histórico de importações de faturas), o `DemoTariffSeeder` (tarifas GD das concessionárias zeradas) e o `MarkFictitiousDataSeeder`. Gerar os PDFs das faturas exige memória: o `MarkFictitiousDataSeeder` eleva o `memory_limit` para 1 GB sozinho.
 5. Identidade visual: como os visitantes não conseguem salvar alterações, configure nome, cores e logotipo **antes** de ligar o `DEMO_MODE` (ou com ele desligado temporariamente), entrando como `admin@teste.com` / `1020`.
-6. Não configurar o cron do agendador nem o worker da fila (não há o que processar).
+6. Configurar o cron do agendador (`* * * * * cd /caminho && php83 artisan schedule:run`) — em `DEMO_MODE` ele só apaga os PDFs temporários de proposta, que se acumulariam sem isso. O worker da fila não é necessário (nada é enfileirado com a base somente leitura).
+7. Dependências: `composer install --no-dev --optimize-autoloader` e `npm ci && npm run build`. Sem as dependências de desenvolvimento, `php artisan test` não existe nessa instância.
 
-Para renovar os dados (por exemplo, a cada mês, para as datas acompanharem o calendário), repita o passo 4 com `php artisan migrate:fresh --seed --force` seguido do `MarketingDemoSeeder`. Isso apaga também os visitantes: exporte-os antes.
+Para renovar os dados (por exemplo, a cada mês, para as datas acompanharem o calendário), repita o passo 4 com `php83 artisan migrate:fresh --seed --force` seguido do `MarketingDemoSeeder`. Isso apaga também os visitantes **e a Identidade Visual**: exporte os visitantes antes e reconfigure a marca depois (passo 5).
+
+## Atualizar a instância
+
+```bash
+git pull
+composer install --no-dev --optimize-autoloader
+npm ci && npm run build
+php83 artisan migrate --force
+php83 artisan config:cache && php83 artisan route:cache && php83 artisan view:cache
+```
+
+Instância atual: `gdsolar.rexar.com.br` (OpenLiteSpeed), código em `/www/wwwroot/rexar/gdsolar`.
 
 ## Visitantes para a equipe de vendas
 
 - **Planilha (CSV):** `https://demo.seudominio.com.br/demo/visitantes.csv?token=DEMO_LEADS_TOKEN` (abre no Excel; sem o token correto responde 404).
 - **No servidor:**
   ```bash
-  php artisan demo:visitantes                          # tabela na tela
-  php artisan demo:visitantes visitantes.csv            # arquivo CSV
-  php artisan demo:visitantes --desde=2026-10-01        # só a partir de uma data
+  php83 artisan demo:visitantes                          # tabela na tela
+  php83 artisan demo:visitantes visitantes.csv            # arquivo CSV
+  php83 artisan demo:visitantes --desde=2026-10-01        # só a partir de uma data
   ```
 
 ## Perfis usados na demonstração
@@ -86,7 +100,9 @@ Cada perfil entra numa conta da base fictícia, configurável no `.env`:
 | Cliente | `DEMO_USER_CLIENTE` | `sabor.serra@cliente.demo` |
 | Produtor | `DEMO_USER_PRODUTOR` | `sertao.solar@cliente.demo` |
 
-Se a conta não existir, é usado o primeiro usuário do perfil.
+Se a conta não existir, é usado o primeiro usuário cadastrado com o perfil (menor id).
+
+`DEMO_INITIAL_ROLE` define o perfil de entrada (padrão `admin`).
 
 ## Onde está no código
 
@@ -95,6 +111,7 @@ Se a conta não existir, é usado o primeiro usuário do perfil.
 - `app/Services/Demo/DemoAccessService.php`: registro do visitante, entrada e troca de perfil.
 - `app/Http/Controllers/Demo/`: acesso, troca de perfil e exportação; `routes/demo.php`.
 - `resources/js/Pages/Demo/Access.jsx`, `resources/js/Components/Demo/DemoBar.jsx` e `resources/js/Demo/demoGuard.js`: tela de acesso, barra de perfis e esmaecimento dos botões.
-- `tests/Feature/Demo/DemoModeTest.php`.
+- `database/seeders/MarketingDemoSeeder.php` e `database/seeders/Support/` (`DemoBillPdf`, `DemoPix`): base fictícia, PDFs de fatura e Pix de demonstração.
+- `tests/Feature/Demo/DemoModeTest.php` e `tests/Feature/Demo/BrandNameTest.php`.
 
 Ao criar uma rota POST que só **lê** dados (ex.: gerar um PDF para visualizar), inclua o nome dela em `readonly_post_routes` no `config/demo.php`; caso contrário ela será bloqueada na demonstração.

@@ -3,6 +3,7 @@
 > **Destinatário:** Claude Code (uso para construir o site de divulgação)
 > **Objetivo deste documento:** reunir tudo que existe de valioso no produto (tecnicamente comprovado no código-fonte, não suposição) para embasar copy, estrutura e argumentos de conversão de uma landing page **B2B SaaS**.
 > **Nome comercial do produto:** **GD Solar ERP**
+> **Atualizado em:** 2026-10-29 — pagamentos agora via **Mercado Pago** (a integração Cora foi removida), números técnicos revistos, novidades: Identidade Visual (white-label), pagamento pelo portal do cliente, e-mails automáticos, alertas operacionais e **demonstração online** (ver `DEMO.md`).
 
 ---
 
@@ -32,7 +33,7 @@ Cobre o ciclo operacional inteiro, ponta a ponta, sem depender de planilhas solt
 ```
 Prospecção → Proposta comercial → Contrato → Vínculo cliente-usina →
 Importação de faturas (IMAP + upload) → Geração de cobranças →
-Pagamento (Pix/Boleto via Cora) → Relatórios de economia e financeiro
+Pagamento (Pix/Boleto via Mercado Pago) → Relatórios de economia e financeiro
 ```
 
 **Frase-síntese sugerida para hero:** *"O ERP feito para quem vende energia solar por assinatura — da proposta ao Pix, sem planilha."*
@@ -58,16 +59,17 @@ Esse mercado cresce rápido no Brasil (Lei 14.300 destravou a GD compartilhada),
 |---|---|---|
 | Leio fatura de concessionária manualmente, erro de digitação | Importação automática via **IMAP** (e-mail) + upload, com extração de texto até de **PDFs protegidos por senha** | Zero retrabalho manual, elimina erro humano de leitura de fatura |
 | Não sei se estou vendendo mais energia do que minha usina gera | Alerta automático **`allocated_energy_exceeds_available`** (crítico) — a plataforma cruza energia alocada × energia disponível todo mês | Protege a empresa de vender energia que não existe — risco jurídico e financeiro real |
-| Cobro por boleto avulso e demoro para receber | Geração automática de cobrança a partir de fatura aprovada + **Pix e Boleto simultâneos** (QR Code, copia-e-cola, linha digitável) via integração Cora | Reduz inadimplência, acelera recebimento |
-| Esqueço de cobrar cliente inadimplente | Lembrete automático: **3 dias antes do vencimento** e **a cada 5 dias em atraso**, com link `wa.me` pronto para o consultor | Menos inadimplência sem precisar de time de cobrança dedicado |
+| Cobro por boleto avulso e demoro para receber | Geração automática de cobrança a partir de fatura aprovada + **Pix ou Boleto em um clique** (copia-e-cola, linha digitável, PDF com código de barras e a marca da empresa) via **Mercado Pago**, com baixa automática quando o cliente paga | Reduz inadimplência, acelera recebimento, acaba com a conciliação manual |
+| Esqueço de cobrar cliente inadimplente | Lembrete automático: **e-mail ao cliente 3 dias antes do vencimento** e alerta ao consultor **a cada 5 dias em atraso**, com link `wa.me` e mensagem prontos | Menos inadimplência sem precisar de time de cobrança dedicado |
 | Não sei quanto cada cliente está economizando de fato | Relatório de economia por cliente e por carteira: `economia = valor original - valor final`, % de economia, evolução mês a mês | Vira munição comercial (mostrar economia real fideliza e ajuda em indicação/upsell) |
 | Cada consultor tem sua própria planilha de clientes | **Scoping automático por consultor** — cada vendedor só vê sua carteira, sem filtro manual | Escala o time comercial sem vazamento de carteira entre vendedores |
 | Não tenho visão executiva do negócio | **Cockpit executivo**: kWh disponível/alocado/restante da frota inteira, usinas em saldo crítico, ranking de consultores, funil de revisão de faturas, feed de "ações pendentes" | Dá ao dono/gestor visão de helicóptero em uma tela só |
-| Cliente me liga perguntando status da fatura/pagamento | **Portal do cliente** com faturas, cobranças, contrato, histórico de desconto e relatório de economia em PDF/Excel — self-service | Reduz volume de suporte, aumenta percepção de profissionalismo |
-| Produtor (dono de usina) quer saber quanto está gerando/recebendo | **Portal do produtor** com geração, alocação e contratos | Fortaleça relação com fornecedores de energia (usinas parceiras) |
+| Cliente me liga perguntando status da fatura/pagamento | **Portal do cliente** com faturas, cobranças **pagáveis ali mesmo** (Pix copia-e-cola, linha digitável, PDF do boleto), contrato e relatório de economia em PDF/Excel — self-service; e-mail automático quando o boleto/Pix é emitido | Reduz volume de suporte, aumenta percepção de profissionalismo |
+| Produtor (dono de usina) quer saber quanto está gerando | **Portal do produtor** com as usinas próprias e o histórico de geração | Fortalece a relação com fornecedores de energia (usinas parceiras) |
 | Onboarding de novo produtor é bagunçado (documento aqui, contrato ali) | **Kanban de 7 etapas** (drag-and-drop) do onboarding de usina: análise de documentos → assinatura de contrato → ficha de inscrição → contrato de adesão → contrato de aluguel → troca de titularidade → concluído | Padroniza processo, nada se perde entre etapas |
-| Não tenho como provar histórico/auditoria de decisões | Cada cobrança/ajuste/alerta guarda `created_by`/`resolved_by`, com trilha de quem fez o quê | Segurança jurídica e operacional |
-| Meu financeiro não sabe se um webhook de pagamento falhou | Dashboard admin mostra **pagamentos e webhooks com falha** em tempo real | Detecta problema de reconciliação financeira antes que vire prejuízo |
+| Não tenho como provar histórico/auditoria de decisões | **Histórico completo de cada cobrança** (quem mudou vencimento, valor, status ou boleto, e quando); ajustes e alertas guardam `created_by`/`resolved_by`; log de acessos | Segurança jurídica e operacional |
+| Meu financeiro não sabe se um webhook de pagamento falhou | **Alertas operacionais** (sino no cabeçalho) para toda falha que ameaça o faturamento: caixa de e-mail inacessível, fatura ilegível, pagamento que não sincroniza, webhook com erro, credencial recusada — e se resolvem sozinhos quando a operação volta | Detecta problema antes que vire prejuízo |
+| Quero a plataforma com a cara da minha empresa | **Identidade Visual configurável**: nome, cores e logotipos aplicados em telas, PDFs de proposta, boletos e e-mails | Produto white-label, pronto para a marca do cliente |
 
 ---
 
@@ -98,10 +100,11 @@ Os alertas se **auto-resolvem** quando a condição desaparece — não é uma l
 ### 3.3 Faturamento e pagamento omnichannel
 
 - Fatura de concessionária aprovada → gera cobrança automaticamente, sem digitação manual.
-- Cobrança gera **boleto E Pix ao mesmo tempo** (QR Code, copia-e-cola, linha digitável, URL de checkout, PDF) via integração com o **Cora**.
-- Arquitetura de pagamento é **agnóstica de provedor** (`PaymentProviderManager`) — Cora hoje, mas pronta para novos provedores amanhã.
-- Lembrete automático pré-vencimento (3 dias antes) e pós-vencimento (a cada 5 dias) via job assíncrono, com link `wa.me` pré-preenchido gerado automaticamente.
-- Reconciliação de pagamento via webhook assíncrono, com painel de falhas visível ao admin.
+- Na cobrança, **Pix ou boleto em um clique** via **Mercado Pago** (copia-e-cola, linha digitável, PDF do boleto com código de barras e a marca da empresa). A emissão é uma ação humana por decisão de negócio — a plataforma avisa o consultor sobre cobranças perto do vencimento ainda sem boleto.
+- Baixa automática: webhook assinado (HMAC) + sincronização a cada 5 minutos; boleto vencido é marcado, o consultor é avisado para reemitir e o pagamento tardio ainda é reconhecido por 10 dias.
+- Mudou vencimento ou valor? O boleto é cancelado e reemitido automaticamente. Estornos ficam registrados para revisão.
+- Arquitetura de pagamento **agnóstica de provedor** (`PaymentProviderManager`) — Mercado Pago hoje, pronta para outros provedores.
+- Lembretes: e-mail ao cliente 3 dias antes do vencimento e alerta ao consultor a cada 5 dias de atraso, com link `wa.me` pré-preenchido.
 
 ### 3.4 Propostas comerciais e contratos
 
@@ -109,7 +112,7 @@ Os alertas se **auto-resolvem** quando a condição desaparece — não é uma l
 - Cadastro inline: cria cliente/produtor novo durante a própria proposta (sem sair da tela), evita duplicidade de CPF/CNPJ.
 - Aplica desconto padrão configurável automaticamente.
 - Ciclo de status da proposta (emitida → enviada → em análise → pendente...).
-- Geração de **PDF de proposta e contrato** (locação de usina) prontos para assinatura.
+- Geração de **PDF de proposta** (modelos novos com capa, comparativo de economia, projeção de receita do produtor e a identidade visual da empresa) e **contrato** (locação de usina), entregues por link seguro com validade.
 - Simulação de investimento para propostas de produtor (ROI).
 
 ### 3.5 Relatórios que viram argumento de venda
@@ -122,8 +125,8 @@ Os alertas se **auto-resolvem** quando a condição desaparece — não é uma l
 
 ### 3.6 Portais dedicados por papel
 
-- **Portal do Cliente**: faturas, cobranças, contrato, histórico de desconto, vínculo com usina e histórico, relatório de economia (PDF/Excel), chamados de suporte — tudo self-service.
-- **Portal do Produtor**: usinas próprias, geração, propostas, pipeline Kanban do onboarding.
+- **Portal do Cliente**: faturas, cobranças com pagamento (Pix/boleto) no próprio portal, contratos, relatório de economia (PDF/Excel), chamados de suporte — tudo self-service.
+- **Portal do Produtor**: usinas próprias com histórico de geração. (O Kanban de onboarding de usina é ferramenta interna da equipe.)
 - **Portal do Consultor**: carteira própria com scoping automático (nunca vê cliente de outro consultor).
 
 ### 3.7 Suporte integrado
@@ -136,12 +139,14 @@ Sistema de chamados com categoria, prioridade, SLA de primeira resposta, notas i
 
 1. **Único no mercado com trava anti-oversell de energia** — a maioria das planilhas/sistemas genéricos de CRM não modela `energia_alocada_kwh` vs `energia_disponivel_kwh` com alerta automático. Isso é risco financeiro real que o produto elimina.
 2. **Feito especificamente para GD compartilhada (Lei 14.300)** — não é um ERP genérico adaptado; o modelo de dados nasceu para usina, unidade consumidora, concessionária e vínculo cliente-usina.
-3. **Pagamento nativo Pix + Boleto** sem sistema externo — cobrança sai da plataforma já pronta para pagar.
-4. **Automação de cobrança e lembrete de ponta a ponta** — de fatura aprovada até lembrete de atraso, zero toque manual.
+3. **Pagamento nativo Pix ou Boleto (Mercado Pago)** — cobrança sai da plataforma pronta para pagar e é baixada sozinha.
+4. **Automação de cobrança e lembrete de ponta a ponta** — de fatura aprovada até lembrete de atraso, o único toque humano é o clique que emite o Pix/boleto; a baixa do pagamento é automática.
 5. **4 portais em 1 produto só** (Admin, Consultor, Produtor, Cliente) — cliente final e produtor (fornecedor de energia) também usam a plataforma, não só a equipe interna.
 6. **Prova real de uso em produção** — já roda a operação real de uma comercializadora de energia solar por compensação, não é um MVP sem tração.
-7. **Stack moderna e testada**: Laravel 12 + React 18, 96 migrations, 62 arquivos de teste automatizado (Pest + SQLite), autorização via Policies por papel — não é um sistema legado remendado.
+7. **Stack moderna e testada**: Laravel 12 + React 18, 100 migrations, 94 arquivos com ~560 testes automatizados (Pest) rodando em integração contínua, autorização via Policies por papel — não é um sistema legado remendado.
 8. **Importação automática de fatura por e-mail (IMAP)**, incluindo faturas em PDF protegido por senha — um detalhe técnico raro que resolve uma dor muito específica e muito comum (concessionárias enviam PDF travado).
+9. **White-label**: nome, cores e logotipos da própria empresa em telas, PDFs, boletos e e-mails.
+10. **Demonstração online sem senha**: o interessado navega pelos 4 perfis com dados fictícios, sem precisar agendar.
 
 ---
 
@@ -149,13 +154,15 @@ Sistema de chamados com categoria, prioridade, SLA de primeira resposta, notas i
 
 Use como prova social técnica, não como jargão para o visitante leigo — traduzir em linguagem de benefício:
 
-- **96 migrations, 40+ tabelas, 56 models** → "sistema maduro, não gambiarra."
-- **62 arquivos de teste automatizado** rodando em cada mudança → "mudanças não quebram o que já funciona."
+- **100 migrations, 40+ tabelas, 50+ models** → "sistema maduro, não gambiarra."
+- **~560 testes automatizados** (94 arquivos) rodando em integração contínua a cada mudança → "mudanças não quebram o que já funciona."
 - **Autorização por Policy em cada módulo crítico** (usina, cobrança, proposta, produtor) com regra de bypass só para Admin → "dado do seu negócio só é visto por quem deveria ver."
-- **9 comandos automatizados agendados** (reimportação de fatura, lembrete de cobrança, marcação de atraso, sincronização de pagamento, geração de cobrança/pagamento faltante, varredura de alertas) → "o sistema trabalha sozinho todo dia, mesmo sem ninguém logado."
-- **6 filas assíncronas (Jobs)** para processar webhook, pagamento, lembrete, cobrança → "não trava a tela do usuário esperando processamento pesado."
-- **Trilha de autoria** (`created_by`, `resolved_by`) em alertas e vínculos → "rastreabilidade para auditoria."
-- **Arquitetura de pagamento plugável** (não hard-coded no Cora) → "não fica refém de um único provedor de pagamento."
+- **9 rotinas automáticas agendadas** (importação de faturas por e-mail, geração de cobranças, marcação de atraso, sincronização de pagamentos a cada 5 min, expiração de boletos, lembretes, varredura de saúde operacional, limpezas) → "o sistema trabalha sozinho todo dia, mesmo sem ninguém logado."
+- **5 jobs assíncronos em fila** (webhook, sincronização de pagamento, lembrete, cobrança, atraso) → "não trava a tela do usuário esperando processamento pesado."
+- **Alertas operacionais com auto-resolução** para toda falha de faturamento → "se algo parar, você fica sabendo antes do cliente."
+- **Trilha de autoria** (histórico de cobrança, `created_by`/`resolved_by`, log de acessos) → "rastreabilidade para auditoria."
+- **Segurança**: webhook com assinatura obrigatória, credenciais criptografadas, isolamento de carteira testado automaticamente, política de senha forte → "dado do seu negócio protegido."
+- **Arquitetura de pagamento plugável** → "não fica refém de um único provedor de pagamento."
 
 ---
 
@@ -167,12 +174,12 @@ Use como prova social técnica, não como jargão para o visitante leigo — tra
 4. **Módulos/Features** — grid com os 7 blocos da seção 3 acima, cada um com ícone + 2 linhas + (idealmente) mockup/screenshot do dashboard real.
 5. **Diferencial "trava de energia"** — seção dedicada só a esse ponto (é o gancho mais forte e mais difícil de copiar), com visual de gauge mostrando energia disponível/alocada/saldo e o alerta crítico disparando.
 6. **4 portais, 1 produto** — mostrar mockups dos 4 dashboards (Admin/Consultor/Produtor/Cliente) lado a lado.
-7. **Pagamento Pix + Boleto nativo** — seção de confiança financeira, com selo visual "Integração Cora".
-8. **Robustez técnica** — números da seção 5 traduzidos ("99 automações rodando por você", "testado automaticamente a cada atualização").
+7. **Pagamento Pix ou Boleto nativo** — seção de confiança financeira, com selo visual "Integração Mercado Pago".
+8. **Robustez técnica** — números da seção 5 traduzidos ("9 rotinas automáticas rodando por você", "testado automaticamente a cada atualização").
 9. **Prova social / case** — "conheça quem já usa": referenciar de forma genérica uma "empresa real de energia solar por compensação em operação", sem citar nomes específicos, a menos que a autorização de divulgação seja confirmada com o cliente final.
 10. **Planos/Pricing** (ver seção 8) ou, se ainda não definido, "Fale com o time para um plano sob medida".
 11. **FAQ** — perguntas típicas de decisor B2B (ver seção 7).
-12. **CTA final** — "Agende uma demonstração" / "Fale com um especialista", formulário curto (nome, empresa, e-mail, telefone, quantas usinas/clientes gerencia hoje).
+12. **CTA final** — "Agende uma demonstração" / "Fale com um especialista", formulário curto (nome, empresa, e-mail, telefone, quantas usinas/clientes gerencia hoje). CTA secundário: **"Explore a demonstração agora"**, apontando para a instância de demonstração (o acesso registra o visitante como lead, com UTM — ver `DEMO.md`).
 
 ---
 
@@ -182,9 +189,11 @@ Use como prova social técnica, não como jargão para o visitante leigo — tra
 - **O sistema calcula automaticamente o desconto de cada cliente?** Sim, com base em regra de desconto configurável por cliente ou padrão do sistema.
 - **Meus consultores vão ver a carteira uns dos outros?** Não — cada consultor só vê e gerencia sua própria carteira.
 - **O sistema me avisa se eu vender mais energia do que minha usina gera?** Sim — é um alerta crítico automático, mensal, por usina.
-- **Como funciona a cobrança dos meus clientes?** Boleto e Pix gerados automaticamente a partir da fatura aprovada, com lembrete automático de vencimento e atraso.
+- **Como funciona a cobrança dos meus clientes?** A cobrança nasce sozinha da fatura aprovada; o Pix ou boleto é emitido com um clique, o cliente recebe por e-mail e no portal, e a baixa é automática quando ele paga. Lembretes de vencimento e atraso também são automáticos.
 - **Meu cliente final vai poder acessar o sistema?** Sim, com um portal próprio para ver fatura, cobrança, contrato e quanto já economizou.
-- **E os produtores (donos de usina)?** Também têm portal próprio, com visão de geração e contratos.
+- **E os produtores (donos de usina)?** Também têm portal próprio, com as usinas e o histórico de geração.
+- **Posso usar com a minha marca?** Sim — nome, cores e logotipos são configuráveis e aparecem em telas, PDFs, boletos e e-mails.
+- **Dá para testar antes?** Sim — a demonstração online abre sem senha, com dados fictícios, nos quatro perfis.
 - **É seguro?** Autorização por papel em cada módulo, trilha de quem alterou o quê, e testes automatizados a cada atualização.
 - **Preciso de equipe técnica para operar?** Não — as automações (importação de fatura, geração de cobrança, lembretes) rodam sozinhas; sua equipe só acompanha os alertas e o dashboard.
 
@@ -225,10 +234,10 @@ Ao construir o site, usar o skill de design de artifacts/dataviz se forem gerado
   - "O ERP que sabe quanto de energia sua usina ainda pode vender."
   - "Da fatura da concessionária ao Pix do cliente, sem planilha no meio."
   - "Feito para quem vende energia solar por assinatura — não adaptado, nascido para isso."
-- CTA principal: **"Agendar demonstração"** (não "teste grátis" — é um ERP operacional, decisão B2B costuma passar por demo guiada).
+- CTA principal: **"Agendar demonstração"** (não "teste grátis" — é um ERP operacional, decisão B2B costuma passar por demo guiada). CTA secundário: **"Explorar a demonstração"** (somente leitura, sem cadastro de senha).
 
 ---
 
 ## 11. RESUMO EXECUTIVO (1 parágrafo, pronto para usar)
 
-> GD Solar ERP é a plataforma completa para quem opera energia solar por compensação/assinatura no Brasil: da prospecção do cliente à cobrança via Pix ou boleto, passando por importação automática de fatura, geração automática de cobrança, alertas de segurança sobre alocação de energia, e relatórios de economia que viram argumento comercial. Com portais dedicados para consultor, cliente e produtor, dashboards executivos em tempo real e automações que rodam sozinhas todo dia, é o único sistema pensado desde a raiz para o modelo real da Geração Distribuída Compartilhada (Lei 14.300/ANEEL) — não um CRM genérico adaptado.
+> GD Solar ERP é a plataforma completa para quem opera energia solar por compensação/assinatura no Brasil: da prospecção do cliente à cobrança via Pix ou boleto (Mercado Pago), passando por importação automática de fatura, geração automática de cobrança, alertas de segurança sobre alocação de energia, e relatórios de economia que viram argumento comercial. Com portais dedicados para consultor, cliente e produtor, dashboards executivos em tempo real e automações que rodam sozinhas todo dia, é o único sistema pensado desde a raiz para o modelo real da Geração Distribuída Compartilhada (Lei 14.300/ANEEL) — não um CRM genérico adaptado.

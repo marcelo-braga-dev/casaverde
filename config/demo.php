@@ -6,7 +6,7 @@
  * instalação define DEMO_MODE=true.
  *
  * No modo demonstração:
- * - /login pede nome + e-mail ou telefone (sem senha) e registra o visitante em demo_leads;
+ * - /login pede nome + e-mail ou telefone (sem senha) e registra o visitante em demo_visitors;
  * - uma barra fixa permite trocar de perfil (admin, consultor, cliente, produtor);
  * - toda alteração é recusada no servidor (somente leitura).
  */
@@ -15,7 +15,7 @@ return [
     'enabled' => (bool) env('DEMO_MODE', false),
 
     // Contas da base de demonstração usadas em cada perfil. Se o e-mail não existir,
-    // usa o primeiro usuário ativo do perfil.
+    // usa o primeiro usuário do perfil (menor id).
     'users' => [
         'admin' => env('DEMO_USER_ADMIN', 'admin@teste.com'),
         'consultor' => env('DEMO_USER_CONSULTOR', 'joao.consultor@demo.com'),
