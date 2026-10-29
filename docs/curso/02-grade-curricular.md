@@ -1,6 +1,6 @@
 # 02 — Grade curricular
 
-13 módulos, 76 aulas (53 expositivas + 23 laboratórios). O curso parte do zero — nenhum conhecimento prévio de energia é exigido — e sobe de nível em quatro etapas:
+13 módulos, 76 aulas (57 expositivas + 19 laboratórios). O curso parte do zero — nenhum conhecimento prévio de energia é exigido — e sobe de nível em quatro etapas:
 
 | Etapa | Módulos | O aluno passa a… |
 |-------|---------|------------------|
@@ -16,21 +16,21 @@ Legenda: 🎥 aula expositiva (apresentador + slides/animação) · 🧪 laborat
 
 ## Visão geral
 
-| Módulo | Tema | Aulas | Vídeo | Prática | Trilhas |
+| Módulo | Tema | Aulas | Vídeo | Prática | Etapa |
 |--------|------|-------|-------|---------|---------|
-| M0 | Boas-vindas e laboratório | 4 | 35 min | 1 h | Todas |
-| M1 | Fundamentos: energia, solar e setor elétrico | 8 | 1h35 | 1 h | Todas |
-| M2 | Marco legal da GD (Lei 14.300) | 7 | 1h30 | 1h30 | Todas |
-| M3 | Modelos de negócio em GD compartilhada | 6 | 1h15 | 2 h | Empreendedor, Integrador, Produtor |
-| M4 | Usinas e produtores | 6 | 1h15 | 2 h | Empreendedor, Integrador, Produtor |
-| M5 | Comercial: do lead à proposta | 6 | 1h15 | 2 h | Empreendedor, Comercial |
-| M6 | Contratos, rateio e alocação de energia | 6 | 1h15 | 2 h | Todas exceto Produtor |
-| M7 | Faturas e compensação | 6 | 1h15 | 2 h | Operação, Empreendedor |
-| M8 | Cobrança e recebimento | 7 | 1h25 | 2h30 | Operação, Empreendedor |
-| M9 | Operação contínua | 5 | 1 h | 1h30 | Operação, Empreendedor |
-| M10 | Indicadores e relatórios | 5 | 1 h | 1h30 | Todas |
-| M11 | Gestão do negócio | 6 | 1h15 | 1 h | Empreendedor, Integrador, Produtor |
-| M12 | Projeto final | 4 | 40 min | 8 h | Certificação completa |
+| M0 | Boas-vindas e laboratório | 4 | 35 min | 1 h | 1 |
+| M1 | Fundamentos: energia, solar e setor elétrico | 8 | 1h35 | 1 h | 1 |
+| M2 | Marco legal da GD (Lei 14.300) | 7 | 1h30 | 1h30 | 2 |
+| M3 | Modelos de negócio em GD compartilhada | 6 | 1h15 | 2 h | 2 |
+| M4 | Usinas e produtores | 6 | 1h15 | 2 h | 3 |
+| M5 | Comercial: do lead à proposta | 6 | 1h15 | 2 h | 3 |
+| M6 | Contratos, rateio e alocação de energia | 6 | 1h15 | 2 h | 3 |
+| M7 | Faturas e compensação | 6 | 1h15 | 2 h | 3 |
+| M8 | Cobrança e recebimento | 7 | 1h25 | 2h30 | 3 |
+| M9 | Operação contínua | 5 | 1 h | 1h30 | 3 |
+| M10 | Indicadores e relatórios | 5 | 1 h | 1h30 | 4 |
+| M11 | Gestão do negócio | 6 | 1h15 | 1 h | 4 |
+| M12 | Projeto final | 4 | 40 min | 8 h | 4 |
 | | **Total** | **76** | **~16 h** | **~28 h** + 8 ao vivo (12 h) + estudo | **60 h** |
 
 ## Aulas

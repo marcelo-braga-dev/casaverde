@@ -443,6 +443,7 @@ Deploy em produção e checklist operacional: `LANCAMENTO.md`. Mercado Pago: `ME
 | `DEMO.md` | Instância de demonstração (`DEMO_MODE`) | Viva |
 | `LANCAMENTO.md` | Prontidão para lançamento e checklist de deploy | Viva |
 | `GD_SOLAR_ERP_RELATORIO_VENDAS.md` | Material de vendas B2B do produto (GD Solar ERP) | Viva |
+| `docs/curso/` | Curso "Empresa de Assinatura de Energia Solar" (vendido à parte): plano, 76 roteiros de aula e backlog do `LAB_MODE` | Viva |
 | `landpage-wordpress-briefing.md` | Briefing da landing page B2C de um cliente (outro site) | Referência externa |
 | `ANALISE.md`, `RELATORIO_ERROS.md` | Retratos de 2026-05/06 | Históricos — não atualizar |
 

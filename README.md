@@ -63,6 +63,7 @@ Combina **CRM** (propostas, leads, Kanban de produtor), **ERP operacional/financ
 | `DEMO.md` | Instância de demonstração (`DEMO_MODE`) | Viva |
 | `LANCAMENTO.md` | Prontidão para lançamento, pendências e checklist de deploy | Viva |
 | `GD_SOLAR_ERP_RELATORIO_VENDAS.md` | Material de vendas B2B do GD Solar ERP | Viva |
+| `docs/curso/` | Curso que usa a plataforma como laboratório: plano, roteiros das 76 aulas, ambiente de laboratório e decisões | Viva |
 | `landpage-wordpress-briefing.md` | Briefing de landing page B2C de um cliente (outro site, não é do sistema) | Referência externa |
 | `ANALISE.md`, `RELATORIO_ERROS.md` | Retratos de maio/junho de 2026 | Históricos — não refletem o estado atual |
 
