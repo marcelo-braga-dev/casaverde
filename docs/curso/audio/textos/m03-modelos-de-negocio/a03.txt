@@ -1,0 +1,21 @@
+Uma frase que você precisa gravar: na geração distribuída, créditos de energia não são vendidos, e a geração distribuída não é um ambiente de comércio de energia. Então, como uma empresa de assinatura ganha dinheiro sem vender energia? A resposta está na estrutura dos contratos. Vamos montar esse quebra-cabeça.
+
+<break time="0.8s" />
+
+São quatro relações contratuais típicas. A primeira: o produtor, dono da usina, aluga ou arrenda a usina para a entidade — o consórcio, a cooperativa ou a associação. A entidade passa a ser a titular da unidade consumidora da usina perante a distribuidora, e paga ao produtor um aluguel. A segunda: os clientes aderem à entidade, tornando-se consorciados, cooperados ou associados, e recebem um percentual dos créditos. Como participantes, eles contribuem para cobrir os custos da entidade, que incluem o aluguel da usina e os serviços de gestão. A terceira: a entidade contrata a sua empresa para fazer a gestão — captar clientes, manter o rateio, faturar, cobrar, pagar o produtor, atender. E a quarta: a sua empresa, ou a entidade, contrata parceiros, como manutenção da usina, assessoria jurídica e contábil e meios de pagamento. O que o cliente paga todo mês é a contribuição dele para a entidade, proporcional à energia compensada e menor do que a economia que ele teve. É o que o mercado chama, comercialmente, de assinatura.
+
+<break time="0.8s" />
+
+Agora, os cuidados. Primeiro: evite, nos contratos, na publicidade e no discurso dos vendedores, a ideia de que a empresa vende energia ou vende créditos. Use a linguagem correta: participação na geração compartilhada, locação da usina, gestão. Isso não é só semântica: a estrutura jurídica precisa refletir a realidade, e órgãos reguladores e de defesa do consumidor olham para isso. Segundo: cuidado com promessas de economia. A economia depende da tarifa, da regra do Fio B e da geração da usina. Prometa com base em cálculos, com as condições e as ressalvas por escrito. Terceiro: todo cliente que recebe créditos precisa, de fato, participar da entidade titular da usina, com a documentação em ordem. Incluir uma unidade no rateio sem esse vínculo é um risco regulatório sério.
+
+<break time="0.8s" />
+
+Outro ponto: o seu cliente, especialmente a pessoa física, é um consumidor, protegido pelo Código de Defesa do Consumidor. Isso significa contrato claro, informação adequada sobre como a economia é calculada, condições de cancelamento razoáveis e nada de cláusulas escondidas. Uma empresa de assinatura vive de recorrência, e recorrência vive de confiança. Multas de cancelamento abusivas e economia que não aparece geram reclamação, processo e, pior, reputação ruim numa região — e a assinatura é um negócio local, onde a indicação vale muito.
+
+<break time="0.8s" />
+
+Na plataforma, essa estrutura aparece de forma simples. A cobrança do cliente nasce da energia compensada na fatura, com o desconto contratado. Do que a usina rende, uma parte é a taxa de administração, a remuneração da gestão, e o restante é o repasse ao produtor. Os percentuais ficam nas configurações e nas regras de cada produtor e de cada cliente. Na próxima aula, vamos fazer essa conta centavo por centavo.
+
+<break time="0.8s" />
+
+Resumindo: a usina é locada à entidade, os clientes participam da entidade e contribuem com os custos, e a sua empresa é contratada para gerir tudo. Use a linguagem certa, prometa com cálculo e trate o cliente como consumidor. Na próxima aula, a conta do quilowatt-hora.

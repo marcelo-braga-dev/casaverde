@@ -1,0 +1,17 @@
+Neste laboratório, você vai olhar a sua empresa de cima, com os dois painéis executivos da plataforma: o dashboard do administrador e o cockpit executivo. A pergunta que guia o laboratório é: o que esses números me mandam fazer esta semana?
+
+<break time="0.8s" />
+
+Comece pelo dashboard do administrador. Ele é o painel do dia a dia: clientes ativos e em prospecção, propostas, faturas esperando revisão, cobranças em aberto e vencidas, quanto há a receber, a receita do mês e, importante, os pagamentos e os avisos do Mercado Pago com falha. Ele responde: o que está travado hoje?
+
+<break time="0.8s" />
+
+Agora, o cockpit executivo, no menu Relatórios, Relatório Geral. Ele é o painel do dono. No topo, a energia da frota inteira: disponível, alocada e o saldo. Abaixo, as usinas críticas, sem saldo, e as com saldo baixo. E um número que vale dinheiro: clientes sem usina — gente que assinou e ainda não está recebendo créditos. Cada cliente nessa lista é receita atrasada e um risco de cancelamento. Na sua empresa do laboratório, quantos clientes estão sem usina? Por quê?
+
+<break time="0.8s" />
+
+Continuando no cockpit: o funil de revisão das faturas, mostrando onde elas estão paradas; os alertas abertos; o ranking dos consultores; o crescimento mês a mês de clientes, usinas e vínculos; e uma lista de ações pendentes, cada uma com um link direto para resolver. É a lista de prioridades da semana, pronta.
+
+<break time="0.8s" />
+
+Agora, o exercício. Olhando para o dashboard e o cockpit da sua empresa do laboratório, escreva três decisões para a próxima semana, cada uma com o quê, quem e até quando. Por exemplo: "vincular os dois clientes sem usina à usina dois, operador, até quarta". Ou: "o consultor B tem a maior inadimplência; revisar com ele as vendas do mês, gestor, sexta". Decisão concreta é o que transforma um painel bonito em gestão.

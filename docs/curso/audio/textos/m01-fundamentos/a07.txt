@@ -1,0 +1,21 @@
+Na aula anterior, abrimos a tarifa sem impostos. Mas a conta que o seu cliente recebe tem mais coisas: bandeiras tarifárias, impostos estaduais e federais e uma contribuição municipal. Nesta aula, vamos montar a conta final, do jeito que ela chega ao cliente.
+
+<break time="0.8s" />
+
+As bandeiras tarifárias funcionam como um semáforo do custo de gerar energia no país. Quando chove bem e as hidrelétricas estão cheias, a energia é mais barata, e a bandeira é verde: não há acréscimo. Quando é preciso acionar usinas mais caras, como as térmicas, a bandeira muda para amarela ou vermelha, em dois patamares, e a conta ganha um acréscimo para cada quilowatt-hora consumido. Quem define a bandeira de cada mês é a Aneel. Para o seu negócio, as bandeiras são um argumento comercial: em meses de bandeira vermelha, a conta de luz sobe, e a economia de quem tem geração distribuída se torna mais visível. Mas atenção ao prometer: a economia do seu cliente depende de como os créditos são valorados e de como o seu contrato define o desconto. Não prometa "você não paga bandeira" sem saber exatamente como isso aparece na fatura da sua distribuidora.
+
+<break time="0.8s" />
+
+Três tributos aparecem na conta. O i cê ême ésse é estadual. Cada estado define a alíquota, e desde 2022 a energia elétrica é considerada bem essencial, o que limitou as alíquotas à alíquota geral do estado. O Pis e a Cofins são federais, e o percentual muda um pouco a cada mês, porque é calculado de forma não cumulativa pela distribuidora. E a contribuição de iluminação pública, que tem nomes como Cip ou Cósip, é municipal e costuma ser um valor fixo ou por faixa de consumo. Um detalhe que pega muita gente de surpresa: o i cê ême ésse, o Pis e a Cofins são calculados "por dentro". Isso significa que eles fazem parte da própria base de cálculo. Por isso, a tarifa com impostos não é simplesmente a tarifa mais dezoito por cento: é a tarifa dividida por um menos a soma das alíquotas.
+
+<break time="0.8s" />
+
+Vamos fazer a conta com o nosso exemplo. A tarifa sem impostos é de oitenta centavos. Imagine um i cê ême ésse de dezoito por cento e Pis mais Cofins somando cerca de cinco por cento — são números ilustrativos. A soma dá vinte e três por cento. A tarifa com impostos é oitenta centavos dividido por um menos zero vírgula vinte e três, ou seja, dividido por zero vírgula setenta e sete. Resultado: cerca de um real e quatro centavos por quilowatt-hora. Repare que os impostos aumentaram a tarifa em quase trinta por cento, e não em vinte e três. É assim que a conta da residência de quatrocentos e cinquenta quilowatts-hora chega perto de quatrocentos e setenta reais, mais a iluminação pública e uma eventual bandeira.
+
+<break time="0.8s" />
+
+E como os tributos funcionam quando há créditos de geração distribuída? Existem regras específicas: em nível federal, há previsão de Pis e Cofins zerados sobre a energia compensada, e no i cê ême ésse existe um convênio entre os estados com isenção sobre a energia compensada, com condições e diferenças de estado para estado, especialmente em relação à parte da tarifa que continua sendo paga, como o Fio B. É um tema que muda e que depende do seu estado, por isso vamos tratá-lo com cuidado no módulo 11, com a recomendação de validar sempre com um contador especializado.
+
+<break time="0.8s" />
+
+Resumindo: a conta final é o consumo vezes a tarifa com impostos, calculados por dentro, mais a bandeira do mês e a contribuição de iluminação pública. Agora você já tem todas as peças para ler uma conta de luz. E é isso que vamos fazer no laboratório da próxima aula, na plataforma.

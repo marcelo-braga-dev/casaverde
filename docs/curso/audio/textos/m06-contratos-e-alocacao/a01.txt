@@ -1,0 +1,21 @@
+O cliente aceitou a proposta. Agora vem o contrato, que transforma a conversa em obrigações claras para os dois lados. Um bom contrato de assinatura é curto, legível e cobre as situações que vão acontecer de verdade: a usina gerar menos, o cliente mudar, a regra mudar, alguém atrasar. Vamos ver as cláusulas essenciais. Lembre: a minuta final deve ser revisada pelo seu advogado.
+
+<break time="0.8s" />
+
+Primeiro, quem assina. Lembre da estrutura do módulo 3: o cliente adere à entidade que detém a usina — consórcio, cooperativa ou associação — e a sua empresa faz a gestão. Dependendo do desenho jurídico, o cliente assina um termo de adesão à entidade e um contrato com as regras da participação, ou um único instrumento que reúne tudo. O importante é que fique claro: o cliente é participante da geração compartilhada, recebe um percentual dos créditos e contribui com os custos conforme a regra do contrato.
+
+<break time="0.8s" />
+
+São dez cláusulas essenciais. Um: o objeto, identificando a unidade consumidora, ou as unidades, que vão receber os créditos. Dois: a cota, em percentual ou em quilowatt-hora de referência, e a data prevista para o início dos créditos. Três: como o valor mensal é calculado — a energia compensada na fatura da distribuidora, multiplicada por um menos o desconto. Escreva a fórmula e um exemplo numérico; isso evita muita discussão. Quatro: vencimento, meios de pagamento — Pix e boleto — e as consequências do atraso, com multa e juros dentro do que a lei permite. Cinco: prazo, renovação e cancelamento, com aviso prévio suficiente para você atualizar o rateio. Seis: o que acontece se o cliente mudar de endereço ou trocar a titularidade da conta. Sete: variação de geração — se a usina gerar menos, ele recebe menos créditos e paga proporcionalmente menos. Oito: reajuste e reequilíbrio em caso de mudança regulatória, como a do Fio B. Nove: as obrigações do cliente — manter a conta no nome dele, informar mudanças, autorizar o acesso às faturas. E dez: dados pessoais e canais de comunicação, que é o tema da próxima aula.
+
+<break time="0.8s" />
+
+Para assinar, colete os documentos. Pessoa física: documento de identidade, a conta de luz no nome dela e, se o contrato exigir, comprovante de endereço. Pessoa jurídica: o cartão cê ene pê jota ou o contrato social, o documento do representante legal e a conta de luz. Use assinatura eletrônica com trilha de auditoria — é aceita juridicamente, rápida e evita papel. Guarde tudo organizado por cliente: quando a distribuidora, um auditor ou o próprio cliente pedir, você encontra em minutos.
+
+<break time="0.8s" />
+
+Na plataforma, o contrato nasce da proposta aprovada, aproveitando os dados dela, e tem status: emitido, assinado, ativo, cancelado. No laboratório deste módulo, você vai emitir os contratos dos seus clientes.
+
+<break time="0.8s" />
+
+Resumindo: dez cláusulas, a fórmula do valor com exemplo, cancelamento com aviso prévio, reequilíbrio regulatório e assinatura eletrônica com documentos organizados. Na próxima aula, a éle gê pê dê.

@@ -1,0 +1,25 @@
+A sua empresa precisa receber de centenas de clientes, todo mês, com o mínimo de trabalho manual. A plataforma faz isso com o Mercado Pago: emite Pix ou boleto, recebe a confirmação automaticamente e baixa a cobrança. Nesta aula, você entende o que acontece por trás de cada clique.
+
+<break time="0.8s" />
+
+A plataforma oferece dois métodos. O Pix, que é o padrão: o cliente recebe um código copia e cola, paga no aplicativo do banco e a confirmação chega em minutos. E o boleto, com linha digitável e um pê dê éfe com código de barras e a marca da sua empresa. O boleto leva até três dias úteis para compensar e exige o endereço completo do pagador — sem ele, o Mercado Pago recusa a emissão. Um detalhe: cada emissão é um método. Não dá para gerar Pix e boleto juntos no mesmo pedido; se o cliente quiser os dois, você gera um e, se ele preferir o outro, cancela e gera o outro.
+
+<break time="0.8s" />
+
+Ao emitir, a plataforma envia ao Mercado Pago o vencimento da cobrança. Se o vencimento cai num fim de semana, o banco joga para o próximo dia útil, e a plataforma registra a data real lida do próprio código de barras — é ela que aparece no pê dê éfe e que o banco aceita. Cobrança já vencida, quando emitida, recebe alguns dias de prazo.
+
+<break time="0.8s" />
+
+Quando o cliente paga, a baixa acontece por dois caminhos. O principal é o webhook: o Mercado Pago avisa a plataforma no momento em que o status muda. Por segurança, a plataforma não confia só no aviso: ela confere o status diretamente no Mercado Pago antes de dar baixa, e só aceita avisos assinados com a chave secreta da sua conta. O segundo caminho é a sincronização: a cada cinco minutos, a plataforma consulta os pagamentos pendentes. Se o aviso falhar por qualquer motivo, a sincronização pega. Resultado: ninguém precisa conferir extrato para dar baixa. E, se algo falhar repetidamente — credencial recusada, pagamento que não sincroniza há horas, aviso com erro —, vira alerta operacional.
+
+<break time="0.8s" />
+
+Três situações especiais. Primeiro, o boleto vencido. O Mercado Pago devolve ao pagador um boleto pago depois do vencimento, então todo dia às seis da manhã a plataforma marca como vencidos os boletos e Pix cuja data passou, bloqueia o pê dê éfe para o cliente não pagar um boleto que vai ser devolvido e alerta o consultor para gerar um novo e enviar. Mas ela não cancela o boleto antigo na hora: um boleto pago no último dia pode levar até três dias úteis para compensar. Por isso, o boleto vencido continua sendo acompanhado por dez dias; se o pagamento cair, a cobrança é baixada e o boleto substituto é cancelado automaticamente. Segundo: se você cancelar a cobrança ou confirmar um pagamento manualmente, o boleto ativo é cancelado no Mercado Pago — e, se o Mercado Pago responder que ele já foi pago, o pagamento é registrado. Terceiro: estorno. Se um pagamento for estornado no Mercado Pago, ele aparece como estornado, a cobrança continua marcada como paga e o caso fica registrado para revisão humana.
+
+<break time="0.8s" />
+
+Lembre que o meio de pagamento cobra tarifas por transação, diferentes para Pix e boleto; elas entram no custo variável da sua conta do módulo 3. A conta do Mercado Pago é configurada pelo administrador, com as credenciais guardadas de forma criptografada. O passo a passo está no material de apoio, e voltamos a isso no módulo 11.
+
+<break time="0.8s" />
+
+Resumindo: Pix ou boleto, baixa automática por dois caminhos, boleto vencido tratado com alerta e reemissão, e estornos registrados. Na próxima aula, a régua de cobrança.

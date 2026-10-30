@@ -1,0 +1,17 @@
+O produtor confiou a usina dele à sua empresa. Um investidor pode estar avaliando colocar dinheiro numa nova usina com você. Os dois querem a mesma coisa: números claros, todo mês, sem precisar pedir. Um bom relatório para eles vale mais do que qualquer apresentação comercial.
+
+<break time="0.8s" />
+
+O relatório mensal do produtor cabe em uma página. Geração do mês, comparada com a esperada e com o mesmo mês do ano anterior. Ocupação da usina e número de clientes. Energia compensada nos clientes. O valor do crédito no mês, a receita da usina, a taxa de administração e o repasse que ele vai receber. E as ocorrências — limpeza, falhas, manutenção — com os próximos passos. Os números de geração e de usina vêm da plataforma: do registro de geração mensal e do relatório por usina. O produtor também vê a geração diretamente no portal dele. Hoje, o extrato do repasse é montado por você a partir desses relatórios, com a regra do contrato; deixe esse cálculo numa planilha padronizada, conferida todo mês.
+
+<break time="0.8s" />
+
+Para investidores — quem financia ou pode financiar a próxima usina —, o relatório é trimestral e mostra o portfólio: quantas usinas, quantos megawatts-pico, quantos megawatts-hora por mês, a ocupação média. Mostra a receita de cada usina e a rentabilidade anualizada, que é o repasse anual dividido pelo investimento. O histórico de geração real contra a projetada, a inadimplência e o churn — porque o investidor sabe que a receita depende de clientes que pagam e ficam. E uma seção honesta de riscos, incluindo a regulação. Investidor sério desconfia de relatório só com boas notícias.
+
+<break time="0.8s" />
+
+Quatro regras de credibilidade. Envie na mesma data todo mês. Use sempre o mesmo formato, para que dê para comparar. Garanta que os números batem com o dinheiro que caiu na conta do produtor. E, quando houver má notícia — uma queda de geração, um cliente grande que saiu —, conte primeiro, com o plano de ação. É isso que faz o produtor renovar e o investidor voltar.
+
+<break time="0.8s" />
+
+Resumindo: uma página por mês para o produtor, um relatório trimestral de portfólio para investidores, sempre na mesma data, no mesmo formato e com números que batem. Nos laboratórios a seguir, você vai tirar esses números da plataforma.

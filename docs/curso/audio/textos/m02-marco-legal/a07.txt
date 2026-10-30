@@ -1,0 +1,21 @@
+Neste laboratório, você vai fazer duas coisas que toda empresa de assinatura faz a cada reajuste da distribuidora: atualizar a tarifa na plataforma e recalcular o valor do crédito com a transição do Fio B. Abra o laboratório como Administrador e, em outra aba, a calculadora do curso.
+
+<break time="0.8s" />
+
+No menu, abra Configurações e depois Concessionárias. Aqui ficam as distribuidoras em que a sua empresa atua. Abra a Distribuidora Exemplo. Os campos são o nome, o estado, o status e a tarifa gê dê dois. A tarifa gê dê dois é o valor do quilowatt-hora de crédito que a plataforma usa como referência nas propostas para produtores, para calcular quanto a usina vai render. O nome vem do enquadramento gê dê dois que você estudou na aula 5: é o valor do crédito para usinas novas. Repare que ele não é a tarifa cheia da conta de luz, e sim o valor do crédito depois da parcela do Fio B que não é compensada. E é a sua empresa que define e atualiza esse número, com base na tarifa homologada pela Aneel.
+
+<break time="0.8s" />
+
+Agora vá para a calculadora do curso, aba Valor do crédito. Preencha a tarifa de energia, a tê é, e a tarifa de uso, a tê u ésse dê, sem impostos, do subgrupo que você atende, e o valor do Fio B. Para o nosso exercício, use os números ilustrativos: tê é trinta e cinco centavos, tê u ésse dê quarenta e cinco centavos, Fio B vinte centavos. Preencha também os tributos: i cê ême ésse de dezoito por cento e Pis mais Cofins de cinco por cento. A calculadora mostra o valor do crédito em cada ano: em 2026, com sessenta por cento do Fio B pago, sessenta e oito centavos sem impostos; em 2027, sessenta e cinco; em 2028, sessenta e dois. E mostra também o valor com impostos, que é o que aparece na fatura do cliente. Para a sua distribuidora real, pegue os valores no site da Aneel, como mostramos no módulo 1. Atenção ao tratamento dos impostos sobre a parte compensada: ele depende do seu estado, por isso a calculadora tem um campo para você escolher a regra que o seu contador indicar.
+
+<break time="0.8s" />
+
+Volte à plataforma, clique para editar a Distribuidora Exemplo e preencha a tarifa gê dê dois com o valor do crédito de 2026 que você calculou. Salve. Pronto: a partir de agora, as propostas de produtor desta distribuidora usam esse valor. Uma boa prática: anote, numa planilha de controle, a data e a origem de cada atualização — qual resolução da Aneel, qual reajuste. E crie um lembrete anual para a data de reajuste da sua distribuidora. Errar esse número é errar todas as propostas.
+
+<break time="0.8s" />
+
+Agora, a parte da sua empresa. Volte à lista de concessionárias e cadastre a distribuidora da região que você escolheu na ficha do módulo 0, com o nome, o estado e a tarifa gê dê dois que você calcular na planilha com os valores reais. Se ainda não tiver os valores reais, use os ilustrativos por enquanto e volte para atualizar depois. A partir daqui, a sua usina e os seus clientes vão ser cadastrados nessa distribuidora.
+
+<break time="0.8s" />
+
+Para fechar, faça o exercício: calcule o valor do crédito da sua distribuidora em 2026, 2027 e 2028, a queda percentual nesse período e a cota ideal e o percentual de rateio dos três clientes de exemplo na usina de referência. Esses números vão para a ficha regulatória da sua empresa, o entregável do módulo. Com isso, você terminou o marco legal. No próximo módulo, vamos usar tudo isso para responder a pergunta mais importante: o seu modelo de negócio dá lucro?

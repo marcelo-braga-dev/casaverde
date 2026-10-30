@@ -1,0 +1,21 @@
+Antes de entrar no conteúdo, quero mostrar como o curso está organizado. Isso vai fazer você estudar com mais eficiência e, principalmente, chegar até o final — que é onde está o resultado.
+
+<break time="0.8s" />
+
+O curso tem treze módulos, divididos em quatro etapas, e cada etapa sobe um degrau. Na primeira, Fundamentos, você entende energia, quilowatt-hora, como funciona a geração solar, como a energia chega até o cliente e como é formada a conta de luz. Na segunda, Regulação e Negócio, você aprende as regras da geração distribuída e faz a conta que mostra se um modelo de assinatura dá lucro. A terceira etapa é a maior: Operação de ponta a ponta. Aqui você vai, na prática, conseguir usinas, vender para clientes, assinar contratos, distribuir a energia, receber as faturas, cobrar e manter a rotina da empresa funcionando. E na quarta etapa, Gestão e Estratégia, você aprende a medir o negócio, gerir riscos, escalar e montar o seu plano — e entrega o projeto final.
+
+<break time="0.8s" />
+
+Você vai encontrar dois tipos de aula. As aulas expositivas, como esta, explicam um conceito com exemplos e contas. Elas são curtas, de oito a quinze minutos, para você assistir com foco. E os laboratórios, que são gravações de tela na plataforma, mostrando passo a passo o que fazer. O laboratório tem também um roteiro escrito, para você repetir no seu ambiente no seu ritmo. A regra de ouro é: assistiu ao laboratório, faça o laboratório. Não deixe acumular. O conhecimento de operação só fixa quando você faz com as próprias mãos.
+
+<break time="0.8s" />
+
+Cada módulo termina com um quiz rápido, para você conferir se entendeu o essencial, e com um entregável: uma pequena peça do seu projeto, como a ficha da sua empresa, a conta do seu modelo de negócio ou a proposta para o seu primeiro cliente. Somando tudo, os entregáveis viram o projeto final: uma operação completa simulada, com usina, mais de vinte clientes, três meses de faturamento e um relatório executivo. Esse projeto é o seu certificado de que você sabe fazer — e pode virar, de verdade, o plano da sua empresa.
+
+<break time="0.8s" />
+
+Algumas dicas práticas. Reserve de três a cinco horas por semana: é o suficiente para um módulo. Se você está numa turma com acompanhamento, siga o cronograma, porque os encontros ao vivo acompanham os módulos. Anote as dúvidas e leve para a comunidade ou para o ao vivo — é ali que você vai ouvir as perguntas de outros empreendedores, e muitas vezes elas são as suas também. E use tudo o que receber no seu negócio real desde já: a calculadora, os modelos de proposta, os checklists.
+
+<break time="0.8s" />
+
+Na próxima aula, você vai entrar no laboratório pela primeira vez e conhecer os quatro perfis da plataforma. Separe uns minutos com o computador à mão. Vamos lá.

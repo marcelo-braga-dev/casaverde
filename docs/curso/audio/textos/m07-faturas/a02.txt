@@ -1,0 +1,17 @@
+Todo mês, você deveria saber quantos créditos cada cliente vai receber: é o percentual dele vezes a geração da usina. Quando a fatura chega, compare. Na maioria das vezes, bate. Quando não bate, existe uma causa, e cada causa tem uma ação. Vamos ver as seis situações mais comuns.
+
+<break time="0.8s" />
+
+O esperado é simples: o percentual do cliente no rateio vezes a energia injetada pela usina no ciclo. Se a padaria tem quatro por cento e a usina injetou cinquenta e oito mil quilowatts-hora, ela deveria receber dois mil, trezentos e vinte. Uma diferença pequena pode vir dos ciclos de leitura, que não coincidem entre a usina e cada cliente. Uma diferença grande exige investigação.
+
+<break time="0.8s" />
+
+Situação um: a fatura veio sem nenhum crédito. As causas mais comuns são a lista de rateio ainda não aplicada pela distribuidora, a unidade consumidora fora da lista ou um problema de titularidade — por exemplo, a conta mudou de nome. Ação: confira o protocolo do rateio e cobre a distribuidora; se o erro for dela, peça o refaturamento. Situação dois: créditos menores que o esperado. Verifique se a usina gerou menos naquele ciclo e se o percentual da lista foi digitado corretamente. Situação três: créditos maiores que o consumo, com o saldo acumulando. A cota está alta para o consumo atual do cliente: revise. Situação quatro: leitura estimada. Às vezes a distribuidora não faz a leitura e fatura pela média; no mês seguinte vem o acerto. Anote e acompanhe, porque o consumo e os créditos do mês podem parecer estranhos. Situação cinco: créditos indo para a unidade errada — geralmente erro na lista. Corrija e peça o refaturamento das faturas afetadas. E situação seis: créditos prestes a expirar no saldo do cliente. Reduza a cota ou, se o contrato permitir, redistribua. Lembre do princípio da cobrança da plataforma: você cobra sobre a energia compensada na fatura do mês. Créditos que ficaram parados no saldo não entram na cobrança até serem usados. Isso é justo com o cliente, mas significa que sobra de crédito é receita adiada — ou perdida, se expirar.
+
+<break time="0.8s" />
+
+Quando o problema é da distribuidora, registre tudo: nas observações da revisão da fatura, na plataforma, anote o que foi encontrado e o número do protocolo aberto. Acompanhe o prazo de resposta. Se não resolver, existem a ouvidoria da distribuidora e, em último caso, a Aneel. Ter o histórico registrado faz diferença nessa hora.
+
+<break time="0.8s" />
+
+Resumindo: calcule o esperado, compare com a fatura, identifique qual das seis situações aconteceu e aja, registrando tudo. Na próxima aula, como fazer as faturas chegarem sozinhas à plataforma.

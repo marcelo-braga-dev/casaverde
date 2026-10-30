@@ -1,0 +1,21 @@
+A plataforma que você usou o curso inteiro pode ter a marca da sua empresa: nome, cores e logotipos, em todas as telas, nos pê dê éfes de proposta, nos boletos e nos e-mails. Neste laboratório, você aplica a sua identidade visual e conhece as configurações que fazem a empresa funcionar.
+
+<break time="0.8s" />
+
+Abra Configurações, Identidade Visual. Preencha o nome da plataforma com o nome da sua empresa. Escolha as cores: primária, secundária, de destaque, a cor de fundo do menu e a cor do texto e dos ícones. Envie o logotipo da plataforma, um logotipo específico para o boleto em pê dê éfe — normalmente uma versão horizontal, que funciona bem impressa — e o favicon, o ícone da aba do navegador. A tela mostra uma prévia do menu antes de salvar. Salve e recarregue: o menu, o login, os e-mails e os pê dê éfes de proposta e de boleto passam a usar a sua marca. Gere uma proposta para ver.
+
+<break time="0.8s" />
+
+Agora, a equipe. Em Usuários, Consultores Cadastrados, crie um consultor. A senha precisa seguir a política da plataforma: pelo menos oito caracteres, com letras e números. Esse consultor vai ver só a própria carteira. Os administradores, em Usuários, Administradores, são para quem opera faturas, cobranças e configurações. Dê o perfil de administrador só a quem precisa.
+
+<break time="0.8s" />
+
+Em Whatsapp, Templates de Mensagens, ficam os modelos das mensagens que os consultores enviam: lembrete de cobrança, envio de boleto, convite. Edite com o tom da sua empresa. Os campos entre chaves duplas, como o nome do cliente, o valor e o vencimento, são preenchidos automaticamente. Lembre: a plataforma prepara a mensagem, mas o envio é sempre um clique humano.
+
+<break time="0.8s" />
+
+Por fim, as integrações, que na empresa real são configuradas uma vez, com cuidado. Em Financeiro, Bancos, fica a conta do Mercado Pago: a chave pública, o token de acesso e a chave secreta dos avisos de pagamento. Sem essa chave secreta, a plataforma recusa os avisos, por segurança. As credenciais ficam criptografadas e nunca aparecem para outros usuários. Em Integrações, ficam as caixas de e-mail que recebem as faturas e o histórico de importação. No laboratório, não use credenciais reais: o guia de configuração completo do Mercado Pago está nos materiais, para quando você montar a empresa de verdade.
+
+<break time="0.8s" />
+
+Para o entregável, aplique a identidade visual da sua empresa, crie um consultor e edite dois modelos de mensagem. Poste um print do menu com a sua marca na comunidade. Na próxima aula, o último passo antes do projeto final: o plano de negócio em uma página.

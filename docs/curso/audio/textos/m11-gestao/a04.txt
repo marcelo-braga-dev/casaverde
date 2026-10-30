@@ -1,0 +1,21 @@
+Crescer é o objetivo, mas crescer sem estrutura é o caminho mais rápido para o caos: faturas atrasadas, cobranças erradas, clientes reclamando. Nesta aula, você vai planejar o time e os processos para três fases da empresa.
+
+<break time="0.8s" />
+
+Na primeira fase, até cerca de trezentos clientes, a estrutura é mínima. O dono cuida da gestão, das usinas e dos produtores, e muitas vezes vende também. Um operador cuida das faturas, das cobranças, do rateio e do suporte, seguindo o ésse ó pê. Dois ou três consultores vendem. E os parceiros externos: contador, advogado e a empresa de manutenção. Na plataforma, o dono e o operador são administradores, e os vendedores são consultores, cada um com a própria carteira. Nesta fase, o dono precisa conhecer cada processo por dentro — foi para isso que você fez os laboratórios.
+
+<break time="0.8s" />
+
+Na segunda fase, a empresa se divide em áreas. Um gestor comercial, com cinco a dez consultores. Uma área de operações, com duas ou três pessoas, separando faturas e rateio de um lado e cobrança do outro. Atendimento, com uma ou duas pessoas. Financeiro e repasses aos produtores. E alguém dedicado a captar usinas, porque o crescimento passa a depender de energia nova todo mês. A plataforma acompanha: cada consultor segue vendo só a carteira dele, os alertas financeiros vão para o consultor responsável e os de fatura e sistema ficam com a operação.
+
+<break time="0.8s" />
+
+Na terceira fase, a empresa atua em várias distribuidoras, e a operação se organiza por distribuidora, porque cada uma tem o seu calendário, o seu layout de fatura e o seu procedimento de rateio. Surge a gestão do portfólio de usinas e de investidores, uma área de qualidade e auditoria — conferindo amostras de faturas e cobranças — e um plano de expansão para novas regiões.
+
+<break time="0.8s" />
+
+O que permite escalar não são as pessoas, são os processos. O ésse ó pê escrito e treinado. Checklists para as tarefas críticas: revisão de fatura, rateio, fechamento. Metas por área, ligadas aos doze indicadores. Rituais curtos: quinze minutos por dia, trinta por semana, o fechamento mensal. E uma dica valiosa: use o próprio laboratório deste curso para treinar cada novo colaborador antes de ele mexer na operação real.
+
+<break time="0.8s" />
+
+Resumindo: comece enxuto, crie áreas quando a base passar de algumas centenas, organize por distribuidora quando expandir, e invista em processos antes de pessoas. Desenhe os seus organogramas no exercício. Na próxima aula, a tecnologia e a marca da sua empresa na plataforma.

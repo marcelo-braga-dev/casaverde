@@ -1,0 +1,21 @@
+Bem-vindo à última etapa do curso. Você já sabe montar e operar a empresa. Agora, vai aprender a dirigi-la. E dirigir começa por medir. Uma empresa de assinatura tem muitos números; nesta aula, você vai escolher os doze que importam, em quatro grupos: energia, comercial, financeiro e cliente.
+
+<break time="0.8s" />
+
+O primeiro grupo é a energia, porque é o seu estoque. Um: a taxa de ocupação, energia alocada dividida pela disponível, com meta entre noventa e noventa e oito por cento. Abaixo disso, você tem estoque parado; acima, risco. Dois: o desempenho de geração, a geração real dividida pela esperada para aquele mês, com meta de pelo menos noventa e cinco por cento. E três: a energia efetivamente compensada nas faturas dividida pela alocada, que diz se os créditos estão chegando aos clientes como deveriam. Um número baixo aqui indica problema de rateio, de distribuidora ou de cota mal dimensionada.
+
+<break time="0.8s" />
+
+O segundo grupo é o comercial. Quatro: novos clientes no mês — e, mais importante, os quilowatts-hora vendidos, porque dez residências e uma padaria podem valer o mesmo. Cinco: a conversão de proposta em cliente pagante. E seis: o custo de aquisição, o cac, que é tudo o que você gastou para vender — comissões, anúncios, parte do salário comercial — dividido pelos novos clientes. Compare o cac com a margem que o cliente traz por mês: se o cac é de quatrocentos reais e o cliente deixa quarenta reais de margem por mês, você leva dez meses para recuperar o investimento nele.
+
+<break time="0.8s" />
+
+O terceiro grupo é o financeiro. Sete: a receita da gestora, a sua taxa de administração no mês. Oito: a taxa de recebimento, quanto do que foi faturado no mês foi recebido, com meta acima de noventa e cinco por cento. Nove: a inadimplência acima de trinta dias, em percentual do faturado, com meta de no máximo três por cento — aquela reserva que usamos na conta do módulo 3. E dez: a margem de contribuição por quilowatt-hora e o resultado do mês comparado com o ponto de equilíbrio. Esse último responde à pergunta mais importante do empresário: estamos ganhando ou perdendo dinheiro, e quanto falta para virar?
+
+<break time="0.8s" />
+
+O quarto grupo é o cliente. Onze: o churn, os cancelamentos do mês divididos pela base de clientes. Parece pequeno, mas dois por cento ao mês significam perder quase um quarto da base em um ano. A meta é ficar perto ou abaixo de um por cento ao mês. E doze: a economia média por cliente, em reais por mês, que é o valor que você entrega, junto com uma pesquisa de satisfação, como o ene pê ésse, feita a cada trimestre. Economia média caindo — por causa do Fio B, por exemplo — é um sinal antecipado de churn.
+
+<break time="0.8s" />
+
+Coloque os doze indicadores numa página só, com a meta, o resultado e um semáforo: verde, amarelo, vermelho. Revise todo mês, no fechamento, e acompanhe semanalmente os mais sensíveis: ocupação, recebimento e inadimplência. Nas próximas aulas, você vai ver de onde tirar esses números na plataforma e como transformar alguns deles em relatórios para clientes e produtores.

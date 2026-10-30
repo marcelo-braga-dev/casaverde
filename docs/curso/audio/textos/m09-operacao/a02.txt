@@ -1,0 +1,21 @@
+Numa operação com centenas de clientes, muita coisa pode dar errado sem ninguém perceber: uma caixa de e-mail para de funcionar, uma fatura fica parada na revisão, um pagamento não sincroniza. A plataforma foi construída com um princípio: toda falha que ameaça o faturamento vira um alerta, e não só uma linha num arquivo de log. Nesta aula, você aprende a trabalhar com eles.
+
+<break time="0.8s" />
+
+Os alertas vêm de quatro grupos. Faturas: problemas na importação por e-mail — caixa inacessível, senha de pê dê éfe errada, fatura ilegível, falha ao gravar — e faturas paradas em revisão há três dias. Financeiro: o Mercado Pago recusou emitir um pagamento, a credencial foi recusada, um pagamento não sincroniza há horas, os avisos de pagamento estão falhando, cobranças em rascunho há dois dias, cobranças vencendo em cinco dias sem Pix ou boleto, e os lembretes da régua. Usinas: sem geração registrada no mês, sem energia disponível, energia alocada maior que a disponível, saldo baixo e cliente consumindo acima da cota. E sistema: uma tarefa automática que falhou, uma conta de pagamento ausente ou sem a chave de segurança dos avisos.
+
+<break time="0.8s" />
+
+Cada alerta tem uma severidade. Os críticos ameaçam a receita ou os clientes agora — credencial do Mercado Pago recusada, energia alocada acima da disponível, rotina de importação parada: trate no mesmo dia. Os avisos pedem ação, mas não são urgentes. E os informativos servem para acompanhar. Na fila diária, a ordem é: críticos, depois o que tem data — como cobranças perto do vencimento —, depois o resto.
+
+<break time="0.8s" />
+
+Duas características deixam os alertas úteis em vez de barulhentos. Primeiro, cada problema gera um único alerta — por módulo, tipo e registro. Se a mesma caixa de e-mail falha dez vezes, você vê um alerta, renovado, e não dez. Segundo, o alerta se resolve sozinho quando a causa desaparece: a caixa voltou a funcionar, a fatura foi revisada, a geração foi registrada. Você não precisa ficar limpando a lista: ela mostra a situação real. Você também pode marcar um alerta como resolvido manualmente, ou como ignorado, quando ele não se aplica — por exemplo, uma usina em manutenção programada —, e a varredura respeita essa decisão.
+
+<break time="0.8s" />
+
+O administrador vê todos os alertas. O consultor vê apenas os alertas financeiros da própria carteira — lembretes, cobranças sem boleto, boletos vencidos —, muitas vezes já com o link do WhatsApp e a mensagem pronta. Ele não vê alertas de faturas nem de sistema, que são responsabilidade da operação. Assim, cada pessoa tem a própria fila, sem ruído.
+
+<break time="0.8s" />
+
+Resumindo: os alertas cobrem faturas, financeiro, usinas e sistema; a severidade define a ordem; cada problema gera um alerta único que se resolve sozinho; e cada perfil vê a sua fila. A meta diária é simples: sino sem críticos. Na próxima aula, a saúde das usinas.

@@ -1,0 +1,21 @@
+A fórmula resolve a grande maioria das cobranças. Mas a vida real traz exceções: uma cortesia, uma correção de um mês anterior, uma refaturação da distribuidora, um pedido de mudança de vencimento. A plataforma tem ferramentas para isso, todas com histórico. Vamos ver quando usar cada uma.
+
+<break time="0.8s" />
+
+O ajuste mais comum é o desconto manual. Use para uma cortesia — por exemplo, o primeiro crédito demorou um ciclo além do prometido e você quer compensar o cliente —, para corrigir um erro seu ou para uma negociação. O acréscimo manual é o contrário: por exemplo, no mês anterior uma fatura foi lida errado e você cobrou a menos; no mês seguinte, cobra a diferença. Em ambos, a plataforma pede o tipo, o valor e uma descrição. Escreva uma descrição que o cliente entenderia, porque ela pode ser questionada. E combine com o cliente antes de cobrar um acréscimo: surpresa na cobrança gera cancelamento.
+
+<break time="0.8s" />
+
+Se a fatura que originou a cobrança foi corrigida, ou se a regra de desconto do cliente mudou antes do pagamento, a cobrança pode ser recalculada, para refletir os novos números. Faça isso sempre antes de emitir o Pix ou o boleto. Se o pagamento já tiver sido gerado, o recálculo exige cancelar e emitir de novo — por isso, a conferência no status de rascunho é tão importante.
+
+<break time="0.8s" />
+
+Outra situação frequente: o cliente pede para mudar o vencimento — por exemplo, a empresa recebe dos clientes dela no dia quinze e prefere pagar depois disso. Na tela da cobrança, use editar vencimento e informe a nova data. Se já existe um boleto ou Pix ativo, a plataforma cancela o anterior no Mercado Pago e emite um novo com a data nova — o mesmo acontece se o valor mudar. Isso evita que o cliente pague um boleto com a data ou o valor errados. Depois, envie o novo boleto ao cliente.
+
+<break time="0.8s" />
+
+Tudo isso fica registrado no histórico de alterações da cobrança: quem mudou o vencimento, quem lançou um ajuste, quando o status mudou, quando um boleto foi emitido ou cancelado. É a trilha de auditoria da sua operação financeira. Numa discussão com um cliente, ou numa auditoria, você reconstrói a história de cada cobrança em segundos.
+
+<break time="0.8s" />
+
+Resumindo: ajustes sempre com descrição e combinados com o cliente; recalcule antes de emitir; mudança de vencimento ou valor reemite o boleto; e o histórico registra tudo. Na próxima aula, como funcionam o Pix e o boleto.

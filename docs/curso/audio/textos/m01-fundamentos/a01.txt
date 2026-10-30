@@ -1,0 +1,25 @@
+Vamos começar do zero absoluto. Se você vai vender energia por assinatura, existe uma unidade que vai acompanhar você todos os dias: o quilowatt-hora, o quilowatt-hora. É nele que a distribuidora cobra o seu cliente, é nele que a usina é medida e é nele que a sua empresa vai ganhar dinheiro. E existe uma confusão muito comum entre kW e quilowatt-hora. Parece detalhe, mas quem confunde erra proposta, erra contrato e perde dinheiro. Nesta aula, você vai sair sabendo a diferença de uma vez por todas.
+
+<break time="0.8s" />
+
+Primeiro, potência. Potência é a quantidade de energia que um equipamento usa a cada instante, enquanto está ligado. A unidade é o watt, W. Mil watts formam um quilowatt, o kW. Uma lâmpada de léd tem uns dez watts. Um ventilador, uns cem. Um chuveiro elétrico tem cinco mil e quinhentos watts, ou cinco vírgula cinco quilowatts. Pense na potência como a largura de uma torneira: quanto maior, mais água passa por segundo. Mas repare: a potência sozinha não diz quanto você vai pagar. Um chuveiro de cinco vírgula cinco quilowatts desligado não consome nada. O que importa para a conta é por quanto tempo ele fica ligado.
+
+<break time="0.8s" />
+
+Agora, energia. Energia é a potência multiplicada pelo tempo em que o equipamento fica ligado. Se o chuveiro de cinco vírgula cinco quilowatts fica ligado quinze minutos por dia — um quarto de hora —, ele consome cinco vírgula cinco vezes zero vírgula vinte e cinco, que dá um vírgula trinta e sete quilowatt-hora por dia. Em trinta dias, são cerca de quarenta e um quilowatts-hora. Voltando à torneira: a potência é a largura da torneira, a energia é quanta água encheu o balde. E é o balde que você paga. O medidor de energia da casa do seu cliente é exatamente isso: um contador de quilowatts-hora. A cada mês, a distribuidora lê quanto ele marcou e cobra por isso.
+
+<break time="0.8s" />
+
+Para você ter referência, veja alguns números aproximados. Uma residência pequena consome algo entre cento e cinquenta e duzentos quilowatts-hora por mês. Uma casa com ar-condicionado pode chegar a quatrocentos, seiscentos, oitocentos. Uma padaria, com fornos e refrigeração, consome de dois a quatro mil. Uma clínica, de três a seis mil. Um supermercado de bairro passa de dez mil. Esses números são exemplos, e cada cliente é um caso, mas eles já mostram uma coisa importante para o seu negócio: um único comércio pode valer o mesmo que dez ou vinte residências. Isso vai pesar muito na sua estratégia comercial, no módulo 5.
+
+<break time="0.8s" />
+
+E como o quilowatt-hora vira dinheiro? A distribuidora multiplica o consumo pelo preço do quilowatt-hora, a tarifa, e acrescenta impostos e algumas taxas. De forma simplificada: se a residência consumiu quatrocentos e cinquenta quilowatts-hora e o quilowatt-hora custa, com tudo incluído, por volta de um real, a conta fica em torno de quatrocentos e cinquenta reais. Guarde esse raciocínio, porque o seu negócio inteiro é sobre ele. A energia que a usina gera vira créditos em quilowatt-hora. Esses créditos abatem os quilowatts-hora que o cliente pagaria para a distribuidora. E cada quilowatt-hora abatido vale dinheiro. Nas próximas aulas, a gente vai abrir essa tarifa por dentro, porque nem tudo o que está nela é abatido pelos créditos. Esse detalhe é o famoso Fio B.
+
+<break time="0.8s" />
+
+Uma última unidade, que você vai ver muito: o quilowatt-pico, quilowatt-pico. É a potência dos painéis solares medida em condições ideais de laboratório. Quando alguém diz "uma usina de quinhentos quilowatt-pico", está dizendo o tamanho da usina — a largura da torneira. Mas o que interessa para o negócio é quanto ela gera por mês, em quilowatt-hora. Como passar de um para o outro é o assunto da próxima aula.
+
+<break time="0.8s" />
+
+Resumindo: kW é potência, o tamanho da torneira. quilowatt-hora é energia, a água no balde — é o que se paga e o que a usina entrega. E quilowatt-pico é o tamanho da usina solar. Faça o exercício do módulo calculando o consumo de um ar-condicionado, e nos vemos na próxima aula.

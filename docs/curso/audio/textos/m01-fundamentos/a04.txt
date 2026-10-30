@@ -1,0 +1,21 @@
+Para operar uma empresa de assinatura de energia, você vai conviver com algumas instituições e com regras que vêm delas. Saber quem é quem evita muita dor de cabeça — e evita que você caia em promessas que não existem, como "vender energia para qualquer cliente". Vamos lá.
+
+<break time="0.8s" />
+
+No topo está o Ministério de Minas e Energia, o ême ême é, que define a política energética do país. Abaixo, a principal para o seu negócio: a Aneel, Agência Nacional de Energia Elétrica. A Aneel regula e fiscaliza o setor: define as tarifas de cada distribuidora, escreve as resoluções que detalham como as leis são aplicadas e fiscaliza o cumprimento. As regras da geração distribuída que você vai estudar estão em leis e em resoluções da Aneel. Depois vem o ó ene ésse, que você conheceu na aula anterior, operando o sistema interligado. A cê cê é é, Câmara de Comercialização de Energia Elétrica, faz a contabilidade do mercado de energia: registra contratos e liquida as diferenças entre o que foi contratado e o que foi consumido. E, na ponta, as distribuidoras: empresas concessionárias, cada uma responsável por uma área. É com a distribuidora que a sua empresa vai conversar no dia a dia: pedido de conexão da usina, cadastro dos clientes que recebem créditos, faturas.
+
+<break time="0.8s" />
+
+Existem dois ambientes para comprar energia no Brasil. O primeiro é o Ambiente de Contratação Regulada, o a cê érre, ou mercado cativo. É onde estão praticamente todas as residências e pequenos comércios. Nele, o consumidor não escolhe o fornecedor: compra da distribuidora da sua região, pela tarifa aprovada pela Aneel. A tarifa é reajustada uma vez por ano e revista periodicamente. É nesse mercado que está o seu cliente de assinatura.
+
+<break time="0.8s" />
+
+O segundo é o Ambiente de Contratação Livre, o mercado livre. Nele, o consumidor escolhe de quem comprar energia e negocia preço, prazo e condições, por meio de geradores ou comercializadoras. Hoje, o mercado livre é acessível principalmente a consumidores conectados em média e alta tensão, como indústrias e grandes comércios. Existe um movimento de abertura gradual para a baixa tensão, que é acompanhado de perto pelo setor e que pode mudar o cenário nos próximos anos; vamos falar disso no módulo de riscos. Por ora, guarde: residências e pequenos comércios, em regra, ainda estão no mercado regulado.
+
+<break time="0.8s" />
+
+E a assinatura de energia, onde fica? Aqui está um ponto que confunde muita gente, inclusive empreendedores que já estão no mercado. A sua empresa não vende energia no mercado livre. O seu cliente continua sendo cliente da distribuidora, no mercado regulado, recebendo a conta normalmente. O que muda é que ele passa a participar da geração distribuída: uma usina injeta energia na rede, essa energia vira créditos, e os créditos são abatidos na conta dele. A sua empresa organiza essa participação e é remunerada por isso. Esse cuidado com as palavras é importante: no Brasil, a geração distribuída não é um ambiente de venda de energia, e os modelos de negócio precisam respeitar isso. No módulo 3, você vai ver exatamente quais estruturas são usadas — consórcio, cooperativa, associação, locação de usina — e por quê.
+
+<break time="0.8s" />
+
+Resumindo: a Aneel regula, a distribuidora atende e fatura, e existem dois mercados — o regulado, onde está o seu cliente, e o livre, para consumidores maiores. A assinatura de energia é geração distribuída: o cliente segue na distribuidora e recebe créditos. Na próxima aula, vamos entender como a distribuidora classifica os clientes, o que muda bastante a conta.

@@ -1,0 +1,25 @@
+Quatro cobranças ficaram em aberto na aula anterior. Agora vamos avançar o tempo no laboratório e ver a régua automática funcionar: lembrete, cobrança vencida, boleto vencido e reemissão.
+
+<break time="0.8s" />
+
+Avance o laboratório até três dias antes do vencimento. Na caixa de e-mails do laboratório, aparece o lembrete enviado aos clientes, com o Pix. E, em Alertas Operacionais, há um alerta de lembrete para o consultor responsável, com o link do WhatsApp e a mensagem pronta. Clique e veja a mensagem. Na vida real, o consultor só confere e envia.
+
+<break time="0.8s" />
+
+Avance para o dia seguinte ao vencimento. As cobranças não pagas foram marcadas como vencidas, sem ninguém clicar. No dashboard, o número de cobranças vencidas subiu, e o valor vencido aparece separado. Na lista de cobranças, filtre pelas vencidas: é a fila de trabalho da cobrança.
+
+<break time="0.8s" />
+
+Agora, a clínica, que tinha boleto. Repare no selo de boleto vencido e no pê dê éfe bloqueado: o cliente não consegue mais baixar um boleto que o banco devolveria. Em Alertas Operacionais, há um alerta pedindo para gerar um novo boleto e enviar. E o menu mostra quantas cobranças estão aguardando um novo boleto. Gere o novo pagamento para a clínica e envie ao cliente. Lembre do detalhe da aula 3: o boleto antigo não foi cancelado no banco; ele continua sendo acompanhado por dez dias. Se a clínica tiver pago o antigo no último dia, a cobrança é baixada e o novo boleto é cancelado sozinho.
+
+<break time="0.8s" />
+
+Por fim, a residência ligou: recebe o salário no dia quinze e pediu para pagar depois disso. Na cobrança, use editar vencimento e informe a nova data. A plataforma cancela o Pix anterior no Mercado Pago e emite um novo com a data nova. O histórico de alterações registra quem mudou e quando. Se o pedido se repetir todo mês, ajuste a data de vencimento padrão desse cliente no contrato.
+
+<break time="0.8s" />
+
+Para os contatos humanos da régua, a cobrança tem os botões de cobrar via WhatsApp e enviar lembrete, sempre com a mensagem pronta e o valor correto. Use-os nos dias de contato pessoal.
+
+<break time="0.8s" />
+
+Confira o entregável: o mês um faturado para os quinze clientes, pelo menos dez pagos, um ajuste, um vencimento alterado, um boleto reemitido e a régua de cobrança da sua empresa por escrito. Com isso, você operou o ciclo completo, da usina ao dinheiro. No próximo módulo, vamos transformar isso numa rotina que roda todo mês.

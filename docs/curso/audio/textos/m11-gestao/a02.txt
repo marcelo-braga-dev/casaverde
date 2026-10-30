@@ -1,0 +1,21 @@
+Tributação é um dos temas em que o empreendedor de energia mais erra, e também um dos que mais mudam. Esta aula organiza o assunto em três camadas — a energia compensada na conta do cliente, a sua empresa gestora e a entidade — para que você chegue ao contador com as perguntas certas. As regras dependem do estado, do município e do regime da empresa, e estão passando pela reforma tributária. Confirme sempre com um contador especializado em energia.
+
+<break time="0.8s" />
+
+Primeira camada: a energia compensada na conta do cliente. Em nível federal, há previsão legal de alíquota zero de Pis e Cofins sobre a energia compensada pelo sistema de compensação. No i cê ême ésse, existe um convênio entre os estados que permite isentar a energia compensada, mas cada estado define a adesão e as condições — por exemplo, limites de potência, modalidades atendidas e o tratamento das parcelas que continuam sendo pagas, como o Fio B e o custo de disponibilidade. Na prática, isso muda o valor do crédito com impostos e, portanto, a economia do cliente. Por isso a calculadora do curso tem um campo para a regra do seu estado. Peça ao contador a regra exata da sua u éfe e confira numa fatura real.
+
+<break time="0.8s" />
+
+Segunda camada: a sua gestora. A receita dela é a taxa de administração, uma receita de prestação de serviços. Os regimes mais comuns são o Simples Nacional, com guia única, em que a alíquota efetiva depende do anexo de enquadramento da atividade e, em serviços, do chamado fator R, a relação entre folha de pagamento e faturamento; o Lucro Presumido, em que imposto de renda e contribuição social incidem sobre uma base presumida para serviços, mais Pis e Cofins cumulativos e o i ésse ésse; e o Lucro Real, que costuma fazer sentido para estruturas maiores ou de margem baixa. Em todos, há i ésse ésse municipal sobre a taxa de gestão, com a alíquota do município. Lembre: na conta do módulo 3, usamos dez por cento da taxa como imposto apenas como exemplo. Coloque o número real do seu contador na calculadora.
+
+<break time="0.8s" />
+
+Terceira camada: a entidade e o produtor. O tratamento muda conforme a forma: no consórcio, os efeitos tributários costumam recair sobre as consorciadas, conforme o contrato; na cooperativa, existe o regime do ato cooperativo; na associação, as regras de entidade sem fins lucrativos, com as condições que elas exigem. E o aluguel que o produtor recebe é rendimento tributável dele — pessoa física ou jurídica —, o que vale explicar na proposta, porque o produtor vai comparar o rendimento líquido.
+
+<break time="0.8s" />
+
+Por fim, a reforma tributária, que vai mudar a tributação do consumo no Brasil nos próximos anos. Em linhas gerais: 2026 é um ano de teste dos novos tributos; em 2027, a cê bê ésse, federal, substitui o Pis e a Cofins; entre 2029 e 2032, o i cê ême ésse e o i ésse ésse vão sendo substituídos gradualmente pelo i bê ésse; e, em 2033, o sistema novo funciona plenamente. Como isso vai tratar a energia compensada na geração distribuída e os serviços da gestora depende de regulamentação que ainda está sendo detalhada. Duas atitudes práticas: inclua a reforma nos cenários do seu plano e nas cláusulas de reequilíbrio dos contratos, e acompanhe as atualizações semestrais deste curso.
+
+<break time="0.8s" />
+
+Resumindo: três camadas — a energia compensada, com regras federais e estaduais; a gestora, com o regime e o i ésse ésse; a entidade e o produtor — e a reforma tributária no horizonte. Leve as perguntas do exercício ao seu contador. Na próxima aula, os riscos do negócio.

@@ -1,0 +1,21 @@
+Neste laboratório, você vai cadastrar um cliente empresarial, a unidade consumidora dele e a proposta comercial, e depois repetir o processo para uma residência. Entre como Consultor — é o dia a dia do vendedor — ou como Administrador.
+
+<break time="0.8s" />
+
+Abra Cliente Consumidor e depois Clientes. Clique para cadastrar um novo cliente. Vamos usar uma academia fictícia: pessoa jurídica, com o cê ene pê jota da lista de documentos do curso. Preencha a razão social, o nome fantasia e os contatos — e-mail e celular são importantes, porque é por eles que o cliente vai receber o convite do portal e os avisos de cobrança. Salve. O cliente recebe um código e já entra com o desconto padrão da sua empresa, aquele que você configurou no módulo 3. Como no produtor, a plataforma valida os dígitos do cê pê éfe ou cê ene pê jota e não deixa cadastrar o mesmo documento duas vezes.
+
+<break time="0.8s" />
+
+Agora, a unidade consumidora. Na ficha do cliente, abra a aba de unidades consumidoras e cadastre uma nova. O código da u cê é o número da instalação que aparece na conta de luz; pode digitar com pontos e traços, a plataforma guarda só os dígitos. Dê um rótulo que ajude a identificar, como "Academia — Centro". Escolha a concessionária — a mesma da sua usina. E informe o consumo previsto mensal: a média de doze meses, seis mil e duzentos quilowatts-hora. Salve. Repare: a combinação de código da u cê e concessionária é única no sistema. Se alguém tentar cadastrar a mesma u cê de novo, a plataforma impede. Isso é fundamental, porque é pela u cê que as faturas da distribuidora vão ser associadas ao cliente certo no módulo 7.
+
+<break time="0.8s" />
+
+Agora abra Cliente Consumidor, Propostas, e crie uma nova. Selecione a academia. Escolha a concessionária e a unidade consumidora. Informe a média de consumo e o valor médio da conta, em reais — é com eles que a proposta calcula a economia. A taxa de redução já vem com o desconto do cliente; ajuste se você negociou algo diferente. Preencha o prazo e a validade da proposta e, nas observações, o que for específico, como a data prevista de início dos créditos. Salve. A proposta nasce com o status de emitida. Quando você enviar ao cliente, mude para enviada; quando ele aceitar, aprovada. Esses status alimentam o funil que você viu na aula anterior.
+
+<break time="0.8s" />
+
+Gere o pê dê éfe. A proposta sai com a identidade visual da sua empresa, a economia estimada e as condições. Confira os números com a sua calculadora: se a economia mostrada for diferente da que você calculou na conta total, entenda o porquê antes de enviar — por exemplo, se o valor médio informado inclui iluminação pública ou bandeira. O link do pê dê éfe é temporário; para enviar, baixe o arquivo ou use a opção de enviar ao cliente, que gera uma mensagem pronta no WhatsApp com o seu número de consultor. O envio continua sendo um clique humano: nada sai sozinho.
+
+<break time="0.8s" />
+
+Agora, monte a carteira inicial da sua empresa: cinco clientes do seu cliente ideal, sendo pelo menos duas empresas e duas residências, cada um com a unidade consumidora, a cota calculada na calculadora e a proposta em pê dê éfe. E escreva o roteiro de abordagem do seu vendedor, em uma página, com as respostas às objeções. No próximo módulo, esses clientes vão assinar o contrato e entrar na usina.
