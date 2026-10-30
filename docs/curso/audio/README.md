@@ -88,7 +88,7 @@ Ao receber os áudios de um lote (gerados no Studio ou baixados do ElevenLabs), 
 node docs/curso/publicar.cjs
 ```
 
-Ele monta `docs/curso/publicacao/` (uma pasta por aula com áudio, slides e transcrição), junta sozinho as aulas divididas entre dois lotes e atualiza o índice com o status de cada aula.
+Ele monta `docs/curso/publicacao/` (uma pasta por aula com áudio, slides, transcrição, **vídeo MP4 1920×1080 e legendas .srt**), junta sozinho as aulas divididas entre dois lotes e atualiza o índice com o status de cada aula. O vídeo usa ffmpeg, LibreOffice e pdftoppm (instalados no servidor em 2026-10-30); cada slide fica na tela pelo tempo da sua narração (detectado pelas pausas entre cenas) e os slides sem voz ganham tempo de leitura. Leva ~45 s por aula; vídeos já gerados só são refeitos se áudio ou slides mudarem. Para pular os vídeos: `SEM_VIDEO=1`.
 
 ## Ajuste fino da voz
 

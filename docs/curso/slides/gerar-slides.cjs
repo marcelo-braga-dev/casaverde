@@ -65,6 +65,7 @@ const ETAPA = { M0: 'Etapa 1 · Fundamentos', M1: 'Etapa 1 · Fundamentos', M2: 
 const clean = (s) => s.replace(/\*\*/g, '').replace(/`/g, '').replace(/\s*\[CONFERIR[^\]]*\]/gi, '').trim();
 const unquote = (s) => clean(s).replace(/^["“]|["”]$/g, '').trim();
 const isLab = (t) => t.startsWith('Laboratório: ');
+const semLab = (t) => { const x = t.replace(/^Laboratório: /, ''); return x.charAt(0).toUpperCase() + x.slice(1); };
 const SKIP_NAME = /^(Abertura|Encerramento|Exercício e encerramento|Entregável e encerramento|Resumo e encerramento)/i;
 
 // ---------- leitura ----------
@@ -239,7 +240,7 @@ function calculo(s, items, x, y, w, h) {
 }
 
 // ---------- blocos ----------
-const pesado = (b) => b.rows.length > 0 || b.tipo === 'QUADRO' || (b.items.length === 1 && b.items[0].includes('→')) || b.items.length > 5 || len(b) > 300;
+const pesado = (b) => (b.fala || '').length > 200 || b.rows.length > 0 || b.tipo === 'QUADRO' || (b.items.length === 1 && b.items[0].includes('→')) || b.items.length > 5 || len(b) > 300;
 
 function faixa(s, texto, y) {
     s.addShape('roundRect', { x: 0.6, y, w: 12.13, h: 0.95, fill: { color: C.claro }, line: { color: C.linha, width: 0.5 }, rectRadius: 0.08 });
@@ -262,6 +263,10 @@ function slideBloco(pptx, a, b, rodape) {
         if (b.items.length) { bullets(s, b.items, 7.05, y, 5.68, 1.4, 14); tabela(s, b.rows, 7.05, y + 1.5, 5.68); } else tabela(s, b.rows, 7.05, y + 0.2, 5.68);
     } else if (b.rows.length) {
         if (b.items.length) { bullets(s, b.items, 0.6, y, 12.2, 1.1, 15); tabela(s, b.rows, 0.6, y + 1.2, 12.13); } else tabela(s, b.rows, 0.6, y + 0.1, 12.13);
+    } else if (b.items.length === 1) {
+        s.addShape('roundRect', { x: 1.6, y: y + 0.3, w: 10.13, h: H - 0.6, fill: { color: C.branco }, line: { color: C.linha, width: 0.75 }, rectRadius: 0.12, shadow: { type: 'outer', blur: 4, offset: 1, angle: 90, color: '000000', opacity: 0.1 } });
+        s.addShape('rect', { x: 1.6, y: y + 0.3, w: 0.14, h: H - 0.6, fill: { color: C.laranja } });
+        s.addText(b.items[0], { x: 2.2, y: y + 0.5, w: 9.2, h: H - 1.0, fontFace: F, fontSize: caber(b.items[0], 9.1, H - 1.1, 32, 16), bold: true, color: C.azul, align: 'center', valign: 'middle' });
     } else if (destaques(b.items)) {
         numeros(s, b.items, 0.6, y + 0.2, 12.13, H - 0.3);
     } else if (b.items.length <= 6 && b.items.every((t) => t.length <= 110)) {
@@ -289,12 +294,12 @@ function slideCartoes(pptx, a, blocos, rodape, titulo) {
         s.addText(b.nome, { x: x + 0.3, y: 1.7, w: w - 0.6, h: 0.75, fontFace: F, fontSize: 16, bold: true, color: C.azul, valign: 'top', fit: 'shrink' });
         const items = b.items.length ? b.items : [b.nome];
         if (items.length === 1) {
-            if (b.fala) s.addText(b.fala, { x: x + 0.3, y: 4.4, w: w - 0.6, h: 2.3, fontFace: F, fontSize: caber(b.fala, w - 0.7, 2.2, 13, 9), italic: true, color: C.cinza, valign: 'top' });
+            if (b.fala) s.addText(b.fala, { x: x + 0.3, y: 4.4, w: w - 0.6, h: 2.3, fontFace: F, fontSize: caber(b.fala, w - 0.7, 2.2, 15, 11), italic: true, color: C.cinza, valign: 'top' });
             s.addText(items[0], { x: x + 0.3, y: 2.5, w: w - 0.6, h: b.fala ? 1.8 : 4.1, fontFace: F, fontSize: caber(items[0], w - 0.7, b.fala ? 1.7 : 4.0, 22, 11), color: C.texto, valign: 'middle', fit: 'shrink' });
         } else bullets(s, items, x + 0.3, 2.5, w - 0.6, b.fala ? 2.5 : 4.1, 17);
         if (b.fala && items.length > 1) {
             s.addShape('rect', { x: x + 0.3, y: 5.1, w: w - 0.6, h: 0.02, fill: { color: C.linha } });
-            s.addText(b.fala, { x: x + 0.3, y: 5.2, w: w - 0.6, h: 1.5, fontFace: F, fontSize: caber(b.fala, w - 0.7, 1.45, 13, 9), italic: true, color: C.cinza, valign: 'top' });
+            s.addText(b.fala, { x: x + 0.3, y: 5.2, w: w - 0.6, h: 1.5, fontFace: F, fontSize: caber(b.fala, w - 0.7, 1.45, 14, 11), italic: true, color: C.cinza, valign: 'top' });
         }
     });
     s.addNotes(blocos.map((b) => b.fala || '').join('\n\n'));
@@ -302,7 +307,7 @@ function slideCartoes(pptx, a, blocos, rodape, titulo) {
 
 function slidePassos(pptx, a, passos, rodape, parte, k) {
     const s = base(pptx, rodape);
-    cabecalho(s, parte ? `Passo a passo (${parte})` : 'Passo a passo na plataforma', `Aula ${a.aula} · ${a.titulo.replace(/^Laboratório: /, '')}`);
+    cabecalho(s, parte ? `Passo a passo (${parte})` : 'Passo a passo na plataforma', `Aula ${a.aula} · ${semLab(a.titulo)}`);
     if (k) {
         const h = imagemTela(s, k, 0.5, 1.45, 7.7);
         s.addText(NOME_TELA[k] || '', { x: 0.5, y: 1.5 + h, w: 7.7, h: 0.35, fontFace: F, fontSize: 11, italic: true, color: C.cinza, align: 'center' });
@@ -334,12 +339,12 @@ function slidePassos(pptx, a, passos, rodape, parte, k) {
 function slideSecao(pptx, a, temas, rodape) {
     const s = base(pptx, rodape, true);
     s.addShape('rect', { x: 0, y: 0, w: 4.6, h: 7.5, fill: { color: C.azul } });
-    s.addText(String(a.aula).padStart(2, '0'), { x: 0.5, y: 0.6, w: 3.8, h: 1.9, fontFace: F, fontSize: 110, bold: true, color: C.destaque });
+    s.addText(String(a.aula).padStart(2, '0'), { x: 0.5, y: 0.6, w: 3.8, h: 1.9, fontFace: F, fontSize: 110, bold: true, color: C.laranja });
     s.addText(`AULA ${a.aula}`, { x: 0.6, y: 2.4, w: 3.6, h: 0.6, fontFace: F, fontSize: 18, bold: true, color: C.laranja, charSpacing: 2 });
     s.addText(`${a.mod} · ${ETAPA[a.mod] || 'Etapa 3 · Operação ponta a ponta'}`, { x: 0.6, y: 3.5, w: 3.7, h: 0.5, fontFace: F, fontSize: 11, color: 'C7D2E3' });
-    s.addText(isLab(a.titulo) ? 'Prática na plataforma' : 'Aula', { x: 0.6, y: 3.0, w: 3.6, h: 0.5, fontFace: F, fontSize: 14, color: 'C7D2E3' });
+    s.addText(isLab(a.titulo) ? 'Prática na plataforma' : 'Aula teórica', { x: 0.6, y: 3.0, w: 3.6, h: 0.5, fontFace: F, fontSize: 14, color: 'C7D2E3' });
     s.addImage({ path: LOGO, x: 0.6, y: 6.2, w: 0.7, h: 0.7 });
-    s.addText(a.titulo.replace(/^Laboratório: /, ''), { x: 5.1, y: 0.9, w: 7.8, h: 1.6, fontFace: F, fontSize: 32, bold: true, color: C.branco, valign: 'bottom', fit: 'shrink' });
+    s.addText(semLab(a.titulo), { x: 5.1, y: 0.9, w: 7.8, h: 1.6, fontFace: F, fontSize: 32, bold: true, color: C.branco, valign: 'bottom', fit: 'shrink' });
     if (a.objetivo) s.addText(a.objetivo, { x: 5.1, y: 2.6, w: 7.8, h: 0.9, fontFace: F, fontSize: caber(a.objetivo, 7.7, 0.85, 15, 11), color: 'C7D2E3', valign: 'top', fit: 'shrink' });
     if (temas.length) {
         s.addText(temas.slice(0, 7).map((t) => ({ text: t, options: { bullet: { code: '25B8' }, breakLine: true, paraSpaceAfter: 6 } })),
@@ -355,7 +360,7 @@ function capaModulo(pptx, mod, plano, aulas) {
     s.addText([{ text: `${MARCA}\n`, options: { fontSize: 18, bold: true, color: C.branco } }, { text: CURSO, options: { fontSize: 13, color: 'C7D2E3' } }], { x: 1.75, y: 0.62, w: 8, h: 0.95, fontFace: F, valign: 'middle' });
     s.addText(`${mod}  ·  ${ETAPA[mod] || 'Etapa 3 · Operação ponta a ponta'}`.toUpperCase(), { x: 0.7, y: 2.1, w: 12, h: 0.45, fontFace: F, fontSize: 14, bold: true, color: C.laranja, charSpacing: 1 });
     s.addText(plano.titulo, { x: 0.7, y: 2.55, w: 12, h: 1.3, fontFace: F, fontSize: 40, bold: true, color: C.branco, valign: 'top', fit: 'shrink' });
-    s.addText(aulas.map((a) => ({ text: `${a.aula}. ${a.titulo.replace(/^Laboratório: /, '')}`, options: { breakLine: true, paraSpaceAfter: 4 } })),
+    s.addText(aulas.map((a) => ({ text: `${a.aula}. ${semLab(a.titulo)}`, options: { breakLine: true, paraSpaceAfter: 4 } })),
         { x: 0.7, y: 4.0, w: 7.2, h: 3.0, fontFace: F, fontSize: aulas.length > 6 ? 12 : 14, color: 'C7D2E3', valign: 'top', fit: 'shrink' });
     s.addShape('roundRect', { x: 8.3, y: 4.0, w: 4.35, h: 3.0, fill: { color: C.destaque }, rectRadius: 0.1 });
     s.addText([{ text: 'Ao final do módulo\n', options: { bold: true, color: C.laranja, fontSize: 13 } },
@@ -404,27 +409,39 @@ function slideQuiz(pptx, plano, rodape) {
 }
 
 // ---------- montagem ----------
+// Linha do tempo para o vídeo: para cada slide criado, as cenas narradas que ele mostra e o volume de texto.
+function marcar(pptx, cenas = [], leitura = 0, tipo = 'conteudo') {
+    pptx._tl ||= [];
+    while (pptx._tl.length < pptx.slides.length) pptx._tl.push({ tipo, cenas: [...cenas], leitura });
+}
+
 function montarAula(pptx, a, falas) {
     const rodape = `${a.mod} · Aula ${a.aula}`;
     const fa = falas[a.chave.slice(-3)] || {};
     a.cenas.forEach((c, i) => {
+        c.n = i + 1;
         c.fala = fa[String(i + 1)] || '';
         if (fa.passos?.[String(i + 1)]) c.items = [fa.passos[String(i + 1)]];
     });
+    // Passo a passo só em laboratório; em aula teórica, a demonstração de tela vira um cartão.
+    const lab = isLab(a.titulo);
+    if (!lab) a.cenas.filter((c) => c.tipo === 'TELA' && c.items.length && !SKIP_NAME.test(c.nome)).forEach((c) => { c.tipo = 'SLIDE'; });
+    const passos = lab ? a.cenas.filter((c) => c.tipo === 'TELA').map((c, i) => ({ ...c, n: i + 1 })) : [];
     const conteudo = a.cenas.filter((c) => ['SLIDE', 'ANIMAÇÃO', 'QUADRO'].includes(c.tipo) && (c.items.length || c.rows.length) && !SKIP_NAME.test(c.nome));
     const resumo = a.cenas.find((c) => /^Resumo/i.test(c.nome) && c.items.length);
-    const passos = a.cenas.filter((c) => c.tipo === 'TELA').map((c, i) => ({ ...c, n: i + 1 }));
     const temas = [...conteudo.map((c) => c.nome), ...(passos.length ? ['Passo a passo na plataforma'] : [])].filter((t) => !/^Resumo/i.test(t));
     slideSecao(pptx, a, temas, rodape);
+    marcar(pptx, [], 0, 'secao');
 
     let leves = [];
     const flush = () => {
         if (leves.length === 1) slideBloco(pptx, a, leves[0], rodape);
-        else if (leves.length) slideCartoes(pptx, a, leves, rodape, a.titulo.replace(/^Laboratório: /, ''));
+        else if (leves.length) slideCartoes(pptx, a, leves, rodape, semLab(a.titulo));
+        marcar(pptx, leves.map((b) => b.n), leves.reduce((t, b) => t + len(b), 0));
         leves = [];
     };
     conteudo.filter((c) => !/^Resumo/i.test(c.nome)).forEach((b) => {
-        if (pesado(b)) { flush(); slideBloco(pptx, a, b, rodape); } else { leves.push(b); if (leves.length === 3) flush(); }
+        if (pesado(b)) { flush(); slideBloco(pptx, a, b, rodape); marcar(pptx, [b.n], len(b)); } else { leves.push(b); if (leves.length === 3) flush(); }
     });
     flush();
     const telas = (TELAS_AULA[a.chave] || []).filter(temTela);
@@ -432,13 +449,15 @@ function montarAula(pptx, a, falas) {
     for (let i = 0; i < passos.length; i += porSlide) {
         const partes = Math.ceil(passos.length / porSlide);
         slidePassos(pptx, a, passos.slice(i, i + porSlide), rodape, partes > 1 ? `${i / porSlide + 1}/${partes}` : '', telas[i / porSlide]);
+        marcar(pptx, [], passos.slice(i, i + porSlide).reduce((t, p) => t + p.items.join(' ').length, 0), 'passos');
     }
-    telas.slice(passos.length ? Math.ceil(passos.length / porSlide) : 0).forEach((k) => slideTela(pptx, a, k, rodape));
+    telas.slice(passos.length ? Math.ceil(passos.length / porSlide) : 0).forEach((k) => { slideTela(pptx, a, k, rodape); marcar(pptx, [], 120, 'tela'); });
     if (resumo) {
         const s = base(pptx, rodape);
         s.background = { color: C.claro };
         cabecalho(s, 'Para levar desta aula', `Aula ${a.aula} · resumo`);
         tiles(s, resumo.items.slice(0, 6), 0.6, 1.45, 12.13, 5.35);
+        marcar(pptx, [], resumo.items.join(' ').length, 'resumo');
     }
 }
 
@@ -472,12 +491,13 @@ const dirs = fs.readdirSync(ROOT).filter((d) => /^m\d\d-/.test(d) && d.startsWit
             px.layout = 'LAYOUT_WIDE';
             px.title = `${a.mod} · Aula ${a.aula} — ${a.titulo}`;
             px.company = MARCA;
-            if (i === 0) capaModulo(px, a.mod, plano, aulas);
+            if (i === 0) { capaModulo(px, a.mod, plano, aulas); marcar(px, [], 0, 'capa'); }
             montarAula(px, a, falas);
             if (i === aulas.length - 1) {
-                if (plano.quiz.length) slideQuiz(px, plano, `${a.mod} · Teste rápido`);
-                if (plano.entregavel || plano.exercicios.length) slideFechamento(px, plano, `${a.mod} · Fechamento`);
+                if (plano.quiz.length) { slideQuiz(px, plano, `${a.mod} · Teste rápido`); marcar(px, [], 0, 'quiz'); px._tl[px._tl.length - 1].tipo = 'gabarito'; }
+                if (plano.entregavel || plano.exercicios.length) { slideFechamento(px, plano, `${a.mod} · Fechamento`); marcar(px, [], (plano.entregavel + plano.exercicios.join(' ')).length, 'fechamento'); }
             }
+            fs.writeFileSync(path.join(__dirname, 'aulas', d, `${a.chave.slice(-3)}.json`), JSON.stringify(px._tl));
             await px.writeFile({ fileName: path.join(__dirname, 'aulas', d, `${a.chave.slice(-3)}.pptx`) });
         }
     }

@@ -7,6 +7,7 @@
 // Saída:   publicacao/<módulo>/<aula>/ com áudio, slides e transcrição, e publicacao/README.md com o status.
 const fs = require('fs');
 const path = require('path');
+const { execFileSync, spawnSync } = require('child_process');
 
 const BASE = __dirname;
 const LOTES = path.join(BASE, 'audio', 'lotes');
@@ -76,6 +77,116 @@ function partesRecebidas() {
 }
 
 // ---------- montagem ----------
+// ---------- vídeo (precisa de ffmpeg, LibreOffice e pdftoppm) ----------
+const temVideo = ['ffmpeg', 'soffice', 'pdftoppm'].every((b) => spawnSync('which', [b]).status === 0) && process.env.SEM_VIDEO !== '1';
+const FPS = 25;
+const run = (bin, args) => execFileSync(bin, args, { stdio: ['ignore', 'ignore', 'pipe'], maxBuffer: 64 * 1024 * 1024 });
+
+// Tempo de leitura (s) de slides sem narração.
+function leitura(t) {
+    const k = t.leitura || 0;
+    return { secao: 5, capa: 6, tela: 8, quiz: 20, gabarito: 10, passos: Math.min(45, 8 + k / 13), resumo: Math.min(20, 6 + k / 14), fechamento: Math.min(35, 8 + k / 14) }[t.tipo] ?? Math.min(25, 4 + k / 14);
+}
+
+// Fronteiras entre cenas: as N-1 maiores pausas do áudio (o ElevenLabs insere ~0,8 s entre cenas).
+function cortes(audio, falas, total) {
+    const n = falas.length;
+    if (n <= 1) return [0, total];
+    const log = spawnSync('ffmpeg', ['-hide_banner', '-i', audio, '-af', 'silencedetect=noise=-38dB:d=0.35', '-f', 'null', '-'], { encoding: 'utf8' }).stderr;
+    const sil = [...log.matchAll(/silence_start: ([\d.]+)[\s\S]*?silence_end: ([\d.]+)/g)].map((m) => ({ ini: +m[1], fim: +m[2] }))
+        .filter((x) => x.ini > 0.5 && x.fim < total - 0.5);
+    if (sil.length >= n - 1) {
+        const meios = sil.sort((x, y) => (y.fim - y.ini) - (x.fim - x.ini)).slice(0, n - 1).map((x) => (x.ini + x.fim) / 2).sort((x, y) => x - y);
+        return [0, ...meios, total];
+    }
+    const pesos = falas.map((f) => f.length);
+    const soma = pesos.reduce((t, v) => t + v, 0);
+    let acc = 0;
+    return [0, ...pesos.slice(0, -1).map((p) => (acc += (p / soma) * total)), total];
+}
+
+function srtTempo(s) {
+    const ms = Math.round(s * 1000);
+    const h = Math.floor(ms / 3600000); const m = Math.floor((ms % 3600000) / 60000); const sec = Math.floor((ms % 60000) / 1000);
+    return `${dois(h)}:${dois(m)}:${dois(sec)},${String(ms % 1000).padStart(3, '0')}`;
+}
+
+function gerarVideo(a, pasta, nome, audio) {
+    const pptx = path.join(BASE, 'slides', 'aulas', a.mod, `${a.id}.pptx`);
+    const tlFile = path.join(BASE, 'slides', 'aulas', a.mod, `${a.id}.json`);
+    const video = path.join(pasta, `${nome} - vídeo.mp4`);
+    if (!fs.existsSync(pptx) || !fs.existsSync(tlFile)) return false;
+    const mais = Math.max(...[pptx, tlFile, audio].map((f) => fs.statSync(f).mtimeMs));
+    if (fs.existsSync(video) && fs.statSync(video).mtimeMs > mais) return true;
+
+    const tmp = path.join(OUT, '.render', `${a.mod}-${a.id}`);
+    fs.rmSync(tmp, { recursive: true, force: true });
+    fs.mkdirSync(tmp, { recursive: true });
+    run('soffice', ['--headless', '--convert-to', 'pdf', '--outdir', tmp, pptx]);
+    run('pdftoppm', ['-png', '-scale-to-x', '1920', '-scale-to-y', '1080', path.join(tmp, `${a.id}.pdf`), path.join(tmp, 's')]);
+    const imagens = fs.readdirSync(tmp).filter((f) => /^s-\d+\.png$/.test(f)).sort((x, y) => parseInt(x.slice(2), 10) - parseInt(y.slice(2), 10));
+    const tl = JSON.parse(fs.readFileSync(tlFile, 'utf8'));
+    if (imagens.length !== tl.length) throw new Error(`slides renderizados (${imagens.length}) ≠ linha do tempo (${tl.length})`);
+
+    // Cenas narradas → slide em que aparecem; cena sem slide fica no slide anterior (ou na abertura).
+    const total = quadros(fs.readFileSync(audio)).segundos;
+    const falas = a.cenas.map((c) => a.falas[String(c)]);
+    const t = cortes(audio, falas, total);
+    const abertura = Math.max(0, tl.findIndex((x) => x.tipo === 'secao'));
+    const doSlide = tl.map(() => []);
+    let ultimo = abertura;
+    a.cenas.forEach((c, i) => {
+        const idx = tl.findIndex((x) => x.cenas.includes(c));
+        ultimo = idx >= 0 ? idx : ultimo;
+        doSlide[ultimo].push(i);
+    });
+
+    const lista = [];
+    const legendas = [];
+    let relogio = 0;
+    tl.forEach((slide, k) => {
+        const clipe = path.join(tmp, `c${dois(k)}.mp4`);
+        const img = path.join(tmp, imagens[k]);
+        const cenas = doSlide[k];
+        const v = ['-y', '-loop', '1', '-framerate', String(FPS), '-i', img];
+        const enc = ['-c:v', 'libx264', '-preset', 'veryfast', '-tune', 'stillimage', '-pix_fmt', 'yuv420p', '-r', String(FPS),
+            '-c:a', 'aac', '-b:a', '160k', '-ar', '44100', '-ac', '2'];
+        let dur;
+        if (cenas.length) {
+            const ini = t[cenas[0]];
+            const fim = t[cenas[cenas.length - 1] + 1];
+            dur = fim - ini + 0.4;
+            run('ffmpeg', [...v, '-ss', ini.toFixed(3), '-t', (fim - ini).toFixed(3), '-i', audio,
+                '-filter_complex', `[1:a]apad=pad_dur=0.4,afade=t=in:d=0.05[a];[0:v]fade=t=in:d=0.25[v]`, '-map', '[v]', '-map', '[a]',
+                '-t', dur.toFixed(3), ...enc, clipe]);
+            cenas.forEach((i) => {
+                // Legenda: texto da cena em blocos de ~90 caracteres, distribuídos no tempo da cena.
+                const blocos = (falas[i].match(/[^.!?]+[.!?]+(\s|$)|[^.!?]+$/g) || [falas[i]]).flatMap((f) => f.match(/.{1,90}(\s|$)/g) || [f]);
+                const ci = relogio + (t[i] - ini);
+                const cd = t[i + 1] - t[i];
+                const soma = blocos.reduce((s2, b) => s2 + b.length, 0);
+                let acc = 0;
+                blocos.forEach((b) => {
+                    const bi = ci + (acc / soma) * cd; acc += b.length;
+                    legendas.push([bi, ci + (acc / soma) * cd, b.trim()]);
+                });
+            });
+        } else {
+            dur = leitura(slide);
+            run('ffmpeg', [...v, '-f', 'lavfi', '-i', 'anullsrc=r=44100:cl=stereo', '-filter_complex', '[0:v]fade=t=in:d=0.25[v]',
+                '-map', '[v]', '-map', '1:a', '-t', dur.toFixed(3), ...enc, clipe]);
+        }
+        relogio += dur;
+        lista.push(`file '${clipe}'`);
+    });
+    fs.writeFileSync(path.join(tmp, 'lista.txt'), lista.join('\n'));
+    run('ffmpeg', ['-y', '-f', 'concat', '-safe', '0', '-i', path.join(tmp, 'lista.txt'), '-c', 'copy', '-movflags', '+faststart', video]);
+    fs.writeFileSync(path.join(pasta, `${nome} - legendas.srt`), legendas.map(([i, f, txt], n) => `${n + 1}\n${srtTempo(i)} --> ${srtTempo(f)}\n${txt}\n`).join('\n'));
+    fs.rmSync(tmp, { recursive: true, force: true });
+    console.log(`  🎬 ${a.mod}/${a.id}: ${duracao(relogio)}`);
+    return true;
+}
+
 function montar() {
     const cat = catalogo();
     const partes = partesRecebidas();
@@ -110,6 +221,15 @@ function montar() {
                 dur = duracao(seg);
                 status = '✅ pronta';
                 prontas++;
+                if (temVideo) {
+                    try {
+                        const v = gerarVideo(a, pasta, nome, destino);
+                        status += v ? ' · 🎬 vídeo' : '';
+                    } catch (e) {
+                        console.error(`  vídeo de ${a.mod}/${a.id} falhou: ${e.message.split('\n')[0]}`);
+                        status += ' · vídeo com erro';
+                    }
+                }
             } else {
                 if (fs.existsSync(destino)) fs.unlinkSync(destino);
                 status = recebidas.length ? `◐ áudio parcial (falta${a.cenas.filter((c) => !cobertas.has(c)).length > 1 ? 'm as cenas' : ' a cena'} ${a.cenas.filter((c) => !cobertas.has(c)).join(', ')})` : '⏳ aguardando áudio';
@@ -131,7 +251,8 @@ Gerada por \`node docs/curso/publicar.cjs\`. **${prontas} de ${total} aulas pron
 Cada aula tem uma pasta com:
 - **áudio** (MP3 da narração, 128 kbps) — só aparece quando a aula está completa;
 - **slides** (.pptx 16:9; a primeira aula do módulo traz a capa, a última traz o teste rápido e o fechamento);
-- **transcrição** (texto da narração, para acessibilidade e para a plataforma de cursos).
+- **transcrição** (texto da narração, para acessibilidade e para a plataforma de cursos);
+- **vídeo** (MP4 1920×1080: slides sincronizados com a narração, slides sem voz com tempo de leitura) e **legendas** (.srt) — gerados quando o servidor tem ffmpeg, LibreOffice e pdftoppm.
 
 Materiais de apoio em \`Materiais/\`.
 ${linhas.join('\n')}
