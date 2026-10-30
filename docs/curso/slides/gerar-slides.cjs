@@ -109,6 +109,15 @@ function parsePlano(file) {
 // ---------- utilidades de desenho ----------
 const len = (b) => (b.items.join(' ').length + b.rows.flat().join(' ').length);
 const fsz = (n, max = 22, min = 11) => Math.max(min, Math.min(max, n > 520 ? 12 : n > 380 ? 13 : n > 280 ? 14 : n > 190 ? 16 : n > 120 ? 18 : 20));
+// Maior fonte (pt) em que o texto cabe na caixa. Estimativa para Arial: caractere ≈ 0,52 da fonte; linha ≈ 1,25.
+function caber(texto, w, h, max = 24, min = 10, extraPt = 0) {
+    for (let t = max; t > min; t--) {
+        const porLinha = Math.max(1, Math.floor((w * 72) / (t * 0.52)));
+        const linhas = String(texto).split('\n').reduce((n, l) => n + Math.max(1, Math.ceil(l.length / porLinha)), 0);
+        if (linhas * t * 1.25 + extraPt <= h * 72) return t;
+    }
+    return min;
+}
 const num = (s) => {
     const m = String(s).replace(/R\$|kWh|kWp|%|\s/g, '').replace(/\.(?=\d{3}\b)/g, '').replace(',', '.').match(/-?\d+(\.\d+)?/);
     return m ? parseFloat(m[0]) : null;
@@ -119,20 +128,22 @@ function base(pptx, rodape, dark = false) {
     s.background = { color: dark ? C.escuro : C.fundo };
     if (!dark) {
         s.addShape('rect', { x: 0, y: 7.12, w: W, h: 0.38, fill: { color: C.branco }, line: { color: C.linha, width: 0.5 } });
-        s.addImage({ path: LOGO, x: 0.45, y: 7.16, w: 0.3, h: 0.3 });
-        s.addText(`${MARCA}  ·  ${CURSO}`, { x: 0.82, y: 7.14, w: 7, h: 0.34, fontFace: F, fontSize: 9, color: C.cinza, bold: true });
-        s.addText(rodape, { x: 7.8, y: 7.14, w: 5.1, h: 0.34, fontFace: F, fontSize: 9, color: C.cinza, align: 'right' });
+        s.addImage({ path: LOGO, x: 0.6, y: 7.16, w: 0.3, h: 0.3 });
+        s.addText(`${MARCA}  ·  ${CURSO}`, { x: 0.97, y: 7.14, w: 7, h: 0.34, fontFace: F, fontSize: 9, color: C.cinza, bold: true });
+        s.addText(rodape, { x: 7.8, y: 7.14, w: 4.4, h: 0.34, fontFace: F, fontSize: 9, color: C.cinza, align: 'right' });
+        s.slideNumber = { x: 12.35, y: 7.17, w: 0.6, h: 0.28, fontFace: F, fontSize: 9, color: C.azul, bold: true, align: 'right' };
     }
     return s;
 }
 
 function cabecalho(s, titulo, sobre) {
-    s.addShape('rect', { x: 0.45, y: 0.42, w: 0.09, h: 0.72, fill: { color: C.laranja } });
-    if (sobre) s.addText(sobre.toUpperCase(), { x: 0.7, y: 0.32, w: 12, h: 0.3, fontFace: F, fontSize: 10, bold: true, color: C.laranja, charSpacing: 1 });
-    s.addText(titulo, { x: 0.7, y: sobre ? 0.58 : 0.42, w: 12.2, h: 0.62, fontFace: F, fontSize: 26, bold: true, color: C.azul, fit: 'shrink' });
+    s.addShape('rect', { x: 0.6, y: 0.42, w: 0.09, h: 0.72, fill: { color: C.laranja } });
+    if (sobre) s.addText(sobre.toUpperCase(), { x: 0.85, y: 0.32, w: 12, h: 0.3, fontFace: F, fontSize: 10, bold: true, color: C.laranja, charSpacing: 1 });
+    s.addText(titulo, { x: 0.85, y: sobre ? 0.58 : 0.42, w: 11.9, h: 0.62, fontFace: F, fontSize: 26, bold: true, color: C.azul, fit: 'shrink' });
 }
 
 function bullets(s, items, x, y, w, h, size, color = C.texto) {
+    size = Math.min(size, caber(items.join('\n'), w - 0.35, h - 0.1, size, 10, items.length * 6));
     s.addText(items.map((t) => ({ text: t, options: { bullet: /^(\d+\.|☐)/.test(t) ? false : { code: '25CF' }, breakLine: true, paraSpaceAfter: 6 } })),
         { x, y, w, h, fontFace: F, fontSize: size, color, valign: 'top', fit: 'shrink' });
 }
@@ -143,7 +154,8 @@ function tiles(s, items, x, y, w, h) {
     const gap = 0.25;
     const tw = (w - gap * (cols - 1)) / cols;
     const th = (h - gap * (lines - 1)) / lines;
-    const size = fsz(Math.max(...items.map((t) => t.length)) * 2.4, 18, 11);
+    const maior = items.reduce((m, t) => (t.length > m.length ? t : m), '');
+    const size = caber(maior, tw - 1.1, th - 0.3, 18, 10);
     items.forEach((t, i) => {
         const cx = x + (i % cols) * (tw + gap);
         const cy = y + Math.floor(i / cols) * (th + gap);
@@ -152,6 +164,24 @@ function tiles(s, items, x, y, w, h) {
         s.addShape('ellipse', { x: cx + 0.2, y: cy + 0.2, w: 0.5, h: 0.5, fill: { color: i % 2 ? C.laranja : C.azul } });
         s.addText(String(i + 1), { x: cx + 0.2, y: cy + 0.2, w: 0.5, h: 0.5, fontFace: F, fontSize: 14, bold: true, color: C.branco, align: 'center', valign: 'middle' });
         s.addText(txt, { x: cx + 0.85, y: cy + 0.12, w: tw - 1.0, h: th - 0.24, fontFace: F, fontSize: size, color: C.texto, valign: 'middle', fit: 'shrink' });
+    });
+}
+
+// Itens curtos com um número de destaque (R$, %, kWh, anos…) viram cartões de indicador.
+const RE_NUM = /(R\$\s?[\d.,]+|[\d.,]+\s?(%|kWh|kWp|MW|kW|anos|meses|dias|h)\b)/;
+const destaques = (items) => items.length >= 2 && items.length <= 4 && items.every((t) => t.length <= 70 && RE_NUM.test(t));
+
+function numeros(s, items, x, y, w, h) {
+    const gap = 0.3;
+    const tw = (w - gap * (items.length - 1)) / items.length;
+    items.forEach((t, i) => {
+        const valor = t.match(RE_NUM)[0];
+        const resto = t.replace(valor, '').replace(/^[\s:=·→-]+|[\s:=·→-]+$/g, '').trim();
+        const cx = x + i * (tw + gap);
+        s.addShape('roundRect', { x: cx, y, w: tw, h, fill: { color: i % 2 ? C.branco : C.azul }, line: { color: C.linha, width: 0.75 }, rectRadius: 0.1, shadow: { type: 'outer', blur: 4, offset: 1, angle: 90, color: '000000', opacity: 0.1 } });
+        s.addText(valor, { x: cx + 0.2, y: y + 0.5, w: tw - 0.4, h: 1.6, fontFace: F, fontSize: caber(valor, tw - 0.4, 1.5, 44, 20), bold: true, color: i % 2 ? C.azul : C.laranja, align: 'center', valign: 'middle' });
+        s.addShape('rect', { x: cx + tw / 2 - 0.4, y: y + 2.25, w: 0.8, h: 0.05, fill: { color: C.laranja } });
+        s.addText(resto || t, { x: cx + 0.25, y: y + 2.45, w: tw - 0.5, h: h - 2.7, fontFace: F, fontSize: caber(resto || t, tw - 0.5, h - 2.8, 18, 11), color: i % 2 ? C.texto : C.branco, align: 'center', valign: 'top' });
     });
 }
 
@@ -186,17 +216,17 @@ function grafico(s, rows, ch, x, y, w, h) {
 
 function fluxo(s, item, y) {
     const parts = item.split('→').map((p) => p.trim()).filter(Boolean).slice(0, 6);
-    const w = (12.4) / parts.length;
+    const w = (12.0) / parts.length;
     parts.forEach((p, i) => {
-        s.addShape('chevron', { x: 0.45 + i * w, y, w: w + 0.12, h: 1.6, fill: { color: [C.azul, C.destaque, C.azul, C.destaque, C.azul, C.destaque][i] }, line: { color: C.branco, width: 2 } });
-        s.addText(p, { x: 0.45 + i * w + 0.35, y, w: w - 0.45, h: 1.6, fontFace: F, fontSize: parts.length > 4 ? 12 : 15, bold: true, color: C.branco, align: 'center', valign: 'middle', fit: 'shrink' });
+        s.addShape('chevron', { x: 0.6 + i * w, y, w: w + 0.12, h: 1.6, fill: { color: [C.azul, C.destaque, C.azul, C.destaque, C.azul, C.destaque][i] }, line: { color: C.branco, width: 2 } });
+        s.addText(p, { x: 0.6 + i * w + 0.35, y, w: w - 0.45, h: 1.6, fontFace: F, fontSize: parts.length > 4 ? 12 : 15, bold: true, color: C.branco, align: 'center', valign: 'middle', fit: 'shrink' });
     });
 }
 
 function calculo(s, items, x, y, w, h) {
     s.addShape('roundRect', { x, y, w, h, fill: { color: C.escuro }, rectRadius: 0.1 });
     s.addText(items.map((t, i) => ({ text: t, options: { breakLine: true, color: i === items.length - 1 ? C.laranja : C.branco, bold: i === 0 || i === items.length - 1, paraSpaceAfter: 10 } })),
-        { x: x + 0.4, y: y + 0.25, w: w - 0.8, h: h - 0.5, fontFace: 'Consolas', fontSize: fsz(items.join(' ').length, 22, 13), valign: 'middle', fit: 'shrink' });
+        { x: x + 0.4, y: y + 0.25, w: w - 0.8, h: h - 0.5, fontFace: 'Consolas', fontSize: caber(items.join('\n'), w - 0.9, h - 0.6, 24, 11, items.length * 10), valign: 'middle', fit: 'shrink' });
 }
 
 // ---------- blocos ----------
@@ -208,16 +238,22 @@ function slideBloco(pptx, a, b, rodape) {
     const y = 1.45;
     const ch = b.rows.length ? chartable(b.rows) : null;
     if (b.tipo === 'QUADRO') {
-        if (b.rows.length) { calculo(s, b.items.length ? b.items : [b.nome], 0.45, y, 6.2, 5.4); tabela(s, b.rows, 6.9, y, 6.0); } else calculo(s, b.items, 0.45, y, 12.45, 5.4);
+        if (b.rows.length) { calculo(s, b.items.length ? b.items : [b.nome], 0.6, y, 5.9, 5.4); tabela(s, b.rows, 6.75, y, 5.98); } else calculo(s, b.items, 0.6, y, 12.13, 5.4);
     } else if (b.items.length === 1 && b.items[0].includes('→') && !b.rows.length) {
         fluxo(s, b.items[0], 2.9);
     } else if (ch) {
-        grafico(s, b.rows, ch, 0.45, y, 6.4, 5.4);
-        if (b.items.length) { bullets(s, b.items, 7.1, y, 5.8, 1.6, 14); tabela(s, b.rows, 7.1, y + 1.7, 5.8); } else tabela(s, b.rows, 7.1, y + 0.3, 5.8);
+        grafico(s, b.rows, ch, 0.6, y, 6.2, 5.4);
+        if (b.items.length) { bullets(s, b.items, 7.05, y, 5.68, 1.6, 14); tabela(s, b.rows, 7.05, y + 1.7, 5.68); } else tabela(s, b.rows, 7.05, y + 0.3, 5.68);
     } else if (b.rows.length) {
-        if (b.items.length) { bullets(s, b.items, 0.6, y, 12.2, 1.2, 15); tabela(s, b.rows, 0.45, y + 1.3, 12.45); } else tabela(s, b.rows, 0.45, y + 0.1, 12.45);
+        if (b.items.length) { bullets(s, b.items, 0.6, y, 12.2, 1.2, 15); tabela(s, b.rows, 0.6, y + 1.3, 12.13); } else tabela(s, b.rows, 0.6, y + 0.1, 12.13);
+    } else if (destaques(b.items)) {
+        numeros(s, b.items, 0.6, y + 0.4, 12.13, 4.6);
     } else if (b.items.length <= 6 && b.items.every((t) => t.length <= 110)) {
-        tiles(s, b.items, 0.45, y, 12.45, 5.35);
+        tiles(s, b.items, 0.6, y, 12.13, 5.35);
+    } else if (b.items.length > 6) {
+        const meio = Math.ceil(b.items.length / 2);
+        bullets(s, b.items.slice(0, meio), 0.6, y, 6.0, 5.4, 18);
+        bullets(s, b.items.slice(meio), 6.85, y, 6.0, 5.4, 18);
     } else {
         bullets(s, b.items, 0.6, y, 12.2, 5.4, fsz(len(b)));
     }
@@ -228,16 +264,16 @@ function slideCartoes(pptx, a, blocos, rodape, titulo) {
     const s = base(pptx, rodape);
     cabecalho(s, titulo, `Aula ${a.aula}`);
     const gap = 0.3;
-    const w = (12.45 - gap * (blocos.length - 1)) / blocos.length;
+    const w = (12.13 - gap * (blocos.length - 1)) / blocos.length;
     blocos.forEach((b, i) => {
-        const x = 0.45 + i * (w + gap);
+        const x = 0.6 + i * (w + gap);
         s.addShape('roundRect', { x, y: 1.45, w, h: 5.4, fill: { color: C.branco }, line: { color: C.linha, width: 0.75 }, rectRadius: 0.08, shadow: { type: 'outer', blur: 3, offset: 1, angle: 90, color: '000000', opacity: 0.08 } });
         s.addShape('rect', { x, y: 1.45, w, h: 0.12, fill: { color: i % 2 ? C.laranja : C.azul } });
         s.addText(b.nome, { x: x + 0.3, y: 1.7, w: w - 0.6, h: 0.75, fontFace: F, fontSize: 16, bold: true, color: C.azul, valign: 'top', fit: 'shrink' });
         const items = b.items.length ? b.items : [b.nome];
         if (items.length === 1) {
-            s.addText(items[0], { x: x + 0.3, y: 2.5, w: w - 0.6, h: 4.1, fontFace: F, fontSize: fsz(items[0].length * 1.6, 22, 13), color: C.texto, valign: 'middle', fit: 'shrink' });
-        } else bullets(s, items, x + 0.3, 2.5, w - 0.6, 4.1, fsz(len(b) * blocos.length * 0.8, 17, 11));
+            s.addText(items[0], { x: x + 0.3, y: 2.5, w: w - 0.6, h: 4.1, fontFace: F, fontSize: caber(items[0], w - 0.7, 4.0, 22, 11), color: C.texto, valign: 'middle', fit: 'shrink' });
+        } else bullets(s, items, x + 0.3, 2.5, w - 0.6, 4.1, 17);
     });
     s.addNotes(blocos.map((b) => b.narracao).join('\n\n'));
 }
@@ -259,10 +295,10 @@ function slidePassos(pptx, a, passos, rodape, parte, k) {
     const cols = passos.length <= 3 ? passos.length : 3;
     const lines = Math.ceil(passos.length / cols);
     const gap = 0.25;
-    const tw = (12.45 - gap * (cols - 1)) / cols;
+    const tw = (12.13 - gap * (cols - 1)) / cols;
     const th = (5.4 - gap * (lines - 1)) / lines;
     passos.forEach((p, i) => {
-        const x = 0.45 + (i % cols) * (tw + gap);
+        const x = 0.6 + (i % cols) * (tw + gap);
         const y = 1.45 + Math.floor(i / cols) * (th + gap);
         s.addShape('roundRect', { x, y, w: tw, h: th, fill: { color: C.branco }, line: { color: C.linha, width: 0.75 }, rectRadius: 0.08 });
         s.addShape('roundRect', { x: x + 0.2, y: y + 0.2, w: 0.9, h: 0.42, fill: { color: C.laranja }, rectRadius: 0.2 });
@@ -276,11 +312,13 @@ function slidePassos(pptx, a, passos, rodape, parte, k) {
 function slideSecao(pptx, a, temas, rodape) {
     const s = base(pptx, rodape, true);
     s.addShape('rect', { x: 0, y: 0, w: 4.6, h: 7.5, fill: { color: C.azul } });
+    s.addText(String(a.aula).padStart(2, '0'), { x: 0.5, y: 0.6, w: 3.8, h: 1.9, fontFace: F, fontSize: 110, bold: true, color: C.destaque });
     s.addText(`AULA ${a.aula}`, { x: 0.6, y: 2.4, w: 3.6, h: 0.6, fontFace: F, fontSize: 18, bold: true, color: C.laranja, charSpacing: 2 });
+    s.addText(`${a.mod} · ${ETAPA[a.mod] || 'Etapa 3 · Operação ponta a ponta'}`, { x: 0.6, y: 3.5, w: 3.7, h: 0.5, fontFace: F, fontSize: 11, color: 'C7D2E3' });
     s.addText(isLab(a.titulo) ? 'Prática na plataforma' : 'Aula', { x: 0.6, y: 3.0, w: 3.6, h: 0.5, fontFace: F, fontSize: 14, color: 'C7D2E3' });
     s.addImage({ path: LOGO, x: 0.6, y: 6.2, w: 0.7, h: 0.7 });
     s.addText(a.titulo.replace(/^Laboratório: /, ''), { x: 5.1, y: 0.9, w: 7.8, h: 1.6, fontFace: F, fontSize: 32, bold: true, color: C.branco, valign: 'bottom', fit: 'shrink' });
-    if (a.objetivo) s.addText(a.objetivo, { x: 5.1, y: 2.6, w: 7.8, h: 0.9, fontFace: F, fontSize: 15, color: 'C7D2E3', valign: 'top', fit: 'shrink' });
+    if (a.objetivo) s.addText(a.objetivo, { x: 5.1, y: 2.6, w: 7.8, h: 0.9, fontFace: F, fontSize: caber(a.objetivo, 7.7, 0.85, 15, 11), color: 'C7D2E3', valign: 'top', fit: 'shrink' });
     if (temas.length) {
         s.addText(temas.slice(0, 7).map((t) => ({ text: t, options: { bullet: { code: '25B8' }, breakLine: true, paraSpaceAfter: 6 } })),
             { x: 5.1, y: 3.7, w: 7.8, h: 3.2, fontFace: F, fontSize: 15, color: C.branco, valign: 'top', fit: 'shrink' });
@@ -308,12 +346,12 @@ function slideFechamento(pptx, plano, rodape) {
     cabecalho(s, 'Pratique e entregue', 'Fechamento do módulo');
     const temEx = plano.exercicios.length > 0;
     if (temEx) {
-        s.addText('Exercícios', { x: 0.45, y: 1.45, w: 6.1, h: 0.45, fontFace: F, fontSize: 16, bold: true, color: C.azul });
+        s.addText('Exercícios', { x: 0.6, y: 1.45, w: 5.9, h: 0.45, fontFace: F, fontSize: 16, bold: true, color: C.azul });
         s.addText(plano.exercicios.map((e, i) => ({ text: `${i + 1}. ${e}`, options: { breakLine: true, paraSpaceAfter: 8 } })),
-            { x: 0.45, y: 1.95, w: 6.1, h: 4.9, fontFace: F, fontSize: fsz(plano.exercicios.join(' ').length, 16, 11), color: C.texto, valign: 'top', fit: 'shrink' });
+            { x: 0.6, y: 1.95, w: 5.9, h: 4.9, fontFace: F, fontSize: caber(plano.exercicios.join('\n'), 5.8, 4.8, 16, 10, plano.exercicios.length * 8), color: C.texto, valign: 'top', fit: 'shrink' });
     }
-    const x = temEx ? 6.9 : 0.45;
-    const w = temEx ? 6.0 : 12.45;
+    const x = temEx ? 6.75 : 0.6;
+    const w = temEx ? 5.98 : 12.13;
     s.addShape('roundRect', { x, y: 1.45, w, h: 5.4, fill: { color: C.azul }, rectRadius: 0.1 });
     s.addText([{ text: 'ENTREGÁVEL DO MÓDULO\n', options: { bold: true, color: C.laranja, fontSize: 13, charSpacing: 1 } }, { text: plano.entregavel, options: { color: C.branco, fontSize: 16 } }],
         { x: x + 0.35, y: 1.7, w: w - 0.7, h: 4.9, fontFace: F, valign: 'top', fit: 'shrink' });
@@ -349,7 +387,7 @@ function montarAula(pptx, a) {
         const s = base(pptx, rodape);
         s.background = { color: C.claro };
         cabecalho(s, 'Para levar desta aula', `Aula ${a.aula} · resumo`);
-        tiles(s, resumo.items.slice(0, 6), 0.45, 1.45, 12.45, 5.35);
+        tiles(s, resumo.items.slice(0, 6), 0.6, 1.45, 12.13, 5.35);
         s.addNotes(resumo.narracao);
     }
 }
