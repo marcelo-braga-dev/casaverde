@@ -26,6 +26,7 @@ A maioria dos cursos de GD/energia solar ensina **instalação** (dimensionar si
 | `07-glossario.md` | Termos do setor elétrico e da plataforma, para alunos e para padronizar a gravação |
 | `08-decisoes-pendentes.md` | O que precisa ser decidido antes de produzir e gravar (inclui melhorias da plataforma) |
 | `slides/mXX-*.pptx` | **Slides 16:9 por módulo** (13 arquivos, identidade visual do GD Solar, gráficos e telas reais da plataforma; narração nas anotações). Telas em `slides/telas/`. Regerar: `NODE_PATH=<node_modules com pptxgenjs> node slides/gerar-slides.cjs [m01]` |
+| `publicacao/` | **Pasta final de publicação** (fora do git): uma pasta por aula com áudio, slides e transcrição + índice com o status. Gerar/atualizar a cada lote de áudio: `node docs/curso/publicar.cjs` |
 | `audio/` | **Narração com ElevenLabs**: gerador, dicionário de pronúncia, textos prontos por aula (`audio/textos/`) e guia passo a passo (`audio/README.md`) |
 | `09-alcance-vendas-e-sucesso-do-aluno.md` | Posicionamento, escada de produtos, canais, oferta, sucesso do aluno, métricas e lançamento |
 

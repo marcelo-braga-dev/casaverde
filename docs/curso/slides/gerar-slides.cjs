@@ -463,6 +463,23 @@ const dirs = fs.readdirSync(ROOT).filter((d) => /^m\d\d-/.test(d) && d.startsWit
         const n = pptx.slides.length;
         total += n;
         console.log(`${d}: ${n} slides`);
+
+        // Um arquivo por aula (slides/aulas/mXX-…/aYY-….pptx), para publicar aula a aula:
+        // a capa do módulo abre a primeira aula; teste rápido e fechamento encerram a última.
+        fs.mkdirSync(path.join(__dirname, 'aulas', d), { recursive: true });
+        for (const [i, a] of aulas.entries()) {
+            const px = new PptxGenJS();
+            px.layout = 'LAYOUT_WIDE';
+            px.title = `${a.mod} · Aula ${a.aula} — ${a.titulo}`;
+            px.company = MARCA;
+            if (i === 0) capaModulo(px, a.mod, plano, aulas);
+            montarAula(px, a, falas);
+            if (i === aulas.length - 1) {
+                if (plano.quiz.length) slideQuiz(px, plano, `${a.mod} · Teste rápido`);
+                if (plano.entregavel || plano.exercicios.length) slideFechamento(px, plano, `${a.mod} · Fechamento`);
+            }
+            await px.writeFile({ fileName: path.join(__dirname, 'aulas', d, `${a.chave.slice(-3)}.pptx`) });
+        }
     }
     console.log(`total: ${total} slides em ${dirs.length} arquivos`);
 })();

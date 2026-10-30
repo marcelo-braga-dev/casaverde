@@ -80,6 +80,16 @@ node --env-file=.env.elevenlabs gerar-audio.cjs juntar         # 1 MP3 por aula,
 ### 6. Alternativa sem programação: ElevenLabs Studio
 Os arquivos de `lotes/lote-NN/` já estão prontos para colar no **Studio**, na ordem do nome (um capítulo por arquivo; arquivos com "cenas X-Y" no nome continuam no lote seguinte). As pausas entre cenas estão marcadas com `<break time="0.8s" />`, que o ElevenLabs entende. Para atualizar os textos depois de editar roteiros: `node gerar-audio.cjs lotes` (lotes já gerados não são afetados: o gerador só refaz cenas cujo texto mudou).
 
+## Publicação
+
+Ao receber os áudios de um lote (gerados no Studio ou baixados do ElevenLabs), coloque-os na pasta do lote com o número do texto correspondente (`1.mp3` = `01_….txt`, `2.mp3` = `02_….txt`…) e rode:
+
+```bash
+node docs/curso/publicar.cjs
+```
+
+Ele monta `docs/curso/publicacao/` (uma pasta por aula com áudio, slides e transcrição), junta sozinho as aulas divididas entre dois lotes e atualiza o índice com o status de cada aula.
+
 ## Ajuste fino da voz
 
 | Variável | Padrão | Efeito |
