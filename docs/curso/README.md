@@ -25,7 +25,7 @@ A maioria dos cursos de GD/energia solar ensina **instalação** (dimensionar si
 | `06-materiais-de-apoio.md` | Planilhas, modelos de contrato, checklists, SOPs e dados de exemplo a produzir |
 | `07-glossario.md` | Termos do setor elétrico e da plataforma, para alunos e para padronizar a gravação |
 | `08-decisoes-pendentes.md` | O que precisa ser decidido antes de produzir e gravar (inclui melhorias da plataforma) |
-| `slides/mXX-*/aYY-*.pptx` | **Slides 16:9 de cada aula** (capa + 1 slide por cena, numerados como no roteiro; narração nas anotações). Regerar: `NODE_PATH=<node_modules com pptxgenjs> node slides/gerar-slides.cjs [m01]` |
+| `slides/mXX-*.pptx` | **Slides 16:9 por módulo** (13 arquivos, identidade visual do GD Solar, gráficos e telas reais da plataforma; narração nas anotações). Telas em `slides/telas/`. Regerar: `NODE_PATH=<node_modules com pptxgenjs> node slides/gerar-slides.cjs [m01]` |
 | `09-alcance-vendas-e-sucesso-do-aluno.md` | Posicionamento, escada de produtos, canais, oferta, sucesso do aluno, métricas e lançamento |
 
 ## Números do curso (proposta)

@@ -1,176 +1,378 @@
-// Gera um .pptx (16:9) por aula a partir dos roteiros (docs/curso/roteiros).
-// Uso: NODE_PATH=<pasta com node_modules/pptxgenjs> node gerar-slides.cjs [filtro-de-modulo, ex.: m01]
-// Um slide por cena (mesma numeração do roteiro); a narração vai nas anotações do slide.
+// Gera um .pptx (16:9) por módulo a partir dos roteiros (docs/curso/roteiros), na identidade visual do GD Solar.
+// Uso: NODE_PATH=<pasta node_modules com pptxgenjs> node gerar-slides.cjs [filtro, ex.: m01]
+// Cenas de apresentador e de gravação de tela não viram slide (os vídeos são separados);
+// cenas curtas são agrupadas em cartões; a narração das cenas vai nas anotações do slide.
 const fs = require('fs');
 const path = require('path');
 const PptxGenJS = require('pptxgenjs');
 
 const CURSO = 'Formação em Energia por Assinatura';
 const SUB = 'Geração distribuída compartilhada, da regulação à operação';
+const MARCA = 'GD Solar';
 const ROOT = path.resolve(__dirname, '..', 'roteiros');
-const OUT = __dirname;
-const LOGO = path.join(__dirname, 'assets', 'logo-rexar.png');
-const C = { verde: '1F7A4D', verdeClaro: 'E6F2EC', grafite: '2B2F33', sol: 'F5B700', fundo: 'F7F8F5', branco: 'FFFFFF', cinza: '6B7280' };
+const LOGO = path.join(__dirname, 'assets', 'logo-gdsolar.png');
+const C = {
+    azul: '1B3A6B', laranja: 'F7A23B', escuro: '0B1F3A', destaque: '11396F',
+    claro: 'EEF3FA', fundo: 'F6F8FB', branco: 'FFFFFF', texto: '1F2937', cinza: '64748B', linha: 'D8E0EC',
+};
 const F = 'Arial';
+const W = 13.333;
 const filtro = process.argv[2] || '';
+const TELAS = path.join(__dirname, 'telas');
+const NOME_TELA = {
+    dashboard: 'Dashboard do administrador', consultor_dashboard: 'Dashboard do consultor', cliente_dashboard: 'Portal do cliente',
+    produtor_dashboard: 'Portal do produtor', fatura: 'Fatura de concessionária', faturas: 'Faturas de concessionárias',
+    concessionarias: 'Concessionárias e tarifa GD', configuracoes: 'Configurações padrão', produtores: 'Produtores',
+    proposta_produtor: 'Proposta de produtor', onboarding: 'Onboarding de usinas', geracao: 'Geração mensal',
+    gestao_energia: 'Gestão de energia', clientes: 'Clientes', proposta_cliente: 'Proposta comercial', uc: 'Unidade consumidora e vínculo com a usina',
+    contratos: 'Contratos', alertas: 'Alertas operacionais', cobrancas: 'Cobranças', cobranca: 'Detalhe da cobrança',
+    pagamentos: 'Pagamentos', relatorio_executivo: 'Relatório executivo', relatorio_usinas: 'Relatório por usina',
+    identidade: 'Identidade visual', templates: 'Modelos de mensagem', cockpit: 'Cockpit executivo',
+    cliente_cobrancas: 'Cobranças no portal do cliente', cliente_economia: 'Relatório de economia do cliente',
+};
+// Telas da plataforma exibidas em cada aula (arquivo do roteiro → capturas em slides/telas).
+const TELAS_AULA = {
+    'm00-boas-vindas/a03': ['dashboard', 'consultor_dashboard', 'cliente_dashboard', 'produtor_dashboard'],
+    'm01-fundamentos/a08': ['fatura'], 'm02-marco-legal/a07': ['concessionarias'], 'm03-modelos-de-negocio/a06': ['configuracoes'],
+    'm04-usinas-e-produtores/a04': ['onboarding'], 'm04-usinas-e-produtores/a05': ['produtores', 'proposta_produtor'],
+    'm04-usinas-e-produtores/a06': ['geracao', 'gestao_energia'], 'm05-comercial/a06': ['clientes', 'proposta_cliente'],
+    'm06-contratos-e-alocacao/a05': ['uc', 'contratos'], 'm06-contratos-e-alocacao/a06': ['gestao_energia', 'alertas'],
+    'm07-faturas/a05': ['faturas', 'fatura'], 'm07-faturas/a06': ['fatura'], 'm08-cobranca/a05': ['cobranca', 'cobrancas'],
+    'm08-cobranca/a06': ['cliente_cobrancas', 'pagamentos'], 'm08-cobranca/a07': ['cobranca', 'alertas'],
+    'm09-operacao/a02': ['alertas'], 'm09-operacao/a05': ['alertas', 'relatorio_usinas'], 'm10-indicadores/a02': ['cliente_economia'],
+    'm10-indicadores/a04': ['cockpit', 'dashboard'], 'm10-indicadores/a05': ['relatorio_executivo', 'relatorio_usinas'],
+    'm11-gestao/a05': ['identidade', 'templates'], 'm12-projeto-final/a03': ['cockpit', 'gestao_energia'],
+};
+const tela = (k) => path.join(TELAS, `${k}.jpg`);
+const temTela = (k) => fs.existsSync(tela(k));
 
-const clean = (s) => s.replace(/\*\*/g, '').replace(/`/g, '').trim();
+function imagemTela(s, k, x, y, w) {
+    const h = w * 9 / 16;
+    s.addShape('roundRect', { x: x - 0.04, y: y - 0.04, w: w + 0.08, h: h + 0.08, fill: { color: C.branco }, line: { color: C.linha, width: 1 }, rectRadius: 0.06, shadow: { type: 'outer', blur: 6, offset: 2, angle: 90, color: '000000', opacity: 0.15 } });
+    s.addImage({ path: tela(k), x, y, w, h });
+    return h;
+}
+
+function slideTela(pptx, a, k, rodape) {
+    const s = base(pptx, rodape);
+    cabecalho(s, NOME_TELA[k] || 'Na plataforma', `Aula ${a.aula} · na plataforma`);
+    imagemTela(s, k, 1.55, 1.38, 10.2);
+}
+const ETAPA = { M0: 'Etapa 1 · Fundamentos', M1: 'Etapa 1 · Fundamentos', M2: 'Etapa 2 · Regulação e negócio', M3: 'Etapa 2 · Regulação e negócio', M10: 'Etapa 4 · Gestão e estratégia', M11: 'Etapa 4 · Gestão e estratégia', M12: 'Etapa 4 · Gestão e estratégia' };
+
+const clean = (s) => s.replace(/\*\*/g, '').replace(/`/g, '').replace(/\s*\[CONFERIR[^\]]*\]/gi, '').trim();
 const unquote = (s) => clean(s).replace(/^["“]|["”]$/g, '').trim();
+const isLab = (t) => t.startsWith('Laboratório: ');
+const SKIP_NAME = /^(Abertura|Encerramento|Exercício e encerramento|Entregável e encerramento|Resumo e encerramento)/i;
 
+// ---------- leitura ----------
 function parseAula(file) {
     const md = fs.readFileSync(file, 'utf8');
     const head = md.match(/^# (M\d+) · Aula (\d+) — (.+)$/m);
-    const objetivo = (md.match(/^\| Objetivo \| (.+) \|$/m) || [])[1] || '';
-    const lab = /\| Tipo \| 🧪/.test(md);
-    const cenas = [];
-    const re = /^## Cena (\d+) — (.+?) \(([^)]*)\)\s*$/gm;
-    const marks = [...md.matchAll(re)];
-    marks.forEach((m, i) => {
-        const body = md.slice(m.index + m[0].length, i + 1 < marks.length ? marks[i + 1].index : md.indexOf('\n## Materiais', m.index) > 0 ? md.indexOf('\n## Materiais', m.index) : md.length);
+    const objetivo = clean((md.match(/^\| Objetivo \| (.+) \|$/m) || [])[1] || '');
+    const marks = [...md.matchAll(/^## Cena (\d+) — (.+?) \(([^)]*)\)\s*$/gm)];
+    const fim = md.indexOf('\n## Materiais') > 0 ? md.indexOf('\n## Materiais') : md.length;
+    const cenas = marks.map((m, i) => {
+        const body = md.slice(m.index + m[0].length, i + 1 < marks.length ? marks[i + 1].index : fim);
         const visual = clean((body.match(/\*\*Visual:\*\*([\s\S]*?)(?=\n\*\*Texto na tela:\*\*|\n\*\*Narração:\*\*)/) || [])[1] || '');
         const texto = ((body.match(/\*\*Texto na tela:\*\*([\s\S]*?)(?=\n\*\*Narração:\*\*)/) || [])[1] || '').trim();
         const narracao = clean((body.match(/\*\*Narração:\*\*([\s\S]*)$/) || [])[1] || '');
-        const tipos = ['SLIDE', 'ANIMAÇÃO', 'QUADRO', 'TELA', 'APRESENTADOR']
-            .map((t) => [t, visual.indexOf(t)]).filter(([, p]) => p >= 0).sort((a, b) => a[1] - b[1]);
-        cenas.push({ n: m[1], nome: m[2], tempo: m[3], visual, texto, narracao, tipo: tipos.length ? tipos[0][0] : 'SLIDE' });
+        const tipo = ['SLIDE', 'ANIMAÇÃO', 'QUADRO', 'TELA', 'APRESENTADOR']
+            .map((t) => [t, visual.indexOf(t)]).filter(([, p]) => p >= 0).sort((a, b) => a[1] - b[1])[0]?.[0] || 'SLIDE';
+        return { nome: clean(m[2]), tipo, narracao, ...parseTexto(texto) };
     });
-    return { mod: head[1], aula: head[2], titulo: head[3], objetivo, lab, cenas };
+    return { mod: head[1], aula: Number(head[2]), titulo: head[3], objetivo, cenas };
 }
 
 function parseTexto(texto) {
     const lines = texto.split('\n').map((l) => l.trim()).filter(Boolean);
-    const rows = lines.filter((l) => l.startsWith('|') && !/^\|[-\s|]+\|$/.test(l))
+    const rows = lines.filter((l) => l.startsWith('|') && !/^\|[-\s|:]+\|$/.test(l))
         .map((l) => l.slice(1, -1).split('|').map((c) => clean(c)));
-    let items = lines.filter((l) => !l.startsWith('|')).map(unquote).filter(Boolean);
-    if (items.length === 1 && !rows.length && items[0].includes(' · ')) {
-        items = items[0].split(' · ').map((s) => s.trim());
-    }
+    let items = lines.filter((l) => !l.startsWith('|')).map(unquote).filter(Boolean)
+        .filter((t) => !/^(Próxim[ao]|Etapa \d concluída)/i.test(t));
+    if (items.length === 1 && !rows.length && items[0].includes(' · ')) items = items[0].split(' · ').map((s) => s.trim());
+    items = items.map((t) => t.replace(/^(Exercício|Entregável[^:]*):\s*$/i, '').trim()).filter(Boolean);
     return { rows, items };
 }
 
-const sizeFor = (items) => {
-    const n = items.join(' ').length;
-    return n > 420 ? 13 : n > 300 ? 15 : n > 200 ? 17 : n > 110 ? 20 : 24;
+function parsePlano(file) {
+    const md = fs.readFileSync(file, 'utf8');
+    const titulo = (md.match(/^# (M\d+) — (.+?) · Plano/m) || [])[2] || '';
+    const sec = (name) => (md.split(new RegExp(`^## ${name}.*$`, 'm'))[1] || '').split(/^## /m)[0];
+    const objetivos = sec('Objetivo').split('\n').filter((l) => /^- /.test(l)).map((l) => clean(l.slice(2)));
+    const entregavel = clean(sec('Entregável').trim().split('\n\n')[0] || '');
+    const exercicios = sec('Exercícios').split('\n').filter((l) => /^\d+\. /.test(l))
+        .map((l) => clean(l.replace(/^\d+\.\s*/, '').replace(/\s*\(R:[^)]*\)\s*$/, '').replace(/\s*\([^)]*discussão[^)]*\)\s*$/i, '')));
+    return { titulo, objetivos, entregavel, exercicios };
+}
+
+// ---------- utilidades de desenho ----------
+const len = (b) => (b.items.join(' ').length + b.rows.flat().join(' ').length);
+const fsz = (n, max = 22, min = 11) => Math.max(min, Math.min(max, n > 520 ? 12 : n > 380 ? 13 : n > 280 ? 14 : n > 190 ? 16 : n > 120 ? 18 : 20));
+const num = (s) => {
+    const m = String(s).replace(/R\$|kWh|kWp|%|\s/g, '').replace(/\.(?=\d{3}\b)/g, '').replace(',', '.').match(/-?\d+(\.\d+)?/);
+    return m ? parseFloat(m[0]) : null;
 };
 
-function frame(pptx, a, cena, dark = false) {
+function base(pptx, rodape, dark = false) {
     const s = pptx.addSlide();
-    s.background = { color: dark ? C.grafite : C.fundo };
-    s.addShape('rect', { x: 0, y: 0, w: 13.333, h: 0.12, fill: { color: C.verde } });
-    s.addShape('rect', { x: 0, y: 0.12, w: 2.2, h: 0.06, fill: { color: C.sol } });
-    s.addText(`${CURSO}  ·  ${a.mod} · Aula ${a.aula}${cena ? ` · Cena ${cena.n}` : ''}`, {
-        x: 0.5, y: 7.05, w: 9.5, h: 0.3, fontFace: F, fontSize: 10, color: dark ? 'C9CDD2' : C.cinza,
-    });
-    if (!dark) s.addImage({ path: LOGO, x: 11.55, y: 6.92, w: 1.35, h: 0.45 });
+    s.background = { color: dark ? C.escuro : C.fundo };
+    if (!dark) {
+        s.addShape('rect', { x: 0, y: 7.12, w: W, h: 0.38, fill: { color: C.branco }, line: { color: C.linha, width: 0.5 } });
+        s.addImage({ path: LOGO, x: 0.45, y: 7.16, w: 0.3, h: 0.3 });
+        s.addText(`${MARCA}  ·  ${CURSO}`, { x: 0.82, y: 7.14, w: 7, h: 0.34, fontFace: F, fontSize: 9, color: C.cinza, bold: true });
+        s.addText(rodape, { x: 7.8, y: 7.14, w: 5.1, h: 0.34, fontFace: F, fontSize: 9, color: C.cinza, align: 'right' });
+    }
     return s;
 }
 
-function titulo(s, text, dark = false) {
-    s.addText(text, { x: 0.5, y: 0.35, w: 12.3, h: 0.8, fontFace: F, fontSize: 28, bold: true, color: dark ? C.branco : C.grafite, fit: 'shrink' });
+function cabecalho(s, titulo, sobre) {
+    s.addShape('rect', { x: 0.45, y: 0.42, w: 0.09, h: 0.72, fill: { color: C.laranja } });
+    if (sobre) s.addText(sobre.toUpperCase(), { x: 0.7, y: 0.32, w: 12, h: 0.3, fontFace: F, fontSize: 10, bold: true, color: C.laranja, charSpacing: 1 });
+    s.addText(titulo, { x: 0.7, y: sobre ? 0.58 : 0.42, w: 12.2, h: 0.62, fontFace: F, fontSize: 26, bold: true, color: C.azul, fit: 'shrink' });
 }
 
-function bullets(s, items, y = 1.35, h = 5.4, color = C.grafite) {
-    const size = sizeFor(items);
-    if (items.length === 1) {
-        s.addText(items[0], { x: 0.8, y, w: 11.7, h, fontFace: F, fontSize: Math.min(size + 6, 32), bold: true, color: C.verde, valign: 'middle', align: 'center', fit: 'shrink' });
-        return;
-    }
-    s.addText(items.map((t) => ({ text: t, options: { bullet: /^(\d+\.|☐|•)/.test(t) ? false : { code: '25A0' }, breakLine: true, paraSpaceAfter: 8 } })), {
-        x: 0.7, y, w: 11.9, h, fontFace: F, fontSize: size, color, valign: 'top', fit: 'shrink',
+function bullets(s, items, x, y, w, h, size, color = C.texto) {
+    s.addText(items.map((t) => ({ text: t, options: { bullet: /^(\d+\.|☐)/.test(t) ? false : { code: '25CF' }, breakLine: true, paraSpaceAfter: 6 } })),
+        { x, y, w, h, fontFace: F, fontSize: size, color, valign: 'top', fit: 'shrink' });
+}
+
+function tiles(s, items, x, y, w, h) {
+    const cols = items.length <= 3 ? items.length : items.length === 4 ? 2 : 3;
+    const lines = Math.ceil(items.length / cols);
+    const gap = 0.25;
+    const tw = (w - gap * (cols - 1)) / cols;
+    const th = (h - gap * (lines - 1)) / lines;
+    const size = fsz(Math.max(...items.map((t) => t.length)) * 2.4, 18, 11);
+    items.forEach((t, i) => {
+        const cx = x + (i % cols) * (tw + gap);
+        const cy = y + Math.floor(i / cols) * (th + gap);
+        const txt = t.replace(/^(\d+\.|☐)\s*/, '');
+        s.addShape('roundRect', { x: cx, y: cy, w: tw, h: th, fill: { color: C.branco }, line: { color: C.linha, width: 0.75 }, rectRadius: 0.08, shadow: { type: 'outer', blur: 3, offset: 1, angle: 90, color: '000000', opacity: 0.08 } });
+        s.addShape('ellipse', { x: cx + 0.2, y: cy + 0.2, w: 0.5, h: 0.5, fill: { color: i % 2 ? C.laranja : C.azul } });
+        s.addText(String(i + 1), { x: cx + 0.2, y: cy + 0.2, w: 0.5, h: 0.5, fontFace: F, fontSize: 14, bold: true, color: C.branco, align: 'center', valign: 'middle' });
+        s.addText(txt, { x: cx + 0.85, y: cy + 0.12, w: tw - 1.0, h: th - 0.24, fontFace: F, fontSize: size, color: C.texto, valign: 'middle', fit: 'shrink' });
     });
 }
 
-function tabela(s, rows, y) {
-    const fs_ = rows.length > 6 || rows[0].length > 4 ? 13 : 16;
+function tabela(s, rows, x, y, w) {
+    const size = rows.length > 7 || rows[0].length > 4 ? 12 : 14;
     s.addTable(rows.map((r, i) => r.map((c) => ({
         text: c,
-        options: i === 0 ? { bold: true, color: C.branco, fill: { color: C.verde } } : { color: C.grafite, fill: { color: i % 2 ? C.branco : C.verdeClaro } },
-    }))), { x: 0.6, y, w: 12.1, fontFace: F, fontSize: fs_, border: { type: 'solid', color: 'D1D5DB', pt: 0.75 }, autoPage: false });
+        options: i === 0 ? { bold: true, color: C.branco, fill: { color: C.azul } } : { color: C.texto, fill: { color: i % 2 ? C.branco : C.claro } },
+    }))), { x, y, w, fontFace: F, fontSize: size, border: { type: 'solid', color: C.linha, pt: 0.75 }, valign: 'middle', autoPage: false });
 }
 
-function fluxo(s, item, y = 2.6) {
-    const parts = item.split('→').map((p) => p.trim()).filter(Boolean).slice(0, 6);
-    const gap = 0.45;
-    const w = (12.1 - gap * (parts.length - 1)) / parts.length;
-    parts.forEach((p, i) => {
-        const x = 0.6 + i * (w + gap);
-        s.addShape('roundRect', { x, y, w, h: 1.7, fill: { color: i === parts.length - 1 ? C.verde : C.branco }, line: { color: C.verde, width: 1.5 }, rectRadius: 0.12 });
-        s.addText(p, { x: x + 0.1, y, w: w - 0.2, h: 1.7, fontFace: F, fontSize: parts.length > 4 ? 13 : 16, bold: true, align: 'center', valign: 'middle', color: i === parts.length - 1 ? C.branco : C.grafite, fit: 'shrink' });
-        if (i < parts.length - 1) s.addText('➜', { x: x + w, y, w: gap, h: 1.7, fontFace: F, fontSize: 20, color: C.sol, align: 'center', valign: 'middle', bold: true });
+// Tabela com uma coluna numérica em todas as linhas vira gráfico de barras.
+function chartable(rows) {
+    if (rows.length < 4) return null;
+    const body = rows.slice(1);
+    for (let c = rows[0].length - 1; c >= 1; c--) {
+        const vals = body.map((r) => num(r[c]));
+        if (vals.every((v) => v !== null)) return { col: c, labels: body.map((r) => r[0]), vals, pct: body.every((r) => /%/.test(r[c])) };
+    }
+    return null;
+}
+
+function grafico(s, rows, ch, x, y, w, h) {
+    s.addChart('bar', [{ name: rows[0][ch.col], labels: ch.labels, values: ch.pct ? ch.vals.map((v) => v / 100) : ch.vals }], {
+        x, y, w, h, barDir: 'col', chartColors: [C.azul], valAxisHidden: true, valGridLine: { style: 'none' },
+        catAxisLabelFontFace: F, catAxisLabelFontSize: 11, catAxisLabelColor: C.texto,
+        showValue: true, dataLabelFontFace: F, dataLabelFontSize: 11, dataLabelColor: C.azul, dataLabelFontBold: true,
+        dataLabelFormatCode: ch.pct ? '0%' : '#,##0.##', barGapWidthPct: 60,
+        showTitle: true, title: rows[0][ch.col], titleFontFace: F, titleFontSize: 12, titleColor: C.cinza,
     });
 }
 
-function notas(s, cena) {
-    s.addNotes(`[${cena.tipo}] ${cena.nome} (${cena.tempo})\nVisual: ${cena.visual}\n\nNarração:\n${cena.narracao}`);
+function fluxo(s, item, y) {
+    const parts = item.split('→').map((p) => p.trim()).filter(Boolean).slice(0, 6);
+    const w = (12.4) / parts.length;
+    parts.forEach((p, i) => {
+        s.addShape('chevron', { x: 0.45 + i * w, y, w: w + 0.12, h: 1.6, fill: { color: [C.azul, C.destaque, C.azul, C.destaque, C.azul, C.destaque][i] }, line: { color: C.branco, width: 2 } });
+        s.addText(p, { x: 0.45 + i * w + 0.35, y, w: w - 0.45, h: 1.6, fontFace: F, fontSize: parts.length > 4 ? 12 : 15, bold: true, color: C.branco, align: 'center', valign: 'middle', fit: 'shrink' });
+    });
 }
 
-function capa(pptx, a) {
-    const s = pptx.addSlide();
-    s.background = { color: C.grafite };
-    s.addShape('rect', { x: 0, y: 0, w: 0.35, h: 7.5, fill: { color: C.verde } });
-    s.addShape('rect', { x: 0.35, y: 0, w: 0.12, h: 7.5, fill: { color: C.sol } });
-    s.addText(CURSO.toUpperCase(), { x: 1.0, y: 0.7, w: 11, h: 0.5, fontFace: F, fontSize: 16, bold: true, color: C.sol, charSpacing: 2 });
-    s.addText(`${a.mod} · Aula ${a.aula}${a.lab ? ' · Laboratório' : ''}`, { x: 1.0, y: 2.0, w: 11, h: 0.6, fontFace: F, fontSize: 22, color: 'C9CDD2' });
-    s.addText(a.titulo.replace(/^Laboratório: /, ''), { x: 1.0, y: 2.6, w: 11.3, h: 1.9, fontFace: F, fontSize: 40, bold: true, color: C.branco, valign: 'top', fit: 'shrink' });
-    if (a.objetivo) s.addText(a.objetivo, { x: 1.0, y: 4.7, w: 11.3, h: 1.0, fontFace: F, fontSize: 18, color: 'C9CDD2', valign: 'top', fit: 'shrink' });
-    s.addShape('roundRect', { x: 10.6, y: 6.35, w: 2.4, h: 0.85, fill: { color: C.branco }, rectRadius: 0.1 });
-    s.addImage({ path: LOGO, x: 10.75, y: 6.43, w: 2.1, h: 0.69 });
-    s.addText(SUB, { x: 1.0, y: 6.55, w: 9, h: 0.4, fontFace: F, fontSize: 12, color: 'C9CDD2' });
+function calculo(s, items, x, y, w, h) {
+    s.addShape('roundRect', { x, y, w, h, fill: { color: C.escuro }, rectRadius: 0.1 });
+    s.addText(items.map((t, i) => ({ text: t, options: { breakLine: true, color: i === items.length - 1 ? C.laranja : C.branco, bold: i === 0 || i === items.length - 1, paraSpaceAfter: 10 } })),
+        { x: x + 0.4, y: y + 0.25, w: w - 0.8, h: h - 0.5, fontFace: 'Consolas', fontSize: fsz(items.join(' ').length, 22, 13), valign: 'middle', fit: 'shrink' });
 }
 
-function cenaSlide(pptx, a, cena) {
-    const { rows, items } = parseTexto(cena.texto);
-    const dark = cena.tipo === 'QUADRO' || cena.tipo === 'TELA';
-    const s = frame(pptx, a, cena, dark);
+// ---------- blocos ----------
+const pesado = (b) => b.rows.length > 0 || b.tipo === 'QUADRO' || (b.items.length === 1 && b.items[0].includes('→')) || b.items.length > 5 || len(b) > 300;
 
-    if (cena.tipo === 'APRESENTADOR') {
-        s.addShape('rect', { x: 0.5, y: 5.2, w: 12.3, h: 1.4, fill: { color: C.verde } });
-        s.addShape('rect', { x: 0.5, y: 5.2, w: 0.15, h: 1.4, fill: { color: C.sol } });
-        s.addText(items.length ? items.join('  ·  ') : cena.nome, { x: 0.85, y: 5.25, w: 11.8, h: 1.3, fontFace: F, fontSize: 24, bold: true, color: C.branco, valign: 'middle', fit: 'shrink' });
-        s.addText('[ APRESENTADOR — área do vídeo ]', { x: 0.5, y: 1.0, w: 12.3, h: 3.8, fontFace: F, fontSize: 16, color: 'B0B6BD', align: 'center', valign: 'middle' });
-    } else if (cena.tipo === 'TELA') {
-        titulo(s, cena.nome, true);
-        s.addShape('roundRect', { x: 0.6, y: 1.35, w: 12.1, h: 3.9, fill: { color: '1E2125' }, line: { color: C.sol, width: 1.5, dashType: 'dash' }, rectRadius: 0.1 });
-        s.addText([{ text: '▶ GRAVAÇÃO DE TELA DA PLATAFORMA\n', options: { bold: true, color: C.sol, fontSize: 16 } }, { text: cena.visual.replace(/^TELA\s*—?\s*/, ''), options: { color: 'D1D5DB', fontSize: 13 } }],
-            { x: 0.9, y: 1.5, w: 11.5, h: 3.6, fontFace: F, valign: 'top', fit: 'shrink' });
-        if (items.length) s.addText(items.join('  ·  '), { x: 0.6, y: 5.45, w: 12.1, h: 1.2, fontFace: F, fontSize: 20, bold: true, color: C.branco, fill: { color: C.verde }, align: 'center', valign: 'middle', fit: 'shrink' });
-    } else if (cena.tipo === 'QUADRO') {
-        titulo(s, cena.nome, true);
-        s.addText(items.map((t, i) => ({ text: t, options: { breakLine: true, color: i === items.length - 1 ? C.sol : C.branco, bold: i === items.length - 1, paraSpaceAfter: 10 } })),
-            { x: 0.8, y: 1.5, w: 11.8, h: 5.2, fontFace: 'Consolas', fontSize: Math.min(sizeFor(items) + 2, 26), valign: 'middle', fit: 'shrink' });
-        if (rows.length) tabela(s, rows, 4.2);
+function slideBloco(pptx, a, b, rodape) {
+    const s = base(pptx, rodape);
+    cabecalho(s, b.nome, `Aula ${a.aula} · ${a.titulo}`);
+    const y = 1.45;
+    const ch = b.rows.length ? chartable(b.rows) : null;
+    if (b.tipo === 'QUADRO') {
+        if (b.rows.length) { calculo(s, b.items.length ? b.items : [b.nome], 0.45, y, 6.2, 5.4); tabela(s, b.rows, 6.9, y, 6.0); } else calculo(s, b.items, 0.45, y, 12.45, 5.4);
+    } else if (b.items.length === 1 && b.items[0].includes('→') && !b.rows.length) {
+        fluxo(s, b.items[0], 2.9);
+    } else if (ch) {
+        grafico(s, b.rows, ch, 0.45, y, 6.4, 5.4);
+        if (b.items.length) { bullets(s, b.items, 7.1, y, 5.8, 1.6, 14); tabela(s, b.rows, 7.1, y + 1.7, 5.8); } else tabela(s, b.rows, 7.1, y + 0.3, 5.8);
+    } else if (b.rows.length) {
+        if (b.items.length) { bullets(s, b.items, 0.6, y, 12.2, 1.2, 15); tabela(s, b.rows, 0.45, y + 1.3, 12.45); } else tabela(s, b.rows, 0.45, y + 0.1, 12.45);
+    } else if (b.items.length <= 6 && b.items.every((t) => t.length <= 110)) {
+        tiles(s, b.items, 0.45, y, 12.45, 5.35);
     } else {
-        titulo(s, cena.nome);
-        if (cena.tipo === 'ANIMAÇÃO' && items.length === 1 && items[0].includes('→') && !rows.length) {
-            fluxo(s, items[0]);
-        } else if (rows.length && items.length) {
-            bullets(s, items, 1.3, 1.3);
-            tabela(s, rows, 2.75);
-        } else if (rows.length) {
-            tabela(s, rows, 1.45);
-        } else if (items.length) {
-            bullets(s, items);
-        }
+        bullets(s, b.items, 0.6, y, 12.2, 5.4, fsz(len(b)));
     }
-    notas(s, cena);
+    s.addNotes(b.narracao);
+}
+
+function slideCartoes(pptx, a, blocos, rodape, titulo) {
+    const s = base(pptx, rodape);
+    cabecalho(s, titulo, `Aula ${a.aula}`);
+    const gap = 0.3;
+    const w = (12.45 - gap * (blocos.length - 1)) / blocos.length;
+    blocos.forEach((b, i) => {
+        const x = 0.45 + i * (w + gap);
+        s.addShape('roundRect', { x, y: 1.45, w, h: 5.4, fill: { color: C.branco }, line: { color: C.linha, width: 0.75 }, rectRadius: 0.08, shadow: { type: 'outer', blur: 3, offset: 1, angle: 90, color: '000000', opacity: 0.08 } });
+        s.addShape('rect', { x, y: 1.45, w, h: 0.12, fill: { color: i % 2 ? C.laranja : C.azul } });
+        s.addText(b.nome, { x: x + 0.3, y: 1.7, w: w - 0.6, h: 0.75, fontFace: F, fontSize: 16, bold: true, color: C.azul, valign: 'top', fit: 'shrink' });
+        const items = b.items.length ? b.items : [b.nome];
+        if (items.length === 1) {
+            s.addText(items[0], { x: x + 0.3, y: 2.5, w: w - 0.6, h: 4.1, fontFace: F, fontSize: fsz(items[0].length * 1.6, 22, 13), color: C.texto, valign: 'middle', fit: 'shrink' });
+        } else bullets(s, items, x + 0.3, 2.5, w - 0.6, 4.1, fsz(len(b) * blocos.length * 0.8, 17, 11));
+    });
+    s.addNotes(blocos.map((b) => b.narracao).join('\n\n'));
+}
+
+function slidePassos(pptx, a, passos, rodape, parte, k) {
+    const s = base(pptx, rodape);
+    cabecalho(s, parte ? `Passo a passo (${parte})` : 'Passo a passo na plataforma', `Aula ${a.aula} · ${a.titulo.replace(/^Laboratório: /, '')}`);
+    if (k) {
+        const h = imagemTela(s, k, 0.5, 1.45, 7.7);
+        s.addText(NOME_TELA[k] || '', { x: 0.5, y: 1.5 + h, w: 7.7, h: 0.35, fontFace: F, fontSize: 11, italic: true, color: C.cinza, align: 'center' });
+        s.addText(passos.map((p) => [
+            { text: `${p.n}  `, options: { bold: true, color: C.laranja, fontSize: 15 } },
+            { text: p.nome, options: { bold: true, color: C.azul, fontSize: 14, breakLine: true } },
+            ...(p.items.length ? [{ text: p.items.join(' · '), options: { color: C.texto, fontSize: 11, breakLine: true, paraSpaceAfter: 8 } }] : []),
+        ]).flat(), { x: 8.55, y: 1.45, w: 4.35, h: 5.4, fontFace: F, valign: 'top', fit: 'shrink' });
+        s.addNotes(passos.map((p) => p.narracao).join('\n\n'));
+        return;
+    }
+    const cols = passos.length <= 3 ? passos.length : 3;
+    const lines = Math.ceil(passos.length / cols);
+    const gap = 0.25;
+    const tw = (12.45 - gap * (cols - 1)) / cols;
+    const th = (5.4 - gap * (lines - 1)) / lines;
+    passos.forEach((p, i) => {
+        const x = 0.45 + (i % cols) * (tw + gap);
+        const y = 1.45 + Math.floor(i / cols) * (th + gap);
+        s.addShape('roundRect', { x, y, w: tw, h: th, fill: { color: C.branco }, line: { color: C.linha, width: 0.75 }, rectRadius: 0.08 });
+        s.addShape('roundRect', { x: x + 0.2, y: y + 0.2, w: 0.9, h: 0.42, fill: { color: C.laranja }, rectRadius: 0.2 });
+        s.addText(`PASSO ${p.n}`, { x: x + 0.2, y: y + 0.2, w: 0.9, h: 0.42, fontFace: F, fontSize: 10, bold: true, color: C.branco, align: 'center', valign: 'middle' });
+        s.addText(p.nome, { x: x + 1.2, y: y + 0.15, w: tw - 1.35, h: 0.55, fontFace: F, fontSize: 14, bold: true, color: C.azul, valign: 'middle', fit: 'shrink' });
+        if (p.items.length) s.addText(p.items.join('\n'), { x: x + 0.25, y: y + 0.8, w: tw - 0.5, h: th - 0.95, fontFace: F, fontSize: fsz(p.items.join(' ').length * 2, 15, 10), color: C.texto, valign: 'top', fit: 'shrink' });
+    });
+    s.addNotes(passos.map((p) => p.narracao).join('\n\n'));
+}
+
+function slideSecao(pptx, a, temas, rodape) {
+    const s = base(pptx, rodape, true);
+    s.addShape('rect', { x: 0, y: 0, w: 4.6, h: 7.5, fill: { color: C.azul } });
+    s.addText(`AULA ${a.aula}`, { x: 0.6, y: 2.4, w: 3.6, h: 0.6, fontFace: F, fontSize: 18, bold: true, color: C.laranja, charSpacing: 2 });
+    s.addText(isLab(a.titulo) ? 'Prática na plataforma' : 'Aula', { x: 0.6, y: 3.0, w: 3.6, h: 0.5, fontFace: F, fontSize: 14, color: 'C7D2E3' });
+    s.addImage({ path: LOGO, x: 0.6, y: 6.2, w: 0.7, h: 0.7 });
+    s.addText(a.titulo.replace(/^Laboratório: /, ''), { x: 5.1, y: 0.9, w: 7.8, h: 1.6, fontFace: F, fontSize: 32, bold: true, color: C.branco, valign: 'bottom', fit: 'shrink' });
+    if (a.objetivo) s.addText(a.objetivo, { x: 5.1, y: 2.6, w: 7.8, h: 0.9, fontFace: F, fontSize: 15, color: 'C7D2E3', valign: 'top', fit: 'shrink' });
+    if (temas.length) {
+        s.addText(temas.slice(0, 7).map((t) => ({ text: t, options: { bullet: { code: '25B8' }, breakLine: true, paraSpaceAfter: 6 } })),
+            { x: 5.1, y: 3.7, w: 7.8, h: 3.2, fontFace: F, fontSize: 15, color: C.branco, valign: 'top', fit: 'shrink' });
+    }
+}
+
+function capaModulo(pptx, mod, plano, aulas) {
+    const s = pptx.addSlide();
+    s.background = { color: C.escuro };
+    s.addShape('rect', { x: 0, y: 0, w: W, h: 0.14, fill: { color: C.laranja } });
+    s.addImage({ path: LOGO, x: 0.7, y: 0.65, w: 0.9, h: 0.9 });
+    s.addText([{ text: `${MARCA}\n`, options: { fontSize: 18, bold: true, color: C.branco } }, { text: CURSO, options: { fontSize: 13, color: 'C7D2E3' } }], { x: 1.75, y: 0.62, w: 8, h: 0.95, fontFace: F, valign: 'middle' });
+    s.addText(`${mod}  ·  ${ETAPA[mod] || 'Etapa 3 · Operação ponta a ponta'}`.toUpperCase(), { x: 0.7, y: 2.1, w: 12, h: 0.45, fontFace: F, fontSize: 14, bold: true, color: C.laranja, charSpacing: 1 });
+    s.addText(plano.titulo, { x: 0.7, y: 2.55, w: 12, h: 1.3, fontFace: F, fontSize: 40, bold: true, color: C.branco, valign: 'top', fit: 'shrink' });
+    s.addText(aulas.map((a) => ({ text: `${a.aula}. ${a.titulo.replace(/^Laboratório: /, '')}`, options: { breakLine: true, paraSpaceAfter: 4 } })),
+        { x: 0.7, y: 4.0, w: 7.2, h: 3.0, fontFace: F, fontSize: aulas.length > 6 ? 12 : 14, color: 'C7D2E3', valign: 'top', fit: 'shrink' });
+    s.addShape('roundRect', { x: 8.3, y: 4.0, w: 4.35, h: 3.0, fill: { color: C.destaque }, rectRadius: 0.1 });
+    s.addText([{ text: 'Ao final do módulo\n', options: { bold: true, color: C.laranja, fontSize: 13 } },
+        ...plano.objetivos.slice(0, 5).map((o) => ({ text: o, options: { bullet: { code: '2714' }, breakLine: true, color: C.branco, fontSize: 11 } }))],
+    { x: 8.5, y: 4.1, w: 3.95, h: 2.8, fontFace: F, valign: 'top', fit: 'shrink' });
+}
+
+function slideFechamento(pptx, plano, rodape) {
+    const s = base(pptx, rodape);
+    cabecalho(s, 'Pratique e entregue', 'Fechamento do módulo');
+    const temEx = plano.exercicios.length > 0;
+    if (temEx) {
+        s.addText('Exercícios', { x: 0.45, y: 1.45, w: 6.1, h: 0.45, fontFace: F, fontSize: 16, bold: true, color: C.azul });
+        s.addText(plano.exercicios.map((e, i) => ({ text: `${i + 1}. ${e}`, options: { breakLine: true, paraSpaceAfter: 8 } })),
+            { x: 0.45, y: 1.95, w: 6.1, h: 4.9, fontFace: F, fontSize: fsz(plano.exercicios.join(' ').length, 16, 11), color: C.texto, valign: 'top', fit: 'shrink' });
+    }
+    const x = temEx ? 6.9 : 0.45;
+    const w = temEx ? 6.0 : 12.45;
+    s.addShape('roundRect', { x, y: 1.45, w, h: 5.4, fill: { color: C.azul }, rectRadius: 0.1 });
+    s.addText([{ text: 'ENTREGÁVEL DO MÓDULO\n', options: { bold: true, color: C.laranja, fontSize: 13, charSpacing: 1 } }, { text: plano.entregavel, options: { color: C.branco, fontSize: 16 } }],
+        { x: x + 0.35, y: 1.7, w: w - 0.7, h: 4.9, fontFace: F, valign: 'top', fit: 'shrink' });
+}
+
+// ---------- montagem ----------
+function montarAula(pptx, a) {
+    const rodape = `${a.mod} · Aula ${a.aula}`;
+    const conteudo = a.cenas.filter((c) => ['SLIDE', 'ANIMAÇÃO', 'QUADRO'].includes(c.tipo) && (c.items.length || c.rows.length) && !SKIP_NAME.test(c.nome));
+    const resumo = a.cenas.find((c) => /^Resumo/i.test(c.nome) && c.items.length);
+    const passos = a.cenas.filter((c) => c.tipo === 'TELA').map((c, i) => ({ ...c, n: i + 1 }));
+    const temas = [...conteudo.map((c) => c.nome), ...(passos.length ? ['Passo a passo na plataforma'] : [])].filter((t) => !/^Resumo/i.test(t));
+    slideSecao(pptx, a, temas, rodape);
+
+    let leves = [];
+    const flush = () => {
+        if (leves.length === 1) slideBloco(pptx, a, leves[0], rodape);
+        else if (leves.length) slideCartoes(pptx, a, leves, rodape, a.titulo.replace(/^Laboratório: /, ''));
+        leves = [];
+    };
+    conteudo.filter((c) => !/^Resumo/i.test(c.nome)).forEach((b) => {
+        if (pesado(b)) { flush(); slideBloco(pptx, a, b, rodape); } else { leves.push(b); if (leves.length === 3) flush(); }
+    });
+    flush();
+    const telas = (TELAS_AULA[a.chave] || []).filter(temTela);
+    const porSlide = telas.length ? 4 : 6;
+    for (let i = 0; i < passos.length; i += porSlide) {
+        const partes = Math.ceil(passos.length / porSlide);
+        slidePassos(pptx, a, passos.slice(i, i + porSlide), rodape, partes > 1 ? `${i / porSlide + 1}/${partes}` : '', telas[i / porSlide]);
+    }
+    telas.slice(passos.length ? Math.ceil(passos.length / porSlide) : 0).forEach((k) => slideTela(pptx, a, k, rodape));
+    if (resumo) {
+        const s = base(pptx, rodape);
+        s.background = { color: C.claro };
+        cabecalho(s, 'Para levar desta aula', `Aula ${a.aula} · resumo`);
+        tiles(s, resumo.items.slice(0, 6), 0.45, 1.45, 12.45, 5.35);
+        s.addNotes(resumo.narracao);
+    }
 }
 
 const dirs = fs.readdirSync(ROOT).filter((d) => /^m\d\d-/.test(d) && d.startsWith(filtro)).sort();
-let total = 0;
 (async () => {
+    let total = 0;
     for (const d of dirs) {
-        fs.mkdirSync(path.join(OUT, d), { recursive: true });
-        for (const f of fs.readdirSync(path.join(ROOT, d)).filter((x) => /^a\d\d-.*\.md$/.test(x)).sort()) {
-            const a = parseAula(path.join(ROOT, d, f));
-            const pptx = new PptxGenJS();
-            pptx.layout = 'LAYOUT_WIDE';
-            pptx.title = `${a.mod} · Aula ${a.aula} — ${a.titulo}`;
-            pptx.company = 'Rexar Sistemas';
-            capa(pptx, a);
-            a.cenas.forEach((c) => cenaSlide(pptx, a, c));
-            await pptx.writeFile({ fileName: path.join(OUT, d, f.replace(/\.md$/, '.pptx')) });
-            total += a.cenas.length + 1;
-        }
+        const plano = parsePlano(path.join(ROOT, d, '00-plano.md'));
+        const aulas = fs.readdirSync(path.join(ROOT, d)).filter((x) => /^a\d\d-.*\.md$/.test(x)).sort()
+            .map((f) => ({ ...parseAula(path.join(ROOT, d, f)), chave: `${d}/${f.slice(0, 3)}` }));
+        const pptx = new PptxGenJS();
+        pptx.layout = 'LAYOUT_WIDE';
+        pptx.title = `${aulas[0].mod} — ${plano.titulo}`;
+        pptx.company = MARCA;
+        capaModulo(pptx, aulas[0].mod, plano, aulas);
+        aulas.forEach((a) => montarAula(pptx, a));
+        if (plano.entregavel || plano.exercicios.length) slideFechamento(pptx, plano, `${aulas[0].mod} · Fechamento`);
+        const file = path.join(__dirname, `${d}.pptx`);
+        await pptx.writeFile({ fileName: file });
+        const n = pptx.slides.length;
+        total += n;
+        console.log(`${d}: ${n} slides`);
     }
-    console.log(`aulas: ${dirs.length} módulos · slides: ${total}`);
+    console.log(`total: ${total} slides em ${dirs.length} arquivos`);
 })();
