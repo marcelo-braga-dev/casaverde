@@ -1,0 +1,21 @@
+A plataforma emite Pix ou boleto pelo Mercado Pago e dá baixa sozinha.
+
+<break time="0.8s" />
+
+O Pix é o padrão: confirma em minutos. O boleto exige endereço completo e leva até três dias úteis. Cada emissão é um método só.
+
+<break time="0.8s" />
+
+O vencimento real é o lido do código de barras, porque o banco joga datas de fim de semana para o dia útil seguinte.
+
+<break time="0.8s" />
+
+A baixa chega por dois caminhos: o aviso do Mercado Pago, conferido pela plataforma, e uma sincronização a cada cinco minutos. Ninguém precisa conferir extrato.
+
+<break time="0.8s" />
+
+Boleto vencido tem o pê dê éfe bloqueado e gera alerta para reemitir, mas continua monitorado por dez dias, porque um pagamento do último dia pode compensar depois. Estornos ficam registrados para revisão.
+
+<break time="0.8s" />
+
+As tarifas do meio de pagamento entram no custo variável da sua conta.

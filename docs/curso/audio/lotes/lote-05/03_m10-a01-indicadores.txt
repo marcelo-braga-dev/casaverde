@@ -1,0 +1,21 @@
+Última etapa: dirigir a empresa. E dirigir começa por medir doze indicadores, em quatro grupos.
+
+<break time="0.8s" />
+
+Energia é o seu estoque: ocupação, desempenho de geração e créditos chegando aos clientes.
+
+<break time="0.8s" />
+
+No comercial, conte quilowatts-hora vendidos, não só clientes, e compare o custo de aquisição com a margem que cada cliente traz.
+
+<break time="0.8s" />
+
+No financeiro, o indicador decisivo é o resultado contra o ponto de equilíbrio: estamos ganhando ou perdendo, e quanto falta?
+
+<break time="0.8s" />
+
+Nos clientes, olhe o churn: dois por cento ao mês é quase um quarto da base em um ano. E economia média caindo antecipa cancelamentos.
+
+<break time="0.8s" />
+
+Coloque tudo numa página, com meta e semáforo, e revise todo mês.

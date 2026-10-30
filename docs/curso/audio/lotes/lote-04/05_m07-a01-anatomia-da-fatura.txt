@@ -1,0 +1,17 @@
+A sua receita nasce de um documento que não é seu: a fatura da distribuidora. Saber lê-la é saber se você cobra certo.
+
+<break time="0.8s" />
+
+A fatura com geração distribuída tem os blocos de sempre e mais um: as informações da geração distribuída.
+
+<break time="0.8s" />
+
+Nos itens faturados, o consumo aparece positivo e a energia compensada, negativa. A diferença por quilowatt-hora entre a tê u ésse dê consumida e a compensada é justamente o Fio B que não é compensado.
+
+<break time="0.8s" />
+
+O número que importa é o consumo injetado: a soma em reais das linhas compensadas. É o que o cliente deixou de pagar à distribuidora, e a sua cobrança parte dele, com o desconto. Não use o valor total da fatura, que inclui itens que não são da sua operação.
+
+<break time="0.8s" />
+
+O bloco de informações da geração distribuída é o seu termômetro: saldo crescendo indica cota alta; créditos a expirar exigem ação.

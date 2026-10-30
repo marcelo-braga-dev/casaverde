@@ -1,0 +1,13 @@
+O projeto final é a sua empresa funcionando no laboratório, com os documentos que um investidor pediria. Metade já está pronta nos entregáveis.
+
+<break time="0.8s" />
+
+No laboratório, a sua empresa precisa ter tudo o que está na lista da tela.
+
+<break time="0.8s" />
+
+Em documento, entregue os itens da tela.
+
+<break time="0.8s" />
+
+Organize em duas semanas: primeiro o laboratório, depois os documentos e a revisão pela rubrica.

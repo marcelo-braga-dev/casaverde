@@ -43,6 +43,8 @@ const TELAS_AULA = {
     'm10-indicadores/a04': ['cockpit', 'dashboard'], 'm10-indicadores/a05': ['relatorio_executivo', 'relatorio_usinas'],
     'm11-gestao/a05': ['identidade', 'templates'], 'm12-projeto-final/a03': ['cockpit', 'gestao_energia'],
 };
+const NARR_DIR = path.resolve(__dirname, '..', 'audio', 'narracao');
+const narr = (d) => { const f = path.join(NARR_DIR, `${d.slice(0, 3)}.json`); return fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, 'utf8')) : {}; };
 const tela = (k) => path.join(TELAS, `${k}.jpg`);
 const temTela = (k) => fs.existsSync(tela(k));
 
@@ -103,7 +105,14 @@ function parsePlano(file) {
     const entregavel = clean(sec('Entregável').trim().split('\n\n')[0] || '');
     const exercicios = sec('Exercícios').split('\n').filter((l) => /^\d+\. /.test(l))
         .map((l) => clean(l.replace(/^\d+\.\s*/, '').replace(/\s*\(R:[^)]*\)\s*$/, '').replace(/\s*\([^)]*discussão[^)]*\)\s*$/i, '')));
-    return { titulo, objetivos, entregavel, exercicios };
+    const quiz = sec('Quiz').split('\n').filter((l) => /^\d+\. /.test(l)).map((l) => {
+        const txt = l.replace(/^\d+\.\s*/, '');
+        const pergunta = clean(txt.split(/\s\*{0,2}\(a\)/)[0]);
+        const opcoes = [...txt.matchAll(/(\*\*)?\(([a-d])\)\s*([^(*]+?)(\*\*)?(?=\s*(\*\*)?\([a-d]\)|\.?\s*$)/g)]
+            .map((m) => ({ letra: m[2], texto: clean(m[3]).replace(/\.$/, ''), certa: Boolean(m[1]) }));
+        return { pergunta, opcoes };
+    }).filter((q) => q.opcoes.length >= 2);
+    return { titulo, objetivos, entregavel, exercicios, quiz };
 }
 
 // ---------- utilidades de desenho ----------
@@ -232,32 +241,40 @@ function calculo(s, items, x, y, w, h) {
 // ---------- blocos ----------
 const pesado = (b) => b.rows.length > 0 || b.tipo === 'QUADRO' || (b.items.length === 1 && b.items[0].includes('→')) || b.items.length > 5 || len(b) > 300;
 
+function faixa(s, texto, y) {
+    s.addShape('roundRect', { x: 0.6, y, w: 12.13, h: 0.95, fill: { color: C.claro }, line: { color: C.linha, width: 0.5 }, rectRadius: 0.08 });
+    s.addShape('rect', { x: 0.6, y, w: 0.1, h: 0.95, fill: { color: C.laranja } });
+    s.addText(texto, { x: 0.85, y: y + 0.05, w: 11.75, h: 0.85, fontFace: F, fontSize: caber(texto, 11.6, 0.8, 15, 10), color: C.texto, valign: 'middle' });
+}
+
 function slideBloco(pptx, a, b, rodape) {
     const s = base(pptx, rodape);
     cabecalho(s, b.nome, `Aula ${a.aula} · ${a.titulo}`);
     const y = 1.45;
+    const H = b.fala ? 4.35 : 5.4;
     const ch = b.rows.length ? chartable(b.rows) : null;
     if (b.tipo === 'QUADRO') {
-        if (b.rows.length) { calculo(s, b.items.length ? b.items : [b.nome], 0.6, y, 5.9, 5.4); tabela(s, b.rows, 6.75, y, 5.98); } else calculo(s, b.items, 0.6, y, 12.13, 5.4);
+        if (b.rows.length) { calculo(s, b.items.length ? b.items : [b.nome], 0.6, y, 5.9, H); tabela(s, b.rows, 6.75, y, 5.98); } else calculo(s, b.items, 0.6, y, 12.13, H);
     } else if (b.items.length === 1 && b.items[0].includes('→') && !b.rows.length) {
-        fluxo(s, b.items[0], 2.9);
+        fluxo(s, b.items[0], y + H / 2 - 0.8);
     } else if (ch) {
-        grafico(s, b.rows, ch, 0.6, y, 6.2, 5.4);
-        if (b.items.length) { bullets(s, b.items, 7.05, y, 5.68, 1.6, 14); tabela(s, b.rows, 7.05, y + 1.7, 5.68); } else tabela(s, b.rows, 7.05, y + 0.3, 5.68);
+        grafico(s, b.rows, ch, 0.6, y, 6.2, H);
+        if (b.items.length) { bullets(s, b.items, 7.05, y, 5.68, 1.4, 14); tabela(s, b.rows, 7.05, y + 1.5, 5.68); } else tabela(s, b.rows, 7.05, y + 0.2, 5.68);
     } else if (b.rows.length) {
-        if (b.items.length) { bullets(s, b.items, 0.6, y, 12.2, 1.2, 15); tabela(s, b.rows, 0.6, y + 1.3, 12.13); } else tabela(s, b.rows, 0.6, y + 0.1, 12.13);
+        if (b.items.length) { bullets(s, b.items, 0.6, y, 12.2, 1.1, 15); tabela(s, b.rows, 0.6, y + 1.2, 12.13); } else tabela(s, b.rows, 0.6, y + 0.1, 12.13);
     } else if (destaques(b.items)) {
-        numeros(s, b.items, 0.6, y + 0.4, 12.13, 4.6);
+        numeros(s, b.items, 0.6, y + 0.2, 12.13, H - 0.3);
     } else if (b.items.length <= 6 && b.items.every((t) => t.length <= 110)) {
-        tiles(s, b.items, 0.6, y, 12.13, 5.35);
+        tiles(s, b.items, 0.6, y, 12.13, H);
     } else if (b.items.length > 6) {
         const meio = Math.ceil(b.items.length / 2);
-        bullets(s, b.items.slice(0, meio), 0.6, y, 6.0, 5.4, 18);
-        bullets(s, b.items.slice(meio), 6.85, y, 6.0, 5.4, 18);
+        bullets(s, b.items.slice(0, meio), 0.6, y, 6.0, H, 18);
+        bullets(s, b.items.slice(meio), 6.85, y, 6.0, H, 18);
     } else {
-        bullets(s, b.items, 0.6, y, 12.2, 5.4, fsz(len(b)));
+        bullets(s, b.items, 0.6, y, 12.2, H, fsz(len(b)));
     }
-    s.addNotes(b.narracao);
+    if (b.fala) faixa(s, b.fala, y + H + 0.12);
+    s.addNotes(b.fala || '');
 }
 
 function slideCartoes(pptx, a, blocos, rodape, titulo) {
@@ -272,10 +289,15 @@ function slideCartoes(pptx, a, blocos, rodape, titulo) {
         s.addText(b.nome, { x: x + 0.3, y: 1.7, w: w - 0.6, h: 0.75, fontFace: F, fontSize: 16, bold: true, color: C.azul, valign: 'top', fit: 'shrink' });
         const items = b.items.length ? b.items : [b.nome];
         if (items.length === 1) {
-            s.addText(items[0], { x: x + 0.3, y: 2.5, w: w - 0.6, h: 4.1, fontFace: F, fontSize: caber(items[0], w - 0.7, 4.0, 22, 11), color: C.texto, valign: 'middle', fit: 'shrink' });
-        } else bullets(s, items, x + 0.3, 2.5, w - 0.6, 4.1, 17);
+            if (b.fala) s.addText(b.fala, { x: x + 0.3, y: 4.4, w: w - 0.6, h: 2.3, fontFace: F, fontSize: caber(b.fala, w - 0.7, 2.2, 13, 9), italic: true, color: C.cinza, valign: 'top' });
+            s.addText(items[0], { x: x + 0.3, y: 2.5, w: w - 0.6, h: b.fala ? 1.8 : 4.1, fontFace: F, fontSize: caber(items[0], w - 0.7, b.fala ? 1.7 : 4.0, 22, 11), color: C.texto, valign: 'middle', fit: 'shrink' });
+        } else bullets(s, items, x + 0.3, 2.5, w - 0.6, b.fala ? 2.5 : 4.1, 17);
+        if (b.fala && items.length > 1) {
+            s.addShape('rect', { x: x + 0.3, y: 5.1, w: w - 0.6, h: 0.02, fill: { color: C.linha } });
+            s.addText(b.fala, { x: x + 0.3, y: 5.2, w: w - 0.6, h: 1.5, fontFace: F, fontSize: caber(b.fala, w - 0.7, 1.45, 13, 9), italic: true, color: C.cinza, valign: 'top' });
+        }
     });
-    s.addNotes(blocos.map((b) => b.narracao).join('\n\n'));
+    s.addNotes(blocos.map((b) => b.fala || '').join('\n\n'));
 }
 
 function slidePassos(pptx, a, passos, rodape, parte, k) {
@@ -289,7 +311,7 @@ function slidePassos(pptx, a, passos, rodape, parte, k) {
             { text: p.nome, options: { bold: true, color: C.azul, fontSize: 14, breakLine: true } },
             ...(p.items.length ? [{ text: p.items.join(' · '), options: { color: C.texto, fontSize: 11, breakLine: true, paraSpaceAfter: 8 } }] : []),
         ]).flat(), { x: 8.55, y: 1.45, w: 4.35, h: 5.4, fontFace: F, valign: 'top', fit: 'shrink' });
-        s.addNotes(passos.map((p) => p.narracao).join('\n\n'));
+        s.addNotes(passos.map((p) => p.items.join(' ')).join('\n'));
         return;
     }
     const cols = passos.length <= 3 ? passos.length : 3;
@@ -306,7 +328,7 @@ function slidePassos(pptx, a, passos, rodape, parte, k) {
         s.addText(p.nome, { x: x + 1.2, y: y + 0.15, w: tw - 1.35, h: 0.55, fontFace: F, fontSize: 14, bold: true, color: C.azul, valign: 'middle', fit: 'shrink' });
         if (p.items.length) s.addText(p.items.join('\n'), { x: x + 0.25, y: y + 0.8, w: tw - 0.5, h: th - 0.95, fontFace: F, fontSize: fsz(p.items.join(' ').length * 2, 15, 10), color: C.texto, valign: 'top', fit: 'shrink' });
     });
-    s.addNotes(passos.map((p) => p.narracao).join('\n\n'));
+    s.addNotes(passos.map((p) => p.items.join(' ')).join('\n'));
 }
 
 function slideSecao(pptx, a, temas, rodape) {
@@ -357,9 +379,38 @@ function slideFechamento(pptx, plano, rodape) {
         { x: x + 0.35, y: 1.7, w: w - 0.7, h: 4.9, fontFace: F, valign: 'top', fit: 'shrink' });
 }
 
+function slideQuiz(pptx, plano, rodape) {
+    for (let i = 0; i < plano.quiz.length; i += 2) {
+        const s = base(pptx, rodape);
+        cabecalho(s, 'Teste rápido', `Questões ${i + 1}–${Math.min(i + 2, plano.quiz.length)} de ${plano.quiz.length}`);
+        plano.quiz.slice(i, i + 2).forEach((q, k) => {
+            const y = 1.45 + k * 2.75;
+            s.addShape('ellipse', { x: 0.6, y, w: 0.55, h: 0.55, fill: { color: C.azul } });
+            s.addText(String(i + k + 1), { x: 0.6, y, w: 0.55, h: 0.55, fontFace: F, fontSize: 16, bold: true, color: C.branco, align: 'center', valign: 'middle' });
+            s.addText(q.pergunta, { x: 1.35, y: y - 0.05, w: 11.4, h: 0.7, fontFace: F, fontSize: caber(q.pergunta, 11.3, 0.65, 18, 12), bold: true, color: C.azul, valign: 'middle' });
+            const ow = (12.13 - 0.25 * 3) / 4;
+            q.opcoes.slice(0, 4).forEach((o, j) => {
+                const ox = 0.6 + j * (ow + 0.25);
+                s.addShape('roundRect', { x: ox, y: y + 0.8, w: ow, h: 1.6, fill: { color: C.branco }, line: { color: C.linha, width: 0.75 }, rectRadius: 0.08 });
+                s.addText(o.letra.toUpperCase(), { x: ox + 0.15, y: y + 0.9, w: 0.4, h: 0.4, fontFace: F, fontSize: 14, bold: true, color: C.laranja });
+                s.addText(o.texto, { x: ox + 0.15, y: y + 1.3, w: ow - 0.3, h: 1.0, fontFace: F, fontSize: caber(o.texto, ow - 0.35, 0.95, 15, 9), color: C.texto, valign: 'top' });
+            });
+        });
+    }
+    const s = base(pptx, rodape);
+    s.background = { color: C.claro };
+    cabecalho(s, 'Gabarito do teste rápido', 'Confira suas respostas');
+    tiles(s, plano.quiz.map((q, n) => { const c = q.opcoes.find((o) => o.certa); return `${c ? c.letra.toUpperCase() : '-'}) ${c ? c.texto : ''}`; }), 0.6, 1.45, 12.13, 5.35);
+}
+
 // ---------- montagem ----------
-function montarAula(pptx, a) {
+function montarAula(pptx, a, falas) {
     const rodape = `${a.mod} · Aula ${a.aula}`;
+    const fa = falas[a.chave.slice(-3)] || {};
+    a.cenas.forEach((c, i) => {
+        c.fala = fa[String(i + 1)] || '';
+        if (fa.passos?.[String(i + 1)]) c.items = [fa.passos[String(i + 1)]];
+    });
     const conteudo = a.cenas.filter((c) => ['SLIDE', 'ANIMAÇÃO', 'QUADRO'].includes(c.tipo) && (c.items.length || c.rows.length) && !SKIP_NAME.test(c.nome));
     const resumo = a.cenas.find((c) => /^Resumo/i.test(c.nome) && c.items.length);
     const passos = a.cenas.filter((c) => c.tipo === 'TELA').map((c, i) => ({ ...c, n: i + 1 }));
@@ -388,7 +439,6 @@ function montarAula(pptx, a) {
         s.background = { color: C.claro };
         cabecalho(s, 'Para levar desta aula', `Aula ${a.aula} · resumo`);
         tiles(s, resumo.items.slice(0, 6), 0.6, 1.45, 12.13, 5.35);
-        s.addNotes(resumo.narracao);
     }
 }
 
@@ -404,7 +454,9 @@ const dirs = fs.readdirSync(ROOT).filter((d) => /^m\d\d-/.test(d) && d.startsWit
         pptx.title = `${aulas[0].mod} — ${plano.titulo}`;
         pptx.company = MARCA;
         capaModulo(pptx, aulas[0].mod, plano, aulas);
-        aulas.forEach((a) => montarAula(pptx, a));
+        const falas = narr(d);
+        aulas.forEach((a) => montarAula(pptx, a, falas));
+        if (plano.quiz.length) slideQuiz(pptx, plano, `${aulas[0].mod} · Teste rápido`);
         if (plano.entregavel || plano.exercicios.length) slideFechamento(pptx, plano, `${aulas[0].mod} · Fechamento`);
         const file = path.join(__dirname, `${d}.pptx`);
         await pptx.writeFile({ fileName: file });

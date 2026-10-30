@@ -1,0 +1,13 @@
+Começa a operação. E ela começa pela energia: sem usina, não há o que oferecer. Garanta a usina antes de vender.
+
+<break time="0.8s" />
+
+As usinas estão em cinco lugares, listados na tela. A oportunidade mais rápida costuma ser a usina pronta e subutilizada, cujo dono tem um ativo parado e um financiamento correndo.
+
+<break time="0.8s" />
+
+Para encontrá-las, use a sua rede, contadores e bancos, associações rurais e os dados públicos da Aneel. Uma visita à usina vale mais que dez e-mails.
+
+<break time="0.8s" />
+
+O produtor quer quatro coisas: renda previsível, usina cheia rápido, zero trabalho e transparência. O portal do produtor é um ótimo argumento.

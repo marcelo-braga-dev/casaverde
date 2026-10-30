@@ -1,0 +1,17 @@
+Saber quem é quem no setor evita erros e promessas que não existem.
+
+<break time="0.8s" />
+
+A Aneel regula e fiscaliza. A distribuidora é o seu parceiro operacional do dia a dia: conexão da usina, rateio dos créditos e faturas.
+
+<break time="0.8s" />
+
+No mercado regulado, onde estão residências e pequenos comércios, o consumidor compra da distribuidora pela tarifa da Aneel.
+
+<break time="0.8s" />
+
+No mercado livre, o consumidor escolhe o fornecedor. Hoje ele atende principalmente consumidores maiores, mas a abertura para a baixa tensão está em discussão.
+
+<break time="0.8s" />
+
+E a assinatura? O cliente continua na distribuidora e recebe créditos de geração distribuída. A sua empresa não vende energia: organiza a participação. Essa distinção é jurídica e importa muito.

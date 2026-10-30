@@ -4,10 +4,11 @@ Tudo o que é preciso para gerar a narração das 76 aulas da **Formação em En
 
 | Item | Valor |
 |------|-------|
-| Conteúdo | 76 aulas · 463 cenas · ~233 mil caracteres |
-| Duração estimada | ~4h20 de áudio |
+| Conteúdo | 76 aulas · 305 cenas narradas · ~37 mil caracteres (narração enxuta) |
+| Duração estimada | ~41 min de áudio |
+| Formato | Voz explica o porquê; listas, tabelas, números, passos de laboratório e testes ficam nos slides |
 | Saída | 1 MP3 por cena (`saida/mXX/aYY/cNN.mp3`) e 1 MP3 por aula (`saida/mXX/aYY.mp3`) |
-| Origem do texto | Narração dos roteiros (`docs/curso/roteiros`), normalizada para fala |
+| Origem do texto | `narracao/mXX.json` (narração enxuta, por cena). A narração completa dos roteiros pode ser usada com `NARRACAO_COMPLETA=1` (~233 mil caracteres) |
 
 ## Estrutura
 
@@ -15,6 +16,7 @@ Tudo o que é preciso para gerar a narração das 76 aulas da **Formação em En
 docs/curso/audio/
 ├── README.md                  este guia
 ├── gerar-audio.cjs            gerador (Node 18+, sem dependências)
+├── narracao/mXX.json          narração enxuta por aula e cena (e instruções escritas dos laboratórios, usadas nos slides)
 ├── pronuncia.json             dicionário de pronúncia (siglas, números, unidades)
 ├── .env.elevenlabs.example    modelo de configuração (copie para .env.elevenlabs)
 ├── PLANO-DE-CREDITOS.md       produção em 31 lotes de ~8 mil créditos, com controle do que já foi feito
@@ -29,7 +31,7 @@ A numeração das cenas é a mesma dos roteiros e dos slides (`M1 · Aula 6 · C
 ### 1. Conta e plano
 1. Crie a conta em **elevenlabs.io**.
 2. Assine um plano **pago**: o uso comercial do áudio (curso vendido) exige plano pago. Confira a licença e a cota de caracteres do plano na página de preços.
-3. O curso inteiro consome cerca de **233 mil caracteres** por rodada completa. Reserve uma margem para testes e regerações (sugestão: 30%).
+3. O curso inteiro consome cerca de **37 mil caracteres** (narração enxuta). Reserve uma margem para testes e regerações (sugestão: 20%).
 
 ### 2. Escolha da voz
 - **Voz pronta:** em *Voices → Voice Library*, filtre por **Portuguese (Brazil)** e por estilo *Narrative/Educational*. Teste com o mesmo trecho (o primeiro arquivo de `lotes/lote-03/`) em 3 ou 4 vozes antes de decidir.
@@ -56,7 +58,7 @@ node --env-file=.env.elevenlabs gerar-audio.cjs gerar m00/a01  # gera as cenas d
 Ouça os arquivos em `saida/m00-boas-vindas/a01/`. Ajuste voz e configurações (seção "Ajuste fino") até ficar como você quer — só então gere o restante.
 
 ### 5. Produção por lotes de créditos
-A produção está dividida em **31 lotes de ~8 mil créditos**, na ordem do curso (`PLANO-DE-CREDITOS.md`). A cada recarga de créditos, gere os próximos lotes:
+A produção está dividida em **5 lotes de ~8 mil créditos**, na ordem do curso (`PLANO-DE-CREDITOS.md`). A cada recarga de créditos, gere os próximos lotes:
 ```bash
 node gerar-audio.cjs status                                     # o que já foi gerado e quanto falta
 node --env-file=.env.elevenlabs gerar-audio.cjs gerar lote-01   # gera um lote (~8 mil créditos)

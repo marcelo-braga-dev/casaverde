@@ -1,0 +1,61 @@
+{
+  "a01": {
+    "1": "Vamos começar do zero: a diferença entre kW e kWh. Quem confunde os dois erra proposta e perde dinheiro.",
+    "2": "Potência é quanto o equipamento consome a cada instante, como a largura de uma torneira. Sozinha, ela não diz quanto você paga.",
+    "3": "Energia é potência vezes tempo, a água que encheu o balde. É ela que o medidor conta e que a distribuidora cobra. Veja a conta do chuveiro na tela.",
+    "4": "Os consumos na tabela mostram algo importante para o negócio: um único comércio pode valer o mesmo que dez ou vinte residências.",
+    "5": "A conta de luz é, basicamente, o consumo vezes a tarifa, mais impostos. E cada quilowatt-hora abatido por crédito vale dinheiro para o seu cliente.",
+    "6": "Por fim, o kWp, quilowatt-pico, é o tamanho da usina. Na próxima aula, você vai ver como transformá-lo em geração mensal."
+  },
+  "a02": {
+    "1": "Você não precisa ser engenheiro, mas precisa entender a usina para conversar com o dono dela e com o seu cliente.",
+    "2": "Os painéis geram corrente contínua, o inversor a converte para o padrão da rede e o medidor bidirecional registra a energia injetada. É esse medidor que gera os créditos.",
+    "3": "A regra prática: geração mensal é a potência vezes a produtividade da região. Quinhentos kWp vezes cento e vinte dão sessenta mil quilowatts-hora por mês, a nossa usina de referência.",
+    "4": "Essa geração é uma média: varia com as estações e cai com sujeira, sombra ou falhas. Por isso, distribua a energia pela média anual e acompanhe a geração todo mês.",
+    "5": "Os painéis também perdem um pouco de eficiência por ano. Em contratos longos, considere isso.",
+    "6": "Mais do que onde a usina está, importa que ela esteja na área da distribuidora dos seus clientes, legalmente conectada e gerando o que promete."
+  },
+  "a03": {
+    "1": "Entender o caminho da energia explica a conta de luz e por que a geração distribuída faz sentido.",
+    "2": "Tradicionalmente, a energia vem de grandes usinas longe das cidades.",
+    "3": "Ela viaja por linhas de transmissão de alta tensão, no Sistema Interligado Nacional. Transmitir custa caro, e esse custo é o Fio A da sua conta.",
+    "4": "Perto da cidade, a rede da distribuidora leva a energia até o medidor do cliente. Essa rede é remunerada pelo Fio B, o personagem principal deste curso.",
+    "5": "Na geração distribuída, a energia é gerada perto do consumo e entra na rede local. O que chega ao cliente não são elétrons, são créditos. Por isso, usina e clientes precisam estar na mesma distribuidora."
+  },
+  "a04": {
+    "1": "Saber quem é quem no setor evita erros e promessas que não existem.",
+    "2": "A ANEEL regula e fiscaliza. A distribuidora é o seu parceiro operacional do dia a dia: conexão da usina, rateio dos créditos e faturas.",
+    "3": "No mercado regulado, onde estão residências e pequenos comércios, o consumidor compra da distribuidora pela tarifa da ANEEL.",
+    "4": "No mercado livre, o consumidor escolhe o fornecedor. Hoje ele atende principalmente consumidores maiores, mas a abertura para a baixa tensão está em discussão.",
+    "5": "E a assinatura? O cliente continua na distribuidora e recebe créditos de geração distribuída. A sua empresa não vende energia: organiza a participação. Essa distinção é jurídica e importa muito."
+  },
+  "a05": {
+    "1": "A distribuidora classifica os clientes, e isso define quem é o cliente ideal da assinatura.",
+    "2": "O grupo B, de baixa tensão, paga só energia em quilowatt-hora, exatamente o que os créditos abatem. Por isso é o público principal. O grupo A paga também demanda, o que complica a proposta.",
+    "3": "Dentro do grupo B, o subgrupo B3, de comércio e serviços, costuma ter as melhores contas e decisão rápida.",
+    "4": "Todo cliente do grupo B paga um mínimo, o custo de disponibilidade. Como esse mínimo é pago de qualquer forma, a cota de créditos deve deixá-lo descoberto.",
+    "5": "Tudo isso aparece na conta de luz: classe, subgrupo e tipo de ligação."
+  },
+  "a06": {
+    "1": "Esta é uma das aulas mais importantes: para onde vai cada centavo do quilowatt-hora. É aqui que nasce o valor do crédito.",
+    "2": "A tarifa tem duas partes: a TE, que paga a energia, e a TUSD, que paga o uso das redes.",
+    "3": "Dentro da TUSD está o Fio B, que remunera a rede da distribuidora. No exemplo da tela, ele é um quarto da tarifa.",
+    "4": "Para projetos novos, a lei fez uma parte do Fio B deixar de ser compensada, crescendo até 2028. Em 2026, sessenta por cento do Fio B continua sendo pago. No exemplo, o crédito cai de oitenta para sessenta e oito centavos. Esse número é a base de toda a conta do negócio."
+  },
+  "a07": {
+    "1": "Agora completamos a conta: bandeiras e impostos.",
+    "2": "As bandeiras sinalizam o custo de gerar energia e acrescentam valor por quilowatt-hora. São um bom argumento comercial, mas prometa só o que a fatura mostra.",
+    "3": "Os tributos são calculados por dentro: fazem parte da própria base de cálculo.",
+    "4": "Por isso a tarifa com impostos é a tarifa dividida por um menos as alíquotas. No exemplo, oitenta centavos viram cerca de um real e quatro.",
+    "5": "Sobre a energia compensada há regras específicas, que variam por estado. Vamos tratá-las no módulo de gestão."
+  },
+  "a08": {
+    "1": "Neste laboratório você lê uma fatura real dentro da plataforma. Siga os passos na tela e compare tudo com o PDF original.",
+    "passos": {
+      "2": "Em Cliente Consumidor, Clientes, abra a Padaria e a fatura mais recente. Atalho: Financeiro, Faturas de Concessionárias.",
+      "3": "Abra o PDF original e localize titular, instalação, classe, ligação, consumo, tributos, bandeira e total.",
+      "4": "Compare com o Resumo Técnico extraído automaticamente: os campos devem bater. Veja o status da extração.",
+      "5": "Localize a seção Energia Injetada e Consumo Injetado: são os créditos da geração distribuída, base da cobrança."
+    }
+  }
+}

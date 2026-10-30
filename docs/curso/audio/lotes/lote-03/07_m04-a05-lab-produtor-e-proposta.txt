@@ -1,0 +1,1 @@
+Neste laboratório você cadastra o produtor da sua primeira usina e gera a proposta para ele. Siga os passos na tela.

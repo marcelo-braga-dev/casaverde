@@ -1,0 +1,17 @@
+Créditos de energia não se vendem. Então, como a empresa ganha dinheiro? A resposta está nos contratos.
+
+<break time="0.8s" />
+
+O produtor aluga a usina para a entidade, os clientes aderem à entidade e contribuem com os custos, e a entidade contrata a sua empresa para fazer a gestão. A mensalidade do cliente é a contribuição dele, sempre menor que a economia.
+
+<break time="0.8s" />
+
+Os cuidados estão na tela. Em resumo: use a linguagem certa, prometa com cálculo e garanta que todo cliente no rateio participe de fato da entidade.
+
+<break time="0.8s" />
+
+O cliente é consumidor. Contrato claro e cancelamento razoável geram confiança, e assinatura vive de confiança.
+
+<break time="0.8s" />
+
+Na plataforma, o pagamento do cliente se divide entre a taxa de administração e o repasse ao produtor. Na próxima aula, a conta centavo por centavo.

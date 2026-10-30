@@ -1,0 +1,13 @@
+Esta é uma das aulas mais importantes: para onde vai cada centavo do quilowatt-hora. É aqui que nasce o valor do crédito.
+
+<break time="0.8s" />
+
+A tarifa tem duas partes: a tê é, que paga a energia, e a tê u ésse dê, que paga o uso das redes.
+
+<break time="0.8s" />
+
+Dentro da tê u ésse dê está o Fio B, que remunera a rede da distribuidora. No exemplo da tela, ele é um quarto da tarifa.
+
+<break time="0.8s" />
+
+Para projetos novos, a lei fez uma parte do Fio B deixar de ser compensada, crescendo até 2028. Em 2026, sessenta por cento do Fio B continua sendo pago. No exemplo, o crédito cai de oitenta para sessenta e oito centavos. Esse número é a base de toda a conta do negócio.

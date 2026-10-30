@@ -1,0 +1,9 @@
+Seis meses depois de assinar, o cliente esquece como era a conta. Mostre a ele quanto economizou.
+
+<break time="0.8s" />
+
+Use o relatório de economia nos momentos da tela, principalmente no pedido de cancelamento.
+
+<break time="0.8s" />
+
+Ele também vende: números agregados viram prova social, e o cliente pode mostrar o próprio relatório a quem indicar.

@@ -1,0 +1,17 @@
+Se a usina gera menos, todos perdem, e você só percebe pela fatura semanas depois. Por isso, acompanhe antes.
+
+<break time="0.8s" />
+
+Use as três fontes da tela. Quando divergirem, investigue.
+
+<break time="0.8s" />
+
+Os sinais da tela pedem ação.
+
+<break time="0.8s" />
+
+Diante de uma queda, acione a manutenção, registre, informe o produtor e, se o impacto for relevante, avise os clientes antes que eles percebam.
+
+<break time="0.8s" />
+
+Ocupação alta e fila de clientes indicam a hora da próxima usina. Comece a buscá-la com meses de antecedência.

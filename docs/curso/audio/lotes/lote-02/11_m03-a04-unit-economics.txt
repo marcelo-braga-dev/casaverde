@@ -1,0 +1,29 @@
+Esta é a aula da conta. Vamos acompanhar cada centavo de um quilowatt-hora de crédito. Acompanhe com a calculadora do curso.
+
+<break time="0.8s" />
+
+Três variáveis comandam o negócio: o valor do crédito, o desconto ao cliente e a taxa de administração, todos mostrados na tela.
+
+<break time="0.8s" />
+
+Dos sessenta e oito centavos, vinte por cento viram economia do cliente, quinze por cento ficam com a gestora e sessenta e cinco por cento vão para o produtor. É a mesma fórmula da proposta ao produtor na plataforma.
+
+<break time="0.8s" />
+
+Numa usina cheia, os valores mensais da tela aparecem para todos. Mas atenção: energia não alocada não gera receita para ninguém.
+
+<break time="0.8s" />
+
+Para o produtor, o retorno simples fica em torno de seis anos numa usina que dura mais de vinte e cinco. É atraente, desde que a usina fique cheia de clientes que pagam. E quem garante isso é você.
+
+<break time="0.8s" />
+
+Um erro comum na venda: o desconto é sobre a energia compensada, não sobre a conta inteira. No exemplo, vinte por cento de desconto viram cerca de dezesseis por cento de economia na conta total. Mostre isso ao cliente com números.
+
+<break time="0.8s" />
+
+A taxa de administração não é lucro: dela saem meio de pagamento, inadimplência e impostos. O que sobra é a margem de contribuição, que paga a estrutura fixa.
+
+<break time="0.8s" />
+
+Dividindo os custos fixos pela margem por quilowatt-hora, você chega ao ponto de equilíbrio. A pergunta de todo empreendedor é: quanto tempo levo para chegar lá, e como financio a empresa até lá?

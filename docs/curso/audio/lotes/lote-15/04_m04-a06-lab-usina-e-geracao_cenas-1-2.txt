@@ -1,5 +1,0 @@
-Com o produtor e a proposta prontos, chegou a hora de cadastrar a usina. Ela vai ser a fonte de energia de todos os clientes que você vai vender a partir do próximo módulo. Entre como Administrador.
-
-<break time="0.8s" />
-
-Abra Usinas Solar, Usinas, e cadastre uma nova usina. Dê um nome — por exemplo, o nome da sua empresa seguido de "Usina um". Em Produtor Proprietário, busque o produtor que você cadastrou na aula anterior. Esse campo é obrigatório: na plataforma, toda usina pertence a um produtor. Em Consultor Responsável, escolha o consultor que cuida dessa usina; ele também é obrigatório. Escolha a concessionária — a mesma em que os seus clientes vão estar. O grupo de usina é opcional e serve para agrupar usinas, por exemplo por região ou por entidade. Preencha a potência, a média de geração, o prazo de locação e, se tiver, os dados de inversores e módulos, que ajudam a manutenção. E o status: enquanto a usina estiver no onboarding, deixe num status que indique isso; quando concluir as sete etapas, marque como ativa. Salve.

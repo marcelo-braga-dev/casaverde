@@ -1,0 +1,1 @@
+Neste laboratório você cadastra a tarifa da distribuidora e calcula o valor do crédito com a transição do Fio B. Siga os passos na tela, com a calculadora do curso aberta.

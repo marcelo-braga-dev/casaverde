@@ -1,0 +1,48 @@
+{
+  "a01": {
+    "1": "O contrato transforma a conversa em obrigações claras para os dois lados. Valide a minuta com o seu advogado.",
+    "2": "O cliente adere à entidade que detém a usina e a sua empresa faz a gestão. Isso precisa ficar claro no documento.",
+    "3": "Das dez cláusulas da tela, três evitam a maioria dos conflitos: a fórmula do valor mensal com um exemplo, o cancelamento com aviso prévio e o reequilíbrio em caso de mudança regulatória.",
+    "4": "Use assinatura eletrônica e guarde os documentos organizados por cliente."
+  },
+  "a02": {
+    "1": "Você vai guardar dados pessoais e contas de luz de centenas de pessoas. A lei de proteção de dados vale desde o primeiro cliente.",
+    "2": "Colete só o necessário, com finalidade clara, como mostra a tabela.",
+    "3": "A base legal principal é a execução do contrato. Tenha um aviso de privacidade simples.",
+    "4": "O que vaza costuma estar fora do sistema: planilhas no WhatsApp e contas no celular do vendedor. Regra simples: dado de cliente vive no sistema.",
+    "5": "Ofereça um canal para o titular e defina por quanto tempo guarda cada dado."
+  },
+  "a03": {
+    "1": "O cliente só recebe créditos quando a unidade dele entra na lista de rateio da usina, na distribuidora.",
+    "2": "A lista traz as unidades e o percentual de cada uma, somando no máximo cem por cento. Descubra o procedimento exato da sua distribuidora antes do primeiro cliente.",
+    "3": "Atualize uma vez por ciclo, num dia fixo: consolide entradas e saídas, envie, acompanhe o protocolo e confira na fatura seguinte.",
+    "4": "Toda saída abre um buraco no rateio. Tenha uma fila de clientes para preenchê-lo rápido.",
+    "5": "Cuidado com as casas decimais, com a concentração acima de vinte e cinco por cento e guarde todos os protocolos."
+  },
+  "a04": {
+    "1": "Vender mais energia do que a usina gera é o erro que mais quebra empresas de assinatura.",
+    "2": "Mantenha a ocupação entre noventa e noventa e oito por cento da energia disponível. A plataforma ajuda com duas travas: não deixa vincular acima do saldo e acusa alerta crítico se a alocação passar da energia disponível.",
+    "4": "Evite concentração: além do risco de GD três, um cliente grande que sai leva uma fatia da receita de uma vez.",
+    "5": "Quando a geração cai, a ação depende da causa: uma queda pontual não exige nada, uma falha exige manutenção e uma queda estrutural exige rebalancear as cotas.",
+    "6": "Cada usina deve ter um plano de ocupação, e o time comercial vende olhando para ele."
+  },
+  "a05": {
+    "1": "Neste laboratório você leva um cliente da proposta aprovada até o portal: contrato, vínculo com a usina e convite. Siga os passos na tela.",
+    "passos": {
+      "2": "Marque a proposta como aprovada e gere o contrato. Os dados vêm da proposta; complete o cadastro e registre a assinatura.",
+      "3": "Na unidade consumidora, crie o vínculo com a usina e informe a energia alocada. O saldo da usina cai na hora.",
+      "4": "Abra a usina, veja os clientes vinculados e calcule na planilha o percentual de rateio de cada um.",
+      "5": "Na aba Acesso do cliente, gere o convite: ele recebe o e-mail de ativação e cria a própria senha."
+    }
+  },
+  "a06": {
+    "1": "Neste laboratório você enche a usina com quinze clientes e testa de propósito as duas travas da plataforma. Siga os passos na tela.",
+    "passos": {
+      "2": "Na planilha de ocupação, some as cotas: a meta é entre noventa e noventa e oito por cento, sem cliente acima de vinte e cinco.",
+      "3": "Vincule os clientes e acompanhe o saldo em Gestão de Energia.",
+      "4": "Tente vincular uma cota maior que o saldo: o vínculo é recusado.",
+      "5": "Registre uma geração menor que a energia alocada e clique em Escanear Agora, em Alertas Operacionais: aparece o alerta crítico.",
+      "6": "Corrija a causa e escaneie de novo: o alerta se resolve sozinho."
+    }
+  }
+}

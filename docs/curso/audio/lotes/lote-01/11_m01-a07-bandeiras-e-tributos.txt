@@ -1,0 +1,17 @@
+Agora completamos a conta: bandeiras e impostos.
+
+<break time="0.8s" />
+
+As bandeiras sinalizam o custo de gerar energia e acrescentam valor por quilowatt-hora. São um bom argumento comercial, mas prometa só o que a fatura mostra.
+
+<break time="0.8s" />
+
+Os tributos são calculados por dentro: fazem parte da própria base de cálculo.
+
+<break time="0.8s" />
+
+Por isso a tarifa com impostos é a tarifa dividida por um menos as alíquotas. No exemplo, oitenta centavos viram cerca de um real e quatro.
+
+<break time="0.8s" />
+
+Sobre a energia compensada há regras específicas, que variam por estado. Vamos tratá-las no módulo de gestão.

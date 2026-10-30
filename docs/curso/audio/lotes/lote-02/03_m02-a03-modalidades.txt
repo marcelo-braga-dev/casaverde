@@ -1,0 +1,21 @@
+A lei prevê quatro modalidades. A escolha errada pode impedir o seu negócio.
+
+<break time="0.8s" />
+
+No autoconsumo local, gera-se e consome-se no mesmo lugar. É o que as integradoras vendem.
+
+<break time="0.8s" />
+
+No autoconsumo remoto, a usina fica em outro lugar, mas os créditos vão só para unidades do mesmo titular.
+
+<break time="0.8s" />
+
+Na geração compartilhada, consumidores diferentes se reúnem numa entidade, como consórcio ou cooperativa, e dividem os créditos. É esse o mecanismo da assinatura.
+
+<break time="0.8s" />
+
+A êmuc atende condomínios, com alcance limitado.
+
+<break time="0.8s" />
+
+A comparação na tela mostra por que a assinatura usa a geração compartilhada. E vale para todas: usina e clientes na mesma distribuidora.

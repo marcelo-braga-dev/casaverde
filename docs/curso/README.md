@@ -36,7 +36,8 @@ A maioria dos cursos de GD/energia solar ensina **instalação** (dimensionar si
 | Público | Empreendedores: quem vai abrir uma empresa de assinatura de energia e empresas solares que querem vender assinaturas |
 | Etapas | 4: Fundamentos → Regulação e negócio → Operação ponta a ponta → Gestão e estratégia |
 | Módulos | 13 (M0 a M12), sendo o M12 o projeto final |
-| Aulas | 76 roteiros completos (57 expositivas + 19 laboratórios), de 7 a 16 min (~16 h de vídeo) |
+| Aulas | 76 aulas (57 expositivas + 19 laboratórios guiados por slides e telas reais), com narração enxuta (~41 min de voz no total) e conteúdo detalhado nos slides |
+| Atividades | Teste rápido de múltipla escolha com gabarito em cada módulo, exercícios, entregáveis e laboratórios autoexplicativos |
 | Encontros ao vivo | 8 (quinzenais, 90 min) na turma com acompanhamento |
 | Carga horária total certificada | 60 h |
 | Duração recomendada | 10 semanas (turma) ou livre (autoestudo, acesso de 12 meses) |

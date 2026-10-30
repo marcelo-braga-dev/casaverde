@@ -1,0 +1,59 @@
+{
+  "a01": {
+    "1": "Agora, as regras do jogo. Num negócio regulado, uma mudança de regra pode transformar margem em prejuízo.",
+    "2": "Geração distribuída é micro e minigeração conectada à rede da distribuidora, com compensação: quem gera recebe créditos, não dinheiro.",
+    "3": "Tudo começou em 2012, com a criação do sistema de compensação.",
+    "4": "Em 2015 veio a virada: geração compartilhada e créditos por sessenta meses. É daí que nasce o negócio da assinatura.",
+    "5": "Em 2022, a Lei 14.300 trouxe segurança jurídica, a transição do Fio B e o direito adquirido até 2045.",
+    "6": "Em 2023, a ANEEL regulamentou a lei. Os detalhes operacionais estão na Resolução Normativa mil.",
+    "7": "O mercado é grande e consolidado, mas a regra muda. Empresa saudável acompanha a regulação e faz contas com cenários."
+  },
+  "a02": {
+    "1": "Nem toda usina é geração distribuída: há limites de tamanho.",
+    "2": "A microgeração vai até setenta e cinco quilowatts. Para assinatura, costuma ser pequena demais.",
+    "3": "A minigeração vai além, com limite de três megawatts para a solar nas regras atuais. É a faixa das usinas de assinatura.",
+    "4": "A minigeração exige parecer de acesso, obras de conexão e, acima de quinhentos quilowatts, garantia de fiel cumprimento. Usina com parecer aprovado vale muito mais do que um terreno com promessa.",
+    "5": "É proibido dividir uma usina grande em várias pequenas para caber nas regras. Desconfie desse atalho.",
+    "6": "Guarde a marca de quinhentos quilowatts: acima dela entra uma regra mais pesada para certos casos, que vamos ver na aula cinco."
+  },
+  "a03": {
+    "1": "A lei prevê quatro modalidades. A escolha errada pode impedir o seu negócio.",
+    "2": "No autoconsumo local, gera-se e consome-se no mesmo lugar. É o que as integradoras vendem.",
+    "3": "No autoconsumo remoto, a usina fica em outro lugar, mas os créditos vão só para unidades do mesmo titular.",
+    "4": "Na geração compartilhada, consumidores diferentes se reúnem numa entidade, como consórcio ou cooperativa, e dividem os créditos. É esse o mecanismo da assinatura.",
+    "5": "A EMUC atende condomínios, com alcance limitado.",
+    "6": "A comparação na tela mostra por que a assinatura usa a geração compartilhada. E vale para todas: usina e clientes na mesma distribuidora."
+  },
+  "a04": {
+    "1": "Vamos acompanhar um crédito da usina até a conta do cliente.",
+    "2": "O crédito nasce no medidor da usina, em quilowatt-hora. O valor em reais só aparece na fatura do cliente.",
+    "3": "Os créditos são divididos pela lista de rateio, em percentuais. Se a usina gera menos, todos recebem proporcionalmente menos. E atualizar essa lista é tarefa mensal da sua operação.",
+    "4": "Na conta da padaria, os créditos abatem o consumo, e ela continua pagando o mínimo e a parcela não compensada do Fio B.",
+    "5": "Sobras ficam acumuladas por até sessenta meses. Sobra recorrente é sinal de cota alta demais.",
+    "6": "A distribuidora mede, rateia e fatura. A sua empresa mantém o rateio, confere as faturas, cobra e paga o produtor. A fatura é a base da sua cobrança."
+  },
+  "a05": {
+    "1": "Esta é a aula que decide se a conta fecha: como o uso da rede é cobrado de quem tem geração distribuída.",
+    "2": "O GD um, das usinas existentes ou com pedido até janeiro de 2023, mantém a regra antiga até 2045. É um ativo valioso, e vale verificar na compra ou arrendamento.",
+    "3": "O GD dois, das usinas novas, paga uma parcela crescente do Fio B. Repare no gráfico: sessenta por cento em 2026, chegando a noventa em 2028. Depois disso, a regra depende da ANEEL.",
+    "4": "Na prática, o crédito cai de sessenta e oito para sessenta e dois centavos em dois anos. Se você promete um desconto fixo, essa queda sai da sua margem ou da do produtor.",
+    "5": "O GD três atinge usinas acima de quinhentos quilowatts com um participante concentrando vinte e cinco por cento ou mais dos créditos. Evite essa concentração.",
+    "6": "Para enquadrar uma usina, olhe data do pedido, potência, modalidade e concentração, e confirme com a distribuidora."
+  },
+  "a06": {
+    "1": "Quanto crédito dar a cada cliente? De menos, sobra economia na mesa. Demais, sobra crédito sem uso.",
+    "2": "Como o cliente paga o custo de disponibilidade de qualquer forma, cobrir cem por cento do consumo não faz sentido.",
+    "3": "A cota ideal é o consumo médio de doze meses menos o custo de disponibilidade. Os exemplos estão na tela.",
+    "4": "Aplique uma margem de segurança, olhe a sazonalidade e pergunte sobre mudanças previstas. Sobra de crédito é pior do que um pouco de consumo descoberto.",
+    "5": "Para o rateio, divida a cota pela geração média da usina. A soma dos clientes nunca passa de cem por cento."
+  },
+  "a07": {
+    "1": "Neste laboratório você cadastra a tarifa da distribuidora e calcula o valor do crédito com a transição do Fio B. Siga os passos na tela, com a calculadora do curso aberta.",
+    "passos": {
+      "2": "Em Configurações, Concessionárias, abra a Distribuidora Exemplo. O campo Tarifa GD2 é o valor do crédito usado nas propostas.",
+      "3": "Na calculadora, aba Valor do crédito, preencha TE, TUSD, Fio B, ICMS e PIS e COFINS. Veja o crédito de 2026 a 2028.",
+      "4": "Volte à plataforma, edite a concessionária e informe na Tarifa GD2 o crédito de 2026. Repita a cada reajuste.",
+      "5": "Cadastre a distribuidora da sua empresa, com o valor do crédito calculado."
+    }
+  }
+}

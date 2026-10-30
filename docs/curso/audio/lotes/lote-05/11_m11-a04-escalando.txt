@@ -1,0 +1,17 @@
+Crescer sem estrutura leva ao caos. Planeje o time por fases.
+
+<break time="0.8s" />
+
+Na primeira fase, a estrutura é mínima e o dono conhece cada processo por dentro.
+
+<break time="0.8s" />
+
+Na segunda, a empresa se divide em áreas, com alguém dedicado a captar usinas.
+
+<break time="0.8s" />
+
+Na terceira, a operação se organiza por distribuidora.
+
+<break time="0.8s" />
+
+O que escala são processos: procedimento escrito, checklists, metas e rituais curtos. Use o laboratório do curso para treinar cada pessoa nova.

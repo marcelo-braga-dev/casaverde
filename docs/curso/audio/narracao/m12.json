@@ -1,0 +1,27 @@
+{
+  "a01": {
+    "1": "O projeto final é a sua empresa funcionando no laboratório, com os documentos que um investidor pediria. Metade já está pronta nos entregáveis.",
+    "2": "No laboratório, a sua empresa precisa ter tudo o que está na lista da tela.",
+    "3": "Em documento, entregue os itens da tela.",
+    "4": "Organize em duas semanas: primeiro o laboratório, depois os documentos e a revisão pela rubrica."
+  },
+  "a02": {
+    "1": "Use os critérios de avaliação como checklist antes de entregar.",
+    "2": "O maior peso é a operação no laboratório. Nos documentos, vale a coerência dos números, a análise e a linguagem correta.",
+    "3": "Setenta por cento aprova; noventa, com distinção."
+  },
+  "a03": {
+    "1": "Veja o projeto da Solaris como referência de qualidade, não de números.",
+    "4": "O que faz um projeto nota máxima: números que batem entre o laboratório e os documentos, análise em vez de descrição, riscos honestos e linguagem correta.",
+    "passos": {
+      "2": "No laboratório: duas usinas bem ocupadas, vinte e quatro clientes, três meses fechados e nenhum alerta crítico.",
+      "3": "Nos documentos: plano, conta com cenários, relatório do trimestre, relatórios de produtor e de economia, procedimento padrão, régua e riscos."
+    }
+  },
+  "a04": {
+    "1": "Você começou sem saber o que era um quilowatt-hora e chegou à operação completa de uma empresa de assinatura.",
+    "2": "Para tirar a empresa do papel, siga o plano dos noventa dias da tela: validar a conta, fechar a primeira usina e conquistar os primeiros clientes.",
+    "3": "Continue na comunidade e acompanhe as atualizações regulatórias.",
+    "4": "Bom para o cliente, bom para o produtor e bom para quem faz a gestão com seriedade. Agora você sabe como fazer. Boa operação."
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "a01": {
+    "1": "Agora vamos olhar a geração distribuída com olhos de empresário: quem participa, quem ganha o quê e onde está o risco.",
+    "2": "São cinco participantes. O produtor coloca o capital na usina, os clientes querem economia e simplicidade, a distribuidora é parceira obrigatória e os parceiros constroem e mantêm. No centro está a sua empresa, a gestora, que transforma créditos em receita mensal organizada.",
+    "3": "No modelo leve, a usina é de terceiros e você é remunerado por uma taxa de administração. Exige pouco capital, mas a sua margem é uma fatia e o crescimento depende de conseguir usinas.",
+    "4": "No modelo pesado, você investe na usina e opera. Fica com toda a margem e constrói patrimônio, mas precisa de capital e concentra o risco.",
+    "5": "O híbrido é ideal para quem já tem empresa solar: você constrói a usina para um investidor, faz a gestão e a manutenção. São três receitas na mesma usina, duas delas recorrentes.",
+    "6": "Para escolher, responda às três perguntas da tela. Muitas empresas começam leves e ganham peso com o tempo."
+  },
+  "a02": {
+    "1": "Na geração compartilhada, os clientes participam de uma entidade que detém a usina. A forma dessa entidade define quem pode ser seu cliente. Valide sempre com um advogado especializado.",
+    "2": "O consórcio reúne empresas. É simples de manter, mas, em regra, não aceita pessoa física.",
+    "3": "A cooperativa aceita pessoas físicas e dá escala com residências, mas exige governança: estatuto, assembleia e decisão coletiva. A sua empresa presta serviço a ela.",
+    "4": "A associação civil também aceita pessoas físicas e é mais simples que a cooperativa. A gestora é remunerada por contrato de prestação de serviços.",
+    "5": "O condomínio civil funciona para poucos participantes estáveis, não para uma carteira que entra e sai.",
+    "6": "Na prática, muitas operações combinam estruturas: consórcio para empresas e cooperativa ou associação para residências, cada uma com as suas usinas."
+  },
+  "a03": {
+    "1": "Créditos de energia não se vendem. Então, como a empresa ganha dinheiro? A resposta está nos contratos.",
+    "2": "O produtor aluga a usina para a entidade, os clientes aderem à entidade e contribuem com os custos, e a entidade contrata a sua empresa para fazer a gestão. A mensalidade do cliente é a contribuição dele, sempre menor que a economia.",
+    "3": "Os cuidados estão na tela. Em resumo: use a linguagem certa, prometa com cálculo e garanta que todo cliente no rateio participe de fato da entidade.",
+    "4": "O cliente é consumidor. Contrato claro e cancelamento razoável geram confiança, e assinatura vive de confiança.",
+    "5": "Na plataforma, o pagamento do cliente se divide entre a taxa de administração e o repasse ao produtor. Na próxima aula, a conta centavo por centavo."
+  },
+  "a04": {
+    "1": "Esta é a aula da conta. Vamos acompanhar cada centavo de um quilowatt-hora de crédito. Acompanhe com a calculadora do curso.",
+    "2": "Três variáveis comandam o negócio: o valor do crédito, o desconto ao cliente e a taxa de administração, todos mostrados na tela.",
+    "3": "Dos sessenta e oito centavos, vinte por cento viram economia do cliente, quinze por cento ficam com a gestora e sessenta e cinco por cento vão para o produtor. É a mesma fórmula da proposta ao produtor na plataforma.",
+    "4": "Numa usina cheia, os valores mensais da tela aparecem para todos. Mas atenção: energia não alocada não gera receita para ninguém.",
+    "5": "Para o produtor, o retorno simples fica em torno de seis anos numa usina que dura mais de vinte e cinco. É atraente, desde que a usina fique cheia de clientes que pagam. E quem garante isso é você.",
+    "6": "Um erro comum na venda: o desconto é sobre a energia compensada, não sobre a conta inteira. No exemplo, vinte por cento de desconto viram cerca de dezesseis por cento de economia na conta total. Mostre isso ao cliente com números.",
+    "7": "A taxa de administração não é lucro: dela saem meio de pagamento, inadimplência e impostos. O que sobra é a margem de contribuição, que paga a estrutura fixa.",
+    "8": "Dividindo os custos fixos pela margem por quilowatt-hora, você chega ao ponto de equilíbrio. A pergunta de todo empreendedor é: quanto tempo levo para chegar lá, e como financio a empresa até lá?"
+  },
+  "a05": {
+    "1": "O crédito das usinas novas encolhe até 2028. Vamos decidir quem absorve essa queda.",
+    "2": "Com desconto e taxa em percentual do crédito, todos perdem juntos, na mesma proporção. É uma divisão justa. E lembre: os reajustes da tarifa costumam compensar parte da queda.",
+    "3": "Preço fixo ao cliente faz a economia dele despencar e gera cancelamentos. Economia garantida sobre a conta total joga todo o risco em você. A recomendação é a política A, com contrato transparente.",
+    "4": "Com o produtor vale o mesmo raciocínio. Aluguel fixo transfere todo o risco para a gestora. Prefira o variável ou um misto com mínimo garantido baixo.",
+    "5": "Para 2029 em diante, trabalhe com cenários e proteja os contratos com cláusula de reequilíbrio regulatório.",
+    "6": "Usinas GD um não sofrem a transição. Por isso são disputadas, e o enquadramento precisa ser verificado."
+  },
+  "a06": {
+    "1": "Neste laboratório você transforma as decisões das últimas aulas em configurações da plataforma e fecha a conta do seu negócio na calculadora. Siga os passos na tela.",
+    "5": "Com os números na tela, responda como empresário: em quantos meses chego ao equilíbrio, quanto capital preciso até lá e se a empresa para de pé em 2028 e no cenário pessimista. A projeção de trinta e seis meses mostra o que a conta simples esconde: com cancelamentos, comissões e a queda do crédito, o equilíbrio do exemplo só chega perto do mês trinta e três.",
+    "passos": {
+      "2": "Em Configurações, Configurações Padrão: taxa de desconto do cliente, taxa de administração e redução de consumo usada na proposta ao produtor.",
+      "3": "Preencha vinte, quinze e vinte por cento e salve. O padrão vale para cadastros novos; cada cliente pode ter o seu desconto.",
+      "4": "Na calculadora, aba Meu modelo: informe crédito, percentuais, custos variáveis e fixos e comissão. Leia margem, ponto de equilíbrio, mês positivo e capital de giro."
+    }
+  }
+}

@@ -1,0 +1,9 @@
+Agora junte tudo o que você construiu numa única página: o documento para um sócio, um investidor ou um banco.
+
+<break time="0.8s" />
+
+São nove blocos, e cada um já existe nos seus entregáveis. O trabalho agora é resumir.
+
+<break time="0.8s" />
+
+No exemplo da Solaris, repare que cada número tem origem num laboratório ou numa planilha do curso.

@@ -1,0 +1,13 @@
+Risco conhecido é risco gerenciável.
+
+<break time="0.8s" />
+
+Classifique cada risco por probabilidade e impacto, e dê a cada um um dono e um plano.
+
+<break time="0.8s" />
+
+Os dez riscos da tela são os que toda empresa de assinatura deve mapear. Atenção ao último: muitas empresas boas morrem por falta de caixa antes do ponto de equilíbrio.
+
+<break time="0.8s" />
+
+Revise a matriz a cada trimestre e registre os incidentes.

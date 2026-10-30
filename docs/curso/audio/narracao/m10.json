@@ -1,0 +1,39 @@
+{
+  "a01": {
+    "1": "Última etapa: dirigir a empresa. E dirigir começa por medir doze indicadores, em quatro grupos.",
+    "2": "Energia é o seu estoque: ocupação, desempenho de geração e créditos chegando aos clientes.",
+    "3": "No comercial, conte quilowatts-hora vendidos, não só clientes, e compare o custo de aquisição com a margem que cada cliente traz.",
+    "4": "No financeiro, o indicador decisivo é o resultado contra o ponto de equilíbrio: estamos ganhando ou perdendo, e quanto falta?",
+    "5": "Nos clientes, olhe o churn: dois por cento ao mês é quase um quarto da base em um ano. E economia média caindo antecipa cancelamentos.",
+    "6": "Coloque tudo numa página, com meta e semáforo, e revise todo mês."
+  },
+  "a02": {
+    "1": "Seis meses depois de assinar, o cliente esquece como era a conta. Mostre a ele quanto economizou.",
+    "3": "Use o relatório de economia nos momentos da tela, principalmente no pedido de cancelamento.",
+    "4": "Ele também vende: números agregados viram prova social, e o cliente pode mostrar o próprio relatório a quem indicar."
+  },
+  "a03": {
+    "1": "Quem coloca dinheiro quer números, todo mês, sem precisar pedir.",
+    "2": "Para o produtor, uma página por mês com os itens da tela, e um repasse que bate com o extrato.",
+    "3": "Para o investidor, um relatório trimestral de portfólio, com uma seção honesta de riscos.",
+    "4": "Mesma data, mesmo formato, números que batem e más notícias contadas primeiro. É isso que faz o produtor renovar."
+  },
+  "a04": {
+    "1": "Neste laboratório você olha a empresa de cima e decide o que fazer na semana. Siga os passos na tela.",
+    "5": "Escreva três decisões concretas, cada uma com o quê, quem e até quando. Decisão concreta transforma painel em gestão.",
+    "passos": {
+      "2": "No dashboard: filas, valores a receber e falhas de pagamento. O que está travado hoje?",
+      "3": "No cockpit, em Relatórios, Relatório Geral: energia da frota, usinas críticas e clientes sem usina.",
+      "4": "Veja o funil de faturas, os alertas abertos, o ranking de consultores e as ações pendentes com link."
+    }
+  },
+  "a05": {
+    "1": "Neste laboratório você fecha os números do mês e prepara os relatórios. Siga os passos na tela.",
+    "passos": {
+      "2": "Em Relatórios, Executivo, filtre o mês: cobrado, recebido e vencido. Exporte em PDF.",
+      "3": "Nos relatórios de usinas e clientes, veja receita por usina e economia dos clientes. Exporte em Excel.",
+      "4": "Preencha o painel de doze indicadores e escreva cinco linhas sobre o mês.",
+      "5": "Exporte o relatório de economia de três clientes e monte o relatório do produtor."
+    }
+  }
+}

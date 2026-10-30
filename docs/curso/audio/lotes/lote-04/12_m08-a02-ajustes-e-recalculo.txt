@@ -1,0 +1,13 @@
+A fórmula resolve quase tudo. Para as exceções, existem ajustes, sempre com histórico.
+
+<break time="0.8s" />
+
+Use desconto manual para cortesias e correções, e acréscimo para diferenças de meses anteriores. Sempre com descrição clara e combinado com o cliente.
+
+<break time="0.8s" />
+
+Se a fatura ou o desconto mudou, recalcule antes de emitir o pagamento.
+
+<break time="0.8s" />
+
+Mudou o vencimento ou o valor, o boleto ativo é cancelado e reemitido automaticamente.

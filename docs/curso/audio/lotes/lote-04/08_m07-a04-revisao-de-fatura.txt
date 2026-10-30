@@ -1,0 +1,17 @@
+A plataforma lê a fatura, mas quem aprova é uma pessoa. A aprovação é o que transforma a fatura em cobrança.
+
+<break time="0.8s" />
+
+Cada fatura tem dois status: o da leitura automática e o da revisão humana. Só a aprovada gera cobrança.
+
+<break time="0.8s" />
+
+Siga sempre os seis passos da tela. Leva menos de dois minutos por fatura e evita a maioria dos erros de cobrança.
+
+<break time="0.8s" />
+
+As pendências automáticas ajudam. As de erro impedem uma aprovação segura; as de aviso pedem atenção.
+
+<break time="0.8s" />
+
+Revise em lote, num horário fixo, e justifique toda correção manual.

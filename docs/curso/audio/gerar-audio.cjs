@@ -47,6 +47,13 @@ function normalizar(t) {
     return /[.!?…]$/.test(s) ? s : `${s}.`;
 }
 
+const cacheNarr = {};
+function narracaoEnxuta(mod) {
+    const f = path.join(__dirname, 'narracao', `${mod.slice(0, 3)}.json`);
+    if (!(mod in cacheNarr)) cacheNarr[mod] = process.env.NARRACAO_COMPLETA === '1' || !fs.existsSync(f) ? {} : JSON.parse(fs.readFileSync(f, 'utf8'));
+    return cacheNarr[mod];
+}
+
 function aulas(filtro = '') {
     if (/^lote-\d+$/.test(filtro)) {
         const lote = montarLotes().find((l) => l.nome === filtro);
@@ -60,10 +67,13 @@ function aulas(filtro = '') {
             const titulo = (md.match(/^# (.+)$/m) || [])[1] || f;
             const marks = [...md.matchAll(/^## Cena (\d+) — (.+?) \(([^)]*)\)\s*$/gm)];
             const fim = md.indexOf('\n## Materiais') > 0 ? md.indexOf('\n## Materiais') : md.length;
+            // Narração enxuta (narracao/mXX.json) tem prioridade: só as cenas listadas viram áudio.
+            const enxuta = (narracaoEnxuta(d)[f.slice(0, 3)]) || null;
             const cenas = marks.map((m, i) => {
                 const body = md.slice(m.index + m[0].length, i + 1 < marks.length ? marks[i + 1].index : fim);
-                const narracao = ((body.match(/\*\*Narração:\*\*([\s\S]*)$/) || [])[1] || '').trim();
-                return { n: Number(m[1]), nome: m[2], texto: normalizar(narracao) };
+                const original = ((body.match(/\*\*Narração:\*\*([\s\S]*)$/) || [])[1] || '').trim();
+                const texto = enxuta ? (enxuta[m[1]] || '') : original;
+                return { n: Number(m[1]), nome: m[2], texto: texto ? normalizar(texto) : '' };
             }).filter((c) => c.texto.length > 1);
             return { mod: d, id: f.slice(0, 3), arquivo: f.replace(/\.md$/, ''), titulo, cenas, chars: cenas.reduce((t, c) => t + c.texto.length, 0) };
         }));

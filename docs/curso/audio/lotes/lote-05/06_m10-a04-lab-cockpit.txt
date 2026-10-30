@@ -1,0 +1,5 @@
+Neste laboratório você olha a empresa de cima e decide o que fazer na semana. Siga os passos na tela.
+
+<break time="0.8s" />
+
+Escreva três decisões concretas, cada uma com o quê, quem e até quando. Decisão concreta transforma painel em gestão.

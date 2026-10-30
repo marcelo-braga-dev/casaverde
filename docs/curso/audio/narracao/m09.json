@@ -1,0 +1,39 @@
+{
+  "a01": {
+    "1": "Operação que escala é a que repete bem, com tarefas certas, na frequência certa e com responsável.",
+    "2": "A plataforma faz sozinha o trabalho repetitivo listado na tela. A equipe trabalha em cima do que ela produz: alertas, filas e exceções.",
+    "3": "A rotina diária começa sempre no mesmo horário, pelos alertas críticos.",
+    "4": "Uma vez por semana, olhe o médio prazo com o time, em trinta minutos.",
+    "5": "O ciclo mensal é o coração da operação. Escreva-o num calendário, com o responsável de cada etapa. Esse é o seu procedimento padrão."
+  },
+  "a02": {
+    "1": "Toda falha que ameaça o faturamento vira um alerta, e não uma linha esquecida num registro.",
+    "2": "Os alertas vêm de quatro áreas: faturas, financeiro, usinas e sistema.",
+    "3": "A severidade define a ordem: críticos no mesmo dia, depois o que tem data, depois o resto.",
+    "4": "Cada problema gera um alerta único, que se resolve sozinho quando a causa desaparece. A lista mostra a situação real.",
+    "5": "Cada perfil vê a sua fila. A meta diária é simples: nenhum alerta crítico."
+  },
+  "a03": {
+    "1": "Se a usina gera menos, todos perdem, e você só percebe pela fatura semanas depois. Por isso, acompanhe antes.",
+    "2": "Use as três fontes da tela. Quando divergirem, investigue.",
+    "3": "Os sinais da tela pedem ação.",
+    "4": "Diante de uma queda, acione a manutenção, registre, informe o produtor e, se o impacto for relevante, avise os clientes antes que eles percebam.",
+    "5": "Ocupação alta e fila de clientes indicam a hora da próxima usina. Comece a buscá-la com meses de antecedência."
+  },
+  "a04": {
+    "1": "A maioria dos cancelamentos não é por preço, é por confusão. O suporte é a sua ferramenta de retenção.",
+    "2": "As perguntas comuns têm resposta padrão, e quase todas se resolvem no próprio portal.",
+    "3": "Pelos chamados, toda a equipe vê o histórico de cada cliente.",
+    "4": "No pedido de cancelamento, siga o roteiro da tela. Muitos clientes desistem ao ver quanto já economizaram.",
+    "5": "O melhor suporte é o proativo, como as ações da tela."
+  },
+  "a05": {
+    "1": "Neste laboratório você fecha um mês inteiro, seguindo o seu procedimento padrão. Siga os passos na tela.",
+    "passos": {
+      "2": "Registre a geração do mês e compare com o esperado.",
+      "3": "Suba e revise as faturas do mês. Investigue o consumo atípico antes de aprovar.",
+      "4": "Confira, abra e emita as cobranças, lance o ajuste do mês anterior e trate vencidas e boletos vencidos.",
+      "5": "Atualize o rateio com a saída e a entrada de clientes, zere os alertas críticos e calcule o repasse ao produtor."
+    }
+  }
+}

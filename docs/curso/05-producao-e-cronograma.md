@@ -1,5 +1,9 @@
 # 05 — Produção, formato dos roteiros e cronograma
 
+## Formato enxuto (decisão de 2026-10-30)
+
+Para reduzir o custo de voz em ~84%, a narração gravada é a de `audio/narracao/mXX.json`: a voz explica o porquê e conecta as ideias; listas, tabelas, números, passos de laboratório e testes ficam nos slides (que trazem uma faixa explicativa por slide). Resumos, encerramentos e demonstrações de tela não têm áudio. Os roteiros completos abaixo seguem como referência de conteúdo e para a versão estendida.
+
 ## Formato-padrão dos roteiros
 
 Todo arquivo em `roteiros/mXX-*/aYY-*.md` segue esta estrutura, pensada para ser colada numa IA de vídeo (avatar/narração + slides) e para orientar a gravação de tela:

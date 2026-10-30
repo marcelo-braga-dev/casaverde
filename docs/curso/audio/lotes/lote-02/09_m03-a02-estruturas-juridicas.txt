@@ -1,0 +1,21 @@
+Na geração compartilhada, os clientes participam de uma entidade que detém a usina. A forma dessa entidade define quem pode ser seu cliente. Valide sempre com um advogado especializado.
+
+<break time="0.8s" />
+
+O consórcio reúne empresas. É simples de manter, mas, em regra, não aceita pessoa física.
+
+<break time="0.8s" />
+
+A cooperativa aceita pessoas físicas e dá escala com residências, mas exige governança: estatuto, assembleia e decisão coletiva. A sua empresa presta serviço a ela.
+
+<break time="0.8s" />
+
+A associação civil também aceita pessoas físicas e é mais simples que a cooperativa. A gestora é remunerada por contrato de prestação de serviços.
+
+<break time="0.8s" />
+
+O condomínio civil funciona para poucos participantes estáveis, não para uma carteira que entra e sai.
+
+<break time="0.8s" />
+
+Na prática, muitas operações combinam estruturas: consórcio para empresas e cooperativa ou associação para residências, cada uma com as suas usinas.

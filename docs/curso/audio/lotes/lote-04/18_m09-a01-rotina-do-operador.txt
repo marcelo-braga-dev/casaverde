@@ -1,0 +1,17 @@
+Operação que escala é a que repete bem, com tarefas certas, na frequência certa e com responsável.
+
+<break time="0.8s" />
+
+A plataforma faz sozinha o trabalho repetitivo listado na tela. A equipe trabalha em cima do que ela produz: alertas, filas e exceções.
+
+<break time="0.8s" />
+
+A rotina diária começa sempre no mesmo horário, pelos alertas críticos.
+
+<break time="0.8s" />
+
+Uma vez por semana, olhe o médio prazo com o time, em trinta minutos.
+
+<break time="0.8s" />
+
+O ciclo mensal é o coração da operação. Escreva-o num calendário, com o responsável de cada etapa. Esse é o seu procedimento padrão.

@@ -1,0 +1,47 @@
+{
+  "a01": {
+    "1": "A sua receita nasce de um documento que não é seu: a fatura da distribuidora. Saber lê-la é saber se você cobra certo.",
+    "2": "A fatura com geração distribuída tem os blocos de sempre e mais um: as informações da geração distribuída.",
+    "3": "Nos itens faturados, o consumo aparece positivo e a energia compensada, negativa. A diferença por quilowatt-hora entre a TUSD consumida e a compensada é justamente o Fio B que não é compensado.",
+    "4": "O número que importa é o consumo injetado: a soma em reais das linhas compensadas. É o que o cliente deixou de pagar à distribuidora, e a sua cobrança parte dele, com o desconto. Não use o valor total da fatura, que inclui itens que não são da sua operação.",
+    "5": "O bloco de informações da geração distribuída é o seu termômetro: saldo crescendo indica cota alta; créditos a expirar exigem ação."
+  },
+  "a02": {
+    "1": "Todo mês, compare os créditos esperados com os faturados.",
+    "2": "O esperado é o percentual do rateio vezes a energia injetada pela usina no ciclo. Pequenas diferenças vêm dos ciclos de leitura; grandes exigem investigação.",
+    "3": "As seis situações da tela cobrem quase tudo. Um princípio vale para todas: você cobra só o que foi compensado no mês. Crédito parado no saldo é receita adiada e, se expirar, perdida.",
+    "4": "Quando o erro é da distribuidora, registre nas observações da fatura, guarde o protocolo e acompanhe o prazo."
+  },
+  "a03": {
+    "1": "Com centenas de clientes, ninguém baixa fatura à mão. A plataforma importa as faturas por e-mail.",
+    "2": "Você cadastra na distribuidora um e-mail da sua empresa, um por cliente. De hora em hora, a plataforma lê as caixas, desbloqueia o PDF, extrai os dados e coloca a fatura na fila de revisão.",
+    "5": "O upload manual continua útil nos casos da tela. E, quando algo falha na importação, um alerta operacional avisa e se resolve sozinho quando volta a funcionar."
+  },
+  "a04": {
+    "1": "A plataforma lê a fatura, mas quem aprova é uma pessoa. A aprovação é o que transforma a fatura em cobrança.",
+    "2": "Cada fatura tem dois status: o da leitura automática e o da revisão humana. Só a aprovada gera cobrança.",
+    "3": "Siga sempre os seis passos da tela. Leva menos de dois minutos por fatura e evita a maioria dos erros de cobrança.",
+    "4": "As pendências automáticas ajudam. As de erro impedem uma aprovação segura; as de aviso pedem atenção.",
+    "5": "Revise em lote, num horário fixo, e justifique toda correção manual."
+  },
+  "a05": {
+    "1": "Neste laboratório você revisa e aprova o primeiro ciclo de faturas. Siga os passos na tela, com a pasta de faturas do curso.",
+    "passos": {
+      "2": "Em Financeiro, Faturas de Concessionárias, crie uma fatura: cliente, UC e o PDF da pasta do curso.",
+      "3": "Confira titular, referência, vencimento, consumo e a energia compensada contra o esperado.",
+      "4": "Confira consumo injetado, margem de desconto e valor ao cliente. Usina vinculada correta e nenhuma pendência.",
+      "5": "Escreva a observação da revisão e aprove: fica registrado quem revisou e quando.",
+      "6": "Repita para as outras faturas, usando os filtros por status e por cliente."
+    }
+  },
+  "a06": {
+    "1": "Neste laboratório você resolve as pendências mais comuns de fatura. Siga os passos na tela.",
+    "passos": {
+      "2": "Sem UC vinculada: cadastre a UC do número da instalação e vincule-a na correção manual.",
+      "3": "Duplicada: compare com a existente e rejeite a duplicata, com observação.",
+      "4": "Valor ou consumo inválido: complete a correção manual a partir do PDF. A plataforma não aceita valor vazio.",
+      "5": "Sem regra de desconto: crie a regra na ficha do cliente e confira a margem na fatura.",
+      "6": "Em Alertas Operacionais, filtre por faturas e confira se não restou problema de importação."
+    }
+  }
+}

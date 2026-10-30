@@ -1,0 +1,17 @@
+Toda falha que ameaça o faturamento vira um alerta, e não uma linha esquecida num registro.
+
+<break time="0.8s" />
+
+Os alertas vêm de quatro áreas: faturas, financeiro, usinas e sistema.
+
+<break time="0.8s" />
+
+A severidade define a ordem: críticos no mesmo dia, depois o que tem data, depois o resto.
+
+<break time="0.8s" />
+
+Cada problema gera um alerta único, que se resolve sozinho quando a causa desaparece. A lista mostra a situação real.
+
+<break time="0.8s" />
+
+Cada perfil vê a sua fila. A meta diária é simples: nenhum alerta crítico.

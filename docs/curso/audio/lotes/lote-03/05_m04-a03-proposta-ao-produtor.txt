@@ -1,0 +1,13 @@
+A proposta ao produtor precisa ser entendida em dois minutos. A plataforma gera os números; você negocia o resto.
+
+<break time="0.8s" />
+
+O número que importa ao produtor é o pagamento mensal previsto, que já desconta o desconto dos clientes e a taxa de administração. Mostre o mensal vezes doze como a renda com a usina cheia, para não gerar expectativa errada.
+
+<break time="0.8s" />
+
+Seis pontos se negociam fora dos números, listados na tela. O mais esquecido é o ramp-up: nenhuma usina enche no primeiro dia, e isso precisa estar combinado.
+
+<break time="0.8s" />
+
+Para as objeções, compare sempre o líquido mensal e mostre o seu plano comercial e a transparência do portal.

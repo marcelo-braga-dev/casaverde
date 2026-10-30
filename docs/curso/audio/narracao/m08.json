@@ -1,0 +1,60 @@
+{
+  "a01": {
+    "1": "Este é o módulo em que a operação vira dinheiro.",
+    "2": "A cobrança parte do consumo injetado da fatura, aplica o desconto do cliente e soma os ajustes. O vencimento acompanha o da fatura, para o cliente ter as duas contas na mesma data.",
+    "3": "Ela é gerada sozinha, de hora em hora, ou com um clique. Nunca há duas cobranças ativas para a mesma fatura.",
+    "4": "Toda cobrança nasce em rascunho, a sua chance de conferir antes de o cliente ver. Depois ela é aberta, aguarda o pagamento e termina paga, vencida ou cancelada.",
+    "5": "O Pix ou boleto é sempre emitido por uma pessoa, por segurança. Para não virar esquecimento, a plataforma alerta sobre cobranças perto do vencimento sem pagamento gerado."
+  },
+  "a02": {
+    "1": "A fórmula resolve quase tudo. Para as exceções, existem ajustes, sempre com histórico.",
+    "2": "Use desconto manual para cortesias e correções, e acréscimo para diferenças de meses anteriores. Sempre com descrição clara e combinado com o cliente.",
+    "3": "Se a fatura ou o desconto mudou, recalcule antes de emitir o pagamento.",
+    "4": "Mudou o vencimento ou o valor, o boleto ativo é cancelado e reemitido automaticamente."
+  },
+  "a03": {
+    "1": "A plataforma emite Pix ou boleto pelo Mercado Pago e dá baixa sozinha.",
+    "2": "O Pix é o padrão: confirma em minutos. O boleto exige endereço completo e leva até três dias úteis. Cada emissão é um método só.",
+    "3": "O vencimento real é o lido do código de barras, porque o banco joga datas de fim de semana para o dia útil seguinte.",
+    "4": "A baixa chega por dois caminhos: o aviso do Mercado Pago, conferido pela plataforma, e uma sincronização a cada cinco minutos. Ninguém precisa conferir extrato.",
+    "5": "Boleto vencido tem o PDF bloqueado e gera alerta para reemitir, mas continua monitorado por dez dias, porque um pagamento do último dia pode compensar depois. Estornos ficam registrados para revisão.",
+    "6": "As tarifas do meio de pagamento entram no custo variável da sua conta."
+  },
+  "a04": {
+    "1": "Inadimplência come margem em silêncio. Ela se resolve com uma régua de cobrança, igual para todos.",
+    "2": "A régua combina automação e contato humano: lembrete três dias antes, marcação de vencida, alertas ao consultor a cada cinco dias, contato pessoal e, depois de trinta dias, as medidas do contrato.",
+    "3": "O tom muda com o atraso. No atraso leve, pergunte em vez de acusar: muitas vezes o cliente não entendeu as duas contas.",
+    "4": "Multa e juros só dentro da lei e do contrato. Acordos sempre registrados, nunca de boca.",
+    "5": "A melhor cobrança é a que não precisa acontecer. As práticas da tela reduzem muito a inadimplência.",
+    "6": "Meça por faixa de atraso e por consultor."
+  },
+  "a05": {
+    "1": "Neste laboratório a fatura aprovada vira cobrança, e a cobrança vira Pix. Siga os passos na tela.",
+    "passos": {
+      "2": "Na fatura aprovada, gere a cobrança, ou aguarde a rotina. Ela aparece em Cobranças de Faturas como rascunho.",
+      "3": "Confira referência, vencimento, consumo injetado, desconto e valor total.",
+      "4": "Em Ações Disponíveis, clique em Abrir esta cobrança para pagamento.",
+      "5": "Gere o pagamento por Pix: o código aparece em Pagamentos Gerados e o cliente recebe o e-mail automaticamente.",
+      "6": "Envie pelo WhatsApp com um clique. Para boleto, o cliente precisa ter endereço completo."
+    }
+  },
+  "a06": {
+    "1": "Neste laboratório você vê o dinheiro entrando e a baixa automática. Siga os passos na tela.",
+    "passos": {
+      "2": "Como Cliente, abra Minhas Cobranças: Pix copia e cola e boleto em PDF prontos para pagar.",
+      "3": "Como Administrador, simule o pagamento: a cobrança fica paga sozinha, com o histórico registrado.",
+      "4": "Em Financeiro, Pagamentos, acompanhe todos os Pix e boletos e sincronize sob demanda.",
+      "5": "Recebeu por fora? Use Confirmar Pagamento com data e observação: o boleto ativo é cancelado."
+    }
+  },
+  "a07": {
+    "1": "Neste laboratório você avança o tempo e vê a régua automática em ação. Siga os passos na tela.",
+    "passos": {
+      "2": "Três dias antes: e-mail ao cliente e alerta ao consultor com a mensagem de WhatsApp pronta.",
+      "3": "No dia seguinte ao vencimento, a cobrança é marcada como vencida sozinha.",
+      "4": "Boleto vencido: PDF bloqueado e alerta para reemitir. Gere o novo boleto e envie.",
+      "5": "Use Editar vencimento: o pagamento anterior é cancelado, um novo é emitido e tudo fica no histórico.",
+      "6": "Nos contatos humanos, use Cobrar via WhatsApp e Enviar Lembrete."
+    }
+  }
+}

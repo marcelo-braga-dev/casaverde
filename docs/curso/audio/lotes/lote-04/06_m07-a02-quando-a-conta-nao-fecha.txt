@@ -1,0 +1,13 @@
+Todo mês, compare os créditos esperados com os faturados.
+
+<break time="0.8s" />
+
+O esperado é o percentual do rateio vezes a energia injetada pela usina no ciclo. Pequenas diferenças vêm dos ciclos de leitura; grandes exigem investigação.
+
+<break time="0.8s" />
+
+As seis situações da tela cobrem quase tudo. Um princípio vale para todas: você cobra só o que foi compensado no mês. Crédito parado no saldo é receita adiada e, se expirar, perdida.
+
+<break time="0.8s" />
+
+Quando o erro é da distribuidora, registre nas observações da fatura, guarde o protocolo e acompanhe o prazo.

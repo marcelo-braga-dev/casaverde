@@ -1,0 +1,5 @@
+Veja o projeto da Solaris como referência de qualidade, não de números.
+
+<break time="0.8s" />
+
+O que faz um projeto nota máxima: números que batem entre o laboratório e os documentos, análise em vez de descrição, riscos honestos e linguagem correta.

@@ -1,0 +1,17 @@
+Este é o módulo em que a operação vira dinheiro.
+
+<break time="0.8s" />
+
+A cobrança parte do consumo injetado da fatura, aplica o desconto do cliente e soma os ajustes. O vencimento acompanha o da fatura, para o cliente ter as duas contas na mesma data.
+
+<break time="0.8s" />
+
+Ela é gerada sozinha, de hora em hora, ou com um clique. Nunca há duas cobranças ativas para a mesma fatura.
+
+<break time="0.8s" />
+
+Toda cobrança nasce em rascunho, a sua chance de conferir antes de o cliente ver. Depois ela é aberta, aguarda o pagamento e termina paga, vencida ou cancelada.
+
+<break time="0.8s" />
+
+O Pix ou boleto é sempre emitido por uma pessoa, por segurança. Para não virar esquecimento, a plataforma alerta sobre cobranças perto do vencimento sem pagamento gerado.

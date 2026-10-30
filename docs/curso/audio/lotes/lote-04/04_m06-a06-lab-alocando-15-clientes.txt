@@ -1,0 +1,1 @@
+Neste laboratório você enche a usina com quinze clientes e testa de propósito as duas travas da plataforma. Siga os passos na tela.

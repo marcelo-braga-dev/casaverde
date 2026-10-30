@@ -1,0 +1,17 @@
+Você vai construir uma empresa peça por peça, do primeiro ao último módulo.
+
+<break time="0.8s" />
+
+O laboratório já começa com uma distribuidora, uma usina de referência e três clientes de exemplo, iguais para todos. Por cima deles, você cria a sua empresa.
+
+<break time="0.8s" />
+
+Preencha a ficha da sua empresa. O campo mais importante é a distribuidora: usina e clientes precisam estar na área da mesma distribuidora.
+
+<break time="0.8s" />
+
+Veja o exemplo da Solaris. A meta parece boa, mas será coerente? Ao longo do curso, você terá as ferramentas para responder com números.
+
+<break time="0.8s" />
+
+Cada módulo acrescenta uma peça: a conta, a usina, os clientes, os contratos, as faturas, as cobranças, a rotina, os indicadores e o plano.

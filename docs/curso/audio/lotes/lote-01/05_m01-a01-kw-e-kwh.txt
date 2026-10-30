@@ -1,0 +1,21 @@
+Vamos começar do zero: a diferença entre kW e quilowatt-hora. Quem confunde os dois erra proposta e perde dinheiro.
+
+<break time="0.8s" />
+
+Potência é quanto o equipamento consome a cada instante, como a largura de uma torneira. Sozinha, ela não diz quanto você paga.
+
+<break time="0.8s" />
+
+Energia é potência vezes tempo, a água que encheu o balde. É ela que o medidor conta e que a distribuidora cobra. Veja a conta do chuveiro na tela.
+
+<break time="0.8s" />
+
+Os consumos na tabela mostram algo importante para o negócio: um único comércio pode valer o mesmo que dez ou vinte residências.
+
+<break time="0.8s" />
+
+A conta de luz é, basicamente, o consumo vezes a tarifa, mais impostos. E cada quilowatt-hora abatido por crédito vale dinheiro para o seu cliente.
+
+<break time="0.8s" />
+
+Por fim, o quilowatt-pico, quilowatt-pico, é o tamanho da usina. Na próxima aula, você vai ver como transformá-lo em geração mensal.

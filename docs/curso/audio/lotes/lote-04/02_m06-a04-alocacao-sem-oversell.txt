@@ -1,0 +1,17 @@
+Vender mais energia do que a usina gera é o erro que mais quebra empresas de assinatura.
+
+<break time="0.8s" />
+
+Mantenha a ocupação entre noventa e noventa e oito por cento da energia disponível. A plataforma ajuda com duas travas: não deixa vincular acima do saldo e acusa alerta crítico se a alocação passar da energia disponível.
+
+<break time="0.8s" />
+
+Evite concentração: além do risco de gê dê três, um cliente grande que sai leva uma fatia da receita de uma vez.
+
+<break time="0.8s" />
+
+Quando a geração cai, a ação depende da causa: uma queda pontual não exige nada, uma falha exige manutenção e uma queda estrutural exige rebalancear as cotas.
+
+<break time="0.8s" />
+
+Cada usina deve ter um plano de ocupação, e o time comercial vende olhando para ele.

@@ -1,0 +1,9 @@
+O cliente só recebe créditos quando a unidade dele entra na lista de rateio da usina, na distribuidora.
+
+<break time="0.8s" />
+
+A lista traz as unidades e o percentual de cada uma, somando no máximo cem por cento. Descubra o procedimento exato da sua distribuidora antes do primeiro cliente.
+
+<break time="0.8s" />
+
+Atualize uma vez por ciclo, num dia fixo: consolide entradas e saídas, envie, acompanhe o protocolo e confira na fatura seguinte.

@@ -1,0 +1,5 @@
+Neste laboratório você transforma as decisões das últimas aulas em configurações da plataforma e fecha a conta do seu negócio na calculadora. Siga os passos na tela.
+
+<break time="0.8s" />
+
+Com os números na tela, responda como empresário: em quantos meses chego ao equilíbrio, quanto capital preciso até lá e se a empresa para de pé em 2028 e no cenário pessimista. A projeção de trinta e seis meses mostra o que a conta simples esconde: com cancelamentos, comissões e a queda do crédito, o equilíbrio do exemplo só chega perto do mês trinta e três.

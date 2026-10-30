@@ -1,0 +1,21 @@
+Vamos acompanhar um crédito da usina até a conta do cliente.
+
+<break time="0.8s" />
+
+O crédito nasce no medidor da usina, em quilowatt-hora. O valor em reais só aparece na fatura do cliente.
+
+<break time="0.8s" />
+
+Os créditos são divididos pela lista de rateio, em percentuais. Se a usina gera menos, todos recebem proporcionalmente menos. E atualizar essa lista é tarefa mensal da sua operação.
+
+<break time="0.8s" />
+
+Na conta da padaria, os créditos abatem o consumo, e ela continua pagando o mínimo e a parcela não compensada do Fio B.
+
+<break time="0.8s" />
+
+Sobras ficam acumuladas por até sessenta meses. Sobra recorrente é sinal de cota alta demais.
+
+<break time="0.8s" />
+
+A distribuidora mede, rateia e fatura. A sua empresa mantém o rateio, confere as faturas, cobra e paga o produtor. A fatura é a base da sua cobrança.

@@ -1,0 +1,17 @@
+Entender o caminho da energia explica a conta de luz e por que a geração distribuída faz sentido.
+
+<break time="0.8s" />
+
+Tradicionalmente, a energia vem de grandes usinas longe das cidades.
+
+<break time="0.8s" />
+
+Ela viaja por linhas de transmissão de alta tensão, no Sistema Interligado Nacional. Transmitir custa caro, e esse custo é o Fio A da sua conta.
+
+<break time="0.8s" />
+
+Perto da cidade, a rede da distribuidora leva a energia até o medidor do cliente. Essa rede é remunerada pelo Fio B, o personagem principal deste curso.
+
+<break time="0.8s" />
+
+Na geração distribuída, a energia é gerada perto do consumo e entra na rede local. O que chega ao cliente não são elétrons, são créditos. Por isso, usina e clientes precisam estar na mesma distribuidora.

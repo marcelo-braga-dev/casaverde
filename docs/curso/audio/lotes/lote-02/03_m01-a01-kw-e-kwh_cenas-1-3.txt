@@ -1,9 +1,0 @@
-Vamos começar do zero absoluto. Se você vai vender energia por assinatura, existe uma unidade que vai acompanhar você todos os dias: o quilowatt-hora, o quilowatt-hora. É nele que a distribuidora cobra o seu cliente, é nele que a usina é medida e é nele que a sua empresa vai ganhar dinheiro. E existe uma confusão muito comum entre kW e quilowatt-hora. Parece detalhe, mas quem confunde erra proposta, erra contrato e perde dinheiro. Nesta aula, você vai sair sabendo a diferença de uma vez por todas.
-
-<break time="0.8s" />
-
-Primeiro, potência. Potência é a quantidade de energia que um equipamento usa a cada instante, enquanto está ligado. A unidade é o watt, W. Mil watts formam um quilowatt, o kW. Uma lâmpada de léd tem uns dez watts. Um ventilador, uns cem. Um chuveiro elétrico tem cinco mil e quinhentos watts, ou cinco vírgula cinco quilowatts. Pense na potência como a largura de uma torneira: quanto maior, mais água passa por segundo. Mas repare: a potência sozinha não diz quanto você vai pagar. Um chuveiro de cinco vírgula cinco quilowatts desligado não consome nada. O que importa para a conta é por quanto tempo ele fica ligado.
-
-<break time="0.8s" />
-
-Agora, energia. Energia é a potência multiplicada pelo tempo em que o equipamento fica ligado. Se o chuveiro de cinco vírgula cinco quilowatts fica ligado quinze minutos por dia — um quarto de hora —, ele consome cinco vírgula cinco vezes zero vírgula vinte e cinco, que dá um vírgula trinta e sete quilowatt-hora por dia. Em trinta dias, são cerca de quarenta e um quilowatts-hora. Voltando à torneira: a potência é a largura da torneira, a energia é quanta água encheu o balde. E é o balde que você paga. O medidor de energia da casa do seu cliente é exatamente isso: um contador de quilowatts-hora. A cada mês, a distribuidora lê quanto ele marcou e cobra por isso.

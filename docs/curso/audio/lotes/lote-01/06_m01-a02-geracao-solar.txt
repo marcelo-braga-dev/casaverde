@@ -1,0 +1,21 @@
+Você não precisa ser engenheiro, mas precisa entender a usina para conversar com o dono dela e com o seu cliente.
+
+<break time="0.8s" />
+
+Os painéis geram corrente contínua, o inversor a converte para o padrão da rede e o medidor bidirecional registra a energia injetada. É esse medidor que gera os créditos.
+
+<break time="0.8s" />
+
+A regra prática: geração mensal é a potência vezes a produtividade da região. Quinhentos quilowatt-pico vezes cento e vinte dão sessenta mil quilowatts-hora por mês, a nossa usina de referência.
+
+<break time="0.8s" />
+
+Essa geração é uma média: varia com as estações e cai com sujeira, sombra ou falhas. Por isso, distribua a energia pela média anual e acompanhe a geração todo mês.
+
+<break time="0.8s" />
+
+Os painéis também perdem um pouco de eficiência por ano. Em contratos longos, considere isso.
+
+<break time="0.8s" />
+
+Mais do que onde a usina está, importa que ela esteja na área da distribuidora dos seus clientes, legalmente conectada e gerando o que promete.

@@ -1,5 +1,0 @@
-Chegou a hora de entrar no laboratório. Você recebeu um e-mail com o endereço e o acesso do seu ambiente. Esse ambiente é só seu: é uma empresa de assinatura de energia fictícia, que você vai administrar durante todo o curso. Nada do que você fizer aqui afeta pessoas reais. Pode clicar, testar e errar à vontade — se precisar, existe um botão para reiniciar o laboratório.
-
-<break time="0.8s" />
-
-Abra o endereço que veio no e-mail. Na tela de login, digite o seu e-mail e a senha. Na primeira entrada, troque a senha por uma só sua. Repare na barra no rodapé: ela mostra que você está num ambiente de aula e permite trocar de perfil. Já, já a gente usa.

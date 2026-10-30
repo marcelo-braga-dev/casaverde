@@ -1,5 +1,0 @@
-Quando o seu cliente acende a luz, a energia percorreu um caminho enorme até chegar ali. Entender esse caminho explica por que a conta de luz tem tantos componentes e por que a geração distribuída faz tanto sentido. Vamos percorrer esse caminho juntos.
-
-<break time="0.8s" />
-
-Tradicionalmente, a energia do Brasil é produzida em grandes usinas: hidrelétricas, que ainda são a maior fonte do país, usinas eólicas, térmicas e, cada vez mais, grandes parques solares. Essas usinas costumam ficar longe das cidades — onde está o rio, onde venta, onde há espaço. Esse modelo se chama geração centralizada: poucas usinas grandes, produzindo para milhões de consumidores distantes.

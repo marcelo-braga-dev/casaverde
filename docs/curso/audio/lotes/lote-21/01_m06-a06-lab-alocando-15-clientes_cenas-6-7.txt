@@ -1,5 +1,0 @@
-Como resolver? Depende da causa, como vimos na aula 4. Se a usina voltou a gerar normalmente, registre a disponibilidade correta. Se a queda é estrutural, reduza cotas ou mova clientes para outra usina. Para o laboratório, registre de novo a energia disponível original e clique em Escanear Agora. O alerta se resolve sozinho, porque a condição deixou de existir. Esse é um princípio dos alertas da plataforma: eles não são uma lista que só cresce; eles refletem a situação atual da operação.
-
-<break time="0.8s" />
-
-Confira o entregável: quinze clientes com contrato, vínculo e convite, ocupação entre noventa e noventa e oito por cento, nenhum cliente acima de vinte e cinco por cento e a planilha de rateio pronta. A sua usina está cheia. No próximo módulo, chegam as primeiras faturas da distribuidora — e com elas, o dinheiro.

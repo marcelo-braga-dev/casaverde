@@ -1,0 +1,33 @@
+{
+  "a01": {
+    "1": "Seja bem-vindo. Neste curso, você vai aprender a montar e operar uma empresa de energia por assinatura: o cliente economiza na conta de luz sem instalar nada, e a sua empresa ganha por organizar tudo isso.",
+    "2": "Veja o negócio inteiro numa imagem. A usina injeta energia na rede da distribuidora, essa energia vira créditos, e os créditos abatem a conta dos clientes. O cliente paga menos à distribuidora e uma mensalidade menor à sua empresa. É permitido e regulado pela Lei 14.300.",
+    "3": "Três motivos fazem desse um bom negócio: a receita é recorrente, a estrutura escala e todo mundo ganha. Mas negócio bom não é negócio fácil: existem regras, custos de rede, inadimplência e uma operação mensal. É isso que você vai dominar.",
+    "4": "Na tela estão as sete coisas que você vai saber fazer ao final. Repare que todas são práticas: ler, calcular, propor, distribuir, cobrar, medir e planejar.",
+    "5": "E você vai praticar numa plataforma profissional, usada numa operação real, com dados fictícios. É o seu simulador de voo."
+  },
+  "a02": {
+    "1": "Antes do conteúdo, entenda como o curso funciona, para estudar bem e chegar ao fim.",
+    "2": "São quatro etapas, e cada uma sobe um degrau: primeiro os fundamentos de energia, depois as regras e a conta do negócio, então a operação de ponta a ponta e, por fim, a gestão da empresa.",
+    "3": "Há dois tipos de aula: as expositivas, que explicam o conceito, e os laboratórios, guiados por telas e passos na tela. A regra de ouro: viu o laboratório, faça o laboratório.",
+    "4": "Cada módulo tem um teste rápido e um entregável. Somados, eles viram o projeto final: a sua empresa operando.",
+    "5": "Reserve de três a cinco horas por semana e use desde já os materiais no seu negócio real."
+  },
+  "a03": {
+    "1": "Neste laboratório você entra na plataforma e conhece os quatro perfis: administrador, consultor, cliente e produtor. Siga os passos na tela, no seu ritmo.",
+    "passos": {
+      "2": "Abra o endereço recebido por e-mail, entre com seu e-mail e senha e troque a senha no primeiro acesso.",
+      "3": "Como Administrador (o dono), veja no dashboard clientes, faturas em revisão, cobranças e valores a receber. O sino mostra os alertas.",
+      "4": "Troque para Consultor: ele vê só a própria carteira de clientes, produtores e propostas.",
+      "5": "Troque para Cliente: o portal mostra faturas, cobranças com Pix ou boleto e a economia acumulada.",
+      "6": "Troque para Produtor: ele acompanha as próprias usinas e a geração de cada mês."
+    }
+  },
+  "a04": {
+    "1": "Você vai construir uma empresa peça por peça, do primeiro ao último módulo.",
+    "2": "O laboratório já começa com uma distribuidora, uma usina de referência e três clientes de exemplo, iguais para todos. Por cima deles, você cria a sua empresa.",
+    "3": "Preencha a ficha da sua empresa. O campo mais importante é a distribuidora: usina e clientes precisam estar na área da mesma distribuidora.",
+    "4": "Veja o exemplo da Solaris. A meta parece boa, mas será coerente? Ao longo do curso, você terá as ferramentas para responder com números.",
+    "5": "Cada módulo acrescenta uma peça: a conta, a usina, os clientes, os contratos, as faturas, as cobranças, a rotina, os indicadores e o plano."
+  }
+}

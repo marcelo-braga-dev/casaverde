@@ -1,0 +1,43 @@
+{
+  "a01": {
+    "1": "Uma operação de assinatura envolve várias pessoas jurídicas. Esta aula é um mapa para a conversa com o seu advogado.",
+    "2": "O desenho típico tem a gestora, as entidades por público e as usinas. No modelo pesado, cada usina pode ficar numa empresa própria.",
+    "3": "Separar isola riscos e facilita financiamento.",
+    "4": "Faça o inventário dos contratos da tela, com cláusulas de reequilíbrio coerentes entre si.",
+    "5": "Se você já tem integradora, contrate obra e manutenção a preço de mercado. O investidor vai perguntar."
+  },
+  "a02": {
+    "1": "Tributação muda e depende do estado e do município. Use esta aula para levar as perguntas certas ao seu contador.",
+    "2": "Sobre a energia compensada há regras federais e estaduais específicas, que mudam o valor do crédito e a economia do cliente. Confira a regra do seu estado numa fatura real.",
+    "3": "A gestora recebe por serviço. O regime tributário muda a margem, e o imposto real entra na calculadora.",
+    "4": "A forma da entidade e o aluguel do produtor têm tratamentos próprios.",
+    "5": "A reforma tributária muda o cenário até 2033. Inclua-a nos cenários e nas cláusulas dos contratos."
+  },
+  "a03": {
+    "1": "Risco conhecido é risco gerenciável.",
+    "2": "Classifique cada risco por probabilidade e impacto, e dê a cada um um dono e um plano.",
+    "3": "Os dez riscos da tela são os que toda empresa de assinatura deve mapear. Atenção ao último: muitas empresas boas morrem por falta de caixa antes do ponto de equilíbrio.",
+    "4": "Revise a matriz a cada trimestre e registre os incidentes."
+  },
+  "a04": {
+    "1": "Crescer sem estrutura leva ao caos. Planeje o time por fases.",
+    "2": "Na primeira fase, a estrutura é mínima e o dono conhece cada processo por dentro.",
+    "3": "Na segunda, a empresa se divide em áreas, com alguém dedicado a captar usinas.",
+    "4": "Na terceira, a operação se organiza por distribuidora.",
+    "5": "O que escala são processos: procedimento escrito, checklists, metas e rituais curtos. Use o laboratório do curso para treinar cada pessoa nova."
+  },
+  "a05": {
+    "1": "Neste laboratório você coloca a marca da sua empresa na plataforma e conhece as configurações essenciais. Siga os passos na tela.",
+    "passos": {
+      "2": "Em Configurações, Identidade Visual: nome, cores, logotipos e favicon. Telas, PDFs, boletos e e-mails passam a usar a sua marca.",
+      "3": "Em Usuários, crie um consultor, que vê só a própria carteira. Administrador só para quem opera.",
+      "4": "Em Whatsapp, Templates de Mensagens, edite os modelos no tom da sua empresa. O envio é sempre com um clique.",
+      "5": "Em Financeiro, Bancos, fica a conta do Mercado Pago, com credenciais criptografadas. Em Integrações, as caixas de e-mail das faturas."
+    }
+  },
+  "a06": {
+    "1": "Agora junte tudo o que você construiu numa única página: o documento para um sócio, um investidor ou um banco.",
+    "2": "São nove blocos, e cada um já existe nos seus entregáveis. O trabalho agora é resumir.",
+    "3": "No exemplo da Solaris, repare que cada número tem origem num laboratório ou numa planilha do curso."
+  }
+}

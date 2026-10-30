@@ -1,0 +1,5 @@
+Toda saída abre um buraco no rateio. Tenha uma fila de clientes para preenchê-lo rápido.
+
+<break time="0.8s" />
+
+Cuidado com as casas decimais, com a concentração acima de vinte e cinco por cento e guarde todos os protocolos.

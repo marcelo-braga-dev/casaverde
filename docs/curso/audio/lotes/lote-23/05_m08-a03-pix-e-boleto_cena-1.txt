@@ -1,1 +1,0 @@
-A sua empresa precisa receber de centenas de clientes, todo mês, com o mínimo de trabalho manual. A plataforma faz isso com o Mercado Pago: emite Pix ou boleto, recebe a confirmação automaticamente e baixa a cobrança. Nesta aula, você entende o que acontece por trás de cada clique.

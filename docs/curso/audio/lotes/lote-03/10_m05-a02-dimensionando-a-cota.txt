@@ -1,0 +1,17 @@
+Sem conta de luz, sem proposta. Com ela, você calcula a cota e a economia real.
+
+<break time="0.8s" />
+
+Da conta, você tira os dados da tela, principalmente o histórico de doze meses. Confirme também que o titular da conta é quem vai assinar.
+
+<break time="0.8s" />
+
+Calcule a cota com a fórmula da tela e olhe o mês a mês para não gerar sobras nos meses de consumo baixo.
+
+<break time="0.8s" />
+
+Na conta total, a clínica economiza cerca de seiscentos e cinquenta reais por mês, quase oito mil por ano. Fale sempre em reais, por mês e por ano, e nunca arredonde para cima.
+
+<break time="0.8s" />
+
+Para os casos especiais da tela, a regra é a mesma: dimensione pelo histórico e combine revisões.

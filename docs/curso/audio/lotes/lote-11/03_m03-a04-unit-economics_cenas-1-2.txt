@@ -1,5 +1,0 @@
-Esta é a aula da conta. Vamos pegar um quilowatt-hora de crédito e acompanhar cada centavo: quanto vai para o cliente na forma de economia, quanto vai para o produtor, quanto fica com a sua empresa e quanto sobra depois dos custos. Depois, vamos escalar essa conta para uma usina inteira e descobrir quantas usinas e quantos clientes a sua empresa precisa para pagar as contas. Pegue a calculadora do curso e acompanhe.
-
-<break time="0.8s" />
-
-Três variáveis comandam o negócio. A primeira é o valor do crédito, que você calculou no módulo 2: no nosso exemplo, sessenta e oito centavos por quilowatt-hora em 2026. A segunda é o desconto que você dá ao cliente: vamos usar vinte por cento sobre o valor do crédito. A terceira é a taxa de administração, a remuneração da sua empresa: vamos usar quinze por cento do valor do crédito. Esses dois percentuais são os padrões que a plataforma traz nas configurações, e você vai poder alterá-los no laboratório. Para simplificar, nesta aula vou trabalhar com valores sem impostos.

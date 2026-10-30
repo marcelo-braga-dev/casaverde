@@ -1,0 +1,13 @@
+O produtor disse sim, mas a usina ainda não está pronta para clientes. São sete etapas.
+
+<break time="0.8s" />
+
+Das sete etapas da tela, a mais sensível é a troca de titularidade: sem ela, a entidade não informa o rateio e os créditos não chegam aos clientes. Acompanhe o protocolo de perto. A sequência exata depende da sua estrutura jurídica e da distribuidora.
+
+<break time="0.8s" />
+
+Na plataforma, cada usina é um cartão no quadro de onboarding. Usina nova entra sozinha na primeira etapa, e cartão parado há mais de duas semanas fica em destaque.
+
+<break time="0.8s" />
+
+Você pode fazer pré-venda durante o onboarding, com data honesta. Mas o cliente só entra no rateio depois da etapa sete.

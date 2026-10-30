@@ -1,0 +1,9 @@
+Com centenas de clientes, ninguém baixa fatura à mão. A plataforma importa as faturas por e-mail.
+
+<break time="0.8s" />
+
+Você cadastra na distribuidora um e-mail da sua empresa, um por cliente. De hora em hora, a plataforma lê as caixas, desbloqueia o pê dê éfe, extrai os dados e coloca a fatura na fila de revisão.
+
+<break time="0.8s" />
+
+O upload manual continua útil nos casos da tela. E, quando algo falha na importação, um alerta operacional avisa e se resolve sozinho quando volta a funcionar.
