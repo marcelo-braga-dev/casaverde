@@ -1,0 +1,13 @@
+Neste laboratório, a fatura aprovada da padaria vai virar uma cobrança, e a cobrança vai virar um Pix. Entre como Administrador — ou como Consultor, que também trabalha as cobranças da própria carteira.
+
+<break time="0.8s" />
+
+Abra a fatura aprovada da padaria e gere a cobrança. Se você preferir, pode esperar: a rotina de hora em hora gera sozinha as cobranças das faturas aprovadas. Depois, abra Financeiro, Cobranças de Faturas, e filtre pelo nome do cliente. A cobrança da padaria está lá, em rascunho.
+
+<break time="0.8s" />
+
+Abra a cobrança. Em dados da cobrança, confira o titular, a referência, o vencimento, a usina e a unidade consumidora, o consumo e o consumo injetado. No resumo financeiro, o valor original, o desconto, os ajustes e o valor total: mil, seiscentos e noventa e cinco reais e vinte centavos. Se quiser rever a origem, o atalho da fatura de concessionária abre os dados técnicos da fatura. Tudo certo? Siga. Algo errado? Corrija antes, com um ajuste ou na fatura.
+
+<break time="0.8s" />
+
+Em ações disponíveis, clique em abrir esta cobrança para pagamento. O status passa de rascunho para aberta. A partir daqui, ela aparece para o cliente no portal e pode receber o Pix ou o boleto.

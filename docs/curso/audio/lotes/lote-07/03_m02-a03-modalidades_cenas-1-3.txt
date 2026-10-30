@@ -1,0 +1,9 @@
+A lei prevê quatro modalidades de geração distribuída. Elas definem quem pode receber os créditos de uma usina. Escolher a modalidade errada pode simplesmente impedir o seu negócio de funcionar. Vamos ver as quatro, com exemplos, e no final você vai entender por que as empresas de assinatura usam uma delas em especial.
+
+<break time="0.8s" />
+
+A primeira é o autoconsumo local. A geração fica no mesmo lugar onde a energia é consumida: o painel no telhado da casa, da loja, da fábrica. Durante o dia, a casa consome parte da energia gerada na hora, e o excedente vai para a rede e vira crédito. À noite, a casa consome da rede e usa os créditos. É o modelo clássico, vendido pelas integradoras. Se você já tem uma empresa solar, é o que você faz hoje. Não é o modelo da assinatura, porque exige que o cliente invista e tenha espaço.
+
+<break time="0.8s" />
+
+A segunda é o autoconsumo remoto. A usina fica num lugar diferente, por exemplo num sítio, e os créditos vão para outras unidades consumidoras do mesmo titular: a mesma pessoa física, ou a mesma pessoa jurídica, incluindo matriz e filiais, desde que todas estejam na área da mesma distribuidora. É muito usado por redes de lojas, por exemplo: uma usina abastece todas as filiais. Para o seu negócio, o autoconsumo remoto aparece de duas formas. Você pode vender esse projeto para uma empresa grande, como integrador. Ou pode encontrar clientes que alugam uma usina inteira, dedicada a eles. Mas ele não serve para reunir muitos clientes diferentes, porque exige o mesmo titular.

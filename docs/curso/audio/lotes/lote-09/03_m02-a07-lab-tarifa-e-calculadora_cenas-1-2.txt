@@ -1,0 +1,5 @@
+Neste laboratório, você vai fazer duas coisas que toda empresa de assinatura faz a cada reajuste da distribuidora: atualizar a tarifa na plataforma e recalcular o valor do crédito com a transição do Fio B. Abra o laboratório como Administrador e, em outra aba, a calculadora do curso.
+
+<break time="0.8s" />
+
+No menu, abra Configurações e depois Concessionárias. Aqui ficam as distribuidoras em que a sua empresa atua. Abra a Distribuidora Exemplo. Os campos são o nome, o estado, o status e a tarifa gê dê dois. A tarifa gê dê dois é o valor do quilowatt-hora de crédito que a plataforma usa como referência nas propostas para produtores, para calcular quanto a usina vai render. O nome vem do enquadramento gê dê dois que você estudou na aula 5: é o valor do crédito para usinas novas. Repare que ele não é a tarifa cheia da conta de luz, e sim o valor do crédito depois da parcela do Fio B que não é compensada. E é a sua empresa que define e atualiza esse número, com base na tarifa homologada pela Aneel.

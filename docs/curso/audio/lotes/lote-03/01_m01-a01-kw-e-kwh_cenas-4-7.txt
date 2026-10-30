@@ -1,0 +1,13 @@
+Para você ter referência, veja alguns números aproximados. Uma residência pequena consome algo entre cento e cinquenta e duzentos quilowatts-hora por mês. Uma casa com ar-condicionado pode chegar a quatrocentos, seiscentos, oitocentos. Uma padaria, com fornos e refrigeração, consome de dois a quatro mil. Uma clínica, de três a seis mil. Um supermercado de bairro passa de dez mil. Esses números são exemplos, e cada cliente é um caso, mas eles já mostram uma coisa importante para o seu negócio: um único comércio pode valer o mesmo que dez ou vinte residências. Isso vai pesar muito na sua estratégia comercial, no módulo 5.
+
+<break time="0.8s" />
+
+E como o quilowatt-hora vira dinheiro? A distribuidora multiplica o consumo pelo preço do quilowatt-hora, a tarifa, e acrescenta impostos e algumas taxas. De forma simplificada: se a residência consumiu quatrocentos e cinquenta quilowatts-hora e o quilowatt-hora custa, com tudo incluído, por volta de um real, a conta fica em torno de quatrocentos e cinquenta reais. Guarde esse raciocínio, porque o seu negócio inteiro é sobre ele. A energia que a usina gera vira créditos em quilowatt-hora. Esses créditos abatem os quilowatts-hora que o cliente pagaria para a distribuidora. E cada quilowatt-hora abatido vale dinheiro. Nas próximas aulas, a gente vai abrir essa tarifa por dentro, porque nem tudo o que está nela é abatido pelos créditos. Esse detalhe é o famoso Fio B.
+
+<break time="0.8s" />
+
+Uma última unidade, que você vai ver muito: o quilowatt-pico, quilowatt-pico. É a potência dos painéis solares medida em condições ideais de laboratório. Quando alguém diz "uma usina de quinhentos quilowatt-pico", está dizendo o tamanho da usina — a largura da torneira. Mas o que interessa para o negócio é quanto ela gera por mês, em quilowatt-hora. Como passar de um para o outro é o assunto da próxima aula.
+
+<break time="0.8s" />
+
+Resumindo: kW é potência, o tamanho da torneira. quilowatt-hora é energia, a água no balde — é o que se paga e o que a usina entrega. E quilowatt-pico é o tamanho da usina solar. Faça o exercício do módulo calculando o consumo de um ar-condicionado, e nos vemos na próxima aula.

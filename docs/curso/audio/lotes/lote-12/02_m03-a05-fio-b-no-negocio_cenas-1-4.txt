@@ -1,0 +1,13 @@
+Você já sabe que, para usinas novas, o valor do crédito cai a cada ano até 2028, por causa do Fio B. Nesta aula, vamos colocar isso na conta da sua empresa e decidir, de forma consciente, quem absorve essa queda: o cliente, o produtor, a sua empresa — ou todos.
+
+<break time="0.8s" />
+
+Primeiro, o efeito com a política que usamos até aqui: desconto e taxa como percentuais do crédito. Mantendo a tarifa constante, o crédito cai de sessenta e oito para sessenta e dois centavos entre 2026 e 2028, uma queda de quase nove por cento. E todo mundo perde junto, na mesma proporção: a economia do cliente cai de treze vírgula seis para doze vírgula quatro centavos, a taxa da gestora de dez vírgula dois para nove vírgula três, e o repasse do produtor de quarenta e quatro vírgula dois para quarenta vírgula três. É uma divisão justa do impacto: ninguém é surpreendido sozinho. Repare que eu chamei de cenário de estresse: na vida real, a tarifa costuma ser reajustada todo ano, normalmente para cima, o que compensa parte dessa queda. Mas planeje pelo cenário conservador.
+
+<break time="0.8s" />
+
+Existem três políticas principais. A primeira, que acabamos de ver, é o desconto percentual sobre o crédito. O impacto é dividido entre todos, e a economia do cliente continua existindo, embora menor. A segunda é cobrar do cliente um preço fixo por quilowatt-hora, por exemplo cinquenta e quatro centavos, independentemente do valor do crédito. Parece seguro para a empresa, mas, quando o crédito cai para sessenta e dois, a economia do cliente despenca de treze para oito centavos, e ele começa a se perguntar se vale a pena — e cancela. A terceira é garantir ao cliente uma economia fixa sobre a conta total, por exemplo quinze por cento. Comercialmente, é a promessa mais forte, mas toda a queda do crédito é absorvida pela gestora e pelo produtor, e, se a regra mudar em 2029, a empresa pode ficar com margem negativa. A minha recomendação, para a maioria das empresas, é a política A, com contrato transparente que explica que a economia acompanha as regras e a tarifa da distribuidora.
+
+<break time="0.8s" />
+
+O mesmo raciocínio vale para o produtor. Se a entidade paga ao produtor um aluguel fixo por mês, ele fica protegido de tudo: da queda do crédito, da usina meio vazia, da inadimplência. Quem assume esses riscos é a gestora. Se o aluguel é variável, um percentual do que a usina rende, o risco é compartilhado. Produtores preferem fixo; gestoras saudáveis preferem variável, ou um modelo misto, com um mínimo garantido baixo e uma parte variável. Se você assumir aluguel fixo, sua margem precisa ser bem maior, porque você está vendendo um seguro ao produtor.

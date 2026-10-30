@@ -1,0 +1,13 @@
+A terceira é a geração compartilhada, e é a que mais interessa a você. Nela, consumidores diferentes, pessoas físicas e jurídicas, se reúnem numa forma jurídica prevista na lei — consórcio, cooperativa, condomínio civil voluntário ou edilício, ou outra forma de associação civil — para ter uma usina em conjunto. A unidade consumidora onde a usina está conectada fica em nome dessa entidade, e os créditos são distribuídos entre os participantes, cada um com o seu percentual. Todos precisam estar na área da mesma distribuidora. Repare no que isso permite: a padaria, a clínica e a residência, que não têm nada a ver uma com a outra, podem receber créditos da mesma usina, sem instalar nada. Basta participarem da entidade. É exatamente esse o mecanismo por trás da assinatura de energia. A sua empresa, em geral, organiza e administra essa entidade, a usina e a relação com os participantes, e é remunerada por isso. Como isso é montado juridicamente — consórcio, cooperativa, associação — é o tema do módulo 3, porque cada forma tem vantagens e obrigações diferentes.
+
+<break time="0.8s" />
+
+A quarta é o empreendimento com múltiplas unidades consumidoras, a êmuc. É o caso de um condomínio, residencial ou comercial, em que a usina, instalada na própria área do condomínio, gera créditos para os apartamentos ou salas e para as áreas comuns, numa propriedade única ou em áreas contíguas. É um nicho interessante para integradores, mas tem alcance limitado ao próprio condomínio.
+
+<break time="0.8s" />
+
+Vamos comparar. No autoconsumo local, os créditos ficam no próprio local. No remoto, vão para unidades do mesmo titular, o que só funciona para um cliente por usina. Na geração compartilhada, vão para os participantes da entidade, o que permite reunir muitos clientes diferentes. E na êmuc, para as unidades do condomínio. Por isso, a assinatura de energia para muitos clientes usa a geração compartilhada. Uma regra que vale para todas: usina e beneficiários precisam estar na área da mesma distribuidora. Uma empresa que atua em dois estados, com distribuidoras diferentes, precisa de usinas em cada área.
+
+<break time="0.8s" />
+
+Resumindo: são quatro modalidades, e a assinatura de energia se apoia na geração compartilhada, em que os clientes participam de uma entidade que detém a usina, todos na mesma distribuidora. Na próxima aula, vamos entender como os créditos são calculados, distribuídos e usados.

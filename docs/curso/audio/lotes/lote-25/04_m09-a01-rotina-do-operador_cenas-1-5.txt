@@ -1,0 +1,17 @@
+Você já fez o ciclo completo uma vez. Agora, ele precisa acontecer todo mês, com centenas de clientes, sem depender de heroísmo. A diferença entre uma operação que escala e uma que vive apagando incêndio é a rotina: tarefas certas, na frequência certa, com um responsável. Nesta aula, você monta o procedimento operacional padrão, o ésse ó pê, da sua empresa.
+
+<break time="0.8s" />
+
+Primeiro, o que você não precisa fazer, porque a plataforma faz sozinha. A cada cinco minutos, ela sincroniza os pagamentos com o Mercado Pago. A cada dez, marca as cobranças vencidas. De hora em hora, importa as faturas que chegaram por e-mail, gera as cobranças das faturas aprovadas e faz uma varredura de saúde da operação. Às seis da manhã, expira os boletos vencidos. Às oito, dispara os lembretes de cobrança. O seu time não substitui essas rotinas: trabalha em cima do que elas produzem — os alertas, as filas e as exceções.
+
+<break time="0.8s" />
+
+A rotina diária leva de trinta minutos a duas horas, dependendo do tamanho da operação, e deve começar sempre no mesmo horário, depois das rotinas da manhã. Abra o sino de alertas e trate primeiro os críticos. Trabalhe a fila de faturas pendentes de revisão. Confira e abra as cobranças em rascunho. Emita o Pix ou o boleto das cobranças que vão vencer em breve. Envie os lembretes e as cobranças do dia, com os links prontos de WhatsApp. E responda os chamados de suporte.
+
+<break time="0.8s" />
+
+Uma vez por semana, olhe o médio prazo. A inadimplência, por faixa de atraso e por consultor. As propostas enviadas sem resposta e as que vão expirar. A ocupação de cada usina e a fila de clientes esperando cota. O quadro de onboarding das usinas novas, com as sete etapas. E faça uma reunião curta com o time, de trinta minutos, olhando esses números juntos.
+
+<break time="0.8s" />
+
+E o ciclo mensal, que é o coração da operação. Um: registrar a geração do mês de cada usina, com a energia disponível, e avisar o produtor. Dois: as faturas chegam, normalmente concentradas em alguns dias, conforme o ciclo de leitura da distribuidora; revise e aprove. Três: as cobranças nascem; confira, abra e emita os pagamentos. Quatro: num dia fixo do mês, atualize a lista de rateio na distribuidora, consolidando entradas, saídas e ajustes. Cinco: calcule e faça o repasse ao produtor, com o relatório da usina. E seis: o fechamento, com os indicadores do mês e o relatório executivo, que é o tema do módulo 10. Escreva tudo isso num calendário, com o responsável de cada etapa. Esse é o seu ésse ó pê.

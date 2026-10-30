@@ -1,0 +1,9 @@
+Para investidores — quem financia ou pode financiar a próxima usina —, o relatório é trimestral e mostra o portfólio: quantas usinas, quantos megawatts-pico, quantos megawatts-hora por mês, a ocupação média. Mostra a receita de cada usina e a rentabilidade anualizada, que é o repasse anual dividido pelo investimento. O histórico de geração real contra a projetada, a inadimplência e o churn — porque o investidor sabe que a receita depende de clientes que pagam e ficam. E uma seção honesta de riscos, incluindo a regulação. Investidor sério desconfia de relatório só com boas notícias.
+
+<break time="0.8s" />
+
+Quatro regras de credibilidade. Envie na mesma data todo mês. Use sempre o mesmo formato, para que dê para comparar. Garanta que os números batem com o dinheiro que caiu na conta do produtor. E, quando houver má notícia — uma queda de geração, um cliente grande que saiu —, conte primeiro, com o plano de ação. É isso que faz o produtor renovar e o investidor voltar.
+
+<break time="0.8s" />
+
+Resumindo: uma página por mês para o produtor, um relatório trimestral de portfólio para investidores, sempre na mesma data, no mesmo formato e com números que batem. Nos laboratórios a seguir, você vai tirar esses números da plataforma.

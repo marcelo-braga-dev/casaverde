@@ -1,0 +1,21 @@
+Chegaram as primeiras faturas dos seus clientes. Neste laboratório, você vai subir o pê dê éfe de uma fatura, conferir o que a plataforma extraiu, revisar com o roteiro de seis passos e aprovar. Entre como Administrador e baixe a pasta de faturas fictícias do módulo 7.
+
+<break time="0.8s" />
+
+Abra Financeiro e depois Faturas de Concessionárias, e crie uma nova fatura. Selecione o cliente — vamos começar pela padaria —, a unidade consumidora e anexe o pê dê éfe da pasta do curso. Salve. Em segundos, a plataforma lê o pê dê éfe. A tela da fatura abre com o status da extração e o status da revisão, que começa como pendente de revisão.
+
+<break time="0.8s" />
+
+Agora, o roteiro. Passo um: titular e número da instalação batem com a padaria. Passo dois: referência e vencimento conferem com o pê dê éfe. Passo três: consumo e valor total coerentes com o histórico — dois mil e quinhentos quilowatts-hora, dentro da média. Repare no indicador de completude dos dados, que mostra quantos campos foram analisados e se algum ficou inválido. Passo quatro: abra a seção de energia injetada e consumo injetado. Ela mostra exatamente quais linhas da fatura foram somadas: as de energia injetada em tê é, tê u ésse dê e bandeira, com quantidades e valores. Compare a energia compensada com o esperado: quatro por cento da geração da usina no ciclo. Se bater, siga.
+
+<break time="0.8s" />
+
+Passo cinco: o consumo injetado total, em reais, a margem de desconto, que veio da regra ativa da padaria, e o valor da fatura ao cliente — o que a sua empresa vai cobrar. A tela explica como chegou em cada número. Confira com a sua conta: consumo injetado vezes um menos vinte por cento. Passo seis: a usina vinculada é a sua usina, e a lista de pendências está vazia, com a mensagem de que nenhuma pendência foi encontrada.
+
+<break time="0.8s" />
+
+Escreva uma observação curta na revisão, por exemplo "conferido, compensação igual ao esperado", e aprove a fatura. O status muda para aprovada, e a plataforma registra quem revisou e quando. Essa trilha é importante: se, daqui a seis meses, o cliente questionar uma cobrança, você sabe quem conferiu a fatura e o que foi visto. A partir daqui, a fatura está pronta para virar cobrança — o que acontece automaticamente na rotina de hora em hora ou com um clique, como você vai ver no próximo módulo.
+
+<break time="0.8s" />
+
+Agora faça o mesmo para as faturas dos outros clientes. Use a lista de Faturas de Concessionárias com os filtros: por status, para ver só as pendentes de revisão, e por nome do cliente. Na operação real, é assim que se trabalha: uma fila, revisada em lote, todos os dias.

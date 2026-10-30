@@ -1,0 +1,5 @@
+O produtor confiou a usina dele à sua empresa. Um investidor pode estar avaliando colocar dinheiro numa nova usina com você. Os dois querem a mesma coisa: números claros, todo mês, sem precisar pedir. Um bom relatório para eles vale mais do que qualquer apresentação comercial.
+
+<break time="0.8s" />
+
+O relatório mensal do produtor cabe em uma página. Geração do mês, comparada com a esperada e com o mesmo mês do ano anterior. Ocupação da usina e número de clientes. Energia compensada nos clientes. O valor do crédito no mês, a receita da usina, a taxa de administração e o repasse que ele vai receber. E as ocorrências — limpeza, falhas, manutenção — com os próximos passos. Os números de geração e de usina vêm da plataforma: do registro de geração mensal e do relatório por usina. O produtor também vê a geração diretamente no portal dele. Hoje, o extrato do repasse é montado por você a partir desses relatórios, com a regra do contrato; deixe esse cálculo numa planilha padronizada, conferida todo mês.

@@ -17,7 +17,8 @@ docs/curso/audio/
 ├── gerar-audio.cjs            gerador (Node 18+, sem dependências)
 ├── pronuncia.json             dicionário de pronúncia (siglas, números, unidades)
 ├── .env.elevenlabs.example    modelo de configuração (copie para .env.elevenlabs)
-├── textos/mXX-…/aYY.txt       narração pronta por aula (para colar no ElevenLabs Studio)
+├── PLANO-DE-CREDITOS.md       produção em 31 lotes de ~8 mil créditos, com controle do que já foi feito
+├── lotes/lote-NN/             textos de cada lote, prontos para o ElevenLabs Studio (um arquivo por aula ou trecho)
 └── saida/                     áudios gerados (fora do git)
 ```
 
@@ -31,7 +32,7 @@ A numeração das cenas é a mesma dos roteiros e dos slides (`M1 · Aula 6 · C
 3. O curso inteiro consome cerca de **233 mil caracteres** por rodada completa. Reserve uma margem para testes e regerações (sugestão: 30%).
 
 ### 2. Escolha da voz
-- **Voz pronta:** em *Voices → Voice Library*, filtre por **Portuguese (Brazil)** e por estilo *Narrative/Educational*. Teste com o mesmo trecho (o arquivo `textos/m01-fundamentos/a01.txt`) em 3 ou 4 vozes antes de decidir.
+- **Voz pronta:** em *Voices → Voice Library*, filtre por **Portuguese (Brazil)** e por estilo *Narrative/Educational*. Teste com o mesmo trecho (o primeiro arquivo de `lotes/lote-03/`) em 3 ou 4 vozes antes de decidir.
 - **Sua própria voz (clonagem):**
   - *Instant Voice Clone*: alguns minutos de áudio limpo, gravado em ambiente silencioso, num único microfone, lendo em tom de aula.
   - *Professional Voice Clone*: qualidade superior; exige bem mais áudio gravado (consulte o requisito atual no painel) e verificação de identidade.
@@ -54,7 +55,16 @@ node --env-file=.env.elevenlabs gerar-audio.cjs gerar m00/a01  # gera as cenas d
 ```
 Ouça os arquivos em `saida/m00-boas-vindas/a01/`. Ajuste voz e configurações (seção "Ajuste fino") até ficar como você quer — só então gere o restante.
 
-### 5. Produção completa
+### 5. Produção por lotes de créditos
+A produção está dividida em **31 lotes de ~8 mil créditos**, na ordem do curso (`PLANO-DE-CREDITOS.md`). A cada recarga de créditos, gere os próximos lotes:
+```bash
+node gerar-audio.cjs status                                     # o que já foi gerado e quanto falta
+node --env-file=.env.elevenlabs gerar-audio.cjs gerar lote-01   # gera um lote (~8 mil créditos)
+node --env-file=.env.elevenlabs gerar-audio.cjs juntar m00      # junta as aulas completas do módulo
+```
+Aula dividida entre dois lotes só fica completa (e pode ser juntada) depois do segundo lote. Para mudar o tamanho dos lotes: `CREDITOS_POR_LOTE=10000 node gerar-audio.cjs lotes`.
+
+### 5b. Produção de uma vez (se houver créditos para tudo)
 ```bash
 node --env-file=.env.elevenlabs gerar-audio.cjs estimar        # caracteres que serão consumidos
 node --env-file=.env.elevenlabs gerar-audio.cjs gerar          # todas as aulas (ou: gerar m01)
@@ -66,7 +76,7 @@ node --env-file=.env.elevenlabs gerar-audio.cjs juntar         # 1 MP3 por aula,
 - O comando `juntar` precisa do **ffmpeg** instalado (ou `FFMPEG=/caminho/ffmpeg` no `.env.elevenlabs`).
 
 ### 6. Alternativa sem programação: ElevenLabs Studio
-Os arquivos de `textos/` já estão prontos para colar no **Studio** (um projeto por módulo, um capítulo por aula). As pausas entre cenas estão marcadas com `<break time="0.8s" />`, que o ElevenLabs entende. Para atualizar os textos depois de editar roteiros: `node gerar-audio.cjs textos`.
+Os arquivos de `lotes/lote-NN/` já estão prontos para colar no **Studio**, na ordem do nome (um capítulo por arquivo; arquivos com "cenas X-Y" no nome continuam no lote seguinte). As pausas entre cenas estão marcadas com `<break time="0.8s" />`, que o ElevenLabs entende. Para atualizar os textos depois de editar roteiros: `node gerar-audio.cjs lotes` (lotes já gerados não são afetados: o gerador só refaz cenas cujo texto mudou).
 
 ## Ajuste fino da voz
 

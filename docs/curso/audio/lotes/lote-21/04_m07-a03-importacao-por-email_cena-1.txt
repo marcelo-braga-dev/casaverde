@@ -1,0 +1,1 @@
+Com quinze clientes, dá para pedir a fatura por WhatsApp e subir o pê dê éfe à mão. Com quinhentos, é impossível. A plataforma resolve isso com a importação automática por e-mail: as faturas chegam sozinhas, são lidas e entram na fila de revisão. Vamos entender como montar isso.

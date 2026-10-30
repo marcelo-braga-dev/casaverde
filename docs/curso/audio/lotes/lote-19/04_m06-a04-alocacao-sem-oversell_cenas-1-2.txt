@@ -1,0 +1,5 @@
+Existe um erro que já quebrou empresas de assinatura de energia: vender mais energia do que as usinas geram. Parece impossível de acontecer, mas acontece com facilidade quando vários vendedores vendem ao mesmo tempo, quando a usina gera menos do que o projetado ou quando ninguém acompanha a conta. O resultado: todos os clientes recebem menos créditos do que esperavam, a economia some, as reclamações chegam juntas e a reputação vai embora. Nesta aula, você aprende a evitar isso.
+
+<break time="0.8s" />
+
+Três números controlam a alocação. A energia disponível, que você define a partir da geração média, de forma conservadora. A energia alocada, que é a soma das cotas de todos os clientes vinculados. E o saldo, que é a diferença, ou seja, o que ainda pode ser vendido. A meta de ocupação saudável fica entre noventa e noventa e oito por cento da energia disponível. Abaixo disso, você deixa dinheiro na mesa. Acima, qualquer mês fraco deixa os clientes com menos créditos do que o contratado.

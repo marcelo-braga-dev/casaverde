@@ -1,0 +1,9 @@
+Agora, gere o pagamento e escolha Pix. Em segundos, o pagamento aparece na seção de pagamentos gerados, com o valor, o vencimento e o código Pix copia e cola. A cobrança passa a aguardando pagamento. E o cliente recebe, automaticamente, um e-mail avisando que o pagamento está disponível, com o valor, o vencimento e o Pix — no laboratório, esse e-mail aparece na caixa de e-mails do ambiente de aula. Repare que o e-mail vai para o e-mail de contato real do cliente cadastrado na ficha dele.
+
+<break time="0.8s" />
+
+Use o botão de enviar ao cliente pelo WhatsApp: ele abre o WhatsApp com uma mensagem pronta, com o valor e o Pix — o envio é seu, com um clique. Agora, faça um boleto para a clínica. Se o cadastro da clínica não tiver o endereço completo, o Mercado Pago recusa, e a plataforma mostra o motivo; complete o endereço do cliente e gere de novo. O boleto vem com a linha digitável, o código de barras e o pê dê éfe com a marca da sua empresa.
+
+<break time="0.8s" />
+
+Agora, faça para todos os seus quinze clientes: gere as cobranças, confira, abra para pagamento e emita o Pix — ou o boleto para dois deles, para praticar. Na próxima aula, os clientes vão pagar, e você vai ver a baixa automática.

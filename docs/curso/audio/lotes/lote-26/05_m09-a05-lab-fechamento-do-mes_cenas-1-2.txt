@@ -1,0 +1,5 @@
+Este é o laboratório que junta tudo. Você vai fechar o segundo mês da sua empresa, seguindo o ésse ó pê que escreveu: geração, faturas, cobranças, pagamentos, rateio, alertas e o relatório para o produtor. Faça com o seu ésse ó pê aberto ao lado.
+
+<break time="0.8s" />
+
+Passo um: registre a geração do mês dois da sua usina, com os números da ficha do laboratório. Compare com o mês anterior e com o esperado. A geração ficou dentro da faixa? Anote nas observações.

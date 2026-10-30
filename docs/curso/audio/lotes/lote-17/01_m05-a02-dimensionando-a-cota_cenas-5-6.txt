@@ -1,0 +1,5 @@
+Alguns casos especiais. Cliente com várias unidades consumidoras, como uma rede de farmácias: cada unidade tem a sua cota e o seu percentual no rateio, e a plataforma trata cada uma separadamente. Cliente que está crescendo: dimensione pelo histórico e combine uma revisão em seis meses — aumentar a cota depois é fácil, reduzir pode gerar atrito. E cliente que já tem um sistema solar próprio que cobre só uma parte do consumo: a cota é sobre o que sobra, olhando o consumo líquido nas contas.
+
+<break time="0.8s" />
+
+Resumindo: peça a conta, pegue o histórico de doze meses, calcule a cota com margem de segurança e apresente a economia em reais, na conta total, por mês e por ano. Na próxima aula, vamos colocar isso numa proposta que convence.

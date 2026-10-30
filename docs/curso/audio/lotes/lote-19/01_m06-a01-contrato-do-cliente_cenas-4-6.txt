@@ -1,0 +1,9 @@
+Para assinar, colete os documentos. Pessoa física: documento de identidade, a conta de luz no nome dela e, se o contrato exigir, comprovante de endereço. Pessoa jurídica: o cartão cê ene pê jota ou o contrato social, o documento do representante legal e a conta de luz. Use assinatura eletrônica com trilha de auditoria — é aceita juridicamente, rápida e evita papel. Guarde tudo organizado por cliente: quando a distribuidora, um auditor ou o próprio cliente pedir, você encontra em minutos.
+
+<break time="0.8s" />
+
+Na plataforma, o contrato nasce da proposta aprovada, aproveitando os dados dela, e tem status: emitido, assinado, ativo, cancelado. No laboratório deste módulo, você vai emitir os contratos dos seus clientes.
+
+<break time="0.8s" />
+
+Resumindo: dez cláusulas, a fórmula do valor com exemplo, cancelamento com aviso prévio, reequilíbrio regulatório e assinatura eletrônica com documentos organizados. Na próxima aula, a éle gê pê dê.

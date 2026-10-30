@@ -1,0 +1,1 @@
+Resumindo: as automações fazem o trabalho repetitivo; a equipe trata as filas e as exceções, em ciclos diário, semanal e mensal, cada tarefa com um responsável. Na próxima aula, a principal fila de trabalho: os alertas operacionais.

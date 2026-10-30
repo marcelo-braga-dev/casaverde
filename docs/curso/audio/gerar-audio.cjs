@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 // Narração do curso com o ElevenLabs. Sem dependências: Node 18+ (fetch nativo).
 //
-//   node gerar-audio.cjs textos  [filtro]            exporta os textos prontos (textos/mXX/aYY.txt), sem usar a API
-//   node gerar-audio.cjs estimar [filtro]            conta caracteres que seriam enviados
+//   node gerar-audio.cjs lotes                       monta os lotes de créditos (lotes/ e PLANO-DE-CREDITOS.md)
+//   node gerar-audio.cjs status                      mostra o que já foi gerado, lote a lote
+//   node gerar-audio.cjs estimar [filtro]            conta caracteres (= créditos no modelo multilingual v2)
 //   node gerar-audio.cjs vozes                       lista as vozes da conta (precisa da chave)
 //   node gerar-audio.cjs gerar   [filtro] [--forcar] gera um MP3 por cena em saida/mXX/aYY/cNN.mp3
 //   node gerar-audio.cjs juntar  [filtro]            junta as cenas em saida/mXX/aYY.mp3 (precisa do ffmpeg)
 //
-// filtro: "m01" (módulo) ou "m01/a03" (aula). Configuração por variáveis de ambiente — ver README.md.
+// filtro: "m01" (módulo), "m01/a03" (aula) ou "lote-03" (lote). Configuração em .env.elevenlabs — ver README.md.
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
@@ -15,7 +16,8 @@ const { execFileSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..', 'roteiros');
 const SAIDA = path.join(__dirname, 'saida');
-const TEXTOS = path.join(__dirname, 'textos');
+const LOTES = path.join(__dirname, 'lotes');
+const LIMITE_LOTE = Number(process.env.CREDITOS_POR_LOTE || 8000);
 const REGRAS = JSON.parse(fs.readFileSync(path.join(__dirname, 'pronuncia.json'), 'utf8')).regras
     .map(([re, sub]) => [new RegExp(re, 'g'), sub]);
 
@@ -46,6 +48,11 @@ function normalizar(t) {
 }
 
 function aulas(filtro = '') {
+    if (/^lote-\d+$/.test(filtro)) {
+        const lote = montarLotes().find((l) => l.nome === filtro);
+        if (!lote) { console.error(`${filtro} não existe (ver PLANO-DE-CREDITOS.md).`); process.exit(1); }
+        return lote.aulas;
+    }
     const [fm, fa] = filtro.split('/');
     return fs.readdirSync(ROOT).filter((d) => /^m\d\d-/.test(d) && (!fm || d.startsWith(fm))).sort().flatMap((d) =>
         fs.readdirSync(path.join(ROOT, d)).filter((f) => /^a\d\d-.*\.md$/.test(f) && (!fa || f.startsWith(fa))).sort().map((f) => {
@@ -58,7 +65,7 @@ function aulas(filtro = '') {
                 const narracao = ((body.match(/\*\*Narração:\*\*([\s\S]*)$/) || [])[1] || '').trim();
                 return { n: Number(m[1]), nome: m[2], texto: normalizar(narracao) };
             }).filter((c) => c.texto.length > 1);
-            return { mod: d, id: f.slice(0, 3), titulo, cenas };
+            return { mod: d, id: f.slice(0, 3), arquivo: f.replace(/\.md$/, ''), titulo, cenas, chars: cenas.reduce((t, c) => t + c.texto.length, 0) };
         }));
 }
 
@@ -108,22 +115,86 @@ function exigir(...chaves) {
     }
 }
 
-function cmdTextos(filtro) {
-    let total = 0;
-    for (const a of aulas(filtro)) {
-        const dir = path.join(TEXTOS, a.mod);
-        fs.mkdirSync(dir, { recursive: true });
-        // <break> é entendido pelo ElevenLabs (Studio e API): pausa entre cenas.
-        const txt = a.cenas.map((c) => c.texto).join(`\n\n<break time="${CFG.pausa}s" />\n\n`);
-        fs.writeFileSync(path.join(dir, `${a.id}.txt`), `${txt}\n`);
-        total += txt.length;
+// Lotes de até LIMITE_LOTE caracteres (= créditos), na ordem do curso. Uma aula pode ser dividida
+// entre dois lotes (por cena); cada lote traz as aulas com só as cenas que lhe cabem.
+function montarLotes() {
+    const lotes = [];
+    for (const a of aulas()) {
+        for (const c of a.cenas) {
+            let atual = lotes[lotes.length - 1];
+            if (!atual || (atual.chars + c.texto.length > LIMITE_LOTE && atual.chars > 0)) lotes.push(atual = { aulas: [], chars: 0 });
+            let parte = atual.aulas[atual.aulas.length - 1];
+            if (!parte || parte.mod !== a.mod || parte.id !== a.id) atual.aulas.push(parte = { ...a, cenas: [], chars: 0, total: a.cenas.length });
+            parte.cenas.push(c);
+            parte.chars += c.texto.length;
+            atual.chars += c.texto.length;
+        }
     }
-    console.log(`textos exportados em ${TEXTOS} (${total.toLocaleString('pt-BR')} caracteres)`);
+    return lotes.map((l, i) => ({ ...l, nome: `lote-${String(i + 1).padStart(2, '0')}` }));
+}
+
+const trecho = (a) => {
+    if (a.cenas.length === a.total) return '';
+    const [i, f] = [a.cenas[0].n, a.cenas[a.cenas.length - 1].n];
+    return i === f ? `cena ${i}` : `cenas ${i}-${f}`;
+};
+
+const cenaArquivo = (a, c) => path.join(SAIDA, a.mod, a.id, `c${String(c.n).padStart(2, '0')}.mp3`);
+const fmt = (n) => n.toLocaleString('pt-BR');
+
+function cmdLotes() {
+    const lotes = montarLotes();
+    fs.rmSync(LOTES, { recursive: true, force: true });
+    let acumulado = 0;
+    const linhas = lotes.map((l) => {
+        const dir = path.join(LOTES, l.nome);
+        fs.mkdirSync(dir, { recursive: true });
+        l.aulas.forEach((a, k) => {
+            // Para o ElevenLabs Studio: um arquivo por aula, cenas separadas por pausa (<break> não consome a voz).
+            const txt = a.cenas.map((c) => c.texto).join(`\n\n<break time="${CFG.pausa}s" />\n\n`);
+            const sufixo = trecho(a) ? `_${trecho(a).replace(' ', '-')}` : '';
+            fs.writeFileSync(path.join(dir, `${String(k + 1).padStart(2, '0')}_${a.mod.slice(0, 3)}-${a.arquivo}${sufixo}.txt`), `${txt}\n`);
+        });
+        acumulado += l.chars;
+        const nomes = l.aulas.map((a) => `${a.mod.slice(0, 3).toUpperCase()}·${a.id.toUpperCase()}${trecho(a) ? ` (${trecho(a)})` : ''}`).join(', ');
+        return `| ${l.nome} | ${nomes} | ${fmt(l.chars)} | ${fmt(acumulado)} | ☐ |`;
+    });
+    const plano = `# Plano de créditos — narração do curso
+
+Gerado por \`node gerar-audio.cjs lotes\` (lotes de até ${fmt(LIMITE_LOTE)} créditos, na ordem do curso; aula dividida entre lotes aparece com o trecho de cenas).
+Modelo \`eleven_multilingual_v2\`: 1 caractere = 1 crédito. Total: **${fmt(acumulado)} créditos** em **${lotes.length} lotes**.
+
+Como usar: gere os lotes em ordem, conforme os créditos disponíveis, e marque a coluna "Feito".
+- Pela API: \`node --env-file=.env.elevenlabs gerar-audio.cjs gerar lote-01\`
+- Pelo Studio: cole os arquivos de \`lotes/lote-01/\` (um capítulo por arquivo)
+- Conferir o andamento: \`node gerar-audio.cjs status\`
+
+Reserve ~10% a mais de créditos por lote para regravar trechos que precisem de ajuste.
+
+| Lote | Aulas | Créditos | Acumulado | Feito |
+|------|-------|---------:|----------:|:-----:|
+${linhas.join('\n')}
+`;
+    fs.writeFileSync(path.join(__dirname, 'PLANO-DE-CREDITOS.md'), plano);
+    console.log(`${lotes.length} lotes · ${fmt(acumulado)} créditos · ver PLANO-DE-CREDITOS.md`);
+}
+
+function cmdStatus() {
+    let falta = 0;
+    for (const l of montarLotes()) {
+        const cenas = l.aulas.flatMap((a) => a.cenas.map((c) => ({ a, c })));
+        const prontas = cenas.filter(({ a, c }) => fs.existsSync(cenaArquivo(a, c)));
+        const restante = cenas.filter(({ a, c }) => !fs.existsSync(cenaArquivo(a, c))).reduce((t, { c }) => t + c.texto.length, 0);
+        falta += restante;
+        const marca = prontas.length === cenas.length ? '✓' : prontas.length ? '◐' : '·';
+        console.log(`${marca} ${l.nome}  ${String(prontas.length).padStart(3)}/${cenas.length} cenas  faltam ${fmt(restante)} créditos`);
+    }
+    console.log(`Faltam ${fmt(falta)} créditos para concluir o curso.`);
 }
 
 function cmdEstimar(filtro) {
     const lista = aulas(filtro);
-    const chars = lista.reduce((t, a) => t + a.cenas.reduce((s, c) => s + c.texto.length, 0), 0);
+    const chars = lista.reduce((t, a) => t + a.chars, 0);
     const cenas = lista.reduce((t, a) => t + a.cenas.length, 0);
     console.log(`${lista.length} aulas · ${cenas} cenas · ${chars.toLocaleString('pt-BR')} caracteres · ~${Math.round(chars / 900)} min de áudio`);
 }
@@ -141,7 +212,7 @@ async function cmdGerar(filtro, forcar) {
     const tarefas = [];
     for (const a of aulas(filtro)) {
         a.cenas.forEach((c, i) => {
-            const arquivo = path.join(SAIDA, a.mod, a.id, `c${String(c.n).padStart(2, '0')}.mp3`);
+            const arquivo = cenaArquivo(a, c);
             const hash = crypto.createHash('sha1').update(JSON.stringify([c.texto, CFG.voz, CFG.modelo, CFG.settings])).digest('hex');
             const chave = path.relative(SAIDA, arquivo);
             if (!forcar && manifesto[chave] === hash && fs.existsSync(arquivo)) return;
@@ -194,11 +265,11 @@ function cmdJuntar(filtro) {
 const [cmd, ...args] = process.argv.slice(2);
 const filtro = args.find((x) => !x.startsWith('--')) || '';
 const comandos = {
-    textos: () => cmdTextos(filtro), estimar: () => cmdEstimar(filtro), vozes: cmdVozes,
+    lotes: cmdLotes, status: cmdStatus, estimar: () => cmdEstimar(filtro), vozes: cmdVozes,
     gerar: () => cmdGerar(filtro, args.includes('--forcar')), juntar: () => cmdJuntar(filtro),
 };
 if (!comandos[cmd]) {
-    console.log(fs.readFileSync(__filename, 'utf8').split('\n').slice(1, 9).map((l) => l.replace(/^\/\/ ?/, '')).join('\n'));
+    console.log(fs.readFileSync(__filename, 'utf8').split('\n').slice(1, 11).map((l) => l.replace(/^\/\/ ?/, '')).join('\n'));
     process.exit(cmd ? 1 : 0);
 }
 Promise.resolve(comandos[cmd]()).catch((e) => { console.error(e.message); process.exit(1); });
