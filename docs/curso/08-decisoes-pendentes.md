@@ -6,7 +6,7 @@ Decisões a tomar antes de produzir e gravar. Cada uma indica a recomendação e
 
 | # | Decisão | Recomendação | Impacto |
 |---|---------|-------------|---------|
-| 1 | Nome do curso | "Empresa de Assinatura de Energia Solar — do zero à operação" | Página de vendas, certificado, vinhetas |
+| 1 | ✅ Nome do curso | **Decidido (2026-10-30): "Formação em Energia por Assinatura"** — subtítulo "Geração distribuída compartilhada, da regulação à operação"; slides com a logo Rexar | Página de vendas, certificado, vinhetas |
 | 2 | Nome da plataforma nas aulas | "GD Solar ERP" (marca da demonstração) | Narração e gravações de tela; Identidade Visual da instância de laboratório |
 | 3 | Planos e preços | Essencial e Profissional + in-company (ver `01-proposta-e-oferta.md`), validados em 10–15 entrevistas | Escopo de suporte e correção |
 | 4 | Instrutor / apresentador | Pessoa real com experiência de operação no M0, M3, M12 e ao vivo; IA de vídeo/avatar nas demais | Credibilidade; custo de produção |
