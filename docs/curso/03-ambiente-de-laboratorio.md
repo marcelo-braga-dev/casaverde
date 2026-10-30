@@ -15,12 +15,16 @@ O aluno usa a própria plataforma (GD Solar ERP) durante as aulas. Este document
 | Cadastrar produtor, proposta de produtor e usina | Consultor ou admin |
 | Upload, revisão e aprovação de fatura | **Só admin** |
 | Gerar cobrança, ajustar, emitir Pix/boleto | Consultor (carteira própria) ou admin |
-| Registrar geração da usina, Kanban de onboarding da usina | **Só admin** |
+| Registrar geração da usina, quadro de onboarding da usina | **Só admin** |
 | Concessionárias e tarifa GD, configurações (desconto padrão, taxa de administração) | **Só admin** |
 | Cockpit executivo, alertas de sistema, Identidade Visual, integrações | **Só admin** |
 | Ver o portal do cliente e do produtor | Cliente / Produtor |
 
 Conclusão (o consultor cobre cerca de metade dos laboratórios; faturas, geração e configurações são só do admin): o aluno precisa ser **admin da própria empresa** e conseguir **trocar de perfil** (como na demonstração) para ver o portal do cliente e do produtor.
+
+## Acesso do aluno à plataforma (decisão de 2026-10-29)
+
+Cada aluno recebe **1 mês de acesso gratuito (teste)** à plataforma para usar durante o curso; depois disso, o uso continua mediante **assinatura** da plataforma. Implicações para o `LAB_MODE`: expiração automática do ambiente do aluno após 30 dias (backlog item 10), aviso antes de expirar e caminho de conversão para a assinatura (manter os dados do aluno ao assinar). **Não citar nos roteiros das aulas por enquanto.**
 
 ## Arquitetura recomendada: `LAB_MODE` com uma empresa por aluno
 
@@ -57,7 +61,7 @@ Uma instância comum por turma, sem `DEMO_MODE`:
 | 7 | **Avançar o tempo**: comando/botão "avançar N dias" para o laboratório de vencimento e boleto vencido (M8 aula 7) e fechamento do mês (M9) — roda as rotinas de vencida, expiração e lembretes com a data simulada | Média |
 | 8 | Botão "reiniciar meu laboratório" (recria o banco do aluno) e "carregar checkpoint do módulo X" (dados prontos até o módulo anterior, para quem chega atrasado) | Média |
 | 9 | Banner fixo "Ambiente de aula — dados fictícios" e bloqueio de envio externo (WhatsApp segue como link) | Baixa |
-| 10 | Expiração automática do laboratório no fim do acesso e exportação do projeto final (PDF dos relatórios) | Baixa |
+| 10 | Expiração automática do ambiente após o mês gratuito, aviso prévio, conversão para assinatura mantendo os dados, e exportação do projeto final (PDF dos relatórios) | Alta |
 | 11 | PDFs de proposta no modelo novo (`commercial-proposal-modern`/`producer-proposal-modern`) também no `LAB_MODE` — hoje o modelo novo de proposta de cliente só é usado com `DEMO_MODE` | Alta |
 
 Itens 6 e 7 são os que mais melhoram a aula: sem eles, pagamento e vencimento ficam só demonstrados.
@@ -70,7 +74,7 @@ Referência para os roteiros — os laboratórios citam estes caminhos:
 |-------|-------|
 | Cliente Consumidor | Clientes · Propostas · Contratos · Unidades Consumidoras |
 | Produtores Solar | Produtores · Propostas |
-| Usinas Solar | Usinas · Blocos de Usinas · Gestão de Energia · Geração Mensal |
+| Usinas Solar | Usinas · Blocos de Usinas · Onboarding de Usinas · Gestão de Energia · Geração Mensal |
 | Financeiro | Faturas de Concessionárias · Cobranças de Faturas · Gestão de Cobranças · Pagamentos · Bancos |
 | Relatórios | Relatório Geral · Alertas Operacionais · Clientes · Financeiro · Cobranças · Pagamentos · Usinas · Executivo |
 | Usuários | Consultores Cadastrados · Administradores |
@@ -79,7 +83,7 @@ Referência para os roteiros — os laboratórios citam estes caminhos:
 | Configurações | Configurações Padrão · Concessionárias · Identidade Visual |
 | Integrações | Configurações de Integração · Histórico de Importação |
 
-O Cockpit executivo é o item **Relatórios → Relatório Geral**. O Kanban de produtores do módulo legado (`auth/produtor/kanban`) está quebrado — depende do antigo `UsinaSolar.user_id` e de status que as usinas não usam mais — e não está no menu; o M4 aula 4 foi escrito sem depender dele (ver `08-decisoes-pendentes.md`, item 12).
+O Cockpit executivo é o item **Relatórios → Relatório Geral**. O quadro de onboarding de usinas (7 etapas, arrastar e soltar) é **Usinas Solar → Onboarding de Usinas**, só admin.
 Portal do cliente: Visão Geral · Minhas Faturas · Minhas Cobranças · Meus Contratos · Relatório de Economia · Meu Perfil · Suporte.
 
 ## Dados-padrão do curso (o "caso contínuo")

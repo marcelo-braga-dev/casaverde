@@ -60,13 +60,6 @@ class ProdutorRepository
         return (new Produtor)->produtores();
     }
 
-    public function getGroupByStatus()
-    {
-        return (new Produtor)
-            ->produtores()
-            ->groupBy('status');
-    }
-
     public function findAllData($id)
     {
         return (new User)

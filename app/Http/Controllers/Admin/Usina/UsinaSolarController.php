@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin\Usina;
 
+use App\Enums\Usina\UsinaOnboardingStage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Usina\StoreUsinaSolarRequest;
 use App\Models\Endereco\Address;
@@ -59,10 +60,13 @@ class UsinaSolarController extends Controller
 
         $usina = DB::transaction(function () use ($data) {
             $data['status'] = UsinaStatus::NOVA;
+            // Usina nova entra no quadro de onboarding pela primeira etapa.
+            $data['onboarding_stage'] = UsinaOnboardingStage::DocumentAnalysis;
+            $data['onboarding_stage_changed_at'] = now();
 
             $usina = UsinaSolar::query()->create($data);
 
-            $address = $this->createOrUpdateAddress($usina, $data['address']);
+            $address = $this->createOrUpdateAddress($usina, $data['address'] ?? []);
             $usina->update(['address_id' => $address?->id]);
 
             $this->syncProducerProfileWithUsina($usina->fresh(), $data);
@@ -160,7 +164,7 @@ class UsinaSolarController extends Controller
         try {
             DB::transaction(function () use ($usina, $data) {
                 $usina->update($data);
-                $this->createOrUpdateAddress($usina, $data['address']);
+                $this->createOrUpdateAddress($usina, $data['address'] ?? []);
                 $this->syncProducerProfileWithUsina($usina->fresh(), $data);
             });
         } catch (\Throwable $e) {

@@ -2,6 +2,7 @@
 
 namespace App\Models\Usina;
 
+use App\Enums\Usina\UsinaOnboardingStage;
 use App\Enums\Usina\UsinaOperationalStatus;
 use App\Models\Alert\OperationalAlert;
 use App\Models\Cliente\ClientUsinaLink;
@@ -33,6 +34,8 @@ class UsinaSolar extends Model
         'inversores',
         'modulos',
         'operational_status',
+        'onboarding_stage',
+        'onboarding_stage_changed_at',
         'operation_started_at',
         'energia_disponivel_kwh',
         'energia_alocada_kwh',
@@ -49,6 +52,8 @@ class UsinaSolar extends Model
         'energia_saldo_kwh' => 'decimal:3',
         'operation_started_at' => 'date',
         'operational_status' => UsinaOperationalStatus::class,
+        'onboarding_stage' => UsinaOnboardingStage::class,
+        'onboarding_stage_changed_at' => 'datetime',
     ];
 
     protected $appends = [

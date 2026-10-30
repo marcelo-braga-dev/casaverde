@@ -66,7 +66,7 @@ Esse mercado cresce rápido no Brasil (Lei 14.300 destravou a GD compartilhada),
 | Não tenho visão executiva do negócio | **Cockpit executivo**: kWh disponível/alocado/restante da frota inteira, usinas em saldo crítico, ranking de consultores, funil de revisão de faturas, feed de "ações pendentes" | Dá ao dono/gestor visão de helicóptero em uma tela só |
 | Cliente me liga perguntando status da fatura/pagamento | **Portal do cliente** com faturas, cobranças **pagáveis ali mesmo** (Pix copia-e-cola, linha digitável, PDF do boleto), contrato e relatório de economia em PDF/Excel — self-service; e-mail automático quando o boleto/Pix é emitido | Reduz volume de suporte, aumenta percepção de profissionalismo |
 | Produtor (dono de usina) quer saber quanto está gerando | **Portal do produtor** com as usinas próprias e o histórico de geração | Fortalece a relação com fornecedores de energia (usinas parceiras) |
-| Onboarding de novo produtor é bagunçado (documento aqui, contrato ali) | **Onboarding de usina em 7 etapas** (checklist; quadro Kanban em reconstrução — não anunciar até ficar pronto): análise de documentos → assinatura de contrato → ficha de inscrição → contrato de adesão → contrato de aluguel → troca de titularidade → concluído | Padroniza processo, nada se perde entre etapas |
+| Onboarding de novo produtor é bagunçado (documento aqui, contrato ali) | **Quadro Kanban de onboarding da usina em 7 etapas** (arrastar e soltar, alerta de etapa parada): análise de documentos → assinatura de contrato → ficha de inscrição → contrato de adesão → contrato de aluguel → troca de titularidade → concluído | Padroniza processo, nada se perde entre etapas |
 | Não tenho como provar histórico/auditoria de decisões | **Histórico completo de cada cobrança** (quem mudou vencimento, valor, status ou boleto, e quando); ajustes e alertas guardam `created_by`/`resolved_by`; log de acessos | Segurança jurídica e operacional |
 | Meu financeiro não sabe se um webhook de pagamento falhou | **Alertas operacionais** (sino no cabeçalho) para toda falha que ameaça o faturamento: caixa de e-mail inacessível, fatura ilegível, pagamento que não sincroniza, webhook com erro, credencial recusada — e se resolvem sozinhos quando a operação volta | Detecta problema antes que vire prejuízo |
 | Quero a plataforma com a cara da minha empresa | **Identidade Visual configurável**: nome, cores e logotipos aplicados em telas, PDFs de proposta, boletos e e-mails | Produto white-label, pronto para a marca do cliente |
@@ -216,7 +216,7 @@ Não há indicação de pricing real no código (é um produto interno hoje). Su
 ## 9. ATIVOS VISUAIS PARA MOCKUPS (o que vale a pena representar visualmente no site)
 
 - Gauge de energia disponível/alocada/saldo por usina (o diferencial mais forte visualmente).
-- Kanban de onboarding de produtor (7 colunas) — **só depois de reconstruído** (ver `docs/curso/08-decisoes-pendentes.md`, item 12).
+- Quadro de onboarding de usinas (7 colunas, cartões parados em destaque) — transmite organização.
 - Gráfico de evolução de economia do cliente (12 meses, kWh × R$).
 - Tela de cobrança com Pix (QR Code) e boleto lado a lado.
 - Cockpit executivo com KPIs e feed de "ações pendentes".

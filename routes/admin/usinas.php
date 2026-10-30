@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\Usina\AdminClientUsinaLinkController;
 use App\Http\Controllers\Admin\Usina\AdminUsinaGenerationRecordController;
 use App\Http\Controllers\Admin\Usina\AdminUsinaManagementController;
+use App\Http\Controllers\Admin\Usina\AdminUsinaOnboardingController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('usinas')
@@ -31,4 +32,10 @@ Route::prefix('usinas')
 
         Route::post('/geracao', [AdminUsinaGenerationRecordController::class, 'store'])
             ->name('generation.store');
+
+        Route::get('/onboarding', [AdminUsinaOnboardingController::class, 'index'])
+            ->name('onboarding.index');
+
+        Route::patch('/onboarding/{usina}', [AdminUsinaOnboardingController::class, 'update'])
+            ->name('onboarding.update');
     });

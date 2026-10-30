@@ -137,6 +137,7 @@ class MarketingDemoSeeder extends Seeder
 
         $this->call(MarketingImportHistorySeeder::class);
         $this->call(DemoTariffSeeder::class);
+        $this->call(DemoUsinaOnboardingSeeder::class);
         // Por último: marca tudo como fictício e gera os PDFs das faturas com os nomes finais.
         $this->call(MarkFictitiousDataSeeder::class);
 

@@ -1,10 +1,8 @@
 <?php
 
 use App\Http\Controllers\Auth\Usinas\FindUsinaController;
-use App\Http\Controllers\Auth\Usinas\GetAllUsinasController;
 use App\Http\Controllers\Auth\Usinas\GetProdutorUsinasController;
 use App\Http\Controllers\Auth\Usinas\GetUsinasController;
-use App\Http\Controllers\Auth\Usinas\UpdateStatusUsinaController;
 use App\Http\Controllers\Auth\Usinas\UsinasController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,7 +16,5 @@ Route::name('auth.')
                 Route::get('get/{id}', FindUsinaController::class)->name('get');
                 Route::get('get-produtor/{id}', GetProdutorUsinasController::class)->name('get-produtor');
                 Route::get('get-all', GetUsinasController::class)->name('get-all');
-                Route::put('update-status/{id}', UpdateStatusUsinaController::class)->name('update-status');
-                Route::get('kanban-get', GetAllUsinasController::class)->name('kanban.get');
             });
     });

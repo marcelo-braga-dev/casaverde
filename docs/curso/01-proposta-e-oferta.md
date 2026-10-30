@@ -68,7 +68,7 @@ Fora do escopo (dizer claramente na página de vendas): projeto elétrico, insta
 | **Profissional (turma)** | Essencial + 8 ao vivo, comunidade, correção do projeto final, laboratório por 12 meses | R$ 2.497 – R$ 3.497 |
 | **Empresas (in-company)** | Turma fechada para a equipe, laboratório com a marca da empresa (Identidade Visual), encontro de diagnóstico da operação | Sob consulta (base R$ 15–30 mil por turma de até 15 pessoas) |
 
-Upsell natural: licença do **GD Solar ERP** para quem terminar o curso e abrir/organizar a operação (desconto de implantação para alunos). O curso vira o principal canal de aquisição da plataforma — e a plataforma é a melhor prova do curso.
+Acesso à plataforma: **1 mês gratuito** de teste para cada aluno (decidido em 2026-10-29); depois, assinatura. Upsell natural: licença do **GD Solar ERP** para quem terminar o curso e abrir/organizar a operação (desconto de implantação para alunos). O curso vira o principal canal de aquisição da plataforma — e a plataforma é a melhor prova do curso.
 
 > Os valores são referência de mercado para cursos profissionais B2B no Brasil, não pesquisa; validar com 10–15 entrevistas de potenciais alunos antes do lançamento.
 

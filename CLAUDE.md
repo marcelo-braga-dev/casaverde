@@ -34,7 +34,7 @@ CRM/ERP para operação de energia solar por compensação/assinatura. Ciclo com
 ### Frontend
 - React 18 + Inertia.js + MUI 6 + Tailwind 3.2 + Vite 5
 - `@react-pdf/renderer` — PDF gerado no frontend
-- `@dnd-kit/core`, `@dnd-kit/sortable` — Kanban drag-and-drop
+- `@dnd-kit/core`, `@dnd-kit/sortable` — drag-and-drop (quadro de onboarding de usinas)
 - `chart.js`, `recharts`, `react-chartjs-2` — gráficos
 - `framer-motion` — animações
 - `@tabler/icons-react` — ícones
@@ -94,6 +94,7 @@ Redirecionamento pós-login (`app/Http/Middleware/RedirectUserByRole.php`):
 - **NÃO existe mais `UsinaSolar.user_id`** — foi removido na migration `2026_05_19`. Não recriar o relacionamento `user()` no model.
 - Toda usina DEVE ter `producer_profile_id` e `consultor_user_id`.
 - Campos de energia: `energia_disponivel_kwh`, `energia_alocada_kwh`, `energia_saldo_kwh`.
+- Onboarding: `onboarding_stage` (`UsinaOnboardingStage`, 7 etapas até `completed`) e `onboarding_stage_changed_at`. Usina cadastrada pela tela entra em `document_analysis`; nulo = fora do quadro (usina já operando). Quadro em Usinas Solar → Onboarding de Usinas (`admin.usinas.onboarding.*`, só admin; `MoveUsinaOnboardingStageService`).
 
 ### Unidade Consumidora (ConsumerUnit)
 - `ConsumerUnit` pertence a um `ClientProfile` e a uma `Concessionaria`.
@@ -180,7 +181,7 @@ app/Enums/
 ├── Fatura/    BillParserStatus, BillReviewStatus
 ├── Pagamento/ PaymentSlipStatus
 ├── Support/   SupportTicketCategory, SupportTicketPriority, SupportTicketStatus
-└── Usina/     UsinaOperationalStatus
+└── Usina/     UsinaOperationalStatus, UsinaOnboardingStage
 ```
 
 ---
@@ -341,7 +342,7 @@ Menu construído com base em `auth.user.role_name` — segurança real sempre no
 - Ambiente: SQLite in-memory (`phpunit.xml` define `DB_CONNECTION=sqlite`, `DB_DATABASE=:memory:`)
 - Rodar com `php83 artisan test` (mesma versão de produção). Exige as dependências de desenvolvimento do Composer — na instância de demonstração elas não estão instaladas.
 - `tests/Pest.php` liga `Http::preventStrayRequests()`: chamada HTTP sem `Http::fake()` falha o teste (nunca sai para o Mercado Pago); helpers `mercadoPagoAccount()` e `mpOrder()` simulam conta e pedido. `phpunit.xml` manda logs para o canal `null`.
-- Cobertura atual: 94 arquivos de teste (Feature + Unit), ~558 casos `it()`/`test()` (contagem de 2026-10-29)
+- Cobertura atual: 95 arquivos de teste (Feature + Unit), 606 testes executados com os datasets (2026-10-29)
 - CI: `.github/workflows/ci.yml` roda Pint, testes (PHP 8.3) e `npm ci && npm run build` (Node 22) a cada push/PR
 - Áreas cobertas: Auth, Middleware, Dashboard (Admin/Consultor), Services (Cliente, Cobrança, Usina, Fatura, Proposta, Automation), Controllers (ConsumerUnit, ClientUsinaLink, ConcessionariaController, ProducerFeeRule), Policies (UsinaSolar, CustomerCharge, ProducerProfile), Pagamento/Mercado Pago (provider, assinatura e controller de webhook, processamento de webhook, geração/cancelamento/sync de boleto e Pix), IMAP (`ImportAutomaticConcessionaireBillService`, com fetcher/extrator/desbloqueio de PDF mockados), WhatsApp (`WhatsAppLinkService`)
 - Também cobertos: Mercado Pago (provider, vencimento, estorno, webhook com assinatura), ciclo de vida de boletos vencidos, isolamento de acesso por role/carteira (`tests/Feature/Security/`), alertas operacionais, e-mails ao cliente, PDFs temporários por link assinado, portal do cliente (pagamento), modo demonstração e nome da marca (`tests/Feature/Demo/`).
@@ -357,7 +358,6 @@ Preferir testes de integração com SQLite — sem mocks de DB.
 |----------|-------|------|
 | `FormRequest::authorize()` valida role, mas não carteira | Requests de edição usados por consultor | Na edição, checar carteira no `authorize()` (padrão: `StoreClientProfileRequest`) |
 | Módulo legado `auth/*` sem filtro de carteira | `app/Http/Controllers/Auth/**` | Restrito a admin; migrar telas ainda úteis para os módulos novos e remover o resto |
-| Kanban de produtores quebrado | `auth/produtor/kanban` (`KanbanProdutorController`, `Pages/Auth/Produtor/Kanban`, `GetAllUsinasController`) lê `proprietario` (antigo `UsinaSolar.user_id`) e status que as usinas não usam; fora do menu | Reconstruir no módulo novo (etapa de onboarding na usina) e remover o legado — decisão em `docs/curso/08-decisoes-pendentes.md` (item 12) |
 | Funcionalidades inacabadas | convite de produtor (`ProducerAccessInvite` nunca é criado, sem página de ativação); telas `fatura-import-settings` (só o `update` está ativo) | Concluir ou remover |
 | Status de slip como strings soltas | `app/Services/Pagamento/**` | Migrar para `PaymentSlipStatus` (já tem `REFUNDED`) |
 | Instanciação direta (`new XService`/`new XRepository`) | ~32 ocorrências em `app/` (ex.: `Admin/Config/ConfigController.php`, `Contratos/Usina/ContratoUsinaController.php`) | Injetar via construtor |
@@ -409,7 +409,7 @@ php83 artisan concessionaire-bills:reprocess [--id=]
 #                  WhatsAppMessageTemplateSeeder, DemoDataSeeder
 # Avulsos: PaymentProviderAccountSeeder (lê MERCADOPAGO_* do .env)
 # Demonstração: MarketingDemoSeeder (chama MarketingImportHistorySeeder, DemoTariffSeeder
-#               e MarkFictitiousDataSeeder) — ver DEMO.md
+#               DemoUsinaOnboardingSeeder e MarkFictitiousDataSeeder) — ver DEMO.md
 
 # Lint / format
 ./vendor/bin/pint

@@ -11,6 +11,7 @@ Decisões a tomar antes de produzir e gravar. Cada uma indica a recomendação e
 | 3 | Planos e preços | Essencial e Profissional + in-company (ver `01-proposta-e-oferta.md`), validados em 10–15 entrevistas | Escopo de suporte e correção |
 | 4 | Instrutor / apresentador | Pessoa real com experiência de operação no M0, M3, M12 e ao vivo; IA de vídeo/avatar nas demais | Credibilidade; custo de produção |
 | 5 | Uso do caso real (operação que usa a plataforma) | Só de forma anônima, salvo autorização escrita | Prova social |
+| 6a | ✅ Acesso do aluno à plataforma | **Decidido (2026-10-29):** 1 mês gratuito de teste; depois, assinatura da plataforma. Fora dos roteiros por enquanto | `LAB_MODE` (expiração e conversão), oferta, página de vendas |
 | 6 | Plataforma de curso | Escolher uma com quizzes, certificado e comunidade (ou comunidade separada) | Entrega e avaliação |
 
 ## Laboratório e plataforma (desenvolvimento)
@@ -22,7 +23,7 @@ Decisões a tomar antes de produzir e gravar. Cada uma indica a recomendação e
 | 9 | **Cobertura de distribuidoras do leitor de faturas** | Hoje o leitor automático reconhece o layout da distribuidora de referência; alunos de outros estados terão faturas lidas parcialmente (correção manual). Priorizar leitores para as maiores distribuidoras do público do curso | Valor percebido pelo aluno fora da área de referência; argumento de venda da plataforma |
 | 10 | **Extrato de repasse ao produtor** | Hoje o repasse é calculado fora da plataforma (M10 aula 3). Desenvolver extrato automático por usina/mês (também item 13 do `LANCAMENTO.md`) | M9 aula 5, M10 aula 3, portal do produtor |
 | 11 | **"Pagamento Anual Líquido" da proposta de produtor** | Hoje desconta só a taxa de administração; o mensal previsto × 12 desconta também o desconto do cliente. Decidir se o líquido deve passar a considerar o desconto do cliente (recomendado) ou renomear o campo | M4 aula 3 (o roteiro já explica a diferença) |
-| 12 | **Kanban de onboarding de usinas** | O Kanban legado (`auth/produtor/kanban`) está quebrado: lê `proprietario` (antigo `UsinaSolar.user_id`, removido) e colunas de status que as usinas não usam. Recomendado: reconstruir no módulo novo (coluna de etapa de onboarding na usina, quadro em Usinas Solar, só admin) e remover o legado. O Cockpit já está no menu (Relatórios → Relatório Geral) | M4 aula 4 (hoje usa checklist; regravar a cena 3 se o quadro for refeito); argumento de venda da plataforma |
+| 12 | ~~Kanban de onboarding de usinas~~ | ✅ **Resolvido em 2026-10-29**: quadro reconstruído em Usinas Solar → Onboarding de Usinas (7 etapas, arrastar e soltar, etapa parada em destaque); Kanban legado removido | M4 aula 4 voltou a mostrar o quadro |
 | 13 | PDF de proposta moderno fora do `DEMO_MODE` | Usar o modelo novo também no laboratório (e avaliar em produção) | M5 aula 6, M4 aula 5 |
 | 14 | Caixa de e-mails do laboratório | Desenvolver (item 5 do backlog) | M6 aula 5, M8 aulas 5 e 7 |
 

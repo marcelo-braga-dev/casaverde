@@ -49,7 +49,7 @@ Macro-regra de negócio:
 8. lembretes, vencimentos, falhas e inconsistências viram alertas operacionais;
 9. relatórios financeiros, de economia e executivos acompanham a operação.
 
-Combina **CRM** (propostas, leads, onboarding de usinas), **ERP operacional/financeiro** (faturas, cobranças, pagamentos, alocação de energia) e **portais** para cliente e produtor.
+Combina **CRM** (propostas, leads, quadro de onboarding de usinas), **ERP operacional/financeiro** (faturas, cobranças, pagamentos, alocação de energia) e **portais** para cliente e produtor.
 
 ---
 
@@ -80,7 +80,7 @@ Combina **CRM** (propostas, leads, onboarding de usinas), **ERP operacional/fina
 
 ## Frontend
 - React 18 + Inertia.js + MUI 6 + Tailwind 3.2 + Vite 5
-- `@react-pdf/renderer`, `@dnd-kit` (Kanban), `chart.js`/`recharts`, `framer-motion`, `@tabler/icons-react`, `date-fns`, `lodash`, `numeral`
+- `@react-pdf/renderer`, `@dnd-kit` (quadro de onboarding), `chart.js`/`recharts`, `framer-motion`, `@tabler/icons-react`, `date-fns`, `lodash`, `numeral`
 
 ## Banco, fila e integrações
 - MySQL 8.0 (100 migrations); testes em SQLite in-memory
@@ -195,8 +195,8 @@ Camadas:
 
 > O fluxo legado em `auth/*` (`Auth\Produtor\ProdutorPropostasController` + `ProdutorPropostaRepository` → `User`/`UserData`/`UserContact`/`ProducerProfile`) é restrito ao admin e não deve ser usado como modelo para código novo.
 
-## 7.3 Cadastro de usina
-`Admin\Usina\UsinaSolarController` + `StoreUsinaSolarRequest` (admin ou consultor): exige `producer_profile_id` existente e `consultor_user_id` com role consultor; telas em `Consultor/Producer/Usina/{Create,Edit}`.
+## 7.3 Cadastro e onboarding de usina
+`Admin\Usina\UsinaSolarController` + `StoreUsinaSolarRequest` (admin ou consultor): exige `producer_profile_id` existente e `consultor_user_id` com role consultor; telas em `Consultor/Producer/Usina/{Create,Edit}`. A usina nova entra no **quadro de onboarding** (Usinas Solar → Onboarding de Usinas, só admin), que acompanha as 7 etapas até ficar pronta para o rateio: análise de documentos, assinatura de contrato, ficha de inscrição, contrato de adesão, contrato de aluguel, troca de titularidade e concluído (arrastar entre colunas ou "Mover para"; cartão parado há mais de 14 dias fica em destaque).
 
 ## 7.4 Faturas de concessionária
 1. `concessionaire-bills:import` (de hora em hora) lê as caixas IMAP (`ImportEmailAccount`, uma por cliente via `ClientEmailImportSetting`), desbloqueia o PDF com a senha cadastrada e extrai os dados (parser por concessionária, ex.: `CopelBillParserService`); também há upload manual.
@@ -311,7 +311,7 @@ Cron (`* * * * * cd /caminho && php83 artisan schedule:run`), worker permanente 
 # 12. Testes e qualidade
 
 - Pest PHP + SQLite in-memory (`phpunit.xml`); nunca MySQL nos testes.
-- `php83 artisan test` — 94 arquivos, ~558 casos (out/2026). Requer as dependências de desenvolvimento do Composer.
+- `php83 artisan test` — 95 arquivos, 606 testes (out/2026). Requer as dependências de desenvolvimento do Composer.
 - `Http::preventStrayRequests()` em `tests/Pest.php`: nenhuma chamada sai para o Mercado Pago; helpers `mercadoPagoAccount()` e `mpOrder()`.
 - `./vendor/bin/pint` para formatação.
 - CI em `.github/workflows/ci.yml`: Pint, testes (PHP 8.3) e build do frontend (Node 22).
@@ -378,6 +378,7 @@ Ordem de leitura sugerida para quem chega: este README → `CLAUDE.md` → `Role
 | 2026-08 | Histórico de alterações da cobrança, PDF do boleto com código de barras, várias cobranças por fatura. |
 | 2026-10-02/03 | Endurecimento do Mercado Pago (webhook com assinatura obrigatória, boleto vencido); isolamento de dados entre roles; **Cora removida**; alertas operacionais para toda falha de faturamento; pagamento pelo portal do cliente e e-mails ao cliente; PDFs de proposta por link assinado; política de senha; CI. |
 | 2026-10-04/05 | Identidade Visual controla nome/cores/logos (nada de marca fixa); **modo demonstração** (`DEMO_MODE`) com dados fictícios e PDFs de proposta novos. |
+| 2026-10-29 | Quadro de onboarding de usinas reconstruído no módulo novo (o Kanban legado de `auth/*` foi removido); campos opcionais da usina passam a aceitar vazio no banco. |
 
 Documentos antigos (`ANALISE.md`, `RELATORIO_ERROS.md`) tratam produtor como legado e citam a Cora — não representam o estado atual.
 

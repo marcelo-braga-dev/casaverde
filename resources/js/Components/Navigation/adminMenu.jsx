@@ -103,6 +103,7 @@ export const adminMenu = [
                 title: 'Blocos de Usinas',
                 link: safeRoute('consultor.producer.usina-blocks.index'),
             },
+            {id: 'usinas-onboarding', title: 'Onboarding de Usinas', link: safeRoute('admin.usinas.onboarding.index')},
             {id: 'usinas-gestao', title: 'Gestão de Energia', link: safeRoute('admin.usinas.management')},
             // {id: 'usinas-vinculos', title: 'Alocação Cliente/Usina', link: safeRoute('admin.usinas.links.index')},
             {id: 'usinas-geracao', title: 'Geração Mensal', link: safeRoute('admin.usinas.generation.index')},

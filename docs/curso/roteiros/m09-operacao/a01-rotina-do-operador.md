@@ -41,7 +41,7 @@ A rotina diária leva de trinta minutos a duas horas, dependendo do tamanho da o
 "☐ Inadimplência por faixa e por consultor"
 "☐ Propostas enviadas sem resposta / a expirar"
 "☐ Ocupação das usinas (Gestão de Energia) e fila de espera"
-"☐ Quadro de onboarding das usinas novas (7 etapas)"
+"☐ Quadro de onboarding das usinas (Usinas Solar → Onboarding de Usinas)"
 "☐ Reunião de 30 min com o time"
 **Narração:**
 Uma vez por semana, olhe o médio prazo. A inadimplência, por faixa de atraso e por consultor. As propostas enviadas sem resposta e as que vão expirar. A ocupação de cada usina e a fila de clientes esperando cota. O quadro de onboarding das usinas novas, com as sete etapas. E faça uma reunião curta com o time, de trinta minutos, olhando esses números juntos.
