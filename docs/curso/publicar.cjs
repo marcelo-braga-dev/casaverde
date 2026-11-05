@@ -80,6 +80,10 @@ function partesRecebidas() {
 // ---------- vídeo (precisa de ffmpeg, LibreOffice e pdftoppm) ----------
 const temVideo = ['ffmpeg', 'soffice', 'pdftoppm'].every((b) => spawnSync('which', [b]).status === 0) && process.env.SEM_VIDEO !== '1';
 const FPS = 25;
+// Trilha instrumental de fundo: em loop, baixa e "abaixada" automaticamente sob a voz (sidechain). SEM_TRILHA=1 desliga.
+const TRILHA = path.join(BASE, 'audio', 'trilha.mp3');
+const usaTrilha = fs.existsSync(TRILHA) && process.env.SEM_TRILHA !== '1';
+const VOLUME_TRILHA = process.env.VOLUME_TRILHA || '0.08';
 const run = (bin, args) => execFileSync(bin, args, { stdio: ['ignore', 'ignore', 'pipe'], maxBuffer: 64 * 1024 * 1024 });
 
 // Tempo de leitura (s) de slides sem narração.
@@ -116,7 +120,7 @@ function gerarVideo(a, pasta, nome, audio) {
     const tlFile = path.join(BASE, 'slides', 'aulas', a.mod, `${a.id}.json`);
     const video = path.join(pasta, `${nome} - vídeo.mp4`);
     if (!fs.existsSync(pptx) || !fs.existsSync(tlFile)) return false;
-    const mais = Math.max(...[pptx, tlFile, audio].map((f) => fs.statSync(f).mtimeMs));
+    const mais = Math.max(...[pptx, tlFile, audio, ...(usaTrilha ? [TRILHA] : [])].map((f) => fs.statSync(f).mtimeMs));
     if (fs.existsSync(video) && fs.statSync(video).mtimeMs > mais) return true;
 
     const tmp = path.join(OUT, '.render', `${a.mod}-${a.id}`);
@@ -180,7 +184,17 @@ function gerarVideo(a, pasta, nome, audio) {
         lista.push(`file '${clipe}'`);
     });
     fs.writeFileSync(path.join(tmp, 'lista.txt'), lista.join('\n'));
-    run('ffmpeg', ['-y', '-f', 'concat', '-safe', '0', '-i', path.join(tmp, 'lista.txt'), '-c', 'copy', '-movflags', '+faststart', video]);
+    const juntado = usaTrilha ? path.join(tmp, 'sem-trilha.mp4') : video;
+    run('ffmpeg', ['-y', '-f', 'concat', '-safe', '0', '-i', path.join(tmp, 'lista.txt'), '-c', 'copy', '-movflags', '+faststart', juntado]);
+    if (usaTrilha) {
+        const fimFade = Math.max(0, relogio - 3).toFixed(3);
+        run('ffmpeg', ['-y', '-i', juntado, '-stream_loop', '-1', '-i', TRILHA, '-filter_complex',
+            '[0:a]asplit=2[voz][chave];' +
+            `[1:a]volume=${VOLUME_TRILHA},afade=t=in:d=2,afade=t=out:st=${fimFade}:d=3[musica];` +
+            '[musica][chave]sidechaincompress=threshold=0.012:ratio=8:attack=15:release=800[fundo];' +
+            '[voz][fundo]amix=inputs=2:duration=first:normalize=0,alimiter=limit=0.95[a]',
+            '-map', '0:v', '-map', '[a]', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '160k', '-t', relogio.toFixed(3), '-movflags', '+faststart', video]);
+    }
     fs.writeFileSync(path.join(pasta, `${nome} - legendas.srt`), legendas.map(([i, f, txt], n) => `${n + 1}\n${srtTempo(i)} --> ${srtTempo(f)}\n${txt}\n`).join('\n'));
     fs.rmSync(tmp, { recursive: true, force: true });
     console.log(`  🎬 ${a.mod}/${a.id}: ${duracao(relogio)}`);
