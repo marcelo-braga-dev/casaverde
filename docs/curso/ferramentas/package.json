@@ -1,0 +1,9 @@
+{
+  "name": "curso-ferramentas",
+  "private": true,
+  "description": "Ferramentas de produção do curso: slides (pptxgenjs) e captura de telas (playwright-core)",
+  "dependencies": {
+    "playwright-core": "^1.56.1",
+    "pptxgenjs": "^3.12.0"
+  }
+}

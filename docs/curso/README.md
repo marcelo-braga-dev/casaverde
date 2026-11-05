@@ -18,16 +18,17 @@ A maioria dos cursos de GD/energia solar ensina **instalação** (dimensionar si
 | `01-proposta-e-oferta.md` | Nome, promessa, público, diferenciais, formato, oferta, preço e lançamento |
 | `02-grade-curricular.md` | As 4 etapas, os 13 módulos e as 76 aulas, carga horária e cronograma da turma |
 | `roteiros/mXX-*/00-plano.md` | Plano de cada módulo: objetivos, aulas, entregável, exercícios e quiz com gabarito |
-| `roteiros/mXX-*/aYY-*.md` | **Roteiro completo de cada aula** (cenas com visual, texto na tela e narração palavra por palavra), pronto para IA de vídeo — formato em `05-producao-e-cronograma.md` |
+| `roteiros/mXX-*/aYY-*.md` | **Roteiro completo de cada aula** (cenas com visual, texto na tela e narração palavra por palavra), base da narração e dos slides — formato em `05-producao-e-cronograma.md` |
 | `03-ambiente-de-laboratorio.md` | Como o aluno usa a plataforma: instâncias, perfis, dados, reset, Mercado Pago sandbox, e-mails e o que precisa ser desenvolvido (`LAB_MODE`) |
 | `04-avaliacao-e-certificacao.md` | Quizzes, entregáveis, projeto final, rubricas e certificado |
-| `05-producao-e-cronograma.md` | Roteiro-padrão de aula, gravação, equipe, cronograma de produção e manutenção do conteúdo |
+| `05-producao-e-cronograma.md` | **Produção ponta a ponta**: roteiro → narração → ElevenLabs → telas → slides → vídeo MP4, requisitos, revisão, situação, cronograma e manutenção |
 | `06-materiais-de-apoio.md` | Planilhas, modelos de contrato, checklists, SOPs e dados de exemplo a produzir |
 | `07-glossario.md` | Termos do setor elétrico e da plataforma, para alunos e para padronizar a gravação |
 | `08-decisoes-pendentes.md` | O que precisa ser decidido antes de produzir e gravar (inclui melhorias da plataforma) |
-| `slides/mXX-*.pptx` | **Slides 16:9 por módulo** (13 arquivos, identidade visual do GD Solar, gráficos e telas reais da plataforma; narração nas anotações). Telas em `slides/telas/`. Regerar: `NODE_PATH=<node_modules com pptxgenjs> node slides/gerar-slides.cjs [m01]` |
-| `publicacao/` | **Pasta final de publicação** (fora do git): uma pasta por aula com áudio, slides e transcrição + índice com o status. Gerar/atualizar a cada lote de áudio: `node docs/curso/publicar.cjs` |
-| `audio/` | **Narração com ElevenLabs**: gerador, dicionário de pronúncia, textos prontos por aula (`audio/textos/`) e guia passo a passo (`audio/README.md`) |
+| `slides/mXX-*.pptx` | **Slides 16:9 por módulo** (13 arquivos, identidade visual do GD Solar, gráficos e telas reais da plataforma; narração nas anotações). Telas em `slides/telas/`. Regerar: `NODE_PATH=docs/curso/ferramentas/node_modules node docs/curso/slides/gerar-slides.cjs [m01]` |
+| `ferramentas/` | Dependências dos geradores (`npm ci`) e captura das telas da plataforma (`capturar-telas.cjs`, `telas.json`) |
+| `publicacao/` | **Pasta final de publicação** (fora do git): uma pasta por aula com áudio, slides, transcrição, vídeo MP4 com trilha de fundo e legendas .srt + índice com o status. Gerar/atualizar a cada lote de áudio: `node docs/curso/publicar.cjs` |
+| `audio/` | **Narração com ElevenLabs**: gerador, dicionário de pronúncia, narração enxuta (`audio/narracao/`), lotes de créditos com textos e MP3 (`audio/lotes/`), trilha de fundo e guia passo a passo (`audio/README.md`) |
 | `09-alcance-vendas-e-sucesso-do-aluno.md` | Posicionamento, escada de produtos, canais, oferta, sucesso do aluno, métricas e lançamento |
 
 ## Números do curso (proposta)

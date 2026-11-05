@@ -19,8 +19,9 @@ docs/curso/audio/
 ├── narracao/mXX.json          narração enxuta por aula e cena (e instruções escritas dos laboratórios, usadas nos slides)
 ├── pronuncia.json             dicionário de pronúncia (siglas, números, unidades)
 ├── .env.elevenlabs.example    modelo de configuração (copie para .env.elevenlabs)
-├── PLANO-DE-CREDITOS.md       produção em 31 lotes de ~8 mil créditos, com controle do que já foi feito
-├── lotes/lote-NN/             textos de cada lote, prontos para o ElevenLabs Studio (um arquivo por aula ou trecho)
+├── PLANO-DE-CREDITOS.md       produção em 5 lotes de ~8 mil créditos; coluna "Feito" marcada pelos MP3 recebidos
+├── lotes/lote-NN/             textos de cada lote (NN_*.txt) para o ElevenLabs Studio e os MP3 recebidos (N.mp3)
+├── trilha.mp3                 trilha instrumental de fundo dos vídeos
 └── saida/                     áudios gerados (fora do git)
 ```
 
@@ -78,7 +79,7 @@ node --env-file=.env.elevenlabs gerar-audio.cjs juntar         # 1 MP3 por aula,
 - O comando `juntar` precisa do **ffmpeg** instalado (ou `FFMPEG=/caminho/ffmpeg` no `.env.elevenlabs`).
 
 ### 6. Alternativa sem programação: ElevenLabs Studio
-Os arquivos de `lotes/lote-NN/` já estão prontos para colar no **Studio**, na ordem do nome (um capítulo por arquivo; arquivos com "cenas X-Y" no nome continuam no lote seguinte). As pausas entre cenas estão marcadas com `<break time="0.8s" />`, que o ElevenLabs entende. Para atualizar os textos depois de editar roteiros: `node gerar-audio.cjs lotes` (lotes já gerados não são afetados: o gerador só refaz cenas cujo texto mudou).
+Os arquivos de `lotes/lote-NN/` já estão prontos para colar no **Studio**, na ordem do nome (um capítulo por arquivo; arquivos com "cenas X-Y" no nome continuam no lote seguinte). As pausas entre cenas estão marcadas com `<break time="0.8s" />`, que o ElevenLabs entende. Para atualizar os textos depois de editar a narração: `node gerar-audio.cjs lotes` (refaz só os `.txt` e o plano; os MP3 já recebidos são preservados). Atenção: se a mudança alterar a divisão dos lotes já gravados, os números dos MP3 deixam de bater com os textos; mude a narração de aulas já gravadas só regravando a aula inteira.
 
 ## Publicação
 
@@ -131,5 +132,5 @@ Ouviu uma palavra errada? Acrescente uma regra em `pronuncia.json` (expressão r
 ## Integração com vídeo e slides
 
 - Cada `cNN.mp3` corresponde ao slide/cena de mesmo número. No editor, posicione o slide (`docs/curso/slides/mXX-….pptx`) e o áudio da cena lado a lado.
-- Se a IA de vídeo usar áudio próprio, envie o MP3 da aula (`saida/mXX/aYY.mp3`) como trilha de voz.
+- O vídeo final é montado por `publicar.cjs` (ver `05-producao-e-cronograma.md`).
 - A narração também está nas anotações de cada slide.

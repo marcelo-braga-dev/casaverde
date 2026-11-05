@@ -154,11 +154,18 @@ const fmt = (n) => n.toLocaleString('pt-BR');
 
 function cmdLotes() {
     const lotes = montarLotes();
-    fs.rmSync(LOTES, { recursive: true, force: true });
+    // Só os textos são refeitos: os MP3 já recebidos em lotes/lote-NN/ nunca são apagados.
+    if (fs.existsSync(LOTES)) {
+        fs.readdirSync(LOTES).forEach((d) => {
+            const dir = path.join(LOTES, d);
+            if (fs.statSync(dir).isDirectory()) fs.readdirSync(dir).filter((f) => f.endsWith('.txt')).forEach((f) => fs.rmSync(path.join(dir, f)));
+        });
+    }
     let acumulado = 0;
     const linhas = lotes.map((l) => {
         const dir = path.join(LOTES, l.nome);
         fs.mkdirSync(dir, { recursive: true });
+        const recebidos = fs.readdirSync(dir).filter((f) => f.toLowerCase().endsWith('.mp3')).length;
         l.aulas.forEach((a, k) => {
             // Para o ElevenLabs Studio: um arquivo por aula, cenas separadas por pausa (<break> não consome a voz).
             const txt = a.cenas.map((c) => c.texto).join(`\n\n<break time="${CFG.pausa}s" />\n\n`);
@@ -167,14 +174,14 @@ function cmdLotes() {
         });
         acumulado += l.chars;
         const nomes = l.aulas.map((a) => `${a.mod.slice(0, 3).toUpperCase()}·${a.id.toUpperCase()}${trecho(a) ? ` (${trecho(a)})` : ''}`).join(', ');
-        return `| ${l.nome} | ${nomes} | ${fmt(l.chars)} | ${fmt(acumulado)} | ☐ |`;
+        return `| ${l.nome} | ${nomes} | ${fmt(l.chars)} | ${fmt(acumulado)} | ${recebidos >= l.aulas.length ? '✅' : recebidos ? `◐ ${recebidos}/${l.aulas.length}` : '☐'} |`;
     });
     const plano = `# Plano de créditos — narração do curso
 
 Gerado por \`node gerar-audio.cjs lotes\` (lotes de até ${fmt(LIMITE_LOTE)} créditos, na ordem do curso; aula dividida entre lotes aparece com o trecho de cenas).
 Modelo \`eleven_multilingual_v2\`: 1 caractere = 1 crédito. Total: **${fmt(acumulado)} créditos** em **${lotes.length} lotes**.
 
-Como usar: gere os lotes em ordem, conforme os créditos disponíveis, e marque a coluna "Feito".
+Como usar: gere os lotes em ordem, conforme os créditos disponíveis, salve os MP3 em lotes/lote-NN/ e rode "lotes" de novo: a coluna "Feito" é marcada pelos MP3 recebidos.
 - Pela API: \`node --env-file=.env.elevenlabs gerar-audio.cjs gerar lote-01\`
 - Pelo Studio: cole os arquivos de \`lotes/lote-01/\` (um capítulo por arquivo)
 - Conferir o andamento: \`node gerar-audio.cjs status\`

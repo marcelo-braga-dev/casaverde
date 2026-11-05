@@ -266,7 +266,7 @@ Cada aula tem uma pasta com:
 - **áudio** (MP3 da narração, 128 kbps) — só aparece quando a aula está completa;
 - **slides** (.pptx 16:9; a primeira aula do módulo traz a capa, a última traz o teste rápido e o fechamento);
 - **transcrição** (texto da narração, para acessibilidade e para a plataforma de cursos);
-- **vídeo** (MP4 1920×1080: slides sincronizados com a narração, slides sem voz com tempo de leitura) e **legendas** (.srt) — gerados quando o servidor tem ffmpeg, LibreOffice e pdftoppm.
+- **vídeo** (MP4 1920×1080: slides sincronizados com a narração, slides sem voz com tempo de leitura, trilha instrumental de fundo) e **legendas** (.srt) — gerados quando o servidor tem ffmpeg, LibreOffice e pdftoppm.
 
 Materiais de apoio em \`Materiais/\`.
 ${linhas.join('\n')}

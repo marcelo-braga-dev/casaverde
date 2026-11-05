@@ -1,0 +1,114 @@
+{
+    "dashboard": [
+        "/admin/dashboard",
+        "admin"
+    ],
+    "cockpit": [
+        "/admin/cockpit/executivo",
+        "admin"
+    ],
+    "fatura": [
+        "/consultor/cliente-faturas/400",
+        "admin"
+    ],
+    "faturas": [
+        "/admin/relatorios/faturas",
+        "admin"
+    ],
+    "concessionarias": [
+        "/admin/concessionaria",
+        "admin"
+    ],
+    "configuracoes": [
+        "/admin/settings",
+        "admin"
+    ],
+    "produtores": [
+        "/consultor/producer/profiles",
+        "admin"
+    ],
+    "proposta_produtor": [
+        "/consultor/propostas/produtor/13",
+        "admin"
+    ],
+    "onboarding": [
+        "/admin/usinas/onboarding",
+        "admin"
+    ],
+    "geracao": [
+        "/admin/usinas/geracao",
+        "admin"
+    ],
+    "gestao_energia": [
+        "/admin/usinas/gestao",
+        "admin"
+    ],
+    "clientes": [
+        "/consultor/user/cliente",
+        "admin"
+    ],
+    "proposta_cliente": [
+        "/consultor/propostas/cliente/47",
+        "admin"
+    ],
+    "uc": [
+        "/consultor/cliente/unidades-consumidoras/1",
+        "admin"
+    ],
+    "contratos": [
+        "/consultor/cliente/contratos",
+        "admin"
+    ],
+    "alertas": [
+        "/admin/alertas-operacionais",
+        "admin"
+    ],
+    "cobrancas": [
+        "/admin/financeiro/cobrancas",
+        "admin"
+    ],
+    "cobranca": [
+        "/admin/financeiro/cobrancas/395",
+        "admin"
+    ],
+    "pagamentos": [
+        "/admin/financeiro/pagamentos",
+        "admin"
+    ],
+    "relatorio_executivo": [
+        "/admin/relatorios/executivo",
+        "admin"
+    ],
+    "relatorio_usinas": [
+        "/admin/relatorios/usinas",
+        "admin"
+    ],
+    "identidade": [
+        "/admin/brand-identity",
+        "admin"
+    ],
+    "templates": [
+        "/admin/whatsapp/templates",
+        "admin"
+    ],
+    "consultor_dashboard": [
+        "/consultor/dashboard",
+        "consultor"
+    ],
+    "cliente_dashboard": [
+        "/cliente/dashboard",
+        "cliente"
+    ],
+    "cliente_cobrancas": [
+        "/cliente/cobrancas",
+        "cliente"
+    ],
+    "cliente_economia": [
+        "/cliente/relatorios/economia",
+        "cliente"
+    ],
+    "produtor_dashboard": [
+        "/produtor/dashboard",
+        "produtor"
+    ]
+}
