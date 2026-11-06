@@ -14,7 +14,7 @@ const LOTES = path.join(BASE, 'audio', 'lotes');
 const OUT = path.join(BASE, 'publicacao');
 const CURSO = 'Formação em Energia por Assinatura';
 
-const seguro = (s) => s.replace(/[:/\\?*"<>|]/g, ' -').replace(/\s+/g, ' ').replace(/ - -/g, ' -').trim();
+const seguro = (s) => s.replace(/[:/\\?*"<>|]/g, ' -').replace(/[,;]/g, '').replace(/\s+/g, ' ').replace(/ - -/g, ' -').trim();
 const dois = (n) => String(n).padStart(2, '0');
 
 // ---------- MP3 ----------
