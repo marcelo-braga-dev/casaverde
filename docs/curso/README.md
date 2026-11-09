@@ -30,6 +30,7 @@ A maioria dos cursos de GD/energia solar ensina **instalação** (dimensionar si
 | `publicacao/` | **Pasta final de publicação** (fora do git): uma pasta por aula com áudio, slides, transcrição, vídeo MP4 com trilha de fundo e legendas .srt + índice com o status. Gerar/atualizar a cada lote de áudio: `node docs/curso/publicar.cjs` |
 | `audio/` | **Narração com ElevenLabs**: gerador, dicionário de pronúncia, narração enxuta (`audio/narracao/`), lotes de créditos com textos e MP3 (`audio/lotes/`), trilha de fundo e guia passo a passo (`audio/README.md`) |
 | `09-alcance-vendas-e-sucesso-do-aluno.md` | Posicionamento, escada de produtos, canais, oferta, sucesso do aluno, métricas e lançamento |
+| `10-descricao-de-vendas.md` | Texto do anúncio/página de vendas (até 2000 palavras), pronto para colar |
 
 ## Números do curso (proposta)
 
