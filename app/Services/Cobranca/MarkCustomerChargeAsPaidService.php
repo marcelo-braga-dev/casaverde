@@ -4,6 +4,7 @@ namespace App\Services\Cobranca;
 
 use App\Models\Cobranca\CustomerCharge;
 use App\Models\Cobranca\CustomerChargeHistory;
+use App\Services\Automation\GenerateChargeReminderAlertService;
 use App\Services\Pagamento\CancelPaymentSlipService;
 use App\Services\Pagamento\PaymentSlipExpiredAlertService;
 use Illuminate\Support\Facades\DB;
@@ -14,6 +15,7 @@ class MarkCustomerChargeAsPaidService
     public function __construct(
         private readonly CancelPaymentSlipService $cancelPaymentSlipService,
         private readonly PaymentSlipExpiredAlertService $expiredAlertService,
+        private readonly GenerateChargeReminderAlertService $reminderAlertService,
     ) {}
 
     public function handle(CustomerCharge $charge, ?string $note = null): CustomerCharge
@@ -46,6 +48,7 @@ class MarkCustomerChargeAsPaidService
             $charge = $charge->fresh();
 
             $this->expiredAlertService->resolveFor($charge, 'Cobrança marcada como paga manualmente.');
+            $this->reminderAlertService->resolveFor($charge, 'Cobrança marcada como paga manualmente.');
 
             CustomerChargeHistory::log(
                 $charge,

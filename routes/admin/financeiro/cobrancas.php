@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\Cobranca\CustomerChargeController;
 use App\Http\Controllers\Admin\Cobranca\GenerateCustomerChargeFromBillController;
 use App\Http\Controllers\Admin\Cobranca\MarkCustomerChargeAsOverdueController;
 use App\Http\Controllers\Admin\Cobranca\MarkCustomerChargeAsPaidController;
+use App\Http\Controllers\Admin\Cobranca\OpenCustomerChargesController;
 use App\Http\Controllers\Admin\Cobranca\UpdateCustomerChargeDueDateController;
 use Illuminate\Support\Facades\Route;
 
@@ -14,6 +15,7 @@ Route::name('financeiro.cobrancas.')
     ->prefix('financeiro/cobrancas')
     ->group(function () {
         Route::get('/', [CustomerChargeController::class, 'index'])->name('index');
+        Route::post('/abrir-em-lote', [OpenCustomerChargesController::class, 'store'])->name('open-batch');
         Route::get('/{cobranca}', [CustomerChargeController::class, 'show'])->name('show');
 
         Route::post('/gerar-da-fatura/{fatura}', [GenerateCustomerChargeFromBillController::class, 'store'])

@@ -96,7 +96,7 @@ class ClienteCobrancaController extends Controller
         return [
             'pendente' => (float) CustomerCharge::query()
                 ->where('client_profile_id', $clientProfileId)
-                ->whereIn('status', ['open', 'waiting_payment'])
+                ->where('status', 'open')
                 ->sum('final_amount'),
             'vencido' => (float) CustomerCharge::query()
                 ->where('client_profile_id', $clientProfileId)

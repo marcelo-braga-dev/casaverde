@@ -10,9 +10,8 @@ describe('CustomerCharge model', function () {
             ->and((new CustomerCharge(['status' => 'paid']))->isDraft())->toBeFalse();
     });
 
-    it('isOpen returns true for open, waiting_payment and overdue', function () {
+    it('isOpen returns true for open and overdue', function () {
         expect((new CustomerCharge(['status' => 'open']))->isOpen())->toBeTrue()
-            ->and((new CustomerCharge(['status' => 'waiting_payment']))->isOpen())->toBeTrue()
             ->and((new CustomerCharge(['status' => 'overdue']))->isOpen())->toBeTrue();
     });
 
@@ -46,9 +45,8 @@ describe('CustomerCharge model', function () {
             ->and((new CustomerCharge(['status' => 'open']))->canBeMarkedAsPaid())->toBeTrue();
     });
 
-    it('canBeMarkedAsOverdue returns true only for open and waiting_payment', function () {
+    it('canBeMarkedAsOverdue returns true only for open', function () {
         expect((new CustomerCharge(['status' => 'open']))->canBeMarkedAsOverdue())->toBeTrue()
-            ->and((new CustomerCharge(['status' => 'waiting_payment']))->canBeMarkedAsOverdue())->toBeTrue()
             ->and((new CustomerCharge(['status' => 'draft']))->canBeMarkedAsOverdue())->toBeFalse()
             ->and((new CustomerCharge(['status' => 'paid']))->canBeMarkedAsOverdue())->toBeFalse()
             ->and((new CustomerCharge(['status' => 'overdue']))->canBeMarkedAsOverdue())->toBeFalse();

@@ -31,7 +31,7 @@ class FinancialReportService
             ->whereBetween('paid_at', [$range->startDate, $range->endDate]);
 
         $openCharges = CustomerCharge::query()
-            ->whereIn('status', ['open', 'waiting_payment'])
+            ->where('status', 'open')
             ->whereBetween('created_at', [$range->startDate, $range->endDate]);
 
         $overdueCharges = CustomerCharge::query()
@@ -112,7 +112,7 @@ class FinancialReportService
             COUNT(*) as total,
             COALESCE(SUM(final_amount), 0) as amount,
             COALESCE(SUM(CASE WHEN status = 'paid' THEN final_amount ELSE 0 END), 0) as paid_amount,
-            COALESCE(SUM(CASE WHEN status IN ('open', 'waiting_payment') THEN final_amount ELSE 0 END), 0) as open_amount,
+            COALESCE(SUM(CASE WHEN status = 'open' THEN final_amount ELSE 0 END), 0) as open_amount,
             COALESCE(SUM(CASE WHEN status = 'overdue' THEN final_amount ELSE 0 END), 0) as overdue_amount,
             COALESCE(SUM(CASE WHEN status = 'cancelled' THEN final_amount ELSE 0 END), 0) as cancelled_amount
         ")

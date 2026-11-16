@@ -47,6 +47,22 @@ describe('SyncPaymentSlipService', function () {
             ->and(PaymentTransaction::where('payment_slip_id', $slip->id)->count())->toBe(1);
     });
 
+    it('stores the paid_at reported in UTC in the app timezone', function () {
+        Http::fake([
+            'mp.test/v1/orders/inv-tz' => Http::response(mpOrder('inv-tz', 'processed', [
+                'total_paid_amount' => '250.00',
+                'last_updated_date' => '2026-09-29T13:54:00.886Z',
+            ]), 200),
+        ]);
+
+        [$charge, $slip] = makeSyncSlip('inv-tz', 'generated');
+
+        $this->service->handle($slip);
+
+        expect($slip->refresh()->paid_at->format('Y-m-d H:i'))->toBe('2026-09-29 10:54')
+            ->and($charge->refresh()->paid_at->format('Y-m-d H:i'))->toBe('2026-09-29 10:54');
+    });
+
     it('is idempotent when synced twice after being paid (no duplicate transaction)', function () {
         Http::fake([
             'mp.test/v1/orders/inv-2' => Http::response(mpOrder('inv-2', 'processed', ['total_paid_amount' => (string) ((25000) / 100)]), 200),
@@ -84,7 +100,7 @@ describe('SyncPaymentSlipService', function () {
 
         // Sem isso a charge ficaria travada em "overdue" para sempre: nem
         // GeneratePaymentSlipService nem a automação geram pagamento fora de
-        // open/waiting_payment.
+        // open.
         expect($charge->refresh()->status)->toBe('open');
 
         Http::fake([

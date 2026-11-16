@@ -3,18 +3,27 @@
 namespace App\Services\Admin\Reports;
 
 use App\Models\Fatura\ConcessionaireBill;
+use App\Services\Fatura\ApproveConcessionaireBillService;
 use App\src\Roles\RoleUser;
 use App\Support\Reports\ReportDateRange;
 
 class BillReportService
 {
+    public function __construct(
+        private readonly ApproveConcessionaireBillService $approveService,
+    ) {}
+
     public function handle(array $filters = []): array
     {
         $range = ReportDateRange::fromFilters($filters);
 
+        // A fila de revisão não tem período: fatura pendente de outro mês continua sendo trabalho a fazer.
+        $wholeQueue = ($filters['review_status'] ?? null) === 'pending_review'
+            && empty($filters['start_date']) && empty($filters['end_date']);
+
         $query = ConcessionaireBill::query()
-            ->with(['clientProfile', 'usina', 'concessionaria'])
-            ->whereBetween('created_at', [$range->startDate, $range->endDate])
+            ->with(['clientProfile', 'usina', 'concessionaria', 'issues'])
+            ->when(! $wholeQueue, fn ($q) => $q->whereBetween('created_at', [$range->startDate, $range->endDate]))
             ->orderByDesc('id');
 
         $user = auth()->user();
@@ -54,12 +63,22 @@ class BillReportService
         $bills = $query->get();
 
         return [
-            'range' => $range->toArray(),
+            'range' => $wholeQueue ? ['start_date' => '', 'end_date' => '', 'label' => 'todas as datas'] : $range->toArray(),
             'summary' => [
                 'total' => $bills->count(),
                 'approved' => $bills->where('review_status', 'approved')->count(),
                 'pending_review' => $bills->where('review_status', 'pending_review')->count(),
                 'parser_error' => $bills->where('parser_status', 'error')->count(),
+                'pending_queue_total' => $wholeQueue
+                    ? $bills->count()
+                    : ConcessionaireBill::query()
+                        ->where('review_status', 'pending_review')
+                        ->when($user && $user->role_id === RoleUser::$CONSULTOR, fn ($q) => $q->whereHas(
+                            'clientProfile',
+                            fn ($c) => $c->where('consultor_user_id', $user->id),
+                        ))
+                        ->count(),
+                'whole_queue' => $wholeQueue,
                 'total_amount' => (float) $bills->sum('valor_total'),
                 'total_consumption_kwh' => (float) $bills->sum('consumo_kwh'),
             ],
@@ -79,7 +98,19 @@ class BillReportService
                 'valor_total' => (float) $bill->valor_total,
                 'consumo_kwh' => (float) $bill->consumo_kwh,
                 'created_at' => optional($bill->created_at)->format('d/m/Y H:i'),
+                'charge_estimate' => $this->chargeEstimate($bill),
+                'approval_blockers' => $bill->review_status === 'pending_review'
+                    ? $this->approveService->blockers($bill)
+                    : [],
             ])->values()->toArray(),
         ];
+    }
+
+    // Mesma conta de GenerateCustomerChargeFromBillService: consumo injetado menos o desconto.
+    private function chargeEstimate(ConcessionaireBill $bill): float
+    {
+        $base = abs((float) $bill->injected_consumption_amount);
+
+        return round(max(0, $base - $base * ((float) $bill->injected_consumption_discount_percent / 100)), 2);
     }
 }

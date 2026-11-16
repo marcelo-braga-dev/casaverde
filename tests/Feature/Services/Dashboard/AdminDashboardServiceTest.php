@@ -58,9 +58,9 @@ describe('AdminDashboardService', function () {
         expect($data['summary']['bills_pending_review'])->toBe(2);
     });
 
-    it('sums charges_open_amount from open and waiting_payment status', function () {
+    it('sums charges_open_amount from open charges only', function () {
         CustomerCharge::factory()->create(['status' => 'open', 'final_amount' => 100.0]);
-        CustomerCharge::factory()->create(['status' => 'waiting_payment', 'final_amount' => 50.0]);
+        CustomerCharge::factory()->create(['status' => 'open', 'final_amount' => 50.0]);
         CustomerCharge::factory()->paid()->create(['final_amount' => 999.0]);
 
         $data = $this->service->handle();

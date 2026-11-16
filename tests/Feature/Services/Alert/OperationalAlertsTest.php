@@ -20,6 +20,7 @@ use App\Services\Pagamento\PaymentAlertService;
 use App\Services\Pagamento\ProcessPaymentWebhookService;
 use App\Services\Pagamento\SyncPaymentSlipService;
 use Illuminate\Console\Events\ScheduledTaskFailed;
+use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Scheduling\CacheEventMutex;
 use Illuminate\Console\Scheduling\Event as ScheduledEvent;
 use Illuminate\Contracts\Queue\Job;
@@ -173,6 +174,27 @@ describe('Operational alerts for failures that compromise billing', function () 
             $alert = openAlert('scheduled_task_failed');
             expect($alert->severity->value)->toBe('critical')
                 ->and($alert->message)->toContain('casaverde:sync-payments');
+        });
+
+        it('resolves the scheduled task alert only when that same task runs cleanly again', function () {
+            $failing = new ScheduledEvent(app(CacheEventMutex::class), "'/usr/bin/php83' 'artisan' concessionaire-bills:import");
+            event(new ScheduledTaskFailed($failing, new RuntimeException('exit code 1')));
+
+            $other = new ScheduledEvent(app(CacheEventMutex::class), "'/usr/bin/php83' 'artisan' casaverde:sync-payments");
+            $other->exitCode = 0;
+            event(new ScheduledTaskFinished($other, 0.1));
+
+            expect(openAlert('scheduled_task_failed'))->not->toBeNull();
+
+            $failing->exitCode = 1;
+            event(new ScheduledTaskFinished($failing, 0.1));
+
+            expect(openAlert('scheduled_task_failed'))->not->toBeNull();
+
+            $failing->exitCode = 0;
+            event(new ScheduledTaskFinished($failing, 0.1));
+
+            expect(openAlert('scheduled_task_failed'))->toBeNull();
         });
     });
 

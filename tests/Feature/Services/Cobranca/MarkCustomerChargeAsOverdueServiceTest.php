@@ -20,14 +20,6 @@ describe('MarkCustomerChargeAsOverdueService', function () {
         expect($updated->status)->toBe('overdue');
     });
 
-    it('marks a waiting_payment charge as overdue', function () {
-        $charge = CustomerCharge::factory()->create(['status' => 'waiting_payment']);
-
-        $updated = $this->service->handle($charge);
-
-        expect($updated->status)->toBe('overdue');
-    });
-
     it('throws for a draft charge', function () {
         $charge = CustomerCharge::factory()->draft()->create();
 

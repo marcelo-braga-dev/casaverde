@@ -5,14 +5,16 @@ namespace App\Http\Controllers\Admin\Dashboard;
 use App\Http\Controllers\Controller;
 use App\Models\Alert\OperationalAlert;
 use App\Services\Admin\Dashboard\AdminDashboardService;
+use App\Services\Admin\Dashboard\BillingQueueService;
 use Inertia\Inertia;
 
 class AdminDashboardController extends Controller
 {
-    public function __invoke(AdminDashboardService $service)
+    public function __invoke(AdminDashboardService $service, BillingQueueService $billingQueue)
     {
         return Inertia::render('Admin/Dashboard/Page', [
             'dashboard' => $service->handle(),
+            'billingQueue' => $billingQueue->handle(),
             'operationalAlertsSummary' => [
                 'open' => OperationalAlert::query()->where('status', 'open')->count(),
                 'critical' => OperationalAlert::query()

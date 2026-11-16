@@ -36,7 +36,7 @@ function safeRoute(routeName) {
     }
 }
 
-export default function Page({ dashboard }) {
+export default function Page({ dashboard, billingQueue = [] }) {
     const summary = dashboard?.summary || {};
     const quickReports = dashboard?.quickReports || [];
 
@@ -114,6 +114,59 @@ export default function Page({ dashboard }) {
                                 Ver relatório executivo
                             </Button>
                         </Stack>
+                    </CardContent>
+                </Card>
+
+                <Card sx={{ borderRadius: 'var(--cv-radius-xl)' }}>
+                    <CardContent>
+                        <Typography variant="h6" sx={{ fontWeight: 800 }}>
+                            Fila de faturamento
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                            O que depende de ação para o cliente ser cobrado, na ordem do processo.
+                        </Typography>
+
+                        <Grid container spacing={2}>
+                            {billingQueue.map((step, index) => {
+                                const pending = step.count > 0;
+
+                                return (
+                                    <Grid key={step.key} size={{ xs: 12, sm: 6, md: 3 }}>
+                                        <Box
+                                            component={Link}
+                                            href={step.url}
+                                            sx={{
+                                                display: 'block',
+                                                height: '100%',
+                                                p: 2,
+                                                borderRadius: 2,
+                                                border: '1px solid',
+                                                borderColor: pending ? 'warning.main' : 'divider',
+                                                bgcolor: pending ? 'rgba(245,158,11,0.06)' : 'transparent',
+                                                textDecoration: 'none',
+                                                color: 'inherit',
+                                                '&:hover': { borderColor: 'primary.main' },
+                                            }}
+                                        >
+                                            <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 700 }}>
+                                                {index + 1}. {step.label}
+                                            </Typography>
+                                            <Typography variant="h4" sx={{ fontWeight: 900, color: pending ? 'warning.dark' : 'success.main' }}>
+                                                {step.count}
+                                            </Typography>
+                                            {step.amount !== null && step.count > 0 && (
+                                                <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                                                    {formatMoney(step.amount)}
+                                                </Typography>
+                                            )}
+                                            <Typography variant="caption" color="text.secondary">
+                                                {pending ? step.help : 'Nada pendente.'}
+                                            </Typography>
+                                        </Box>
+                                    </Grid>
+                                );
+                            })}
+                        </Grid>
                     </CardContent>
                 </Card>
 

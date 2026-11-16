@@ -22,7 +22,7 @@ class ChargeReportController extends Controller
         return Inertia::render('Admin/Relatorio/Cobranca/Page', [
             'report' => $service->handle($filters),
             'filters' => $filters,
-            'statuses' => ['draft', 'open', 'waiting_payment', 'paid', 'overdue', 'cancelled'],
+            'statuses' => ['draft', 'open', 'paid', 'overdue', 'cancelled'],
         ]);
     }
 }

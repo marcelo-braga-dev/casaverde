@@ -42,7 +42,26 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        $blocked = false;
+
+        // attemptWhen recusa antes de logar, então o evento Login não registra acesso de bloqueado.
+        $authenticated = Auth::attemptWhen(
+            $this->only('email', 'password'),
+            function ($user) use (&$blocked) {
+                $blocked = $user->isBlocked();
+
+                return ! $blocked;
+            },
+            $this->boolean('remember'),
+        );
+
+        if ($blocked) {
+            throw ValidationException::withMessages([
+                'email' => 'Seu acesso está bloqueado. Fale com a administração.',
+            ]);
+        }
+
+        if (! $authenticated) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([

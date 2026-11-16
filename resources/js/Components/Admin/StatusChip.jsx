@@ -19,7 +19,6 @@ const statusMap = {
     ignored: { label: "Ignorado", color: "warning" },
 
     pending_review: { label: "Aguardando revisão", color: "warning" },
-    reviewed: { label: "Revisada", color: "primary" },
     corrected: { label: "Corrigida", color: "info" },
     approved: { label: "Aprovada", color: "success" },
 

@@ -66,7 +66,7 @@ class OperationalHealthScanService
             self::CHARGES_WITHOUT_PAYMENT => $this->chargesByConsultor(
                 self::CHARGES_WITHOUT_PAYMENT,
                 CustomerCharge::query()
-                    ->whereIn('status', ['open', 'waiting_payment', 'overdue'])
+                    ->whereIn('status', ['open', 'overdue'])
                     ->whereDate('due_date', '<=', now()->addDays(self::PAYMENT_DUE_WINDOW_DAYS))
                     // Boleto vencido tem alerta próprio (PaymentSlipExpiredAlertService).
                     ->whereDoesntHave('paymentSlips', fn ($q) => $q->whereIn('status', ['pending', 'generated', 'paid', 'expired'])),

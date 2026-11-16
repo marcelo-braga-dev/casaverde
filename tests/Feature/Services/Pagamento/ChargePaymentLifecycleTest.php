@@ -35,7 +35,7 @@ describe('Charge + Payment lifecycle', function () {
     });
 
     it('walks the full happy path: bill approved -> charge -> payment issued -> paid via webhook', function () {
-        $bill = ConcessionaireBill::factory()->create(['review_status' => 'approved']);
+        $bill = ConcessionaireBill::factory()->create(['review_status' => 'approved', 'injected_consumption_amount' => -300.00]);
 
         $charge = $this->generateCharge->handle($bill);
         expect($charge->status)->toBe('draft');
@@ -108,7 +108,7 @@ describe('Charge + Payment lifecycle', function () {
     });
 
     it('generates an independent new charge from a new bill after the previous charge for the same client was cancelled', function () {
-        $oldBill = ConcessionaireBill::factory()->create(['review_status' => 'approved']);
+        $oldBill = ConcessionaireBill::factory()->create(['review_status' => 'approved', 'injected_consumption_amount' => -300.00]);
         $oldCharge = $this->generateCharge->handle($oldBill);
         $oldCharge = $this->approveCharge->handle($oldCharge);
         $oldCharge->update(['status' => 'cancelled', 'cancelled_at' => now()]);
@@ -116,6 +116,7 @@ describe('Charge + Payment lifecycle', function () {
         $newBill = ConcessionaireBill::factory()->create([
             'client_profile_id' => $oldBill->client_profile_id,
             'review_status' => 'approved',
+            'injected_consumption_amount' => -300.00,
         ]);
 
         $newCharge = $this->generateCharge->handle($newBill);
@@ -135,7 +136,7 @@ describe('Charge + Payment lifecycle', function () {
     });
 
     it('cannot generate a second active charge for the same bill while the first one is still active', function () {
-        $bill = ConcessionaireBill::factory()->create(['review_status' => 'approved']);
+        $bill = ConcessionaireBill::factory()->create(['review_status' => 'approved', 'injected_consumption_amount' => -300.00]);
         $this->generateCharge->handle($bill);
 
         expect(fn () => $this->generateCharge->handle($bill->fresh()))
@@ -143,7 +144,7 @@ describe('Charge + Payment lifecycle', function () {
     });
 
     it('allows generating a replacement charge for the same bill once the previous one was cancelled', function () {
-        $bill = ConcessionaireBill::factory()->create(['review_status' => 'approved']);
+        $bill = ConcessionaireBill::factory()->create(['review_status' => 'approved', 'injected_consumption_amount' => -300.00]);
         $charge = $this->generateCharge->handle($bill);
         $charge->update(['status' => 'cancelled', 'cancelled_at' => now()]);
 
@@ -159,7 +160,7 @@ describe('Charge + Payment lifecycle', function () {
     });
 
     it('still refuses a replacement charge while the previous one is only overdue, not cancelled', function () {
-        $bill = ConcessionaireBill::factory()->create(['review_status' => 'approved']);
+        $bill = ConcessionaireBill::factory()->create(['review_status' => 'approved', 'injected_consumption_amount' => -300.00]);
         $charge = $this->generateCharge->handle($bill);
         $charge->update(['status' => 'overdue']);
 

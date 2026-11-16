@@ -125,7 +125,7 @@ class CustomerCharge extends BaseModel
 
     public function isOpen(): bool
     {
-        return in_array($this->status, ['open', 'waiting_payment', 'overdue'], true);
+        return in_array($this->status, ['open', 'overdue'], true);
     }
 
     public function isPaid(): bool
@@ -148,7 +148,7 @@ class CustomerCharge extends BaseModel
     public function scopeAguardandoNovoBoleto($query)
     {
         return $query
-            ->whereIn('status', ['open', 'waiting_payment', 'overdue'])
+            ->whereIn('status', ['open', 'overdue'])
             ->whereDoesntHave('paymentSlips', fn ($q) => $q->whereIn('status', ['pending', 'generated']))
             ->whereHas('paymentSlips', fn ($q) => $q->where('status', 'expired'));
     }
@@ -175,7 +175,7 @@ class CustomerCharge extends BaseModel
 
     public function canBeMarkedAsOverdue(): bool
     {
-        return in_array($this->status, ['open', 'waiting_payment'], true);
+        return $this->status === 'open';
     }
 
     public function hasActivePayment(): bool

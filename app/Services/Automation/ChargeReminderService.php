@@ -22,7 +22,7 @@ class ChargeReminderService
     private function sendUpcomingDueReminders(): void
     {
         CustomerCharge::query()
-            ->whereIn('status', ['open', 'waiting_payment'])
+            ->where('status', 'open')
             ->whereNull('reminder_sent_at')
             ->whereDate('due_date', now()->addDays(self::PRE_DUE_DAYS)->toDateString())
             ->chunkById(100, function ($charges) {

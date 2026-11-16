@@ -53,7 +53,6 @@ class UpdateConcessionaireBillReviewRequest extends FormRequest
 
             'notes' => ['nullable', 'string'],
             'review_notes' => ['nullable', 'string'],
-            'review_status' => ['required', 'string', 'max:50'],
         ];
     }
 

@@ -50,7 +50,6 @@ class ReviewConcessionaireBillService
 
                 'notes' => $data['notes'] ?? null,
                 'review_notes' => $data['review_notes'] ?? null,
-                'review_status' => $data['review_status'] ?? $bill->review_status,
 
                 'reviewed_by_user_id' => auth()->id(),
                 'reviewed_by_id' => auth()->id(),

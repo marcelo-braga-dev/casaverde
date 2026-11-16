@@ -3,8 +3,6 @@
 namespace App\Models\Users;
 
 use App\Models\Cliente\ClientProfile;
-use App\Models\Energia\EnergyBill;
-use App\Models\Importacao\ClientEmailImportSetting;
 use App\Models\Produtor\ProducerProfile;
 use App\Models\Usina\UsinaSolar;
 use App\src\Roles\RoleUser;
@@ -178,16 +176,6 @@ class User extends Authenticatable
             ->where('role_id', RoleUser::$PRODUTOR);
     }
 
-    public function energyBillImportSetting(): HasOne
-    {
-        return $this->hasOne(ClientEmailImportSetting::class, 'user_id');
-    }
-
-    public function energyBills(): HasMany
-    {
-        return $this->hasMany(EnergyBill::class, 'user_id');
-    }
-
     public function clientProfilesAsConsultor(): HasMany
     {
         return $this->hasMany(ClientProfile::class, 'consultor_user_id');
@@ -238,6 +226,11 @@ class User extends Authenticatable
         }
 
         return Carbon::parse($this->attributes['created_at'])->format('d/m/Y H:i');
+    }
+
+    public function isBlocked(): bool
+    {
+        return (string) ($this->attributes['status'] ?? '') === '0';
     }
 
     public function getStatusNomeAttribute(): string

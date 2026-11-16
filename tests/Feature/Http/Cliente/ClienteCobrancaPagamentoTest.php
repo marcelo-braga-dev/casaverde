@@ -22,7 +22,7 @@ describe('Pagamento da cobrança no portal do cliente', function () {
 
         $this->charge = CustomerCharge::factory()->create([
             'client_profile_id' => $profile->id,
-            'status' => 'waiting_payment',
+            'status' => 'open',
         ]);
 
         $this->slip = PaymentSlip::factory()->create([

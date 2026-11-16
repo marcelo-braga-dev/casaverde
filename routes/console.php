@@ -3,10 +3,6 @@
 use App\Services\Proposta\TemporaryPdfStorageService;
 use Illuminate\Support\Facades\Schedule;
 
-// energy-bills:import (pipeline EnergyBill antigo) fora do agendamento: nunca importou
-// uma fatura (energy_bills vazia, toda tentativa falhava no parser) e lia a mesma caixa
-// que concessionaire-bills:import, que processa esses PDFs com sucesso.
-//
 // withoutOverlapping: importação IMAP e sync com o Mercado Pago podem demorar mais que o
 // intervalo; duas execuções simultâneas processariam os mesmos e-mails/boletos.
 Schedule::command('concessionaire-bills:import')->hourly()->withoutOverlapping(60);

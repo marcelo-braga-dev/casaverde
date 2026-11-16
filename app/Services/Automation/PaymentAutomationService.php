@@ -21,7 +21,7 @@ class PaymentAutomationService
     public function markOverdueCharges(): void
     {
         CustomerCharge::query()
-            ->whereIn('status', ['open', 'waiting_payment'])
+            ->where('status', 'open')
             ->whereDate('due_date', '<', now())
             ->chunkById(100, function ($charges) {
                 foreach ($charges as $charge) {
@@ -37,7 +37,9 @@ class PaymentAutomationService
                 $query->whereIn('status', ['pending', 'generated'])
                     ->orWhere(fn ($q) => $q
                         ->where('status', 'expired')
-                        ->whereDate('due_date', '>=', now()->subDays(self::EXPIRED_SYNC_GRACE_DAYS)));
+                        ->whereDate('due_date', '>=', now()->subDays(self::EXPIRED_SYNC_GRACE_DAYS))
+                        // Cobrança cancelada não recebe mais: consultar só gastava cota do MP (HTTP 429).
+                        ->whereHas('charge', fn ($charge) => $charge->where('status', '!=', 'cancelled')));
             })
             ->chunkById(100, function ($payments) {
                 foreach ($payments as $payment) {

@@ -23,7 +23,6 @@ function safeRoute(n, p) { try { return route(n, p); } catch { return '#'; } }
 const STATUS_MAP = {
     draft:           { label: 'Rascunho',     color: 'default' },
     open:            { label: 'Em Aberto',    color: 'warning' },
-    waiting_payment: { label: 'Ag. Pgto',     color: 'info' },
     paid:            { label: 'Pago',         color: 'success' },
     overdue:         { label: 'Vencido',      color: 'error' },
     cancelled:       { label: 'Cancelado',    color: 'default' },
@@ -98,7 +97,6 @@ export default function Page({ cobrancas, filters = {}, totais = {} }) {
                             <FilterSelect label="Status" value={data.status} onChange={v => setData('status', v)}
                                 options={[
                                     { value: 'open',            label: 'Em Aberto' },
-                                    { value: 'waiting_payment', label: 'Aguardando Pagamento' },
                                     { value: 'paid',            label: 'Pago' },
                                     { value: 'overdue',         label: 'Vencido' },
                                     { value: 'cancelled',       label: 'Cancelado' },

@@ -86,7 +86,6 @@ class ClienteEconomiaExport implements FromArray, ShouldAutoSize, WithHeadings, 
         return match ($status) {
             'paid' => 'Pago',
             'open' => 'Em Aberto',
-            'waiting_payment' => 'Ag. Pagamento',
             'overdue' => 'Vencido',
             'cancelled' => 'Cancelado',
             default => $status ?? '—',

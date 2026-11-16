@@ -30,7 +30,6 @@ function safeRoute(n, p) { try { return route(n, p); } catch { return '#'; } }
 const STATUS_MAP = {
     draft:           { label: 'Rascunho',         color: 'default',  gradient: 'linear-gradient(135deg,#6b7280,#4b5563)' },
     open:            { label: 'Em Aberto',         color: 'warning',  gradient: 'linear-gradient(135deg,#f59e0b,#d97706)' },
-    waiting_payment: { label: 'Aguardando Pgto.',  color: 'info',     gradient: 'linear-gradient(135deg,#3b82f6,#1d4ed8)' },
     paid:            { label: 'Pago',              color: 'success',  gradient: 'linear-gradient(135deg,#10b981,#059669)' },
     overdue:         { label: 'Vencido',           color: 'error',    gradient: 'linear-gradient(135deg,#ef4444,#dc2626)' },
     cancelled:       { label: 'Cancelado',         color: 'default',  gradient: 'linear-gradient(135deg,#6b7280,#4b5563)' },
@@ -39,11 +38,10 @@ const STATUS_MAP = {
 const STATUS_TIMELINE = [
     { key: 'draft',           icon: <IconClock size={14} />,        label: 'Gerada' },
     { key: 'open',            icon: <IconFileInvoice size={14} />,  label: 'Em Aberto' },
-    { key: 'waiting_payment', icon: <IconWallet size={14} />,       label: 'Ag. Pagamento' },
     { key: 'paid',            icon: <IconCircleCheck size={14} />,  label: 'Pago' },
 ];
 
-const STATUS_ORDER = ['draft', 'open', 'waiting_payment', 'paid'];
+const STATUS_ORDER = ['draft', 'open', 'paid'];
 
 function SectionHeader({ icon, title, gradient }) {
     return (

@@ -48,12 +48,12 @@ class ClienteDashboardService
 
         $chargesPending = CustomerCharge::query()
             ->where('client_profile_id', $profile->id)
-            ->whereIn('status', ['open', 'waiting_payment'])
+            ->where('status', 'open')
             ->count();
 
         $chargesPendingAmount = (float) CustomerCharge::query()
             ->where('client_profile_id', $profile->id)
-            ->whereIn('status', ['open', 'waiting_payment'])
+            ->where('status', 'open')
             ->sum('final_amount');
 
         $chargesOverdue = CustomerCharge::query()

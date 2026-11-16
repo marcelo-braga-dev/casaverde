@@ -157,7 +157,7 @@ const BreakdownTable = ({ title, description, items, kwhTotal, amountTotal, show
 );
 
 /* ─── Page ────────────────────────────────────────────────────────────── */
-const Page = ({ bill, suggestedUsinaId, energyBreakdown, reviewStatuses = [], usinas = [], consumerUnits = [] }) => {
+const Page = ({ bill, suggestedUsinaId, energyBreakdown, usinas = [], consumerUnits = [] }) => {
     const { flash } = usePage().props;
     const [tab, setTab] = useState("dados");
     const [deleteOpen, setDeleteOpen] = useState(false);
@@ -167,7 +167,6 @@ const Page = ({ bill, suggestedUsinaId, energyBreakdown, reviewStatuses = [], us
     useEffect(() => { setInjectedValuesConfirmed(bill.review_status === "approved"); }, [bill.id]);
 
     const initialData = useMemo(() => ({
-        review_status: bill.review_status ?? "pending_review",
         consumer_unit_id: bill.consumer_unit_id ?? "",
         usina_id: bill.usina_id ?? suggestedUsinaId ?? "",
         concessionaria_id: bill.concessionaria_id ?? bill.concessionaria?.id ?? "",
@@ -230,7 +229,7 @@ const Page = ({ bill, suggestedUsinaId, energyBreakdown, reviewStatuses = [], us
     const injectedConsumptionIsManual = differsFromBreakdown(bill.injected_consumption_kwh, energyBreakdown.injected_consumption.kwh_total)
         || differsFromBreakdown(bill.injected_consumption_amount, energyBreakdown.injected_consumption.amount_total);
 
-    const canApprove = data.review_status !== "approved" && invalidFields.length === 0 && !hasUnsavedChanges && injectedConfirmed && !processing;
+    const canApprove = bill.review_status !== "approved" && invalidFields.length === 0 && !hasUnsavedChanges && injectedConfirmed && !processing;
 
     const submit = (e) => {
         e.preventDefault();
@@ -628,18 +627,6 @@ const Page = ({ bill, suggestedUsinaId, energyBreakdown, reviewStatuses = [], us
                                             <SearchableSelect
                                                 fullWidth
                                                 size="small"
-                                                disableClearable
-                                                label="Status da revisão"
-                                                value={data.review_status}
-                                                onChange={(value) => setData("review_status", value)}
-                                                options={reviewStatuses.map((s) => ({ value: s, label: getStatusLabel(s) }))}
-                                                error={Boolean(errors.review_status)}
-                                                helperText={errors.review_status}
-                                            />
-
-                                            <SearchableSelect
-                                                fullWidth
-                                                size="small"
                                                 label="Unidade Consumidora"
                                                 value={data.consumer_unit_id}
                                                 onChange={(value) => setData("consumer_unit_id", value)}
@@ -673,6 +660,11 @@ const Page = ({ bill, suggestedUsinaId, energyBreakdown, reviewStatuses = [], us
                                             <Button fullWidth type="submit" variant="contained" disabled={processing || !hasUnsavedChanges} startIcon={<IconDeviceFloppy size={18} />} sx={{ fontWeight: 700, py: 1.2 }}>
                                                 {processing ? "Salvando..." : "Salvar Correções"}
                                             </Button>
+                                            {bill.review_status !== "approved" && (
+                                                <Typography variant="caption" color="text.secondary" textAlign="center">
+                                                    Salvar não aprova a fatura. Depois de salvar, clique em “Aprovar” na aba de dados: só a fatura aprovada gera a cobrança.
+                                                </Typography>
+                                            )}
                                         </Stack>
                                     </form>
                                 </TabPanel>

@@ -43,7 +43,7 @@ class ClienteEconomiaRelatorioService
     {
         $charges = CustomerCharge::query()
             ->where('client_profile_id', $clientProfileId)
-            ->whereIn('status', ['paid', 'open', 'waiting_payment', 'overdue'])
+            ->whereIn('status', ['paid', 'open', 'overdue'])
             ->where('reference_year', $year)
             ->orderBy('reference_month')
             ->get()
@@ -99,7 +99,7 @@ class ClienteEconomiaRelatorioService
             ->where('client_profile_id', $clientProfileId)
             ->where('reference_year', $year)
             ->where('reference_month', $month)
-            ->whereIn('status', ['paid', 'open', 'waiting_payment', 'overdue', 'draft'])
+            ->whereIn('status', ['paid', 'open', 'overdue', 'draft'])
             ->with(['bill.concessionaria'])
             ->first();
 
@@ -177,7 +177,7 @@ class ClienteEconomiaRelatorioService
         // (que é só a base de cálculo da cobrança — Consumo Injetado).
         $totals = CustomerCharge::query()
             ->where('customer_charges.client_profile_id', $clientProfileId)
-            ->whereIn('customer_charges.status', ['paid', 'open', 'waiting_payment', 'overdue'])
+            ->whereIn('customer_charges.status', ['paid', 'open', 'overdue'])
             ->leftJoin('concessionaire_bills', 'concessionaire_bills.id', '=', 'customer_charges.concessionaire_bill_id')
             ->selectRaw('
                 SUM(COALESCE(concessionaire_bills.valor_total, customer_charges.original_amount)) as total_original,

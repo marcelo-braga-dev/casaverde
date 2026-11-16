@@ -36,11 +36,11 @@ class UsinaReportService
                 'potencia_usina' => (float) ($usina->potencia_usina ?? 0),
                 'charges_count' => (clone $charges)->count(),
                 'paid_count' => (clone $charges)->where('status', 'paid')->count(),
-                'open_count' => (clone $charges)->whereIn('status', ['open', 'waiting_payment'])->count(),
+                'open_count' => (clone $charges)->where('status', 'open')->count(),
                 'overdue_count' => (clone $charges)->where('status', 'overdue')->count(),
                 'total_amount' => (float) (clone $charges)->sum('final_amount'),
                 'paid_amount' => (float) (clone $charges)->where('status', 'paid')->sum('final_amount'),
-                'open_amount' => (float) (clone $charges)->whereIn('status', ['open', 'waiting_payment'])->sum('final_amount'),
+                'open_amount' => (float) (clone $charges)->where('status', 'open')->sum('final_amount'),
                 'overdue_amount' => (float) (clone $charges)->where('status', 'overdue')->sum('final_amount'),
             ];
         });
