@@ -2,21 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 
-// Módulo legado de cadastros (propostas, produtores, usinas, contratos...). Expõe CPF,
-// CNPJ, e-mail e endereço de todos os cadastros: com só "auth", qualquer cliente ou
-// produtor logado conseguia listar tudo.
-// Os controllers deste módulo não filtram por carteira, então nem consultor entra.
-Route::middleware(['auth', 'role:admin'])
-    ->prefix('auth')
-    ->group(function () {
-        require __DIR__.'/produtor/index.php';
-        require __DIR__.'/concessionarias/index.php';
-        require __DIR__.'/usinas/index.php';
-        require __DIR__.'/propostas/index.php';
-        require __DIR__.'/contratos/index.php';
-        require __DIR__.'/cliente/index.php';
-        require __DIR__.'/config/config.php';
-    });
+// O antigo módulo de cadastros (clientes, produtores, usinas, propostas e contratos sem
+// filtro de carteira) foi removido em 2026-11-16; o que era usado vive nos módulos novos.
+// Aqui restam só as telas do próprio usuário e as ferramentas de WhatsApp.
 
 Route::middleware(['auth', 'role:admin,consultor'])
     ->prefix('auth')

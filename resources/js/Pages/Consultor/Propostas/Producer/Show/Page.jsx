@@ -20,7 +20,7 @@ import {
     IconMapPin,
     IconUser,
 } from "@tabler/icons-react";
-import PropostaProdutor from "@/Pages/Auth/Produtor/Proposta/Show/PropostaProdutor.jsx";
+import PropostaProdutor from "@/Components/Proposta/Produtor/PropostaProdutorViewer.jsx";
 import WhatsAppButton from "@/Components/WhatsApp/WhatsAppButton";
 
 const cardSx = {

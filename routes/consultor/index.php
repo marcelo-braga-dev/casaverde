@@ -17,4 +17,5 @@ Route::middleware(['auth', 'role:admin,consultor'])
         require __DIR__.'/producer/index.php';
         require __DIR__.'/propostas/cliente-propostas.php';
         require __DIR__.'/propostas/producer-propostas.php';
+        require __DIR__.'/propostas/pdf.php';
     });

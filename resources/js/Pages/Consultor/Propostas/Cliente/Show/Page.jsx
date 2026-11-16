@@ -23,7 +23,7 @@ import {
     IconUser,
     IconBolt,
 } from "@tabler/icons-react";
-import PropostaBaixar from "@/Pages/Auth/Cliente/Proposta/Show/Propostas.jsx";
+import PropostaBaixar from "@/Components/Proposta/Cliente/PropostaClienteViewer.jsx";
 import WhatsAppButton from "@/Components/WhatsApp/WhatsAppButton";
 import formatCurrency from "@/Utils/formatCurrency.js";
 

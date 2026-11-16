@@ -14,16 +14,16 @@ describe('Access isolation between roles and portfolios', function () {
         $this->foreignClient = ClientProfile::factory()->create(['consultor_user_id' => $this->otherConsultor->id]);
     });
 
-    it('keeps clientes and produtores out of the legacy registry module but not out of profile/support', function (string $role) {
+    it('keeps clientes and produtores out of the proposal tools but not out of profile/support', function (string $role) {
         $user = User::factory()->{$role}()->create();
 
-        $this->actingAs($user)->getJson(route('auth.cliente.proposta.api.get'))->assertForbidden();
+        $this->actingAs($user)->getJson(route('consultor.propostas.pdf.produtor-layout'))->assertForbidden();
         $this->actingAs($user)->get(route('auth.perfil.usuario.index'))->assertOk();
         $this->actingAs($user)->get(route('support.tickets.index'))->assertOk();
     })->with(['cliente', 'produtor']);
 
-    it('keeps consultores out of the legacy registry module, which has no portfolio filter', function () {
-        $this->actingAs($this->consultor)->getJson(route('auth.cliente.proposta.api.get'))->assertForbidden();
+    it('lets consultores generate proposal PDFs from their proposal pages', function () {
+        $this->actingAs($this->consultor)->getJson(route('consultor.propostas.pdf.produtor-layout'))->assertOk();
     });
 
     it('keeps consultores out of company-wide admin areas', function (string $routeName) {

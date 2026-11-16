@@ -125,7 +125,8 @@ Redirecionamento pós-login (`app/Http/Middleware/RedirectUserByRole.php`):
 
 ### Mapa de acesso por role (rotas)
 - `admin/*`: **só admin por padrão** (`routes/admin/index.php`). Consultor entra apenas em cobranças, pagamentos, alertas operacionais e relatórios de clientes/usinas — todos filtrados pela carteira. Faturas de concessionária, dashboard admin, cockpit, configurações, usuários e integrações são exclusivos do admin.
-- `auth/*` (módulo legado de cadastros): só admin, porque os controllers não filtram por carteira; exceções: ferramentas de WhatsApp (admin + consultor), perfil e suporte (todas as roles).
+- `auth/*`: só perfil e suporte (todas as roles) e ferramentas de WhatsApp (admin + consultor). O antigo módulo de cadastros sem filtro de carteira foi removido em 2026-11-16; as tabelas antigas (`cliente_propostas`, `produtor_contratos`, `admins`...) ficaram no banco, sem código.
+- PDF das propostas (`consultor.propostas.pdf.*`, admin + consultor): componentes em `resources/js/Components/Proposta/`.
 - `cliente/*` e `produtor/*`: portais próprios, cada `show` confere o dono do registro.
 - Não há cadastro público (`/register` removido): clientes entram por convite (`ClientAccessInvite`); produtores são criados pelo admin.
 
@@ -135,12 +136,11 @@ Redirecionamento pós-login (`app/Http/Middleware/RedirectUserByRole.php`):
 
 ```
 app/Models/
-├── Users/       User, UserData, UserContact, Admin, Produtor, Vendedor, Roles
-├── Cliente/     ClientProfile, ClienteProposta, ClientContract, ClientUsinaLink,
-│                ClientDiscountRule, ClientAccessInvite, ClientePropostaAddress,
-│                ConsumerUnit
+├── Users/       User, UserData, UserContact, Produtor, Vendedor, Roles
+├── Cliente/     ClientProfile, ClientContract, ClientUsinaLink,
+│                ClientDiscountRule, ClientAccessInvite, ConsumerUnit
 ├── Produtor/    ProducerProfile, ProducerLead, ProdutorPropostas,
-│                ProdutorContratos, ProducerAdministrationFeeRules, ProducerAccessInvite,
+│                ProducerAdministrationFeeRules, ProducerAccessInvite,
 │                ProdutorPropostasEnderecos
 ├── Usina/       UsinaSolar, UsinaBlock, UsinaGenerationRecord, Concessionaria, UsinaAddress
 ├── Proposta/    CommercialProposal, ProducerProposal
@@ -227,7 +227,7 @@ routes/
 │   ├── users/                 # admin.php, produtor.php, vendedor.php
 │   ├── financeiro/
 │   └── [usinas, fatura, relatorios, config, alerts, whatsapp...]
-├── auth/                      # rotas compartilhadas por roles
+├── auth/                      # perfil, suporte, WhatsApp e ativação de conta
 ├── cliente/index.php          # auth + role:cliente
 ├── consultor/                 # auth + role:consultor
 │   ├── index.php
@@ -318,7 +318,7 @@ Preferir testes de integração com SQLite — sem mocks de DB.
 | Problema | Local | Ação |
 |----------|-------|------|
 | `FormRequest::authorize()` valida role, mas não carteira | Requests de edição usados por consultor | Na edição, checar carteira no `authorize()` (padrão: `StoreClientProfileRequest`) |
-| Módulo legado `auth/*` sem filtro de carteira | `app/Http/Controllers/Auth/**` | Restrito a admin; migrar telas ainda úteis para os módulos novos e remover o resto |
+| Models `Produtor`/`Vendedor` (wrappers antigos sobre `users`) | `ProdutorRepository`, `ConsultorRepository` | Trocar por scopes em `User` ao revisar as telas de usuários do admin |
 | Funcionalidades inacabadas | convite de produtor (`ProducerAccessInvite` nunca é criado, sem página de ativação); telas `fatura-import-settings` (só o `update` está ativo) | Concluir ou remover |
 | Status de slip como strings soltas | `app/Services/Pagamento/**` | Migrar para `PaymentSlipStatus` (já tem `REFUNDED`) |
 | Controllers/Services acima de 200 linhas | `ClientReportService`, `ImportAutomaticConcessionaireBillService`, `ScanUsinaOperationalAlertsService`, `ClienteEconomiaRelatorioService`, `AdminDashboardMetricsService`, `ExecutiveCockpitService` | Dividir em classes menores |

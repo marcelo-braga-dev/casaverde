@@ -11,7 +11,7 @@ beforeEach(fn () => Storage::fake('local'));
 it('stores the uploaded proposal pdf privately and returns a signed url', function () {
     $admin = User::factory()->create(['role_id' => RoleUser::$ADMIN]);
 
-    $response = $this->actingAs($admin)->post(route('auth.propostas.pdf.cliente.gerar-pdf'), [
+    $response = $this->actingAs($admin)->post(route('consultor.propostas.pdf.cliente-upload'), [
         'file' => UploadedFile::fake()->create('proposta.pdf', 10, 'application/pdf'),
     ]);
 
