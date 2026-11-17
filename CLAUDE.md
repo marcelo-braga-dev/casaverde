@@ -322,7 +322,7 @@ Preferir testes de integração com SQLite — sem mocks de DB.
 | Models `Produtor`/`Vendedor` (wrappers antigos sobre `users`) | `ProdutorRepository`, `ConsultorRepository` | Trocar por scopes em `User` ao revisar as telas de usuários do admin |
 | Funcionalidades inacabadas | convite de produtor (`ProducerAccessInvite` nunca é criado, sem página de ativação); telas `fatura-import-settings` (só o `update` está ativo) | Concluir ou remover |
 | Status de slip/cobrança como strings soltas (35 restantes em `Services/Pagamento`) | `app/Services/Pagamento/**` | Grupos já centralizados (`PaymentSlip::active()`, `CustomerChargeStatus::finalValues()/payableValues()`); trocar o restante pelos enums ao mexer em cada service |
-| Controllers/Services acima de 200 linhas | `ClientReportService`, `ImportAutomaticConcessionaireBillService`, `ScanUsinaOperationalAlertsService`, `ClienteEconomiaRelatorioService`, `AdminDashboardMetricsService`, `ExecutiveCockpitService` | Dividir em classes menores |
+| Controllers/Services acima de 200 linhas | `ClientReportService`, `ImportAutomaticConcessionaireBillService`, `ScanUsinaOperationalAlertsService`, `ClienteEconomiaRelatorioService`, `ExecutiveCockpitService` | Dividir em classes menores |
 | N+1 potenciais | Services sem eager loading | Adicionar `.with()` onde necessário |
 | Sem cobertura de teste para geração de PDF | dompdf/snappy | Criar testes quando o fluxo for revisado |
 
