@@ -65,12 +65,12 @@ class ClienteCobrancaController extends Controller
     // Só os dados de pagamento: o slip completo traz payloads e erros do provider.
     private function pagamentoDisponivel(CustomerCharge $cobranca): ?array
     {
-        if (in_array($cobranca->status, ['paid', 'cancelled'], true)) {
+        if ($cobranca->isFinal()) {
             return null;
         }
 
         $slip = $cobranca->paymentSlips()
-            ->whereIn('status', ['pending', 'generated'])
+            ->active()
             ->latest('id')
             ->get()
             ->first(fn (PaymentSlip $slip) => $slip->isPayable());

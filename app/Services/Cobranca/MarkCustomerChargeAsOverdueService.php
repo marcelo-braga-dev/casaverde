@@ -10,7 +10,7 @@ class MarkCustomerChargeAsOverdueService
 {
     public function handle(CustomerCharge $charge): CustomerCharge
     {
-        if ($charge->status !== 'open') {
+        if (! $charge->canBeMarkedAsOverdue()) {
             throw new InvalidArgumentException('Apenas cobranças abertas podem ser marcadas como atrasadas.');
         }
 

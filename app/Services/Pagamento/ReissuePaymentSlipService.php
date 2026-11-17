@@ -25,7 +25,7 @@ class ReissuePaymentSlipService
     {
         $activeSlip = $charge->paymentSlips()
             ->with('providerAccount')
-            ->whereIn('status', ['pending', 'generated'])
+            ->active()
             ->latest('id')
             ->first();
 

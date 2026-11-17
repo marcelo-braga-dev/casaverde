@@ -15,7 +15,7 @@ class ApproveCustomerChargeService
 
     public function handle(CustomerCharge $charge): CustomerCharge
     {
-        if ($charge->status !== 'draft') {
+        if (! $charge->isDraft()) {
             throw new InvalidArgumentException('Apenas cobranças em rascunho podem ser abertas/aprovadas.');
         }
 
@@ -54,7 +54,7 @@ class ApproveCustomerChargeService
 
         $charges->get()->each(function (CustomerCharge $charge) use ($newDueDate, &$result) {
             try {
-                if ($newDueDate && $charge->status === 'draft' && $charge->due_date?->lt(today())) {
+                if ($newDueDate && $charge->isDraft() && $charge->due_date?->lt(today())) {
                     $charge = $this->updateDueDateService->handle($charge, $newDueDate);
                 }
 

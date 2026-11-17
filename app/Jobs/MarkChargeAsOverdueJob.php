@@ -23,7 +23,7 @@ class MarkChargeAsOverdueJob implements ShouldQueue
             return;
         }
 
-        if ($charge->status !== 'open') {
+        if (! $charge->canBeMarkedAsOverdue()) {
             return;
         }
 

@@ -2,6 +2,7 @@
 
 namespace App\Models\Cobranca;
 
+use App\Enums\Cobranca\CustomerChargeStatus;
 use App\Models\Alert\OperationalAlert;
 use App\Models\BaseModel;
 use App\Models\Cliente\ClientProfile;
@@ -120,17 +121,27 @@ class CustomerCharge extends BaseModel
 
     public function isDraft(): bool
     {
-        return $this->status === 'draft';
-    }
-
-    public function isOpen(): bool
-    {
-        return in_array($this->status, ['open', 'overdue'], true);
+        return $this->status === CustomerChargeStatus::DRAFT->value;
     }
 
     public function isPaid(): bool
     {
-        return $this->status === 'paid';
+        return $this->status === CustomerChargeStatus::PAID->value;
+    }
+
+    public function isCancelled(): bool
+    {
+        return $this->status === CustomerChargeStatus::CANCELLED->value;
+    }
+
+    public function isFinal(): bool
+    {
+        return in_array($this->status, CustomerChargeStatus::finalValues(), true);
+    }
+
+    public function canReceivePayment(): bool
+    {
+        return in_array($this->status, CustomerChargeStatus::payableValues(), true);
     }
 
     public function paymentSlips()
@@ -148,8 +159,8 @@ class CustomerCharge extends BaseModel
     public function scopeAguardandoNovoBoleto($query)
     {
         return $query
-            ->whereIn('status', ['open', 'overdue'])
-            ->whereDoesntHave('paymentSlips', fn ($q) => $q->whereIn('status', ['pending', 'generated']))
+            ->whereIn('status', CustomerChargeStatus::payableValues())
+            ->whereDoesntHave('paymentSlips', fn ($q) => $q->active())
             ->whereHas('paymentSlips', fn ($q) => $q->where('status', 'expired'));
     }
 
@@ -165,23 +176,48 @@ class CustomerCharge extends BaseModel
 
     public function canBeCancelled(): bool
     {
-        return ! in_array($this->status, ['paid', 'cancelled'], true);
+        return ! $this->isFinal();
     }
 
     public function canBeMarkedAsPaid(): bool
     {
-        return ! in_array($this->status, ['paid', 'cancelled'], true);
+        return ! $this->isFinal();
     }
 
     public function canBeMarkedAsOverdue(): bool
     {
-        return $this->status === 'open';
+        return $this->status === CustomerChargeStatus::OPEN->value;
+    }
+
+    public function canChangeDueDate(): bool
+    {
+        return ! $this->isFinal();
     }
 
     public function hasActivePayment(): bool
     {
-        return $this->paymentSlips()
-            ->whereIn('status', ['pending', 'generated'])
-            ->exists();
+        return $this->paymentSlips()->active()->exists();
+    }
+
+    /**
+     * O boleto/Pix ativo deixou de ser pagável (cancelado, vencido, recusado, estornado):
+     * a cobrança volta para "em aberto" ou "vencida", conforme a data, para aceitar um novo.
+     * Antes cada service fazia isso do seu jeito; alguns punham "open" mesmo vencida.
+     */
+    public function reopenAfterPaymentEnded(): bool
+    {
+        if ($this->isFinal()) {
+            return false;
+        }
+
+        $status = $this->due_date && $this->due_date->lt(today())
+            ? CustomerChargeStatus::OVERDUE->value
+            : CustomerChargeStatus::OPEN->value;
+
+        if ($this->status !== $status) {
+            $this->update(['status' => $status]);
+        }
+
+        return true;
     }
 }

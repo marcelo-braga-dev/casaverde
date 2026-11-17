@@ -22,7 +22,7 @@ class ExpirePaymentSlipService
 
     public function handle(PaymentSlip $slip): void
     {
-        if (! in_array($slip->status, ['pending', 'generated'], true)) {
+        if (! $slip->isActive()) {
             return;
         }
 
@@ -40,13 +40,9 @@ class ExpirePaymentSlipService
 
             $charge = $slip->charge;
 
-            if (! $charge || in_array($charge->status, ['paid', 'cancelled'], true)) {
+            if (! $charge?->reopenAfterPaymentEnded()) {
                 return;
             }
-
-            $charge->update([
-                'status' => $charge->due_date && $charge->due_date->lt(today()) ? 'overdue' : 'open',
-            ]);
 
             CustomerChargeHistory::log(
                 $charge->fresh(),
@@ -55,7 +51,7 @@ class ExpirePaymentSlipService
             );
         });
 
-        if ($slip->charge && ! in_array($slip->charge->fresh()->status, ['paid', 'cancelled'], true)) {
+        if ($slip->charge && ! $slip->charge->fresh()->isFinal()) {
             $this->alertService->notify($slip->charge->fresh());
         }
     }

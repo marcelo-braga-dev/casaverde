@@ -2,6 +2,7 @@
 
 namespace App\Models\Pagamento;
 
+use App\Enums\Pagamento\PaymentSlipStatus;
 use App\Models\Cobranca\CustomerCharge;
 use App\Support\BoletoDueDate;
 use Carbon\CarbonImmutable;
@@ -62,9 +63,19 @@ class PaymentSlip extends Model
 
     // Espelha isSlipPayable() de resources/js/Utils/paymentSlip.js: ativo e dentro da data
     // que o banco aceita (a rotina diária pode ainda não ter marcado como expirado).
+    public function scopeActive($query)
+    {
+        return $query->whereIn('status', PaymentSlipStatus::activeValues());
+    }
+
+    public function isActive(): bool
+    {
+        return in_array($this->status, PaymentSlipStatus::activeValues(), true);
+    }
+
     public function isPayable(): bool
     {
-        if (! in_array($this->status, ['pending', 'generated'], true)) {
+        if (! $this->isActive()) {
             return false;
         }
 

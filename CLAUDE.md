@@ -191,6 +191,7 @@ Serviços de automação recorrente em `app/Services/Automation/`:
 - `ChargeReminderService` — dispara lembrete de cobrança: pré-vencimento (3 dias antes do `due_date`, uma vez), pós-vencimento (a cada 5 dias enquanto `status=overdue`) e boleto vencido sem substituto (a cada 5 dias, via `PaymentSlipExpiredAlertService`; nesses casos o lembrete de vencida comum não é enviado). Despacha `SendChargeReminderJob`, que delega para `GenerateChargeReminderAlertService` (cria um `OperationalAlert` com link `wa.me` pronto no `payload`, atribuído ao consultor responsável). Controlado pela coluna `customer_charges.reminder_sent_at`.
 - `PaymentAutomationService::expireOverdueSlips()` — marca como `expired` o boleto/Pix cuja data (lida do código de barras) passou, sem cancelar no provider; o slip vencido segue sincronizado por 10 dias.
 - Status de cobrança: `draft → open → paid | overdue | cancelled` (`waiting_payment` foi removido em 2026-11-16: nada gravava esse valor).
+- Regras de status ficam no model `CustomerCharge` (`isFinal()`, `canReceivePayment()`, `canChangeDueDate()`, `canBeMarkedAsOverdue()`...). Quando o boleto/Pix ativo deixa de ser pagável, use `reopenAfterPaymentEnded()`: volta para `open` ou `overdue` conforme o vencimento — não reimplementar no service.
 - **Não há geração automática de boletos**: o pagamento é sempre gerado manualmente na tela da cobrança (decisão de negócio). O antigo `casaverde:generate-missing-payments`/`GeneratePaymentForChargeJob` foi removido junto com a Cora.
 
 Agendamento (`routes/console.php`, cron com `php83 artisan schedule:run`):
@@ -304,7 +305,7 @@ Menu construído com base em `auth.user.role_name` — segurança real sempre no
 - Ambiente: SQLite in-memory (`phpunit.xml` define `DB_CONNECTION=sqlite`, `DB_DATABASE=:memory:`)
 - Rodar com `php83 artisan test` (mesma versão de produção).
 - `tests/Pest.php` liga `Http::preventStrayRequests()`: chamada HTTP sem `Http::fake()` falha o teste (nunca sai para o Mercado Pago); helpers `mercadoPagoAccount()` e `mpOrder()` simulam conta e pedido. `phpunit.xml` manda logs para o canal `null`.
-- Cobertura atual: 85 arquivos de teste (Feature + Unit), 590 testes
+- Cobertura atual: 86 arquivos de teste (Feature + Unit), 592 testes
 - Áreas cobertas: Auth, Middleware, Dashboard (Admin/Consultor), Services (Cliente, Cobrança, Usina, Fatura, Proposta, Automation), Controllers (ConsumerUnit, ClientUsinaLink, ConcessionariaController, ProducerFeeRule), Policies (UsinaSolar, CustomerCharge, ProducerProfile), Pagamento/Mercado Pago (provider, assinatura e controller de webhook, processamento de webhook, geração/cancelamento/sync de boleto e Pix), IMAP (`ImportAutomaticConcessionaireBillService`, com fetcher/extrator/desbloqueio de PDF mockados), WhatsApp (`WhatsAppLinkService`)
 - Também cobertos: Mercado Pago (provider, vencimento, estorno, webhook com assinatura), ciclo de vida de boletos vencidos, isolamento de acesso por role/carteira (`tests/Feature/Security/`).
 - **Áreas sem cobertura**: geração de PDF via snappy (propostas legadas)
@@ -320,7 +321,7 @@ Preferir testes de integração com SQLite — sem mocks de DB.
 | `FormRequest::authorize()` valida role, mas não carteira | Requests de edição usados por consultor | Na edição, checar carteira no `authorize()` (padrão: `StoreClientProfileRequest`) |
 | Models `Produtor`/`Vendedor` (wrappers antigos sobre `users`) | `ProdutorRepository`, `ConsultorRepository` | Trocar por scopes em `User` ao revisar as telas de usuários do admin |
 | Funcionalidades inacabadas | convite de produtor (`ProducerAccessInvite` nunca é criado, sem página de ativação); telas `fatura-import-settings` (só o `update` está ativo) | Concluir ou remover |
-| Status de slip como strings soltas | `app/Services/Pagamento/**` | Migrar para `PaymentSlipStatus` (já tem `REFUNDED`) |
+| Status de slip/cobrança como strings soltas (35 restantes em `Services/Pagamento`) | `app/Services/Pagamento/**` | Grupos já centralizados (`PaymentSlip::active()`, `CustomerChargeStatus::finalValues()/payableValues()`); trocar o restante pelos enums ao mexer em cada service |
 | Controllers/Services acima de 200 linhas | `ClientReportService`, `ImportAutomaticConcessionaireBillService`, `ScanUsinaOperationalAlertsService`, `ClienteEconomiaRelatorioService`, `AdminDashboardMetricsService`, `ExecutiveCockpitService` | Dividir em classes menores |
 | N+1 potenciais | Services sem eager loading | Adicionar `.with()` onde necessário |
 | Sem cobertura de teste para geração de PDF | dompdf/snappy | Criar testes quando o fluxo for revisado |

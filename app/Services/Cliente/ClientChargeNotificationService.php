@@ -24,7 +24,7 @@ class ClientChargeNotificationService
     public function dueReminder(CustomerCharge $charge): void
     {
         $slip = $charge->paymentSlips()
-            ->whereIn('status', ['pending', 'generated'])
+            ->active()
             ->latest('id')
             ->get()
             ->first(fn (PaymentSlip $slip) => $slip->isPayable());

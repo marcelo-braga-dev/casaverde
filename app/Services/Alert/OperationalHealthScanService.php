@@ -2,6 +2,7 @@
 
 namespace App\Services\Alert;
 
+use App\Enums\Cobranca\CustomerChargeStatus;
 use App\Models\Cobranca\CustomerCharge;
 use App\Models\Fatura\ConcessionaireBill;
 use App\Models\Importacao\ClientEmailImportSetting;
@@ -66,7 +67,7 @@ class OperationalHealthScanService
             self::CHARGES_WITHOUT_PAYMENT => $this->chargesByConsultor(
                 self::CHARGES_WITHOUT_PAYMENT,
                 CustomerCharge::query()
-                    ->whereIn('status', ['open', 'overdue'])
+                    ->whereIn('status', CustomerChargeStatus::payableValues())
                     ->whereDate('due_date', '<=', now()->addDays(self::PAYMENT_DUE_WINDOW_DAYS))
                     // Boleto vencido tem alerta próprio (PaymentSlipExpiredAlertService).
                     ->whereDoesntHave('paymentSlips', fn ($q) => $q->whereIn('status', ['pending', 'generated', 'paid', 'expired'])),
@@ -148,7 +149,7 @@ class OperationalHealthScanService
         $staleBefore = now()->subHours(self::SYNC_STALE_HOURS);
 
         $slips = PaymentSlip::query()
-            ->whereIn('status', ['pending', 'generated'])
+            ->active()
             ->whereNotNull('provider_payment_id')
             ->where('generated_at', '<', $staleBefore)
             ->get()

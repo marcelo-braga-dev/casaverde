@@ -192,8 +192,9 @@ describe('Charge + Payment lifecycle', function () {
         // O boleto acaba expirando no provider; o admin sincroniza manualmente.
         $this->syncSlip->handle($slip);
 
+        // Continua vencida (a data já passou), mas sem boleto ativo: aceita um novo.
         expect($slip->refresh()->status)->toBe('expired')
-            ->and($charge->refresh()->status)->toBe('open'); // reaberta automaticamente
+            ->and($charge->refresh()->status)->toBe('overdue');
 
         // Agora dá pra emitir um novo boleto normalmente e pagá-lo.
         $newSlip = $this->generateSlip->handle($charge->refresh());

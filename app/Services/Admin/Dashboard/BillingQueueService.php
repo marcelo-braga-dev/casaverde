@@ -2,6 +2,7 @@
 
 namespace App\Services\Admin\Dashboard;
 
+use App\Enums\Cobranca\CustomerChargeStatus;
 use App\Models\Cobranca\CustomerCharge;
 use App\Models\Fatura\ConcessionaireBill;
 
@@ -15,7 +16,7 @@ class BillingQueueService
     {
         $drafts = CustomerCharge::query()->where('status', 'draft');
         $withoutPayment = CustomerCharge::query()
-            ->whereIn('status', ['open', 'overdue'])
+            ->whereIn('status', CustomerChargeStatus::payableValues())
             ->whereDoesntHave('paymentSlips', fn ($q) => $q->whereIn('status', ['pending', 'generated', 'paid']));
         $overdue = CustomerCharge::query()->where('status', 'overdue');
 

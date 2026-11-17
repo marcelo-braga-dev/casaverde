@@ -10,14 +10,14 @@ describe('CustomerCharge model', function () {
             ->and((new CustomerCharge(['status' => 'paid']))->isDraft())->toBeFalse();
     });
 
-    it('isOpen returns true for open and overdue', function () {
-        expect((new CustomerCharge(['status' => 'open']))->isOpen())->toBeTrue()
-            ->and((new CustomerCharge(['status' => 'overdue']))->isOpen())->toBeTrue();
+    it('canReceivePayment returns true for open and overdue', function () {
+        expect((new CustomerCharge(['status' => 'open']))->canReceivePayment())->toBeTrue()
+            ->and((new CustomerCharge(['status' => 'overdue']))->canReceivePayment())->toBeTrue();
     });
 
-    it('isOpen returns false for draft and paid', function () {
-        expect((new CustomerCharge(['status' => 'draft']))->isOpen())->toBeFalse()
-            ->and((new CustomerCharge(['status' => 'paid']))->isOpen())->toBeFalse();
+    it('canReceivePayment returns false for draft and paid', function () {
+        expect((new CustomerCharge(['status' => 'draft']))->canReceivePayment())->toBeFalse()
+            ->and((new CustomerCharge(['status' => 'paid']))->canReceivePayment())->toBeFalse();
     });
 
     it('isPaid returns true only for paid status', function () {

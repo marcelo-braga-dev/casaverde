@@ -34,7 +34,7 @@ class PaymentAutomationService
     {
         PaymentSlip::query()
             ->where(function ($query) {
-                $query->whereIn('status', ['pending', 'generated'])
+                $query->active()
                     ->orWhere(fn ($q) => $q
                         ->where('status', 'expired')
                         ->whereDate('due_date', '>=', now()->subDays(self::EXPIRED_SYNC_GRACE_DAYS))
@@ -55,7 +55,7 @@ class PaymentAutomationService
         // A data efetiva vem do código de barras, então o filtro é feito em PHP.
         PaymentSlip::query()
             ->with('charge')
-            ->whereIn('status', ['pending', 'generated'])
+            ->active()
             ->chunkById(100, function ($slips) use (&$expired) {
                 foreach ($slips as $slip) {
                     if ($slip->effectiveDueDate()?->lt(today())) {

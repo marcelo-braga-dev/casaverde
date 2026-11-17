@@ -20,11 +20,11 @@ class CancelCustomerChargeService
 
     public function handle(CustomerCharge $charge, ?string $reason = null): CustomerCharge
     {
-        if ($charge->status === 'paid') {
+        if ($charge->isPaid()) {
             throw new InvalidArgumentException('Não é possível cancelar uma cobrança já paga.');
         }
 
-        if ($charge->status === 'cancelled') {
+        if ($charge->isCancelled()) {
             throw new InvalidArgumentException('Esta cobrança já está cancelada.');
         }
 
@@ -32,7 +32,7 @@ class CancelCustomerChargeService
         // não pode ser cancelada com um boleto ainda pagável lá fora.
         $this->cancelPaymentSlipService->cancelActiveSlipsOf($charge);
 
-        if ($charge->refresh()->status === 'paid') {
+        if ($charge->refresh()->isPaid()) {
             throw new InvalidArgumentException('Não é possível cancelar uma cobrança já paga.');
         }
 

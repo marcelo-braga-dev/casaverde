@@ -47,11 +47,7 @@ class CancelPaymentSlipService
                 'provider_status' => $cancelledAtProvider ? 'canceled' : $slip->provider_status,
             ]);
 
-            if ($slip->charge && ! in_array($slip->charge->status, ['paid', 'cancelled'], true)) {
-                $slip->charge->update([
-                    'status' => 'open',
-                ]);
-            }
+            $slip->charge?->reopenAfterPaymentEnded();
 
             return $slip->fresh();
         });
@@ -66,7 +62,7 @@ class CancelPaymentSlipService
     {
         $activeSlips = $charge->paymentSlips()
             ->with('providerAccount')
-            ->whereIn('status', ['pending', 'generated'])
+            ->active()
             ->get();
 
         foreach ($activeSlips as $slip) {

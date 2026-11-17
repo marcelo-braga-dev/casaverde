@@ -16,7 +16,7 @@ class UpdateCustomerChargeDueDateService
 
     public function handle(CustomerCharge $charge, string $dueDate): CustomerCharge
     {
-        if (in_array($charge->status, ['paid', 'cancelled'], true)) {
+        if (! $charge->canChangeDueDate()) {
             throw new InvalidArgumentException('Não é possível alterar o vencimento de uma cobrança paga ou cancelada.');
         }
 
