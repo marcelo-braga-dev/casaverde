@@ -2,6 +2,8 @@
 
 namespace App\Services\Automation;
 
+use App\Enums\Alert\OperationalAlertStatus;
+use App\Enums\Cobranca\CustomerChargeStatus;
 use App\Jobs\SendChargeReminderJob;
 use App\Models\Cobranca\CustomerCharge;
 use App\Services\Pagamento\PaymentSlipExpiredAlertService;
@@ -12,11 +14,31 @@ class ChargeReminderService
 
     private const OVERDUE_RESEND_INTERVAL_DAYS = 5;
 
+    public function __construct(
+        private readonly GenerateChargeReminderAlertService $reminderAlertService,
+    ) {}
+
     public function sendDueReminders(): void
     {
+        $this->resolveStaleReminders();
         $this->sendUpcomingDueReminders();
         $this->sendOverdueReminders();
         $this->sendExpiredSlipReminders();
+    }
+
+    // Lembrete de cobrança que já foi paga ou cancelada (inclusive antes de esse fechamento
+    // existir no cancelamento/pagamento) não tem mais o que cobrar.
+    private function resolveStaleReminders(): void
+    {
+        CustomerCharge::query()
+            ->whereIn('status', CustomerChargeStatus::finalValues())
+            ->whereHas('operationalAlerts', fn ($q) => $q
+                ->whereIn('type', ['charge_overdue_reminder', 'charge_upcoming_due_reminder'])
+                ->whereIn('status', [OperationalAlertStatus::Open->value, OperationalAlertStatus::InProgress->value]))
+            ->each(fn (CustomerCharge $charge) => $this->reminderAlertService->resolveFor(
+                $charge,
+                $charge->isPaid() ? 'Cobrança paga.' : 'Cobrança cancelada.',
+            ));
     }
 
     private function sendUpcomingDueReminders(): void
