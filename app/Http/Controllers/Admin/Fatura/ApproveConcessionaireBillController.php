@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin\Fatura;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Fatura\ApproveConcessionaireBillRequest;
 use App\Http\Requests\Fatura\ApproveConcessionaireBillsRequest;
 use App\Models\Fatura\ConcessionaireBill;
 use App\Services\Fatura\ApproveConcessionaireBillService;
@@ -14,24 +15,29 @@ class ApproveConcessionaireBillController extends Controller
         private readonly ApproveConcessionaireBillService $service,
     ) {}
 
-    public function store(ConcessionaireBill $fatura)
+    public function store(ApproveConcessionaireBillRequest $request, ConcessionaireBill $fatura)
     {
         try {
-            $this->service->handle($fatura);
+            $bill = $this->service->handle($fatura, $request->validated('charge_due_date'));
         } catch (InvalidArgumentException $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
 
-        return redirect()
-            ->back()
-            ->with('success', 'Fatura aprovada. A cobrança será gerada automaticamente em até 1 hora.');
+        $charge = $bill->relationLoaded('customerCharge') ? $bill->customerCharge : null;
+
+        return redirect()->back()->with(...match ($charge?->status) {
+            'open' => ['success', "Fatura aprovada e cobrança #{$charge->id} aberta."],
+            'draft' => ['warning', "Fatura aprovada. A cobrança #{$charge->id} ficou em rascunho: informe um vencimento futuro na tela da cobrança para abri-la."],
+            default => ['warning', 'Fatura aprovada, mas a cobrança não foi gerada agora. A rotina automática tenta de novo em até 1 hora.'],
+        });
     }
 
     public function storeMany(ApproveConcessionaireBillsRequest $request)
     {
-        $result = $this->service->handleMany($request->validated('ids'));
+        $result = $this->service->handleMany($request->validated('ids'), $request->validated('charge_due_date'));
 
-        $message = "{$result['approved']} fatura(s) aprovada(s). As cobranças serão geradas automaticamente em até 1 hora.";
+        $message = "{$result['approved']} fatura(s) aprovada(s): {$result['opened']} cobrança(s) aberta(s)";
+        $message .= $result['drafts'] > 0 ? ", {$result['drafts']} em rascunho (vencimento passado ou valor zerado)." : '.';
 
         if ($result['skipped'] !== []) {
             $message .= ' '.count($result['skipped']).' não aprovada(s): '

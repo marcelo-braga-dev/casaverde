@@ -241,7 +241,13 @@ const Page = ({ bill, suggestedUsinaId, energyBreakdown, usinas = [], consumerUn
         put(route("consultor.cliente.faturas.update", bill.id), { preserveScroll: true, onSuccess: () => setSavedData({ ...data }) });
     };
 
-    const approve = () => { if (!canApprove) return; router.post(route("consultor.cliente.faturas.approve", bill.id), {}, { preserveScroll: true }); };
+    const todayIso = new Date().toISOString().slice(0, 10);
+    const billPastDue = bill.review_status !== "approved" && toInputDate(bill.vencimento) !== "" && toInputDate(bill.vencimento) < todayIso;
+    const [chargeDueDate, setChargeDueDate] = useState("");
+    const approve = () => {
+        if (!canApprove) return;
+        router.post(route("consultor.cliente.faturas.approve", bill.id), { charge_due_date: chargeDueDate || null }, { preserveScroll: true });
+    };
     const resolveIssue = (issueId) => router.post(route("consultor.cliente.faturas.issues.resolve", issueId), {}, { preserveScroll: true });
     const confirmDelete = () => destroyBill(route("consultor.cliente.faturas.destroy", bill.id), { onSuccess: () => setDeleteOpen(false) });
     const clearInvalidDecimalOnFocus = (field) => { if (isInvalidNumber(data[field])) setData(field, ""); };
@@ -297,6 +303,8 @@ const Page = ({ bill, suggestedUsinaId, energyBreakdown, usinas = [], consumerUn
             <Stack spacing={1} mb={3}>
                 {flash?.error && <Alert severity="error" sx={{ borderRadius: 2 }}>{flash.error}</Alert>}
                 {flash?.success && <Alert severity="success" sx={{ borderRadius: 2 }}>{flash.success}</Alert>}
+                {flash?.warning && <Alert severity="warning" sx={{ borderRadius: 2 }}>{flash.warning}</Alert>}
+                {errors.charge_due_date && <Alert severity="error" sx={{ borderRadius: 2 }}>{errors.charge_due_date}</Alert>}
                 {invalidFields.length > 0 ? (
                     <Alert severity="warning" icon={<IconAlertTriangle size={18} />} sx={{ borderRadius: 2 }}>
                         <strong>{invalidFields.length} campo(s) inválido(s):</strong> {invalidFields.map(f => f.label).join(", ")}. Corrija antes de aprovar.
@@ -537,6 +545,22 @@ const Page = ({ bill, suggestedUsinaId, energyBreakdown, usinas = [], consumerUn
                                     </Stack>
 
                                     <Divider sx={{ my: 2.5 }} />
+                                    {billPastDue && (
+                                        <Alert severity="warning" sx={{ mb: 2 }}>
+                                            O vencimento desta fatura já passou. Informe o vencimento da cobrança para ela já nascer aberta;
+                                            sem data, a cobrança fica em rascunho.
+                                            <TextField
+                                                type="date"
+                                                size="small"
+                                                label="Vencimento da cobrança"
+                                                value={chargeDueDate}
+                                                onChange={(e) => setChargeDueDate(e.target.value)}
+                                                InputLabelProps={{ shrink: true }}
+                                                inputProps={{ min: todayIso }}
+                                                sx={{ display: "block", mt: 1.5, bgcolor: "background.paper" }}
+                                            />
+                                        </Alert>
+                                    )}
                                     <Stack direction="row" spacing={1.5} flexWrap="wrap">
                                         {bill.review_status !== "approved" && (
                                             <Tooltip title={!canApprove ? (!injectedConfirmed ? "Confirme os valores de energia injetada antes de aprovar" : "Corrija os campos inválidos e salve antes de aprovar") : ""}>
@@ -662,7 +686,7 @@ const Page = ({ bill, suggestedUsinaId, energyBreakdown, usinas = [], consumerUn
                                             </Button>
                                             {bill.review_status !== "approved" && (
                                                 <Typography variant="caption" color="text.secondary" textAlign="center">
-                                                    Salvar não aprova a fatura. Depois de salvar, clique em “Aprovar” na aba de dados: só a fatura aprovada gera a cobrança.
+                                                    Salvar não aprova a fatura. Depois de salvar, clique em “Aprovar” na aba de dados: ao aprovar, a cobrança já é gerada e aberta.
                                                 </Typography>
                                             )}
                                         </Stack>

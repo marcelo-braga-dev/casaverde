@@ -24,7 +24,7 @@ class BillingQueueService
             [
                 'key' => 'bills_pending_review',
                 'label' => 'Faturas para aprovar',
-                'help' => 'Confira e aprove; a cobrança nasce em até 1 hora.',
+                'help' => 'Confira e aprove: a cobrança já nasce aberta.',
                 'count' => ConcessionaireBill::query()->where('review_status', 'pending_review')->count(),
                 'amount' => null,
                 'url' => route('admin.relatorios.faturas', ['review_status' => 'pending_review'], false),
@@ -32,7 +32,7 @@ class BillingQueueService
             [
                 'key' => 'charges_draft',
                 'label' => 'Cobranças em rascunho',
-                'help' => 'Abra para cobrar o cliente.',
+                'help' => 'Ficaram sem vencimento válido ou com valor zerado: corrija e abra.',
                 'count' => (clone $drafts)->count(),
                 'amount' => (float) (clone $drafts)->sum('final_amount'),
                 'url' => route('admin.financeiro.cobrancas.index', ['status' => 'draft'], false),

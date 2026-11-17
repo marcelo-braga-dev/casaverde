@@ -14,7 +14,7 @@ describe('GenerateCustomerChargeFromBillService', function () {
         $this->actingAs($this->admin);
     });
 
-    it('generates a draft charge based on the injected consumption amount, not the bill total', function () {
+    it('generates an open charge based on the injected consumption amount, not the bill total', function () {
         $client = ClientProfile::factory()->create();
         $bill = ConcessionaireBill::factory()->approved()->create([
             'client_profile_id' => $client->id,
@@ -26,7 +26,8 @@ describe('GenerateCustomerChargeFromBillService', function () {
         $charge = $this->service->handle($bill);
 
         expect($charge)->toBeInstanceOf(CustomerCharge::class)
-            ->and($charge->status)->toBe('draft')
+            ->and($charge->status)->toBe('open')
+            ->and($charge->approved_at)->not->toBeNull()
             ->and($charge->client_profile_id)->toBe($client->id)
             ->and((float) $charge->original_amount)->toBe(1000.00);
     });
@@ -129,5 +130,31 @@ describe('GenerateCustomerChargeFromBillService', function () {
         $charge = $this->service->handle($bill);
 
         expect($charge->generated_by_user_id)->toBe($this->admin->id);
+    });
+
+    it('uses the given due date only when the bill due date already passed, and keeps a draft without it', function () {
+        $late = fn () => ConcessionaireBill::factory()->approved()->create([
+            'vencimento' => now()->subDays(5)->toDateString(),
+            'injected_consumption_amount' => -300.00,
+        ]);
+        $newDue = now()->addDays(10)->toDateString();
+
+        $withDate = $this->service->handle($late(), $newDue);
+        $withoutDate = $this->service->handle($late());
+
+        $onTime = ConcessionaireBill::factory()->approved()->create(['injected_consumption_amount' => -300.00]);
+        $keepsOwn = $this->service->handle($onTime, $newDue);
+
+        expect($withDate->status)->toBe('open')
+            ->and($withDate->due_date->toDateString())->toBe($newDue)
+            ->and($withoutDate->status)->toBe('draft')
+            ->and($keepsOwn->status)->toBe('open')
+            ->and($keepsOwn->due_date->toDateString())->toBe($onTime->vencimento->toDateString());
+    });
+
+    it('keeps a zero-value charge as draft', function () {
+        $bill = ConcessionaireBill::factory()->approved()->create(['injected_consumption_amount' => 0]);
+
+        expect($this->service->handle($bill)->status)->toBe('draft');
     });
 });

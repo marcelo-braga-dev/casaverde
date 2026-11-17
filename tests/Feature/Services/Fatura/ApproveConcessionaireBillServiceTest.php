@@ -32,7 +32,9 @@ describe('Approving concessionaire bills', function () {
         $approved = $this->service->handle($bill);
 
         expect($approved->review_status)->toBe('approved')
-            ->and($approved->reviewed_by_user_id)->toBe($this->admin->id);
+            ->and($approved->reviewed_by_user_id)->toBe($this->admin->id)
+            ->and($approved->customerCharge->status)->toBe('open')
+            ->and((float) $approved->customerCharge->final_amount)->toBe(255.0);
     });
 
     it('lists what blocks the approval of an incomplete bill', function () {
@@ -115,5 +117,31 @@ describe('Approving concessionaire bills', function () {
 
         expect($item['approval_blockers'])->toBe([])
             ->and($item['charge_estimate'])->toBe(255.0);
+    });
+
+    it('opens the charges of bills already past due with the date given in the batch', function () {
+        $late = approvableBill(['vencimento' => now()->subDays(10)->toDateString()]);
+        $onTime = approvableBill();
+        $newDue = now()->addDays(7)->toDateString();
+
+        $this->post(route('consultor.cliente.faturas.approve-batch'), [
+            'ids' => [$late->id, $onTime->id],
+            'injected_values_confirmed' => true,
+            'charge_due_date' => $newDue,
+        ])->assertSessionHas('success');
+
+        expect($late->fresh()->customerCharge->status)->toBe('open')
+            ->and($late->fresh()->customerCharge->due_date->toDateString())->toBe($newDue)
+            ->and($onTime->fresh()->customerCharge->status)->toBe('open')
+            ->and($onTime->fresh()->customerCharge->due_date->toDateString())->toBe($onTime->vencimento->toDateString());
+    });
+
+    it('approves a past due bill without date, leaving its charge as draft and warning', function () {
+        $late = approvableBill(['vencimento' => now()->subDays(10)->toDateString()]);
+
+        $this->post(route('consultor.cliente.faturas.approve', $late))->assertSessionHas('warning');
+
+        expect($late->fresh()->review_status)->toBe('approved')
+            ->and($late->fresh()->customerCharge->status)->toBe('draft');
     });
 });

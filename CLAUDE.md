@@ -95,7 +95,7 @@ Redirecionamento pós-login (`app/Http/Middleware/RedirectUserByRole.php`):
 - Código da UC (`uc_code`) é normalizado para apenas dígitos no evento `saving`.
 - Combinação `uc_code + concessionaria_id` é única — não criar UCs duplicadas.
 - `ConcessionaireBill` referencia `consumer_unit_id` para associar faturas à UC correta.
-- Revisão de fatura: `pending_review` → `approved` (botão "Aprovar"); só fatura aprovada gera cobrança. O formulário de correção nunca altera o status. `reviewed` foi extinto (migration `2026_11_16_130000`); `corrected` existe só no legado de 05–07/2026.
+- Revisão de fatura: `pending_review` → `approved` (botão "Aprovar"); a aprovação já gera a cobrança **aberta** (`GenerateCustomerChargeFromBillService`). Ela só nasce em rascunho com valor zerado ou com o vencimento da fatura já passado sem nova data (`charge_due_date` na aprovação individual ou em lote). O formulário de correção nunca altera o status. `reviewed` foi extinto (migration `2026_11_16_130000`); `corrected` existe só no legado de 05–07/2026.
 - Aprovação (individual ou em lote na lista `admin.relatorios.faturas`) passa por `ApproveConcessionaireBillService::blockers()`: campos obrigatórios, consumo injetado diferente de zero (base da cobrança) e nenhuma pendência `error`/`critical` em aberto.
 - Abrir cobrança (`ApproveCustomerChargeService`) recusa valor zerado e vencimento passado; em lote (`financeiro.cobrancas.open-batch`) o novo vencimento só substitui o das cobranças já vencidas.
 
@@ -186,7 +186,7 @@ app/Jobs/
 ```
 
 Serviços de automação recorrente em `app/Services/Automation/`:
-- `ChargeAutomationService` — gera `CustomerCharge` a partir de fatura aprovada.
+- `ChargeAutomationService` — rede de segurança: gera a cobrança de fatura aprovada que ficou sem (a aprovação já gera na hora).
 - `PaymentAutomationService` — marca cobranças vencidas, sincroniza pagamentos pendentes com o Mercado Pago e expira boletos vencidos.
 - `ChargeReminderService` — dispara lembrete de cobrança: pré-vencimento (3 dias antes do `due_date`, uma vez), pós-vencimento (a cada 5 dias enquanto `status=overdue`) e boleto vencido sem substituto (a cada 5 dias, via `PaymentSlipExpiredAlertService`; nesses casos o lembrete de vencida comum não é enviado). Despacha `SendChargeReminderJob`, que delega para `GenerateChargeReminderAlertService` (cria um `OperationalAlert` com link `wa.me` pronto no `payload`, atribuído ao consultor responsável). Controlado pela coluna `customer_charges.reminder_sent_at`.
 - `PaymentAutomationService::expireOverdueSlips()` — marca como `expired` o boleto/Pix cuja data (lida do código de barras) passou, sem cancelar no provider; o slip vencido segue sincronizado por 10 dias.
@@ -305,7 +305,7 @@ Menu construído com base em `auth.user.role_name` — segurança real sempre no
 - Ambiente: SQLite in-memory (`phpunit.xml` define `DB_CONNECTION=sqlite`, `DB_DATABASE=:memory:`)
 - Rodar com `php83 artisan test` (mesma versão de produção).
 - `tests/Pest.php` liga `Http::preventStrayRequests()`: chamada HTTP sem `Http::fake()` falha o teste (nunca sai para o Mercado Pago); helpers `mercadoPagoAccount()` e `mpOrder()` simulam conta e pedido. `phpunit.xml` manda logs para o canal `null`.
-- Cobertura atual: 86 arquivos de teste (Feature + Unit), 593 testes
+- Cobertura atual: 86 arquivos de teste (Feature + Unit), 597 testes
 - Áreas cobertas: Auth, Middleware, Dashboard (Admin/Consultor), Services (Cliente, Cobrança, Usina, Fatura, Proposta, Automation), Controllers (ConsumerUnit, ClientUsinaLink, ConcessionariaController, ProducerFeeRule), Policies (UsinaSolar, CustomerCharge, ProducerProfile), Pagamento/Mercado Pago (provider, assinatura e controller de webhook, processamento de webhook, geração/cancelamento/sync de boleto e Pix), IMAP (`ImportAutomaticConcessionaireBillService`, com fetcher/extrator/desbloqueio de PDF mockados), WhatsApp (`WhatsAppLinkService`)
 - Também cobertos: Mercado Pago (provider, vencimento, estorno, webhook com assinatura), ciclo de vida de boletos vencidos, isolamento de acesso por role/carteira (`tests/Feature/Security/`).
 - **Áreas sem cobertura**: geração de PDF via snappy (propostas legadas)

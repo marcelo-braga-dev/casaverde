@@ -3,11 +3,17 @@
 namespace App\Services\Fatura;
 
 use App\Models\Fatura\ConcessionaireBill;
+use App\Services\Cobranca\GenerateCustomerChargeFromBillService;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
+use Throwable;
 
 class ApproveConcessionaireBillService
 {
+    public function __construct(
+        private readonly GenerateCustomerChargeFromBillService $generateChargeService,
+    ) {}
+
     /**
      * Motivos que impedem aprovar. Espelha a validação da tela da fatura e acrescenta o que
      * faria a cobrança nascer errada (sem consumo injetado ela sairia zerada).
@@ -58,7 +64,13 @@ class ApproveConcessionaireBillService
         return $blockers;
     }
 
-    public function handle(ConcessionaireBill $bill): ConcessionaireBill
+    /**
+     * Aprova e já gera a cobrança (aberta, ou rascunho quando ainda não dá para cobrar).
+     * $chargeDueDate só é usado se o vencimento da fatura já passou. Se a geração falhar,
+     * a fatura continua aprovada: a rotina horária tenta de novo e o alerta de "fatura
+     * aprovada sem cobrança" avisa.
+     */
+    public function handle(ConcessionaireBill $bill, ?string $chargeDueDate = null): ConcessionaireBill
     {
         if ($bill->review_status === 'approved') {
             throw new InvalidArgumentException('Esta fatura já está aprovada.');
@@ -76,25 +88,41 @@ class ApproveConcessionaireBillService
             'reviewed_at' => now(),
         ]);
 
-        return $bill->fresh();
+        $bill = $bill->fresh();
+
+        try {
+            $bill->setRelation('customerCharge', $this->generateChargeService->handle($bill, $chargeDueDate));
+        } catch (InvalidArgumentException) {
+            // Já existe cobrança ativa para a fatura: nada a gerar.
+        } catch (Throwable $e) {
+            report($e);
+        }
+
+        return $bill;
     }
 
     /**
      * @param  iterable<int>  $ids
-     * @return array{approved: int, skipped: array<int, string>}
+     * @return array{approved: int, opened: int, drafts: int, skipped: array<int, string>}
      */
-    public function handleMany(iterable $ids): array
+    public function handleMany(iterable $ids, ?string $chargeDueDate = null): array
     {
-        $result = ['approved' => 0, 'skipped' => []];
+        $result = ['approved' => 0, 'opened' => 0, 'drafts' => 0, 'skipped' => []];
 
         ConcessionaireBill::query()
             ->with('issues')
             ->whereIn('id', Collection::make($ids)->map(fn ($id) => (int) $id)->unique())
             ->get()
-            ->each(function (ConcessionaireBill $bill) use (&$result) {
+            ->each(function (ConcessionaireBill $bill) use (&$result, $chargeDueDate) {
                 try {
-                    $this->handle($bill);
+                    $approved = $this->handle($bill, $chargeDueDate);
+                    $charge = $approved->relationLoaded('customerCharge') ? $approved->customerCharge : null;
                     $result['approved']++;
+                    match ($charge?->status) {
+                        'open' => $result['opened']++,
+                        'draft' => $result['drafts']++,
+                        default => null,
+                    };
                 } catch (InvalidArgumentException $e) {
                     $result['skipped'][$bill->id] = $e->getMessage();
                 }

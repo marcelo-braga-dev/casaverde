@@ -18,6 +18,7 @@ class ApproveConcessionaireBillsRequest extends FormRequest
             'ids' => ['required', 'array', 'min:1', 'max:200'],
             'ids.*' => ['integer', 'exists:concessionaire_bills,id'],
             'injected_values_confirmed' => ['accepted'],
+            'charge_due_date' => ['nullable', 'date', 'after_or_equal:today'],
         ];
     }
 
@@ -25,6 +26,7 @@ class ApproveConcessionaireBillsRequest extends FormRequest
     {
         return [
             'injected_values_confirmed.accepted' => 'Confirme que conferiu os valores de consumo injetado antes de aprovar em lote.',
+            'charge_due_date.after_or_equal' => 'O vencimento da cobrança não pode ser uma data passada.',
         ];
     }
 }

@@ -85,12 +85,22 @@ export default function Page({
     const [confirmOpen, setConfirmOpen] = useState(false);
     const [injectedConfirmed, setInjectedConfirmed] = useState(false);
     const [approving, setApproving] = useState(false);
+    const [chargeDueDate, setChargeDueDate] = useState("");
 
     const selectedVisible = selected.filter((id) => eligibleIds.includes(id));
     const selectedTotal = items
         .filter((b) => selectedVisible.includes(b.id))
         .reduce((sum, b) => sum + (b.charge_estimate || 0), 0);
     const allSelected = eligibleIds.length > 0 && selectedVisible.length === eligibleIds.length;
+    // vencimento chega como "dd/mm/aaaa"
+    const isPast = (date) => {
+        if (!date) return false;
+        const [d, m, y] = date.split("/").map(Number);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        return new Date(y, m - 1, d) < today;
+    };
+    const selectedPastDue = items.filter((b) => selectedVisible.includes(b.id) && isPast(b.vencimento)).length;
 
     const toggle = (id) => setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
     const toggleAll = () => setSelected(allSelected ? [] : eligibleIds);
@@ -98,12 +108,12 @@ export default function Page({
     const approveSelected = () => {
         router.post(
             route("consultor.cliente.faturas.approve-batch"),
-            { ids: selectedVisible, injected_values_confirmed: injectedConfirmed },
+            { ids: selectedVisible, injected_values_confirmed: injectedConfirmed, charge_due_date: chargeDueDate || null },
             {
                 preserveScroll: true,
                 onStart: () => setApproving(true),
                 onFinish: () => setApproving(false),
-                onSuccess: () => { setSelected([]); setConfirmOpen(false); setInjectedConfirmed(false); },
+                onSuccess: () => { setSelected([]); setConfirmOpen(false); setInjectedConfirmed(false); setChargeDueDate(""); },
             },
         );
     };
@@ -278,9 +288,10 @@ export default function Page({
                 </Grid>
 
                 {flash?.success && <Alert severity="success">{flash.success}</Alert>}
+                {flash?.warning && <Alert severity="warning">{flash.warning}</Alert>}
                 {flash?.error && <Alert severity="error">{flash.error}</Alert>}
-                {(pageErrors?.ids || pageErrors?.injected_values_confirmed) && (
-                    <Alert severity="error">{pageErrors.injected_values_confirmed || pageErrors.ids}</Alert>
+                {(pageErrors?.ids || pageErrors?.injected_values_confirmed || pageErrors?.charge_due_date) && (
+                    <Alert severity="error">{pageErrors.injected_values_confirmed || pageErrors.charge_due_date || pageErrors.ids}</Alert>
                 )}
 
                 {!summary.whole_queue && summary.pending_queue_total > 0 && (
@@ -321,7 +332,7 @@ export default function Page({
                     >
                         {selectedVisible.length > 0 ? (
                             <>
-                                <strong>{selectedVisible.length}</strong> fatura(s) selecionada(s) — cobrança estimada de{" "}
+                                <strong>{selectedVisible.length}</strong> fatura(s) selecionada(s), cobrança estimada de{" "}
                                 <MoneyText value={selectedTotal} bold component="span" />.
                             </>
                         ) : (
@@ -409,9 +420,25 @@ export default function Page({
                 <DialogContent>
                     <Stack spacing={2}>
                         <Typography>
-                            As cobranças serão geradas automaticamente em até 1 hora, como rascunho, totalizando cerca de{" "}
-                            <MoneyText value={selectedTotal} bold component="span" />. O cliente só é cobrado depois que a cobrança for aberta.
+                            As cobranças são geradas e abertas na hora, totalizando cerca de{" "}
+                            <MoneyText value={selectedTotal} bold component="span" />. Depois é só gerar o boleto/Pix de cada uma.
                         </Typography>
+                        {selectedPastDue > 0 && (
+                            <>
+                                <Alert severity="warning">
+                                    {selectedPastDue} fatura(s) com vencimento já passado. Informe o vencimento das cobranças delas;
+                                    sem data, essas ficam em rascunho. As demais usam o vencimento da própria fatura.
+                                </Alert>
+                                <TextField
+                                    type="date"
+                                    label="Vencimento das cobranças vencidas"
+                                    value={chargeDueDate}
+                                    onChange={(e) => setChargeDueDate(e.target.value)}
+                                    InputLabelProps={{ shrink: true }}
+                                    size="small"
+                                />
+                            </>
+                        )}
                         <FormControlLabel
                             control={<Checkbox checked={injectedConfirmed} onChange={(e) => setInjectedConfirmed(e.target.checked)} />}
                             label="Conferi os valores de consumo injetado destas faturas."
