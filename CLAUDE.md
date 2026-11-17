@@ -200,7 +200,8 @@ Agendamento (`routes/console.php`, cron com `php83 artisan schedule:run`):
 - `casaverde:scan-operational-health` (`ScanOperationalHealthCommand`) — `hourlyAt(30)`.
 - `casaverde:sync-payments` (`SyncPendingPaymentsCommand`) — `everyFiveMinutes()`.
 - `casaverde:mark-overdue-charges` — `everyTenMinutes()`.
-- `concessionaire-bills:import`, `casaverde:generate-monthly-charges` — `hourly()`. (O pipeline `EnergyBill`/`energy-bills:import` foi removido em 2026-11-16; as tabelas `energy_bills` e `imported_energy_bill_emails` ficaram no banco, sem código.)
+- `concessionaire-bills:import` — `twiceDaily(7, 13)` (leitura IMAP só às 07h e 13h, para poupar o servidor de e-mail).
+- `casaverde:generate-monthly-charges` — `hourly()`. (O pipeline `EnergyBill`/`energy-bills:import` foi removido em 2026-11-16; as tabelas `energy_bills` e `imported_energy_bill_emails` ficaram no banco, sem código.)
 
 Worker da fila: serviço systemd `casa-verde-queue` (`/usr/bin/php83`, `Restart=always`), conexão `database`. Após deploy: `php artisan queue:restart`.
 
@@ -210,7 +211,7 @@ Toda falha que compromete o faturamento ou a operação contínua vira `Operatio
 - Importação de faturas (`BillImportAlertService`): caixa IMAP inacessível, senha do PDF inválida, fatura ilegível, falha ao gravar, rotina inteira falhando.
 - Pagamentos (`PaymentAlertService`): Mercado Pago recusou gerar (alerta ao consultor), credencial recusada (401/403, crítico), pagamento que não sincroniza, webhook que falha.
 - Sistema (`SystemFailureAlertService`, ouvintes em `AppServiceProvider`): job que esgota tentativas na fila, tarefa agendada que falha (resolvido quando a mesma rotina volta a terminar com exit 0).
-- Varredura (`OperationalHealthScanService`): caixas não verificadas há 3h, faturas em revisão há 3 dias, faturas aprovadas sem cobrança, cobranças em rascunho há 2 dias e cobranças vencendo em 5 dias sem boleto/Pix (um alerta por consultor), pagamentos sem sync há 2h, conta Mercado Pago ausente e webhook sem secret. Respeita alertas marcados como "ignorado".
+- Varredura (`OperationalHealthScanService`): caixas não verificadas há 20h (a importação roda às 07h e 13h), faturas em revisão há 3 dias, faturas aprovadas sem cobrança, cobranças em rascunho há 2 dias e cobranças vencendo em 5 dias sem boleto/Pix (um alerta por consultor), pagamentos sem sync há 2h, conta Mercado Pago ausente e webhook sem secret. Respeita alertas marcados como "ignorado".
 - Dashboard do admin mostra a "Fila de faturamento" (`BillingQueueService`): faturas para aprovar, rascunhos, cobranças sem boleto/Pix e vencidas, cada uma com link para a lista filtrada.
 - Visibilidade (`OperationalAlert::scopeVisibleTo`): admin vê tudo; consultor só alertas `financeiro` da própria carteira (nunca `fatura`/`sistema`).
 
@@ -305,7 +306,7 @@ Menu construído com base em `auth.user.role_name` — segurança real sempre no
 - Ambiente: SQLite in-memory (`phpunit.xml` define `DB_CONNECTION=sqlite`, `DB_DATABASE=:memory:`)
 - Rodar com `php83 artisan test` (mesma versão de produção).
 - `tests/Pest.php` liga `Http::preventStrayRequests()`: chamada HTTP sem `Http::fake()` falha o teste (nunca sai para o Mercado Pago); helpers `mercadoPagoAccount()` e `mpOrder()` simulam conta e pedido. `phpunit.xml` manda logs para o canal `null`.
-- Cobertura atual: 86 arquivos de teste (Feature + Unit), 597 testes
+- Cobertura atual: 86 arquivos de teste (Feature + Unit), 598 testes
 - Áreas cobertas: Auth, Middleware, Dashboard (Admin/Consultor), Services (Cliente, Cobrança, Usina, Fatura, Proposta, Automation), Controllers (ConsumerUnit, ClientUsinaLink, ConcessionariaController, ProducerFeeRule), Policies (UsinaSolar, CustomerCharge, ProducerProfile), Pagamento/Mercado Pago (provider, assinatura e controller de webhook, processamento de webhook, geração/cancelamento/sync de boleto e Pix), IMAP (`ImportAutomaticConcessionaireBillService`, com fetcher/extrator/desbloqueio de PDF mockados), WhatsApp (`WhatsAppLinkService`)
 - Também cobertos: Mercado Pago (provider, vencimento, estorno, webhook com assinatura), ciclo de vida de boletos vencidos, isolamento de acesso por role/carteira (`tests/Feature/Security/`).
 - **Áreas sem cobertura**: geração de PDF via snappy (propostas legadas)

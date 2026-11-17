@@ -200,6 +200,27 @@ describe('Operational alerts for failures that compromise billing', function () 
 
     describe('health scan', function () {
 
+        it('flags a mailbox only after 20h without reading, since imports run at 07h and 13h', function () {
+            $setting = ClientEmailImportSetting::create([
+                'client_profile_id' => $this->client->id,
+                'user_id' => User::factory()->admin()->create()->id,
+                'imap_host' => 'mail.example.com',
+                'imap_port' => 993,
+                'imap_encryption' => 'ssl',
+                'imap_email' => 'faturas@example.com',
+                'imap_password' => 'secret',
+                'is_active' => true,
+                'last_checked_at' => now()->subHours(18),
+            ]);
+
+            app(OperationalHealthScanService::class)->scan();
+            expect(openAlert(OperationalHealthScanService::BILL_IMPORT_STALLED))->toBeNull();
+
+            $setting->forceFill(['last_checked_at' => now()->subHours(21)])->save();
+            app(OperationalHealthScanService::class)->scan();
+            expect(openAlert(OperationalHealthScanService::BILL_IMPORT_STALLED))->not->toBeNull();
+        });
+
         it('groups charges stuck in draft per consultor and resolves when they are opened', function () {
             $charges = CustomerCharge::factory()->count(2)->create([
                 'client_profile_id' => $this->client->id,

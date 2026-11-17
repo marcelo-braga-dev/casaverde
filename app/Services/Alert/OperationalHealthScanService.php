@@ -34,7 +34,8 @@ class OperationalHealthScanService
 
     public const WEBHOOK_SECRET_MISSING = 'payment_webhook_secret_missing';
 
-    private const IMPORT_STALE_HOURS = 3;
+    // Importação roda às 07h e 13h: o maior intervalo normal é de 18h (13h → 07h).
+    private const IMPORT_STALE_HOURS = 20;
 
     private const REVIEW_OVERDUE_DAYS = 3;
 
