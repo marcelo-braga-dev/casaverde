@@ -131,7 +131,7 @@ describe('ProcessPaymentWebhookService', function () {
             'base_url' => 'https://mp.test',
         ]);
 
-        $charge = CustomerCharge::factory()->create(['status' => 'waiting_payment']);
+        $charge = CustomerCharge::factory()->create(['status' => 'open']);
         $slip = PaymentSlip::factory()->create([
             'customer_charge_id' => $charge->id,
             'payment_provider_account_id' => $account->id,

@@ -39,7 +39,6 @@ function ChargeStatusChip({ status }) {
     const map = {
         draft:           { label: 'Rascunho',     color: 'default' },
         open:            { label: 'Em Aberto',     color: 'warning' },
-        waiting_payment: { label: 'Ag. Pagamento', color: 'info' },
         paid:            { label: 'Pago',          color: 'success' },
         overdue:         { label: 'Vencido',       color: 'error' },
         cancelled:       { label: 'Cancelado',     color: 'default' },
@@ -52,7 +51,6 @@ function BillStatusChip({ status }) {
     const map = {
         approved:       { label: 'Aprovada',   color: 'success' },
         pending_review: { label: 'Em Revisão', color: 'warning' },
-        reviewed:       { label: 'Revisada',   color: 'info' },
         corrected:      { label: 'Corrigida',  color: 'info' },
         rejected:       { label: 'Rejeitada',  color: 'error' },
     };

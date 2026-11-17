@@ -12,6 +12,7 @@ Route::name('cliente.faturas.')
     ->group(function () {
         Route::get('/create', [ConcessionaireBillController::class, 'create'])->name('create');
         Route::post('/', [ConcessionaireBillController::class, 'store'])->name('store');
+        Route::post('/approve-batch', [ApproveConcessionaireBillController::class, 'storeMany'])->name('approve-batch');
         Route::get('/{fatura}', [ConcessionaireBillController::class, 'show'])->name('show');
         Route::put('/{fatura}', [ConcessionaireBillController::class, 'update'])->name('update');
         Route::delete('/{fatura}', [ConcessionaireBillController::class, 'destroy'])->name('destroy');

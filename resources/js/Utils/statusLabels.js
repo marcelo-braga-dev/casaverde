@@ -29,12 +29,6 @@ const STATUS_MAP = {
         bgColor: '#FFF4D8',
         borderColor: '#F6D98A',
     },
-    reviewed: {
-        label: 'Revisada',
-        color: '#1E40AF',
-        bgColor: '#DBEAFE',
-        borderColor: '#BFDBFE',
-    },
     corrected: {
         label: 'Corrigida',
         color: '#0F766E',

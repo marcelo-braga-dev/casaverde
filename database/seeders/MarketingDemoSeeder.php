@@ -559,7 +559,7 @@ class MarketingDemoSeeder extends Seeder
                 $isCurrent && $clientIndex % 7 === 2 => 'open',
                 // Parte dos clientes paga assim que recebe a cobrança, antes do vencimento.
                 $isCurrent && $clientIndex % 5 < 2 => 'paid',
-                $isCurrent => 'waiting_payment',
+                $isCurrent => 'open_with_slip',
                 $isPrevious && $lateClient => 'overdue',
                 $clientIndex === 7 && $ref->equalTo($since->startOfMonth()->addMonths(2)) => 'cancelled',
                 default => 'paid',
@@ -654,7 +654,8 @@ class MarketingDemoSeeder extends Seeder
             'manual_discount_amount' => $manualDiscount,
             'manual_addition_amount' => $manualAddition,
             'final_amount' => $final,
-            'status' => $status,
+            // 'open_with_slip' é rótulo interno do seeder: aberta e com boleto/Pix pendente.
+            'status' => $status === 'open_with_slip' ? 'open' : $status,
             'generated_by_user_id' => $this->adminId,
             'approved_by_user_id' => $status === 'draft' ? null : $this->adminId,
             'approved_at' => $status === 'draft' ? null : $issued->addDays(2),
@@ -679,7 +680,7 @@ class MarketingDemoSeeder extends Seeder
 
         match ($status) {
             'paid' => $this->createPaidSlip($charge, $issued->addDays(2), $due, $paidAt),
-            'waiting_payment' => $this->createSlip($charge, $issued->addDays(2), $due, 'pending'),
+            'open_with_slip' => $this->createSlip($charge, $issued->addDays(2), $due, 'pending'),
             'overdue' => $this->createOverdue($charge, $issued->addDays(2), $due),
             'cancelled' => $this->log($charge, 'cancelled', 'Cancelada: fatura reemitida pela concessionária.', $issued->addDays(4)),
             default => null,
@@ -782,7 +783,7 @@ class MarketingDemoSeeder extends Seeder
 
             // Cobranças antigas que ficaram em aberto passam a pagas (o mês atual assume a fila).
             CustomerCharge::where('client_profile_id', $profile->id)
-                ->whereIn('status', ['open', 'waiting_payment'])
+                ->where('status', 'open')
                 ->get()
                 ->each(function (CustomerCharge $charge) {
                     $paidAt = CarbonImmutable::parse($charge->getRawOriginal('due_date'))->subDays(2)->setTime(10, 15)
@@ -810,7 +811,7 @@ class MarketingDemoSeeder extends Seeder
             $start = CarbonImmutable::create($last->reference_year, $last->reference_month, 1)->addMonth();
             for ($ref = $start; $ref->lte($this->lastRef); $ref = $ref->addMonth()) {
                 $bill = $this->createBill($profile, $unit, $usina, $ref, $base, 'approved');
-                $status = $ref->equalTo($this->lastRef) ? 'waiting_payment' : 'paid';
+                $status = $ref->equalTo($this->lastRef) ? 'open_with_slip' : 'paid';
                 $this->createCharge($profile, $bill, $usina, $discount, $status, 0);
             }
         }

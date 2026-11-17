@@ -2,7 +2,11 @@
 
 namespace App\Services\Alert;
 
+use App\Enums\Alert\OperationalAlertStatus;
+use App\Models\Alert\OperationalAlert;
 use Illuminate\Console\Events\ScheduledTaskFailed;
+use Illuminate\Console\Events\ScheduledTaskFinished;
+use Illuminate\Console\Scheduling\Event as ScheduledEvent;
 use Illuminate\Queue\Events\JobFailed;
 
 /**
@@ -35,8 +39,7 @@ class SystemFailureAlertService
 
     public function scheduledTaskFailed(ScheduledTaskFailed $event): void
     {
-        $command = $event->task->command ?? $event->task->description ?? 'tarefa agendada';
-        $command = trim(preg_replace("/^.*artisan'?\s*/", '', (string) $command));
+        $command = $this->commandName($event->task);
 
         $this->notifier->raise(
             OperationalAlertNotifier::MODULE_SISTEMA,
@@ -46,5 +49,31 @@ class SystemFailureAlertService
             sprintf('A rotina "%s" terminou com erro: %s. Enquanto não for corrigida, o que ela automatiza (importação, sincronização de pagamentos, vencimentos, lembretes) fica parado.', $command, $event->exception->getMessage()),
             context: ['payload' => ['command' => $command, 'error' => $event->exception->getMessage(), 'failed_at' => now()->toDateTimeString()]],
         );
+    }
+
+    // O alerta é um só para todas as rotinas: só resolve quando a rotina que falhou volta a rodar.
+    public function scheduledTaskFinished(ScheduledTaskFinished $event): void
+    {
+        if ((int) $event->task->exitCode !== 0) {
+            return;
+        }
+
+        OperationalAlert::query()
+            ->where('module', OperationalAlertNotifier::MODULE_SISTEMA)
+            ->where('type', self::SCHEDULED_TASK_FAILED)
+            ->whereIn('status', [OperationalAlertStatus::Open->value, OperationalAlertStatus::InProgress->value])
+            ->where('payload->command', $this->commandName($event->task))
+            ->update([
+                'status' => OperationalAlertStatus::Resolved->value,
+                'resolved_at' => now(),
+                'resolution_notes' => 'Resolvido automaticamente: a rotina voltou a rodar sem erro.',
+            ]);
+    }
+
+    private function commandName(ScheduledEvent $task): string
+    {
+        $command = $task->command ?? $task->description ?? 'tarefa agendada';
+
+        return trim(preg_replace("/^.*artisan'?\s*/", '', (string) $command));
     }
 }

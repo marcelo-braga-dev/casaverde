@@ -355,7 +355,7 @@ export default function OperationalAlertIndexPage() {
                                                 {alert.usina && (
                                                     <Button
                                                         component={Link}
-                                                        href={route('auth.usinas.show', alert.usina.id)}
+                                                        href={route('consultor.producer.usinas.show', alert.usina.id)}
                                                         size="small"
                                                         variant="outlined"
                                                         startIcon={<VisibilityIcon />}

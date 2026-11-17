@@ -23,17 +23,6 @@ describe('MarkChargeAsOverdueJob', function () {
         ]);
     });
 
-    it('marks a waiting_payment charge with a past due date as overdue', function () {
-        $charge = CustomerCharge::factory()->create([
-            'status' => 'waiting_payment',
-            'due_date' => now()->subDay()->toDateString(),
-        ]);
-
-        (new MarkChargeAsOverdueJob($charge->id))->handle();
-
-        expect($charge->refresh()->status)->toBe('overdue');
-    });
-
     it('leaves an open charge with a future due date untouched', function () {
         $charge = CustomerCharge::factory()->create([
             'status' => 'open',

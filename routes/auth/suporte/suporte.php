@@ -21,12 +21,3 @@ Route::middleware(['auth'])
             ->middleware('role:admin,consultor')
             ->name('tickets.status');
     });
-
-// ── Redirecionamentos legados (mantém compatibilidade com menus existentes) ──
-Route::middleware(['auth'])
-    ->name('auth.suporte.')
-    ->prefix('suporte')
-    ->group(function () {
-        Route::get('/produtor', fn () => redirect()->route('support.tickets.index'))->name('produtor.index');
-        Route::get('/cliente', fn () => redirect()->route('support.tickets.index'))->name('cliente.index');
-    });

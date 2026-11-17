@@ -21,7 +21,7 @@ class PaymentAutomationService
     public function markOverdueCharges(): void
     {
         CustomerCharge::query()
-            ->whereIn('status', ['open', 'waiting_payment'])
+            ->where('status', 'open')
             ->whereDate('due_date', '<', now())
             ->chunkById(100, function ($charges) {
                 foreach ($charges as $charge) {
@@ -34,10 +34,12 @@ class PaymentAutomationService
     {
         PaymentSlip::query()
             ->where(function ($query) {
-                $query->whereIn('status', ['pending', 'generated'])
+                $query->active()
                     ->orWhere(fn ($q) => $q
                         ->where('status', 'expired')
-                        ->whereDate('due_date', '>=', now()->subDays(self::EXPIRED_SYNC_GRACE_DAYS)));
+                        ->whereDate('due_date', '>=', now()->subDays(self::EXPIRED_SYNC_GRACE_DAYS))
+                        // Cobrança cancelada não recebe mais: consultar só gastava cota do MP (HTTP 429).
+                        ->whereHas('charge', fn ($charge) => $charge->where('status', '!=', 'cancelled')));
             })
             ->chunkById(100, function ($payments) {
                 foreach ($payments as $payment) {
@@ -53,7 +55,7 @@ class PaymentAutomationService
         // A data efetiva vem do código de barras, então o filtro é feito em PHP.
         PaymentSlip::query()
             ->with('charge')
-            ->whereIn('status', ['pending', 'generated'])
+            ->active()
             ->chunkById(100, function ($slips) use (&$expired) {
                 foreach ($slips as $slip) {
                     if ($slip->effectiveDueDate()?->lt(today())) {

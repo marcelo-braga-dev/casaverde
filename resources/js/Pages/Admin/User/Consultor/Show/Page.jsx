@@ -140,7 +140,7 @@ export default function Page({ consultor, stats, clients = [], proposals = [], u
             menu="consultores"
             subMenu="consultores-cadastrados"
             breadcrumbs={[
-                { label: 'Consultores', href: safeRoute('admin.consultores.index') },
+                { label: 'Consultores', href: safeRoute('admin.user.consultor.index') },
                 { label: consultor?.nome ?? 'Detalhe' },
             ]}
         >

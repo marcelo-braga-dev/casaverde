@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
-import { Head, Link, router } from "@inertiajs/react";
+import { Head, Link, router, usePage } from "@inertiajs/react";
 import {
     Alert,
     AlertTitle,
@@ -121,7 +121,6 @@ function InfoRow({ label, value, highlight = false }) {
 const STATUS_CONFIG = {
     draft:           { label: "Rascunho",      color: "#64748b", bg: "#f1f5f9" },
     open:            { label: "Aberta",         color: "#3b82f6", bg: "#eff6ff" },
-    waiting_payment: { label: "Aguard. Pag.",   color: "#f59e0b", bg: "#fffbeb" },
     paid:            { label: "Paga",           color: "#10b981", bg: "#f0fdf4" },
     overdue:         { label: "Atrasada",       color: "#ef4444", bg: "#fef2f2" },
     cancelled:       { label: "Cancelada",      color: "#6b7280", bg: "#f9fafb" },
@@ -138,6 +137,7 @@ const PROVIDER_LABELS = {
 
 export default function Page({ charge, aguardandoNovoBoleto = false }) {
     const admin = isAdmin(useAuthUser());
+    const { flash } = usePage().props;
     const hasActivePayment = charge.payment_slips?.some((payment) =>
         ["pending", "generated"].includes(payment.status)
     );
@@ -188,7 +188,7 @@ export default function Page({ charge, aguardandoNovoBoleto = false }) {
     const activePayment = charge.payment_slips?.find((payment) => ["pending", "generated"].includes(payment.status));
     const latestPayment = activePayment || charge.payment_slips?.[charge.payment_slips.length - 1];
     const expiredPayment = [...(charge.payment_slips || [])].reverse().find((payment) => payment.status === "expired");
-    const canGeneratePayment = ["open", "waiting_payment", "overdue"].includes(charge.status) && !hasActivePayment;
+    const canGeneratePayment = ["open", "overdue"].includes(charge.status) && !hasActivePayment;
     const whatsappContext = {
         phone: clientPhone,
         variables: {
@@ -210,6 +210,8 @@ export default function Page({ charge, aguardandoNovoBoleto = false }) {
             <Head title={`Cobrança #${charge.id}`} />
 
             <Stack spacing={3}>
+                {flash?.success && <Alert severity="success">{flash.success}</Alert>}
+                {flash?.error && <Alert severity="error">{flash.error}</Alert>}
 
                 {/* ── Hero Card ─────────────────────────────────────── */}
                 <Card
@@ -400,7 +402,7 @@ export default function Page({ charge, aguardandoNovoBoleto = false }) {
                                 />
                             )}
 
-                            {["open", "waiting_payment"].includes(charge.status) && !aguardandoNovoBoleto && (
+                            {charge.status === "open" && !aguardandoNovoBoleto && (
                                 <WhatsAppButton
                                     templateKey="lembrete_vencimento"
                                     phone={clientPhone}
@@ -517,7 +519,7 @@ export default function Page({ charge, aguardandoNovoBoleto = false }) {
 
                         </Stack>
 
-                        {(["open", "waiting_payment"].includes(charge.status) || canFinalizeCharge) && (
+                        {(charge.status === "open" || canFinalizeCharge) && (
                             <>
                                 <Divider sx={{ my: 2.5 }} />
 
@@ -539,7 +541,7 @@ export default function Page({ charge, aguardandoNovoBoleto = false }) {
                                         </Tooltip>
                                     )}
 
-                                    {["open", "waiting_payment"].includes(charge.status) && (
+                                    {charge.status === "open" && (
                                         <Tooltip title="Marcar como atrasada">
                                             <span>
                                                 <ConfirmActionButton

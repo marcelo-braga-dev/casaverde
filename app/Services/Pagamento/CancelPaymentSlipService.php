@@ -36,21 +36,18 @@ class CancelPaymentSlipService
 
         $provider = $this->providerManager->make($slip->provider, $slip->providerAccount);
 
-        $finalStatus = $provider->cancelPayment($slip->provider_payment_id)
-            ? 'cancelled'
-            : $this->statusWhenCancelRefused($slip, $provider);
+        $cancelledAtProvider = $provider->cancelPayment($slip->provider_payment_id);
+        $finalStatus = $cancelledAtProvider ? 'cancelled' : $this->statusWhenCancelRefused($slip, $provider);
 
-        return DB::transaction(function () use ($slip, $finalStatus) {
+        return DB::transaction(function () use ($slip, $finalStatus, $cancelledAtProvider) {
             $slip->update([
                 'status' => $finalStatus,
                 'cancelled_at' => $finalStatus === 'cancelled' ? now() : $slip->cancelled_at,
+                // Sem isso o slip ficava "cancelado" aqui e "waiting_payment" no provider_status.
+                'provider_status' => $cancelledAtProvider ? 'canceled' : $slip->provider_status,
             ]);
 
-            if ($slip->charge && ! in_array($slip->charge->status, ['paid', 'cancelled'], true)) {
-                $slip->charge->update([
-                    'status' => 'open',
-                ]);
-            }
+            $slip->charge?->reopenAfterPaymentEnded();
 
             return $slip->fresh();
         });
@@ -65,7 +62,7 @@ class CancelPaymentSlipService
     {
         $activeSlips = $charge->paymentSlips()
             ->with('providerAccount')
-            ->whereIn('status', ['pending', 'generated'])
+            ->active()
             ->get();
 
         foreach ($activeSlips as $slip) {

@@ -101,6 +101,9 @@ Redirecionamento pós-login (`app/Http/Middleware/RedirectUserByRole.php`):
 - Código da UC (`uc_code`) é normalizado para apenas dígitos no evento `saving`.
 - Combinação `uc_code + concessionaria_id` é única — não criar UCs duplicadas.
 - `ConcessionaireBill` referencia `consumer_unit_id` para associar faturas à UC correta.
+- Revisão de fatura: `pending_review` → `approved` (botão "Aprovar"); a aprovação já gera a cobrança **aberta** (`GenerateCustomerChargeFromBillService`). Ela só nasce em rascunho com valor zerado ou com o vencimento da fatura já passado sem nova data (`charge_due_date` na aprovação individual ou em lote). O formulário de correção nunca altera o status. `reviewed` foi extinto (migration `2026_11_16_130000`); `corrected` existe só no legado de 05–07/2026.
+- Aprovação (individual ou em lote na lista `admin.relatorios.faturas`) passa por `ApproveConcessionaireBillService::blockers()`: campos obrigatórios, consumo injetado diferente de zero (base da cobrança) e nenhuma pendência `error`/`critical` em aberto.
+- Abrir cobrança (`ApproveCustomerChargeService`) recusa valor zerado e vencimento passado; em lote (`financeiro.cobrancas.open-batch`) o novo vencimento só substitui o das cobranças já vencidas.
 
 ### ClientUsinaLink
 - Vincula `ClientProfile` ↔ `UsinaSolar`, opcionalmente via `ConsumerUnit`.
@@ -129,7 +132,8 @@ Redirecionamento pós-login (`app/Http/Middleware/RedirectUserByRole.php`):
 
 ### Mapa de acesso por role (rotas)
 - `admin/*`: **só admin por padrão** (`routes/admin/index.php`). Consultor entra apenas em cobranças, pagamentos, alertas operacionais e relatórios de clientes/usinas — todos filtrados pela carteira. Faturas de concessionária, dashboard admin, cockpit, configurações, usuários e integrações são exclusivos do admin.
-- `auth/*` (módulo legado de cadastros): só admin, porque os controllers não filtram por carteira; exceções: ferramentas de WhatsApp (admin + consultor), perfil e suporte (todas as roles).
+- `auth/*`: só perfil e suporte (todas as roles) e ferramentas de WhatsApp (admin + consultor). O antigo módulo de cadastros sem filtro de carteira foi removido em 2026-11-16; as tabelas antigas (`cliente_propostas`, `produtor_contratos`, `admins`...) ficaram no banco, sem código.
+- PDF das propostas (`consultor.propostas.pdf.*`, admin + consultor): componentes em `resources/js/Components/Proposta/`.
 - `cliente/*` e `produtor/*`: portais próprios, cada `show` confere o dono do registro.
 - Não há cadastro público (`/register` removido): clientes entram por convite (`ClientAccessInvite`); produtores são criados pelo admin.
 
@@ -139,23 +143,21 @@ Redirecionamento pós-login (`app/Http/Middleware/RedirectUserByRole.php`):
 
 ```
 app/Models/
-├── Users/       User, UserData, UserContact, UserAddress, Admin, Produtor, Vendedor, Roles
+├── Users/       User, UserData, UserContact, UserAddress, Produtor, Vendedor, Roles
 ├── Acesso/      UserAccessLog            (login/logout e ações de acesso)
-├── Cliente/     ClientProfile, ClienteProposta, ClientContract, ClientUsinaLink,
-│                ClientDiscountRule, ClientAccessInvite, ClientePropostaAddress,
-│                ConsumerUnit
+├── Cliente/     ClientProfile, ClientContract, ClientUsinaLink,
+│                ClientDiscountRule, ClientAccessInvite, ConsumerUnit
 ├── Produtor/    ProducerProfile, ProducerLead, ProdutorPropostas,
-│                ProdutorContratos, ProducerAdministrationFeeRules, ProducerAccessInvite,
+│                ProducerAdministrationFeeRules, ProducerAccessInvite,
 │                ProdutorPropostasEnderecos
 ├── Usina/       UsinaSolar, UsinaBlock, UsinaGenerationRecord, Concessionaria, UsinaAddress
 ├── Proposta/    CommercialProposal, ProducerProposal
-├── Energia/     EnergyBill               (pipeline antigo, fora do agendamento)
 ├── Fatura/      ConcessionaireBill, ConcessionaireBillIssue, ImportedConcessionaireEmail,
 │                ImportRun                (histórico de execuções da importação)
 ├── Cobranca/    CustomerCharge, CustomerChargeAdjustment, CustomerChargeHistory
 ├── Pagamento/   PaymentSlip, PaymentTransaction, PaymentProviderAccount, PaymentWebhookEvent
 ├── Alert/       OperationalAlert
-├── Importacao/  ClientEmailImportSetting, ImportEmailAccount, ImportedEnergyBillEmail,
+├── Importacao/  ClientEmailImportSetting, ImportEmailAccount,
 │                InstitutionalEmailAccount (caixas institucionais, tela Integração)
 ├── Config/      SystemSetting
 ├── Demo/        DemoVisitor              (visitantes do modo demonstração)
@@ -198,10 +200,12 @@ app/Jobs/
 ```
 
 Serviços de automação recorrente em `app/Services/Automation/`:
-- `ChargeAutomationService` — gera `CustomerCharge` a partir de fatura aprovada.
+- `ChargeAutomationService` — rede de segurança: gera a cobrança de fatura aprovada que ficou sem (a aprovação já gera na hora).
 - `PaymentAutomationService` — marca cobranças vencidas, sincroniza pagamentos pendentes com o Mercado Pago e expira boletos vencidos.
 - `ChargeReminderService` — dispara lembrete de cobrança: pré-vencimento (3 dias antes do `due_date`, uma vez), pós-vencimento (a cada 5 dias enquanto `status=overdue`) e boleto vencido sem substituto (a cada 5 dias, via `PaymentSlipExpiredAlertService`; nesses casos o lembrete de vencida comum não é enviado). Despacha `SendChargeReminderJob`, que delega para `GenerateChargeReminderAlertService` (cria um `OperationalAlert` com link `wa.me` pronto no `payload`, atribuído ao consultor responsável). Controlado pela coluna `customer_charges.reminder_sent_at`.
 - `PaymentAutomationService::expireOverdueSlips()` — marca como `expired` o boleto/Pix cuja data (lida do código de barras) passou, sem cancelar no provider; o slip vencido segue sincronizado por 10 dias.
+- Status de cobrança: `draft → open → paid | overdue | cancelled` (`waiting_payment` foi removido em 2026-11-16: nada gravava esse valor).
+- Regras de status ficam no model `CustomerCharge` (`isFinal()`, `canReceivePayment()`, `canChangeDueDate()`, `canBeMarkedAsOverdue()`...). Quando o boleto/Pix ativo deixa de ser pagável, use `reopenAfterPaymentEnded()`: volta para `open` ou `overdue` conforme o vencimento — não reimplementar no service.
 - **Não há geração automática de boletos**: o pagamento é sempre gerado manualmente na tela da cobrança (decisão de negócio). O antigo `casaverde:generate-missing-payments`/`GeneratePaymentForChargeJob` foi removido junto com a Cora.
 
 Agendamento (`routes/console.php`, cron com `php83 artisan schedule:run`):
@@ -210,7 +214,8 @@ Agendamento (`routes/console.php`, cron com `php83 artisan schedule:run`):
 - `casaverde:scan-operational-health` (`ScanOperationalHealthCommand`) — `hourlyAt(30)`.
 - `casaverde:sync-payments` (`SyncPendingPaymentsCommand`) — `everyFiveMinutes()`.
 - `casaverde:mark-overdue-charges` — `everyTenMinutes()`.
-- `concessionaire-bills:import`, `casaverde:generate-monthly-charges` — `hourly()`. (`energy-bills:import`, pipeline `EnergyBill` antigo, está fora do agendamento: nunca importou nada e duplicava a leitura das caixas — candidato a remoção.)
+- `concessionaire-bills:import` — `twiceDaily(7, 13)` (leitura IMAP só às 07h e 13h, para poupar o servidor de e-mail).
+- `casaverde:generate-monthly-charges` — `hourly()`. (O pipeline `EnergyBill`/`energy-bills:import` foi removido em 2026-11-16; as tabelas `energy_bills` e `imported_energy_bill_emails` ficaram no banco, sem código.)
 - `queue:prune-failed --hours=720` — `daily()`.
 - `prune-temporary-pdfs` (`TemporaryPdfStorageService::prune()`) — `daily()`; único agendamento que roda também em `DEMO_MODE`.
 - Todos os comandos usam `withoutOverlapping()`. Em `DEMO_MODE` só a limpeza de PDFs temporários é agendada.
@@ -232,8 +237,9 @@ Worker da fila: serviço systemd `casa-verde-queue` (`/usr/bin/php83 artisan que
 Toda falha que compromete o faturamento ou a operação contínua vira `OperationalAlert` (tela Alertas Operacionais + sino com contador no cabeçalho) via `App\Services\Alert\OperationalAlertNotifier` — nunca só log. O alerta é único por módulo + tipo + registro, é renovado se a falha se repete e resolvido sozinho quando a operação volta a funcionar.
 - Importação de faturas (`BillImportAlertService`): caixa IMAP inacessível, senha do PDF inválida, fatura ilegível, falha ao gravar, rotina inteira falhando.
 - Pagamentos (`PaymentAlertService`): Mercado Pago recusou gerar (alerta ao consultor), credencial recusada (401/403, crítico), pagamento que não sincroniza, webhook que falha.
-- Sistema (`SystemFailureAlertService`, ouvintes em `AppServiceProvider`): job que esgota tentativas na fila, tarefa agendada que falha.
-- Varredura (`OperationalHealthScanService`): caixas não verificadas há 3h, faturas em revisão há 3 dias, faturas aprovadas sem cobrança, cobranças em rascunho há 2 dias e cobranças vencendo em 5 dias sem boleto/Pix (um alerta por consultor), pagamentos sem sync há 2h, conta Mercado Pago ausente e webhook sem secret. Respeita alertas marcados como "ignorado".
+- Sistema (`SystemFailureAlertService`, ouvintes em `AppServiceProvider`): job que esgota tentativas na fila, tarefa agendada que falha (resolvido quando a mesma rotina volta a terminar com exit 0).
+- Varredura (`OperationalHealthScanService`): caixas não verificadas há 20h (a importação roda às 07h e 13h), faturas em revisão há 3 dias, faturas aprovadas sem cobrança, cobranças em rascunho há 2 dias e cobranças vencendo em 5 dias sem boleto/Pix (um alerta por consultor), pagamentos sem sync há 2h, conta Mercado Pago ausente e webhook sem secret. Respeita alertas marcados como "ignorado".
+- Dashboard do admin mostra a "Fila de faturamento" (`BillingQueueService`): faturas para aprovar, rascunhos, cobranças sem boleto/Pix e vencidas, cada uma com link para a lista filtrada.
 - Visibilidade (`OperationalAlert::scopeVisibleTo`): admin vê tudo; consultor só alertas `financeiro` da própria carteira (nunca `fatura`/`sistema`).
 
 Não existe envio automático de WhatsApp (sem credenciais de Business API/Twilio/Z-API) — `WhatsAppLinkService` apenas gera o link `wa.me` para clique humano do consultor a partir do alerta.
@@ -253,7 +259,7 @@ routes/
 │   ├── users/                 # admin.php, produtor.php, vendedor.php
 │   ├── financeiro/
 │   └── [usinas, fatura, relatorios, config, alerts, whatsapp...]
-├── auth/                      # rotas compartilhadas por roles
+├── auth/                      # perfil, suporte, WhatsApp e ativação de conta
 ├── cliente/index.php          # auth + role:cliente
 ├── consultor/                 # auth + role:consultor
 │   ├── index.php
@@ -299,7 +305,6 @@ Mercado Pago (`app/Services/Pagamento/Providers/MercadoPago/`) é o provider em 
 
 ```
 app/Services/Imap/AbstractImapFetcherService.php   # classe base
-app/Services/Energia/Imap/ImapEnergyBillFetcherService.php
 app/Services/Fatura/Imap/ImapConcessionaireFetcherService.php
 ```
 
@@ -342,7 +347,7 @@ Menu construído com base em `auth.user.role_name` — segurança real sempre no
 - Ambiente: SQLite in-memory (`phpunit.xml` define `DB_CONNECTION=sqlite`, `DB_DATABASE=:memory:`)
 - Rodar com `php83 artisan test` (mesma versão de produção). Exige as dependências de desenvolvimento do Composer — na instância de demonstração elas não estão instaladas.
 - `tests/Pest.php` liga `Http::preventStrayRequests()`: chamada HTTP sem `Http::fake()` falha o teste (nunca sai para o Mercado Pago); helpers `mercadoPagoAccount()` e `mpOrder()` simulam conta e pedido. `phpunit.xml` manda logs para o canal `null`.
-- Cobertura atual: 95 arquivos de teste (Feature + Unit), 606 testes executados com os datasets (2026-10-29)
+- Cobertura atual: 98 arquivos de teste (Feature + Unit), 635 testes
 - CI: `.github/workflows/ci.yml` roda Pint, testes (PHP 8.3) e `npm ci && npm run build` (Node 22) a cada push/PR
 - Áreas cobertas: Auth, Middleware, Dashboard (Admin/Consultor), Services (Cliente, Cobrança, Usina, Fatura, Proposta, Automation), Controllers (ConsumerUnit, ClientUsinaLink, ConcessionariaController, ProducerFeeRule), Policies (UsinaSolar, CustomerCharge, ProducerProfile), Pagamento/Mercado Pago (provider, assinatura e controller de webhook, processamento de webhook, geração/cancelamento/sync de boleto e Pix), IMAP (`ImportAutomaticConcessionaireBillService`, com fetcher/extrator/desbloqueio de PDF mockados), WhatsApp (`WhatsAppLinkService`)
 - Também cobertos: Mercado Pago (provider, vencimento, estorno, webhook com assinatura), ciclo de vida de boletos vencidos, isolamento de acesso por role/carteira (`tests/Feature/Security/`), alertas operacionais, e-mails ao cliente, PDFs temporários por link assinado, portal do cliente (pagamento), modo demonstração e nome da marca (`tests/Feature/Demo/`).
@@ -357,13 +362,13 @@ Preferir testes de integração com SQLite — sem mocks de DB.
 | Problema | Local | Ação |
 |----------|-------|------|
 | `FormRequest::authorize()` valida role, mas não carteira | Requests de edição usados por consultor | Na edição, checar carteira no `authorize()` (padrão: `StoreClientProfileRequest`) |
-| Módulo legado `auth/*` sem filtro de carteira | `app/Http/Controllers/Auth/**` | Restrito a admin; migrar telas ainda úteis para os módulos novos e remover o resto |
+| Models `Produtor`/`Vendedor` (wrappers antigos sobre `users`) | `ProdutorRepository`, `ConsultorRepository` | Trocar por scopes em `User` ao revisar as telas de usuários do admin |
 | Funcionalidades inacabadas | convite de produtor (`ProducerAccessInvite` nunca é criado, sem página de ativação); telas `fatura-import-settings` (só o `update` está ativo) | Concluir ou remover |
-| Status de slip como strings soltas | `app/Services/Pagamento/**` | Migrar para `PaymentSlipStatus` (já tem `REFUNDED`) |
-| Instanciação direta (`new XService`/`new XRepository`) | ~32 ocorrências em `app/` (ex.: `Admin/Config/ConfigController.php`, `Contratos/Usina/ContratoUsinaController.php`) | Injetar via construtor |
-| Models legados na raiz | `app/Models/{BaseModel,Concessionarias,Config,Enderecos}.php` | Migrar usos para os models de domínio e remover |
-| Telas JSX acima de 1000 linhas | `Auth/Contratos/Usinas/Contrato/ContratoUsina.jsx`, `Admin/Cobranca/Show/Page.jsx`, `Admin/Integracao/Page.jsx` | Extrair componentes em `Partials/` |
-| Controllers/Services acima de 200 linhas | `ClientReportService`, `ImportAutomaticConcessionaireBillService`, `ClientProposalController`, `ScanUsinaOperationalAlertsService`, `OperationalHealthScanService`, `ClienteEconomiaRelatorioService`, `AdminDashboardMetricsService`, `ExecutiveCockpitService` | Dividir em classes menores |
+| Status de slip/cobrança como strings soltas (35 restantes em `Services/Pagamento`) | `app/Services/Pagamento/**` | Grupos já centralizados (`PaymentSlip::active()`, `CustomerChargeStatus::finalValues()/payableValues()`); trocar o restante pelos enums ao mexer em cada service |
+| Instanciação direta (`new XService`/`new XRepository`) | ocorrências em `app/` (ex.: `Admin/Config/ConfigController.php`) | Injetar via construtor |
+| Models legados na raiz | `app/Models/{BaseModel,Concessionarias,Config}.php` | Migrar usos para os models de domínio e remover |
+| Telas JSX acima de 1000 linhas | `Admin/Cobranca/Show/Page.jsx`, `Admin/Integracao/Page.jsx` | Extrair componentes em `Partials/` |
+| Controllers/Services acima de 200 linhas | `ClientReportService`, `ImportAutomaticConcessionaireBillService`, `ClientProposalController`, `ScanUsinaOperationalAlertsService`, `OperationalHealthScanService`, `ClienteEconomiaRelatorioService`, `ExecutiveCockpitService` | Dividir em classes menores |
 | N+1 potenciais | Services sem eager loading | Adicionar `.with()` onde necessário |
 | Sem cobertura de teste para geração de PDF | dompdf/snappy | Criar testes quando o fluxo for revisado |
 

@@ -14,6 +14,7 @@ use App\Policies\ProducerProfilePolicy;
 use App\Policies\UsinaSolarPolicy;
 use App\Services\Alert\SystemFailureAlertService;
 use Illuminate\Console\Events\ScheduledTaskFailed;
+use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
@@ -46,5 +47,6 @@ class AppServiceProvider extends ServiceProvider
 
         Event::listen(JobFailed::class, fn (JobFailed $event) => app(SystemFailureAlertService::class)->jobFailed($event));
         Event::listen(ScheduledTaskFailed::class, fn (ScheduledTaskFailed $event) => app(SystemFailureAlertService::class)->scheduledTaskFailed($event));
+        Event::listen(ScheduledTaskFinished::class, fn (ScheduledTaskFinished $event) => app(SystemFailureAlertService::class)->scheduledTaskFinished($event));
     }
 }

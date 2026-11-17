@@ -146,7 +146,7 @@ class PerfilController extends Controller
         $billsCount = ConcessionaireBill::where('client_profile_id', $profile->id)
             ->where('review_status', 'approved')->count();
         $savings = (float) CustomerCharge::where('client_profile_id', $profile->id)
-            ->whereIn('status', ['paid', 'open', 'waiting_payment', 'overdue'])
+            ->whereIn('status', ['paid', 'open', 'overdue'])
             ->sum('discount_amount');
 
         return [

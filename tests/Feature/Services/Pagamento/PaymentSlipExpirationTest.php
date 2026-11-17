@@ -1,6 +1,7 @@
 <?php
 
 use App\Jobs\SendChargeReminderJob;
+use App\Jobs\SyncPaymentStatusJob;
 use App\Models\Alert\OperationalAlert;
 use App\Models\Cliente\ClientProfile;
 use App\Models\Cobranca\CustomerCharge;
@@ -185,6 +186,26 @@ describe('Payment slip expiration', function () {
         app(SyncPaymentSlipService::class)->handle($expired);
 
         expect($expired->fresh()->status)->toBe('expired');
+    });
+
+    it('keeps syncing a recently expired slip, but not one whose charge was cancelled', function () {
+        Queue::fake();
+
+        $live = PaymentSlip::factory()->create([
+            'customer_charge_id' => CustomerCharge::factory()->create(['status' => 'overdue'])->id,
+            'status' => 'expired',
+            'due_date' => '2026-09-28',
+        ]);
+        PaymentSlip::factory()->create([
+            'customer_charge_id' => CustomerCharge::factory()->cancelled()->create()->id,
+            'status' => 'expired',
+            'due_date' => '2026-09-28',
+        ]);
+
+        app(PaymentAutomationService::class)->syncPendingPayments();
+
+        Queue::assertPushed(SyncPaymentStatusJob::class, 1);
+        Queue::assertPushed(SyncPaymentStatusJob::class, fn ($job) => $job->paymentId === $live->id);
     });
 
     it('reopens an overdue charge when its due date is moved to the future', function () {

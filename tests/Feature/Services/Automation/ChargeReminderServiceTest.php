@@ -7,6 +7,7 @@ use App\Models\Cobranca\CustomerCharge;
 use App\Models\Users\User;
 use App\Models\WhatsApp\WhatsAppMessageTemplate;
 use App\Services\Automation\ChargeReminderService;
+use App\Services\Automation\GenerateChargeReminderAlertService;
 
 describe('ChargeReminderService', function () {
 
@@ -144,4 +145,13 @@ describe('ChargeReminderService', function () {
             ->and($alert->resolved_at)->not->toBeNull();
     });
 
+    it('resolves reminder alerts left open on charges that were already cancelled', function () {
+        $charge = CustomerCharge::factory()->create(['status' => 'overdue', 'due_date' => now()->subDays(2)->toDateString()]);
+        app(GenerateChargeReminderAlertService::class)->handle($charge, 'overdue');
+        $charge->update(['status' => 'cancelled']);
+
+        $this->service->sendDueReminders();
+
+        expect(OperationalAlert::where('type', 'charge_overdue_reminder')->first()->status)->toBe(OperationalAlertStatus::Resolved);
+    });
 });

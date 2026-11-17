@@ -4,6 +4,7 @@ namespace App\Services\Cobranca;
 
 use App\Models\Cobranca\CustomerCharge;
 use App\Models\Cobranca\CustomerChargeHistory;
+use App\Services\Automation\GenerateChargeReminderAlertService;
 use App\Services\Pagamento\CancelPaymentSlipService;
 use App\Services\Pagamento\PaymentSlipExpiredAlertService;
 use Illuminate\Support\Facades\DB;
@@ -14,15 +15,16 @@ class MarkCustomerChargeAsPaidService
     public function __construct(
         private readonly CancelPaymentSlipService $cancelPaymentSlipService,
         private readonly PaymentSlipExpiredAlertService $expiredAlertService,
+        private readonly GenerateChargeReminderAlertService $reminderAlertService,
     ) {}
 
     public function handle(CustomerCharge $charge, ?string $note = null): CustomerCharge
     {
-        if ($charge->status === 'cancelled') {
+        if ($charge->isCancelled()) {
             throw new InvalidArgumentException('Não é possível pagar uma cobrança cancelada.');
         }
 
-        if ($charge->status === 'paid') {
+        if ($charge->isPaid()) {
             throw new InvalidArgumentException('Esta cobrança já está paga.');
         }
 
@@ -30,7 +32,7 @@ class MarkCustomerChargeAsPaidService
         // provider, senão o cliente ainda consegue pagar de novo.
         $this->cancelPaymentSlipService->cancelActiveSlipsOf($charge);
 
-        if ($charge->refresh()->status === 'paid') {
+        if ($charge->refresh()->isPaid()) {
             return $charge;
         }
 
@@ -46,6 +48,7 @@ class MarkCustomerChargeAsPaidService
             $charge = $charge->fresh();
 
             $this->expiredAlertService->resolveFor($charge, 'Cobrança marcada como paga manualmente.');
+            $this->reminderAlertService->resolveFor($charge, 'Cobrança marcada como paga manualmente.');
 
             CustomerChargeHistory::log(
                 $charge,

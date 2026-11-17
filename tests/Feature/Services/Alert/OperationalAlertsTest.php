@@ -20,6 +20,7 @@ use App\Services\Pagamento\PaymentAlertService;
 use App\Services\Pagamento\ProcessPaymentWebhookService;
 use App\Services\Pagamento\SyncPaymentSlipService;
 use Illuminate\Console\Events\ScheduledTaskFailed;
+use Illuminate\Console\Events\ScheduledTaskFinished;
 use Illuminate\Console\Scheduling\CacheEventMutex;
 use Illuminate\Console\Scheduling\Event as ScheduledEvent;
 use Illuminate\Contracts\Queue\Job;
@@ -174,9 +175,51 @@ describe('Operational alerts for failures that compromise billing', function () 
             expect($alert->severity->value)->toBe('critical')
                 ->and($alert->message)->toContain('casaverde:sync-payments');
         });
+
+        it('resolves the scheduled task alert only when that same task runs cleanly again', function () {
+            $failing = new ScheduledEvent(app(CacheEventMutex::class), "'/usr/bin/php83' 'artisan' concessionaire-bills:import");
+            event(new ScheduledTaskFailed($failing, new RuntimeException('exit code 1')));
+
+            $other = new ScheduledEvent(app(CacheEventMutex::class), "'/usr/bin/php83' 'artisan' casaverde:sync-payments");
+            $other->exitCode = 0;
+            event(new ScheduledTaskFinished($other, 0.1));
+
+            expect(openAlert('scheduled_task_failed'))->not->toBeNull();
+
+            $failing->exitCode = 1;
+            event(new ScheduledTaskFinished($failing, 0.1));
+
+            expect(openAlert('scheduled_task_failed'))->not->toBeNull();
+
+            $failing->exitCode = 0;
+            event(new ScheduledTaskFinished($failing, 0.1));
+
+            expect(openAlert('scheduled_task_failed'))->toBeNull();
+        });
     });
 
     describe('health scan', function () {
+
+        it('flags a mailbox only after 20h without reading, since imports run at 07h and 13h', function () {
+            $setting = ClientEmailImportSetting::create([
+                'client_profile_id' => $this->client->id,
+                'user_id' => User::factory()->admin()->create()->id,
+                'imap_host' => 'mail.example.com',
+                'imap_port' => 993,
+                'imap_encryption' => 'ssl',
+                'imap_email' => 'faturas@example.com',
+                'imap_password' => 'secret',
+                'is_active' => true,
+                'last_checked_at' => now()->subHours(18),
+            ]);
+
+            app(OperationalHealthScanService::class)->scan();
+            expect(openAlert(OperationalHealthScanService::BILL_IMPORT_STALLED))->toBeNull();
+
+            $setting->forceFill(['last_checked_at' => now()->subHours(21)])->save();
+            app(OperationalHealthScanService::class)->scan();
+            expect(openAlert(OperationalHealthScanService::BILL_IMPORT_STALLED))->not->toBeNull();
+        });
 
         it('groups charges stuck in draft per consultor and resolves when they are opened', function () {
             $charges = CustomerCharge::factory()->count(2)->create([

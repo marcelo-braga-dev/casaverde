@@ -49,13 +49,13 @@ class GeneratePaymentSlipService
     private function generate(CustomerCharge $charge, string $provider, string $paymentMethod): PaymentSlip
     {
         // "overdue" incluído: cobrança atrasada com boleto vencido precisa de um novo boleto.
-        if (! in_array($charge->status, ['open', 'waiting_payment', 'overdue'], true)) {
+        if (! $charge->canReceivePayment()) {
             throw new InvalidArgumentException('A cobrança precisa estar aberta ou atrasada para gerar pagamento.');
         }
 
         $existingSlip = PaymentSlip::query()
             ->where('customer_charge_id', $charge->id)
-            ->whereIn('status', ['pending', 'generated'])
+            ->active()
             ->first();
 
         if ($existingSlip) {

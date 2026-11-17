@@ -20,7 +20,6 @@ function safeRoute(n, p) { try { return route(n, p); } catch { return '#'; } }
 const STATUS_MAP = {
     approved: { label: 'Aprovada', color: 'success' },
     pending_review: { label: 'Aguardando Revisão', color: 'warning' },
-    reviewed: { label: 'Revisada', color: 'info' },
     corrected: { label: 'Corrigida', color: 'info' },
     rejected: { label: 'Rejeitada', color: 'error' },
 };

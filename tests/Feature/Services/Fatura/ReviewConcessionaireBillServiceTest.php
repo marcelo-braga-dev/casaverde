@@ -37,13 +37,32 @@ describe('ReviewConcessionaireBillService', function () {
             'injected_energy_amount' => '400.00',
             'injected_consumption_kwh' => '3000.00',
             'injected_consumption_amount' => '700.00',
-            'review_status' => 'reviewed',
         ]);
 
         expect((float) $updated->injected_energy_kwh)->toBe(1500.0)
             ->and((float) $updated->injected_energy_amount)->toBe(400.0)
             ->and((float) $updated->injected_consumption_kwh)->toBe(3000.0)
             ->and((float) $updated->injected_consumption_amount)->toBe(700.0);
+    });
+
+    it('never changes the review status: only the approve action does', function () {
+        $client = ClientProfile::factory()->active()->create();
+        ClientDiscountRule::factory()->create(['client_profile_id' => $client->id]);
+        $concessionaria = Concessionaria::factory()->create();
+        $bill = ConcessionaireBill::factory()->create(['client_profile_id' => $client->id, 'review_status' => 'pending_review']);
+
+        $updated = $this->service->handle($bill, [
+            'concessionaria_id' => $concessionaria->id,
+            'reference_month' => $bill->reference_month,
+            'reference_year' => $bill->reference_year,
+            'unidade_consumidora' => $bill->unidade_consumidora,
+            'vencimento' => $bill->vencimento->toDateString(),
+            'valor_total' => '500.00',
+            'review_status' => 'approved',
+        ]);
+
+        expect($updated->review_status)->toBe('pending_review')
+            ->and((float) $updated->valor_total)->toBe(500.0);
     });
 
     it('clears injected values when an empty value is submitted', function () {
@@ -64,7 +83,6 @@ describe('ReviewConcessionaireBillService', function () {
             'vencimento' => $bill->vencimento->toDateString(),
             'valor_total' => '796.17',
             'injected_energy_kwh' => '',
-            'review_status' => 'reviewed',
         ]);
 
         expect($updated->injected_energy_kwh)->toBeNull();
@@ -88,7 +106,6 @@ describe('ReviewConcessionaireBillService', function () {
             'vencimento' => $bill->vencimento->toDateString(),
             'valor_total' => '796.17',
             'injected_consumption_discount_percent' => '35,5',
-            'review_status' => 'reviewed',
         ]);
 
         expect((float) $updated->injected_consumption_discount_percent)->toBe(35.5);
@@ -109,7 +126,6 @@ describe('ReviewConcessionaireBillService', function () {
             'vencimento' => $bill->vencimento->toDateString(),
             'valor_total' => '796.17',
             'injected_consumption_discount_percent' => '150',
-            'review_status' => 'reviewed',
         ]);
 
         expect((float) $updated->injected_consumption_discount_percent)->toBe(100.0);

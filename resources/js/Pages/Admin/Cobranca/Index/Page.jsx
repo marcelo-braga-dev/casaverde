@@ -1,10 +1,12 @@
 import Layout from "@/Layouts/UserLayout/Layout.jsx";
-import { Head, Link, router, useForm } from "@inertiajs/react";
+import { Head, Link, router, useForm, usePage } from "@inertiajs/react";
+import { useState } from "react";
 import {
     Alert,
     Button,
     Card,
     CardContent,
+    Checkbox,
     Chip,
     MenuItem,
     Stack,
@@ -22,7 +24,6 @@ import Grid from "@mui/material/Grid2";
 const statusLabels = {
     draft: "Rascunho",
     open: "Aberta",
-    waiting_payment: "Aguardando pagamento",
     paid: "Paga",
     overdue: "Atrasada",
     cancelled: "Cancelada",
@@ -31,7 +32,6 @@ const statusLabels = {
 const statusColors = {
     draft: "default",
     open: "primary",
-    waiting_payment: "warning",
     paid: "success",
     overdue: "error",
     cancelled: "default",
@@ -44,6 +44,15 @@ function money(value) {
         style: "currency",
         currency: "BRL",
     });
+}
+
+// due_date chega como "dd/mm/aaaa".
+function isPastDue(dueDate) {
+    if (!dueDate) return false;
+    const [d, m, y] = dueDate.split("/").map(Number);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return new Date(y, m - 1, d) < today;
 }
 
 function getClientName(charge) {
@@ -71,6 +80,35 @@ export default function Page({
     });
 
     const filteringAwaitingSlip = Boolean(filters.aguardando_novo_boleto);
+
+    const { flash, errors: pageErrors } = usePage().props;
+    const rows = charges?.data || [];
+    const draftIds = rows.filter((c) => c.status === "draft").map((c) => c.id);
+    const [selected, setSelected] = useState([]);
+    const [newDueDate, setNewDueDate] = useState("");
+    const [opening, setOpening] = useState(false);
+
+    const selectedVisible = selected.filter((id) => draftIds.includes(id));
+    const selectedRows = rows.filter((c) => selectedVisible.includes(c.id));
+    const selectedTotal = selectedRows.reduce((sum, c) => sum + Number(c.final_amount || 0), 0);
+    const selectedPastDue = selectedRows.filter((c) => isPastDue(c.due_date)).length;
+    const allSelected = draftIds.length > 0 && selectedVisible.length === draftIds.length;
+
+    const toggle = (id) => setSelected((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+    const toggleAll = () => setSelected(allSelected ? [] : draftIds);
+
+    const openSelected = () => {
+        router.post(
+            route("admin.financeiro.cobrancas.open-batch"),
+            { ids: selectedVisible, due_date: newDueDate || null },
+            {
+                preserveScroll: true,
+                onStart: () => setOpening(true),
+                onFinish: () => setOpening(false),
+                onSuccess: () => { setSelected([]); setNewDueDate(""); },
+            },
+        );
+    };
 
     const submit = (e) => {
         e.preventDefault();
@@ -101,6 +139,12 @@ export default function Page({
             <Head title="Cobranças" />
 
             <Stack spacing={3}>
+                {flash?.success && <Alert severity="success">{flash.success}</Alert>}
+                {flash?.error && <Alert severity="error">{flash.error}</Alert>}
+                {(pageErrors?.due_date || pageErrors?.ids) && (
+                    <Alert severity="error">{pageErrors.due_date || pageErrors.ids}</Alert>
+                )}
+
                 {(aguardandoNovoBoletoCount > 0 || filteringAwaitingSlip) && (
                     <Alert
                         severity={aguardandoNovoBoletoCount > 0 ? "error" : "success"}
@@ -211,6 +255,41 @@ export default function Page({
                     </CardContent>
                 </Card>
 
+                {selectedVisible.length > 0 && (
+                    <Card variant="outlined" sx={{ borderColor: "success.main" }}>
+                        <CardContent>
+                            <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems={{ md: "center" }}>
+                                <Typography sx={{ flexGrow: 1 }}>
+                                    <strong>{selectedVisible.length}</strong> rascunho(s) selecionado(s) — {money(selectedTotal)}.
+                                    {selectedPastDue > 0 && (
+                                        <> {selectedPastDue} com vencimento já passado: informe o novo vencimento (as demais mantêm a data atual).</>
+                                    )}
+                                </Typography>
+                                <TextField
+                                    type="date"
+                                    size="small"
+                                    label="Novo vencimento"
+                                    value={newDueDate}
+                                    onChange={(e) => setNewDueDate(e.target.value)}
+                                    InputLabelProps={{ shrink: true }}
+                                    required={selectedPastDue > 0}
+                                    error={selectedPastDue > 0 && !newDueDate}
+                                    sx={{ minWidth: 180 }}
+                                />
+                                <Button
+                                    color="success"
+                                    variant="contained"
+                                    onClick={openSelected}
+                                    disabled={opening || (selectedPastDue > 0 && !newDueDate)}
+                                    sx={{ fontWeight: 700, whiteSpace: "nowrap" }}
+                                >
+                                    {opening ? "Abrindo..." : "Abrir selecionadas"}
+                                </Button>
+                            </Stack>
+                        </CardContent>
+                    </Card>
+                )}
+
                 <Card>
                     <CardContent>
                         <Typography variant="h6" marginBottom={2}>
@@ -221,6 +300,15 @@ export default function Page({
                         <Table>
                             <TableHead>
                                 <TableRow>
+                                    <TableCell padding="checkbox">
+                                        <Checkbox
+                                            checked={allSelected}
+                                            indeterminate={selectedVisible.length > 0 && !allSelected}
+                                            disabled={draftIds.length === 0}
+                                            onChange={toggleAll}
+                                            inputProps={{ "aria-label": "Selecionar todos os rascunhos da página" }}
+                                        />
+                                    </TableCell>
                                     <TableCell>ID</TableCell>
                                     <TableCell>Cliente</TableCell>
                                     <TableCell>Referência</TableCell>
@@ -233,9 +321,18 @@ export default function Page({
                             </TableHead>
 
                             <TableBody>
-                                {charges?.data?.length > 0 ? (
-                                    charges.data.map((charge) => (
-                                        <TableRow key={charge.id}>
+                                {rows.length > 0 ? (
+                                    rows.map((charge) => (
+                                        <TableRow key={charge.id} selected={selectedVisible.includes(charge.id)}>
+                                            <TableCell padding="checkbox">
+                                                {charge.status === "draft" && (
+                                                    <Checkbox
+                                                        checked={selectedVisible.includes(charge.id)}
+                                                        onChange={() => toggle(charge.id)}
+                                                        inputProps={{ "aria-label": `Selecionar cobrança #${charge.id}` }}
+                                                    />
+                                                )}
+                                            </TableCell>
                                             <TableCell>#{charge.id}</TableCell>
 
                                             <TableCell>{getClientName(charge)}</TableCell>
@@ -255,7 +352,7 @@ export default function Page({
                                                 )}
                                             </TableCell>
 
-                                            <TableCell>
+                                            <TableCell sx={charge.status === "draft" && isPastDue(charge.due_date) ? { color: "error.main", fontWeight: 700 } : undefined}>
                                                 {charge.due_date || "-"}
                                             </TableCell>
 
@@ -293,7 +390,7 @@ export default function Page({
                                     ))
                                 ) : (
                                     <TableRow>
-                                        <TableCell colSpan={8}>
+                                        <TableCell colSpan={9}>
                                             <Typography textAlign="center" color="text.secondary">
                                                 Nenhuma cobrança encontrada.
                                             </Typography>

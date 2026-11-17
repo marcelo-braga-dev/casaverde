@@ -5,6 +5,7 @@ namespace App\Services\Pagamento;
 use App\Models\Cobranca\CustomerChargeHistory;
 use App\Models\Pagamento\PaymentSlip;
 use App\Models\Pagamento\PaymentTransaction;
+use App\Services\Automation\GenerateChargeReminderAlertService;
 use Carbon\CarbonInterface;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -13,6 +14,7 @@ class MarkPaymentAsPaidService
 {
     public function __construct(
         private readonly PaymentSlipExpiredAlertService $expiredAlertService,
+        private readonly GenerateChargeReminderAlertService $reminderAlertService,
     ) {}
 
     public function handle(PaymentSlip $slip, array $payload = []): void
@@ -67,6 +69,7 @@ class MarkPaymentAsPaidService
                 );
 
                 $this->expiredAlertService->resolveFor($slip->charge, 'Pagamento confirmado.');
+                $this->reminderAlertService->resolveFor($slip->charge, 'Pagamento confirmado.');
             }
         });
     }
@@ -80,7 +83,8 @@ class MarkPaymentAsPaidService
         }
 
         try {
-            return Carbon::parse($paidAt);
+            // O MP manda UTC ("...Z"); sem converter, o horário era gravado 3h adiantado.
+            return Carbon::parse($paidAt)->setTimezone(config('app.timezone'));
         } catch (\Throwable) {
             return now();
         }

@@ -86,7 +86,7 @@ class SyncPaymentSlipService
         $paidSlip->charge?->paymentSlips()
             ->with('providerAccount')
             ->whereKeyNot($paidSlip->id)
-            ->whereIn('status', ['pending', 'generated'])
+            ->active()
             ->get()
             ->each(function (PaymentSlip $replacement) use ($paidSlip) {
                 try {
@@ -122,19 +122,12 @@ class SyncPaymentSlipService
         }
     }
 
-    // Sem isso, uma cobrança que virou "overdue" enquanto o slip ainda estava
-    // pending/generated fica travada para sempre assim que o slip morre: nem
-    // GeneratePaymentSlipService nem a automação aceitam gerar pagamento para
-    // charge fora de open/waiting_payment, e nada além do cancelamento manual
-    // (CancelPaymentSlipService) reabre a charge. Mesmo padrão usado lá.
     private function reopenChargeIfPaymentDied(PaymentSlip $slip, string $newStatus): void
     {
         if (! in_array($newStatus, ['cancelled', 'expired', 'failed', 'refunded'], true)) {
             return;
         }
 
-        if ($slip->charge && ! in_array($slip->charge->status, ['paid', 'cancelled'], true)) {
-            $slip->charge->update(['status' => 'open']);
-        }
+        $slip->charge?->reopenAfterPaymentEnded();
     }
 }

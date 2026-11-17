@@ -7,7 +7,6 @@ use App\Models\Fatura\ConcessionaireBill;
 use App\Models\Pagamento\PaymentSlip;
 use App\Models\Pagamento\PaymentTransaction;
 use App\Models\Pagamento\PaymentWebhookEvent;
-use App\Services\Cobranca\ApproveCustomerChargeService;
 use App\Services\Cobranca\GenerateCustomerChargeFromBillService;
 use App\Services\Pagamento\CancelPaymentSlipService;
 use App\Services\Pagamento\GeneratePaymentSlipService;
@@ -27,7 +26,6 @@ describe('Charge + Payment lifecycle', function () {
         $this->account = mercadoPagoAccount();
 
         $this->generateCharge = app(GenerateCustomerChargeFromBillService::class);
-        $this->approveCharge = app(ApproveCustomerChargeService::class);
         $this->generateSlip = app(GeneratePaymentSlipService::class);
         $this->cancelSlip = app(CancelPaymentSlipService::class);
         $this->syncSlip = app(SyncPaymentSlipService::class);
@@ -35,12 +33,10 @@ describe('Charge + Payment lifecycle', function () {
     });
 
     it('walks the full happy path: bill approved -> charge -> payment issued -> paid via webhook', function () {
-        $bill = ConcessionaireBill::factory()->create(['review_status' => 'approved']);
+        $bill = ConcessionaireBill::factory()->create(['review_status' => 'approved', 'injected_consumption_amount' => -300.00]);
 
+        // A cobrança já nasce aberta: a conferência foi feita na aprovação da fatura.
         $charge = $this->generateCharge->handle($bill);
-        expect($charge->status)->toBe('draft');
-
-        $charge = $this->approveCharge->handle($charge);
         expect($charge->status)->toBe('open');
 
         Http::fake([
@@ -108,23 +104,21 @@ describe('Charge + Payment lifecycle', function () {
     });
 
     it('generates an independent new charge from a new bill after the previous charge for the same client was cancelled', function () {
-        $oldBill = ConcessionaireBill::factory()->create(['review_status' => 'approved']);
+        $oldBill = ConcessionaireBill::factory()->create(['review_status' => 'approved', 'injected_consumption_amount' => -300.00]);
         $oldCharge = $this->generateCharge->handle($oldBill);
-        $oldCharge = $this->approveCharge->handle($oldCharge);
         $oldCharge->update(['status' => 'cancelled', 'cancelled_at' => now()]);
 
         $newBill = ConcessionaireBill::factory()->create([
             'client_profile_id' => $oldBill->client_profile_id,
             'review_status' => 'approved',
+            'injected_consumption_amount' => -300.00,
         ]);
 
         $newCharge = $this->generateCharge->handle($newBill);
 
         expect($newCharge->id)->not->toBe($oldCharge->id)
-            ->and($newCharge->status)->toBe('draft')
+            ->and($newCharge->status)->toBe('open')
             ->and(CustomerCharge::where('client_profile_id', $oldBill->client_profile_id)->count())->toBe(2);
-
-        $newCharge = $this->approveCharge->handle($newCharge);
 
         Http::fake([
             'mp.test/v1/orders' => Http::response(mpOrder('inv-newbill-1', 'action_required'), 201),
@@ -135,7 +129,7 @@ describe('Charge + Payment lifecycle', function () {
     });
 
     it('cannot generate a second active charge for the same bill while the first one is still active', function () {
-        $bill = ConcessionaireBill::factory()->create(['review_status' => 'approved']);
+        $bill = ConcessionaireBill::factory()->create(['review_status' => 'approved', 'injected_consumption_amount' => -300.00]);
         $this->generateCharge->handle($bill);
 
         expect(fn () => $this->generateCharge->handle($bill->fresh()))
@@ -143,14 +137,14 @@ describe('Charge + Payment lifecycle', function () {
     });
 
     it('allows generating a replacement charge for the same bill once the previous one was cancelled', function () {
-        $bill = ConcessionaireBill::factory()->create(['review_status' => 'approved']);
+        $bill = ConcessionaireBill::factory()->create(['review_status' => 'approved', 'injected_consumption_amount' => -300.00]);
         $charge = $this->generateCharge->handle($bill);
         $charge->update(['status' => 'cancelled', 'cancelled_at' => now()]);
 
         $replacement = $this->generateCharge->handle($bill->fresh());
 
         expect($replacement->id)->not->toBe($charge->id)
-            ->and($replacement->status)->toBe('draft')
+            ->and($replacement->status)->toBe('open')
             ->and($replacement->concessionaire_bill_id)->toBe($bill->id)
             ->and(CustomerCharge::where('concessionaire_bill_id', $bill->id)->count())->toBe(2);
 
@@ -159,7 +153,7 @@ describe('Charge + Payment lifecycle', function () {
     });
 
     it('still refuses a replacement charge while the previous one is only overdue, not cancelled', function () {
-        $bill = ConcessionaireBill::factory()->create(['review_status' => 'approved']);
+        $bill = ConcessionaireBill::factory()->create(['review_status' => 'approved', 'injected_consumption_amount' => -300.00]);
         $charge = $this->generateCharge->handle($bill);
         $charge->update(['status' => 'overdue']);
 
@@ -191,8 +185,9 @@ describe('Charge + Payment lifecycle', function () {
         // O boleto acaba expirando no provider; o admin sincroniza manualmente.
         $this->syncSlip->handle($slip);
 
+        // Continua vencida (a data já passou), mas sem boleto ativo: aceita um novo.
         expect($slip->refresh()->status)->toBe('expired')
-            ->and($charge->refresh()->status)->toBe('open'); // reaberta automaticamente
+            ->and($charge->refresh()->status)->toBe('overdue');
 
         // Agora dá pra emitir um novo boleto normalmente e pagá-lo.
         $newSlip = $this->generateSlip->handle($charge->refresh());

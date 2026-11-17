@@ -130,7 +130,6 @@ class ClientReportService
                         ->whereIn('status', [
                             'draft',
                             'open',
-                            'waiting_payment',
                             'overdue',
                         ])
                         ->sum('final_amount'),

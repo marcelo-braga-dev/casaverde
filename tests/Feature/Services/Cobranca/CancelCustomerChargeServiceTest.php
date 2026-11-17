@@ -1,8 +1,10 @@
 <?php
 
+use App\Models\Alert\OperationalAlert;
 use App\Models\Cobranca\CustomerCharge;
 use App\Models\Pagamento\PaymentSlip;
 use App\Models\Users\User;
+use App\Services\Automation\GenerateChargeReminderAlertService;
 use App\Services\Cobranca\CancelCustomerChargeService;
 use Illuminate\Support\Facades\Http;
 
@@ -24,6 +26,15 @@ describe('CancelCustomerChargeService', function () {
             ->and($updated->notes)->toContain('Cliente pediu cancelamento');
     });
 
+    it('resolves pending reminder alerts of the cancelled charge', function () {
+        $charge = CustomerCharge::factory()->create(['status' => 'overdue']);
+        app(GenerateChargeReminderAlertService::class)->handle($charge, 'overdue');
+
+        $this->service->handle($charge);
+
+        expect(OperationalAlert::where('type', 'charge_overdue_reminder')->first()->status->value)->toBe('resolved');
+    });
+
     it('cancels the active payment slips at the provider along with the charge', function () {
         Http::fake([
             'mp.test/v1/orders/inv-1/cancel' => Http::response(mpOrder('inv-1', 'canceled'), 200),
@@ -39,7 +50,8 @@ describe('CancelCustomerChargeService', function () {
 
         $this->service->handle($charge);
 
-        expect($slip->fresh()->status)->toBe('cancelled');
+        expect($slip->fresh()->status)->toBe('cancelled')
+            ->and($slip->fresh()->provider_status)->toBe('canceled');
         Http::assertSent(fn ($request) => $request->method() === 'POST' && str_ends_with($request->url(), '/v1/orders/inv-1/cancel'));
     });
 

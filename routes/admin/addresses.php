@@ -3,7 +3,7 @@
 use App\Http\Controllers\Admin\Endereco\AddressController;
 use Illuminate\Support\Facades\Route;
 
-Route::name('admin.addresses.')
+Route::name('addresses.')
     ->prefix('addresses')
     ->group(function () {
         Route::get('/', [AddressController::class, 'index'])->name('index');

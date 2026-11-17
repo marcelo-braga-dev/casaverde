@@ -19,7 +19,7 @@ class BillingManagementService
             ->get();
 
         $overdueCharges = $charges->where('status', 'overdue');
-        $openCharges = $charges->whereIn('status', ['open', 'waiting_payment']);
+        $openCharges = $charges->where('status', 'open');
         $paidCharges = $charges->where('status', 'paid');
 
         return [

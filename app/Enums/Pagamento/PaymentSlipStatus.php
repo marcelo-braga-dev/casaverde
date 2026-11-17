@@ -12,6 +12,12 @@ enum PaymentSlipStatus: string
     case FAILED = 'failed';
     case REFUNDED = 'refunded';
 
+    /** Ainda pode ser pago pelo cliente. */
+    public static function activeValues(): array
+    {
+        return [self::PENDING->value, self::GENERATED->value];
+    }
+
     public function label(): string
     {
         return match ($this) {

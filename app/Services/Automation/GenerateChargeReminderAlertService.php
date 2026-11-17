@@ -5,6 +5,7 @@ namespace App\Services\Automation;
 use App\Enums\Alert\OperationalAlertStatus;
 use App\Models\Alert\OperationalAlert;
 use App\Models\Cobranca\CustomerCharge;
+use App\Services\Alert\ResolveOperationalAlertService;
 use App\Services\Alert\UpsertOperationalAlertService;
 use App\Services\WhatsApp\WhatsAppLinkService;
 
@@ -13,7 +14,21 @@ class GenerateChargeReminderAlertService
     public function __construct(
         private readonly WhatsAppLinkService $whatsAppLinkService,
         private readonly UpsertOperationalAlertService $upsertAlertService,
+        private readonly ResolveOperationalAlertService $resolveAlertService,
     ) {}
+
+    // Cobrança paga ou cancelada: o lembrete pendente não tem mais o que cobrar.
+    public function resolveFor(CustomerCharge $charge, string $notes): void
+    {
+        foreach (['charge_overdue_reminder', 'charge_upcoming_due_reminder'] as $type) {
+            $this->resolveAlertService->resolveMatching([
+                'module' => 'financeiro',
+                'type' => $type,
+                'alertable_type' => CustomerCharge::class,
+                'alertable_id' => $charge->id,
+            ], $notes);
+        }
+    }
 
     public function handle(CustomerCharge $charge, string $reason): void
     {

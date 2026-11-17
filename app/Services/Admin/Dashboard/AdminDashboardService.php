@@ -30,7 +30,7 @@ class AdminDashboardService
                     ->count(),
 
                 'charges_open_amount' => (float) CustomerCharge::query()
-                    ->whereIn('status', ['open', 'waiting_payment'])
+                    ->where('status', 'open')
                     ->sum('final_amount'),
 
                 'charges_overdue_amount' => (float) CustomerCharge::query()

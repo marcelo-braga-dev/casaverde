@@ -32,8 +32,7 @@ return [
 
     // Rotas que usam POST só para leitura (geram o PDF temporário de visualização).
     'readonly_post_routes' => [
-        'auth.propostas.pdf.cliente.gerar-pdf',
-        'auth.propostas.pdf.usina.gerar-pdf',
-        'auth.produtor.proposta.api.gerar-pdf',
+        'consultor.propostas.pdf.cliente-upload',
+        'consultor.propostas.pdf.produtor-gerar',
     ],
 ];

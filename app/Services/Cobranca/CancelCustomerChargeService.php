@@ -4,6 +4,7 @@ namespace App\Services\Cobranca;
 
 use App\Models\Cobranca\CustomerCharge;
 use App\Models\Cobranca\CustomerChargeHistory;
+use App\Services\Automation\GenerateChargeReminderAlertService;
 use App\Services\Pagamento\CancelPaymentSlipService;
 use App\Services\Pagamento\PaymentSlipExpiredAlertService;
 use Illuminate\Support\Facades\DB;
@@ -14,15 +15,16 @@ class CancelCustomerChargeService
     public function __construct(
         private readonly CancelPaymentSlipService $cancelPaymentSlipService,
         private readonly PaymentSlipExpiredAlertService $expiredAlertService,
+        private readonly GenerateChargeReminderAlertService $reminderAlertService,
     ) {}
 
     public function handle(CustomerCharge $charge, ?string $reason = null): CustomerCharge
     {
-        if ($charge->status === 'paid') {
+        if ($charge->isPaid()) {
             throw new InvalidArgumentException('Não é possível cancelar uma cobrança já paga.');
         }
 
-        if ($charge->status === 'cancelled') {
+        if ($charge->isCancelled()) {
             throw new InvalidArgumentException('Esta cobrança já está cancelada.');
         }
 
@@ -30,7 +32,7 @@ class CancelCustomerChargeService
         // não pode ser cancelada com um boleto ainda pagável lá fora.
         $this->cancelPaymentSlipService->cancelActiveSlipsOf($charge);
 
-        if ($charge->refresh()->status === 'paid') {
+        if ($charge->refresh()->isPaid()) {
             throw new InvalidArgumentException('Não é possível cancelar uma cobrança já paga.');
         }
 
@@ -58,6 +60,7 @@ class CancelCustomerChargeService
             $charge = $charge->fresh();
 
             $this->expiredAlertService->resolveFor($charge, 'Cobrança cancelada.');
+            $this->reminderAlertService->resolveFor($charge, 'Cobrança cancelada.');
 
             CustomerChargeHistory::log(
                 $charge,

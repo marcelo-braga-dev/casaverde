@@ -20,7 +20,7 @@ const Page = () => {
 
     const submit = (e) => {
         e.preventDefault()
-        router.post(route('admin.user.vendedor.store'), {...data, endereco})
+        router.post(route('admin.user.consultor.store'), {...data, endereco})
     }
 
     return (

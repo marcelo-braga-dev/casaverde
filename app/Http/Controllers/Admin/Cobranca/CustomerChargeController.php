@@ -24,7 +24,7 @@ class CustomerChargeController extends Controller
         return Inertia::render('Admin/Cobranca/Index/Page', [
             'charges' => $repository->paginate($filters, 20),
             'filters' => $filters,
-            'statuses' => ['draft', 'open', 'waiting_payment', 'paid', 'overdue', 'cancelled'],
+            'statuses' => ['draft', 'open', 'paid', 'overdue', 'cancelled'],
             'aguardandoNovoBoletoCount' => CustomerCharge::query()->somenteMinhasCobrancas()->aguardandoNovoBoleto()->count(),
         ]);
     }

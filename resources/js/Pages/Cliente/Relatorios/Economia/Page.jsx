@@ -48,7 +48,6 @@ const MONTHS_PT = ['', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho
 const STATUS_MAP = {
     paid:            { label: 'Pago',          color: 'success' },
     open:            { label: 'Em Aberto',     color: 'warning' },
-    waiting_payment: { label: 'Ag. Pgto',      color: 'info' },
     overdue:         { label: 'Vencido',       color: 'error' },
     cancelled:       { label: 'Cancelado',     color: 'default' },
 };

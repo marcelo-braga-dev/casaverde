@@ -6,13 +6,11 @@ use Illuminate\Support\Facades\Schedule;
 // Modo demonstração (DEMO_MODE): nada de importar e-mails, consultar o Mercado Pago ou
 // gerar alertas e lembretes sobre a base fictícia.
 if (! config('demo.enabled')) {
-    // energy-bills:import (pipeline EnergyBill antigo) fora do agendamento: nunca importou
-    // uma fatura (energy_bills vazia, toda tentativa falhava no parser) e lia a mesma caixa
-    // que concessionaire-bills:import, que processa esses PDFs com sucesso.
-    //
     // withoutOverlapping: importação IMAP e sync com o Mercado Pago podem demorar mais que o
     // intervalo; duas execuções simultâneas processariam os mesmos e-mails/boletos.
-    Schedule::command('concessionaire-bills:import')->hourly()->withoutOverlapping(60);
+    // Leitura das caixas IMAP só duas vezes ao dia, para poupar o servidor de e-mail.
+    // Fatura que chegar fora desses horários entra na leitura seguinte.
+    Schedule::command('concessionaire-bills:import')->twiceDaily(7, 13)->withoutOverlapping(60);
 
     Schedule::command('casaverde:generate-monthly-charges')->hourly()->withoutOverlapping(60);
     Schedule::command('casaverde:mark-overdue-charges')->everyTenMinutes()->withoutOverlapping(30);

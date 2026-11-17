@@ -24,7 +24,7 @@ class BillReportController extends Controller
         return Inertia::render('Admin/Relatorio/Fatura/Page', [
             'report' => $service->handle($filters),
             'filters' => $filters,
-            'reviewStatuses' => ['pending_review', 'reviewed', 'corrected', 'approved'],
+            'reviewStatuses' => ['pending_review', 'approved', 'corrected'],
             'parserStatuses' => ['pending', 'success', 'error'],
         ]);
     }

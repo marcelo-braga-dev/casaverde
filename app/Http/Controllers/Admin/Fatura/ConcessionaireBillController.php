@@ -93,7 +93,6 @@ class ConcessionaireBillController extends Controller
 
             'suggestedUsinaId' => $suggestBillUsinaService->handle($fatura),
             'energyBreakdown' => $energyBreakdownService->handle($fatura),
-            'reviewStatuses' => ['pending_review', 'reviewed', 'corrected', 'approved'],
 
             'usinas' => UsinaSolar::query()
                 ->orderByDesc('id')
